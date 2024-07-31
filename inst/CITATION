@@ -1,0 +1,11 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "SpaMTP: User-Freindly R package for Parrellel Statistical Analysis of Mass Spectrometry-Based Spatial Metabolomics and Spatial Transcriptomics",
+  author   = "Andrew Causer, Xiao Tan, Christopher Fitzgerald, Tianyao Lu, Quan Nguyen, Saskia Freytag",
+  journal  = "...",
+  year     = 2024,
+  volume   = "...",
+  number   = "...",
+  pages    = "...",
+  doi      = "..."
+)

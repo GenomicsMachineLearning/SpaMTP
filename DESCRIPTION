@@ -1,0 +1,55 @@
+Package: SpaMTP
+Title: User Friendly Spatial Metabolomic Data Analysis Package
+Version: 0.0.0.9000
+Authors@R: 
+    person("Andrew", "Causer", , "a.causer@uq.edu.au", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0001-7341-8366"))
+Description: This is an easy-to-use spatial metabolomic data analysis package that harnesses the functionality of Cardinal and Seurat. In addition to easier and quicker plotting, this package contains additional function for various downstream analyses such as differential peak analysis, merging of Metabolomic and Spatial Transcriptomic (Visium) data, m/z metabolite annotation, and others.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+biocViews:
+Imports: 
+    Cardinal,
+    data.table,
+    dplyr,
+    DropletUtils,
+    edgeR,
+    fgsea,
+    fields,
+    ggplot2,
+    ggridges,
+    graphics,
+    grDevices,
+    imager,
+    limma,
+    magrittr,
+    Matrix,
+    matter,
+    pheatmap,
+    plotly,
+    RANN,
+    RColorBrewer,
+    reshape2,
+    rgoslin,
+    rlist,
+    scater,
+    Seurat,
+    SeuratObject,
+    shiny,
+    shinyjs,
+    SingleCellExperiment,
+    stringr,
+    tidyr,
+    utils,
+    zeallot
+URL: https://github.com/BiomedicalMachineLearning/SpaMTP
+BugReports: https://github.com/BiomedicalMachineLearning/SpaMTP/issues
+Depends: 
+    R (>= 2.10)
+LazyData: true
+LazyDataCompression: xz
