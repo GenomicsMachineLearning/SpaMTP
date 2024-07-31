@@ -4,3 +4,7 @@
 ^README\.Rmd$
 inst/figures/$
 ^vignettes/
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

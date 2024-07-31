@@ -1,0 +1,10 @@
+url: https://genomicsmachinelearning.github.io/SpaMTP/
+template:
+  bootstrap: 5
+  bootswatch: cerulean
+
+external-articles:
+- name: subsampling
+  title: Subsampling for Class Imbalances
+  description: Improve model performance in imbalanced data sets through undersampling or oversampling.
+  href: https://www.tidymodels.org/learn/models/sub-sampling/
