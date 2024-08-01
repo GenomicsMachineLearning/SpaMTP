@@ -1,0 +1,981 @@
+---
+title: "Mouse_Urinary_Bladder"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mouse_Urinary_Bladder}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  comment = "#>"
+)
+```
+
+
+<br>
+
+# SpaMTP: Mouse Urinary Bladder Vignette
+<br>
+This tutorial highlights the utility of [**SpaMTP**](https://github.com/GenomicsMachineLearning/SpaMTP) on single-cell resolution Spatial Metabolomics. This vignette will use public mouse bladder Spatial Metabolomics data first published by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559), and used in the [*Cardinal V3* article](https://doi.org/10.1038/s41592-023-02070-z). 
+
+
+Using **SpaMTP** we will highlight:
+
+* Loading Spatial Metabolomic Data
+* Using *Cardinal* tools - Tissue Segmentation using SSC
+* Automated Metabolite Annotation of m/z Masses
+* Simplifying Lipid Nomenclature into Lipid Catagories and Classes
+* Differential expression analysis of annotated metabolites
+* Metabolite Expression Visualisation
+* Pathway Analysis
+* Re-Clustering using PCA and Seurat
+* Finding Spatially Correlated Metabolites
+
+Author: Andrew Causer
+<br>
+
+## Install and Import *R* Libraries
+
+First we need to import the required libraries for this analysis.
+
+```{r load_packages, warning=FALSE, message=FALSE}
+## Install SpaMTP if not previously installed
+if (!require("SpaMTP"))
+    devtools::install_github("BiomedicalMachineLearning/SpaMTP")
+
+#General Libraries
+library(SpaMTP)
+library(Cardinal)
+library(Seurat)
+
+#For plotting + DE plots
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(EnhancedVolcano)
+
+#Visualising HTML files in JupyterLab
+#library(IRdisplay)
+```
+
+<br>
+
+## Load SM Data using SpaMTP
+
+#### Sample Pre-Processing
+
+Pre-Processing is an import step in any pipeline and should be performed prior to any downstream analysis. For spatial metabolic data there are various packages which have robust functions and applications for removing technical noise from a SM dataset, these include *Cardinal* and *SCILS-LAB*. This pre-processing pipeline is copied from *Cardinal's* V3 Vignette. We will not run it in this case because it can take some time. The code required for the preprocessing is provided below but we will just load the processed data object below.
+
+<details>
+  <summary>*Cardinal Pre-Processing Code*</summary>
+```{r cardinal_preprossing}
+##### Using Cardinal #####
+
+# ## Load raw data
+# bladder <- readImzML("HR2MSImouseurinarybladderS096", folder = "vignette_data_files/", mass.range=c(400,1000), resolution=10, units="ppm") 
+  
+# ## Get mean intensity values across all spots (like bulk data)
+# mse_mean <- summarizeFeatures(bladder, FUN="mean") 
+
+# ## Generates a list of significant peaks to use as a reference for normalisation and pre-processing
+# ref <- mse_mean %>% 
+#     peakPick(method="mad",
+#             SNR=6) %>%
+#     peakAlign("mean",
+#             tolerance=15,
+#             units="ppm") %>%
+#     peakFilter() %>%
+#     process()
+
+# ## Normalise and pre-process the raw data using the reference peak
+# mse_peaks <- mse %>% 
+#     normalize(method="tic") %>%
+#     peakBin(ref=mz(ref),
+#             tolerance=15,
+#             units="ppm") %>%
+#     process()
+
+# ## Save the data
+# write.table(fData(mse_peaks),  "mouse-bladder-peaks.tsv")
+# writeMSIData(mse_peaks, "mouse-bladder-peaks.imzML") # We will load this data in for the rest of the analysis using SpaMTP
+# save(mse_mean, file="mouse-bladder-mean.RData")
+```
+
+</details> 
+
+#### Load Processed *SM* Data
+
+The first step is loading the data. In this case our pre-processed data was saved in the format of .ibd and .imzML files. Alternative formats that data can be loaded into SpaMTP are through a intensity matrix or a Cardinal Object. These are displayed in different vignettes.
+
+This *SpaMTP* function is a wrapper on *Cardinal's readImzML()* function. For more information on how this function works, and the relative inputs it accepts please head to [*Cardinal's* documentation page](https://rdrr.io/bioc/Cardinal/man/readMSIData.html).  
+
+Here, we have specified the file path were the .imzML and .imb files are stored, along with the mass range to include m/z values between and also the resolution or bin size of each peak is set to 10ppm.
+
+
+```{r warning=FALSE, message=FALSE}
+bladder <- loadSM(name = "mouse-bladder-peaks", path = "vignette_data_files/Mouse_Urinary_Bladder/", mass.range=c(400,1000), resolution=10, units="ppm")
+```
+
+
+We can visualise the data below. Because *SpaMTP* is built on a *Seurat* Object, we can plot and use useful *Seurat* functions. In this case we will plot the spatial distribution of the total number of feature (m/z's) present per pixel. 
+
+
+
+```{r, fig.width= 10, fig.height=5, warning=FALSE, message=FALSE}
+ImageFeaturePlot(bladder, features = "nFeature_Spatial", size = 1) + coord_flip() + scale_x_reverse()
+```
+
+
+After visualising the data we can see our tissue section, and that there are some areas outside the tissue region that contain pixel information, this is noise that will be removed later. Published in the original paper by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559) we will visualise 3 m/z values that define organ structures within the urinary bladder. 
+
+
+```{r fig.width=30, fig.height=5, warning=FALSE, message=FALSE}
+ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1) & coord_flip() & scale_x_reverse()
+```
+
+After importing the data we can run some quick QC plots to observe the distribution of the data. 
+
+
+```{r, fig.width=20, fig.height=5}
+options(repr.plot.width = 20, repr.plot.height = 5)
+
+MZRidgePlot(seurat.obj = bladder, bins = 10, log.data = TRUE, cols = c(RColorBrewer::brewer.pal(name = "Paired", n = 7)[c(1:2, 5:6)]))+ theme_minimal() +theme(panel.grid = element_blank()) |
+MZVlnPlot(seurat.obj = bladder, log.data = TRUE, show.points = F) |
+MZBoxPlot(seurat.obj = bladder, log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05) 
+```
+
+These plots display the intensity of each m/z summed across all pixels. Based on this there seems to be a majority of m/z values which display global expression across the tissue which is expected, suggesting that there are no outlying m/z values.
+
+<br>
+
+## Switching between SpaMTP and Cardinal Objects
+
+Now that we have loaded and visualised out data to demonstrate it's quality, we will identify similar groups of pixels based on their relative metabolite composition. This is similar to clustering performed with Spatial Transcriptomics data. Following the *Cardinal* workflow we will use a method called Spatially-aware Shrunken Centroid (SSC) segmentation. To generate these results we can convert our SpaMTP object to Cardinal:
+
+
+```{r, warning=FALSE, message=FALSE}
+bladder_cardinal <- ConvertSeuratToCardinal(data = bladder, assay = "Spatial", slot = "counts")
+```
+
+    Gathering Intensity, m/z values and metadata from Seurat Object ...
+    
+    Converting intensity matrix and Generating Cardinal Object ...
+    
+
+Lets observe the Cardinal Object structure after conversion
+
+```{r}
+bladder_cardinal
+```
+
+
+We can see that the Object layout is correct and we have 305 m/z values across 34,840 pixels. Next we can generate a plot using Cardinal
+
+```{r, fig.width=20, fig.height=5}
+bladder_cardinal %>%
+    subsetFeatures(mz >= 750, mz <= 800) %>%
+    plot()
+```
+
+
+We can see that our data has converted properlly to a *Cardinal* Object. Now we can run ssc and check the results match. 
+
+<br>
+
+#### Tissue Segmentation using SSC 
+
+Following the *Cardinal* tutorial we will use the same values for: 
+
+* Spatial neighborhood radius  = 2
+* Maximum number of segments/clusters = 10
+* Sparsity thresholding parameter = 24
+
+```{r}
+set.seed(1)
+ssc <- spatialShrunkenCentroids(bladder_cardinal,
+            r=2, s=c(24), k=10,
+            method="gaussian")
+```
+
+
+```{r fig.width=10, fig.height=10}
+
+col_palette = list("1" = "#9FBEAC", 
+                   "2" = "#C2B03B",
+                   "3" = "#F99D1D",
+                   "4" = "#008E87", 
+                   "5" = "#0074B0",  
+                   "6" = "#DE4D6C", 
+                   "7" = "#F99D1D",
+                   "8" = "#DE4D6C",
+                   "9" = "#BF212E")
+
+image(ssc, model=list(s=24), col= unlist(unname(col_palette)))
+```
+
+
+We can see that our clustering results match that of [previously published results](https://doi.org/10.1038/s41592-023-02070-z). Based on this we can add the ssc results to our *Cardinal* object and then match them to their respective spots within the SpaMTP object.
+
+Although the majority of functions within the SpaMTP package are used as wrappers for analysing and modifying Seurat objects, there are a few functions that are designed to assist in SM analysis in Cardinal. The function below is one, which allows you to add the ssc results pack to a  
+
+```{r, warning=FALSE, message=FALSE}
+bladder_cardinal <- add_ssc_annotation(bladder_cardinal, ssc, resolution = 24)
+```
+
+We can now check where our ssc results were added in our Cardinal Object 
+
+```{r, echo=TRUE, results='hide'}
+head(data.frame(pixelData(bladder_cardinal)), n = 3)
+```
+
+```{r, echo=FALSE}
+df <- head(data.frame(pixelData(bladder_cardinal)), n = 3)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "cccccccccc")
+```
+
+
+
+Based on the image above there are a few clusters that are associated with regions outside the tissue. Because we are not interested in these (technical noise) we will subset our SpaMTP object to only include the clusters of interest (cluster 2, 5 and 6)
+
+```{r, fig.width = 20, fig.height = 8}
+# subset the pixels to only include our ssc clusters of interest
+tissue_clusters = c(2,5,6)
+test <- subsetPixels(bladder_cardinal, ssc %in% tissue_clusters)
+
+# plot a key marker m/z only across our segments of interest in Cardinal
+image(test, mz =798.5410) 
+```
+
+<br>
+
+#### Add SSC segmentation results to SpaMTP Object
+
+Below we will add the relative results from the ssc analysis to our SpaMTP object
+
+
+```{r}
+bladder$ssc <- pixelData(bladder_cardinal)$ssc
+```
+
+
+```{r, fig.width=18, fig.height=8, warning=FALSE, message=FALSE}
+ImageDimPlot(bladder, group.by = "ssc", size = 2, cols = col_palette) + coord_flip() + scale_x_reverse()
+```
+
+We can see that the pixel annotations have been added correctly, and we have a ggplot2 figure that can be easily manipulated using ggplot2 commands. Following the processing and annotation of pixels across our dataset we will next annotate the m/z values.
+
+<br>
+
+## Metabolite annotaiton of m/z masses
+
+One of the major steps in the analysis of metabolomics is the identification/annotation of m/z masses to their relative common metabolite name. There are various public website which can be used to run this however they are often complicated and do not take in an R object and annotate them directly. 
+
+*SpaMTP* has a user-friendly function that assigns possible annotations to each m/z value based on a few varibales:
+* db: Database to use to match the m/z masses against -> options are = "HMDB", "LipidMaps", "GNPS" or "ChEBI"
+* polarity: Polarity mode the experiment was run in -> either "positive" or "negative"
+* test_adduct: 
+
+
+```{r, warning=FALSE, message=FALSE}
+bladder_annotated <- AnnotateSM(bladder, db = Lipidmaps_db, ppm_error = 15, test_add_pos = "M+K", polarity = "pos")
+```
+
+    Filtering 'Lipidmaps_db' database by M+K adduct/s
+    
+    Searching database against input m/z's to return annotaiton results
+    
+    Adding annotations to Seurat Object .... 
+    
+    Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features
+    
+
+```{r}
+bladder_annotated
+```
+
+
+Following annotation with the [LIPID_MAPS](https://www.lipidmaps.org/) database there are 79 m/z masses that were successfully annotated!
+
+These annotations are stored in the feature.metadata slot within our SpaMTP Object, lets take a look:
+
+
+```{r, echo=TRUE, results='hide'}
+head(bladder_annotated[["Spatial"]]@meta.data, n = 3)
+```
+
+```{r, echo=FALSE}
+df <- head(bladder_annotated[["Spatial"]]@meta.data, n = 3)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "cccccccc")
+```
+
+
+
+We can see that for each m/z value, along with all possible annotations, we also observe information including database ID, the adduct used to annotate this metabolite, the common chemical formula and also the plus-minus ppm error between the observed mass and the reference mass of these annotated molecules in our reference dataset.
+
+Based on these results we can now perform a serious of analyses to identify which metabolites are associated with certain biological features/processes.
+
+<br>
+
+## Simplifying Lipid Nomenclature into Lipid Catagories and Classes
+
+
+Because lipids are made of many carbon molecules in a long chain there are many different kinds of lipids that share the same molecular weight. This results in some annotations for a mass being very long, due to the numerous possible lipids matching that m/z value. Lets use a SpaMTP function to similfy the lipid nomenclature into common lipid catagories and Classes! This gives more simplifed annotations to a level that most Spatial Metabolic datasets are capable of identifying. 
+
+
+```{r, message=FALSE, results='hide'}
+bladder_annotated@assays$Spatial@meta.data <- RefineLipids(bladder_annotated@assays$Spatial@meta.data, annotation.column = "all_IsomerNames", lipid_info = "simple")
+
+refined_annotations <- bladder_annotated@assays$Spatial@meta.data # get the refined annotations from our feature meta.data
+```
+
+
+```{r, echo=TRUE, results='hide'}
+cat("non-lipid metabolites ... ")
+head(refined_annotations, 1)
+
+
+cat("refined lipid names ... ")
+refined_annotations[11,]
+```
+
+<div style="margin-left: auto;
+            margin-right: auto;
+            width: 30%">
+| non-lipid metabolites |       
+| :----:      |
+
+</div>
+
+```{r, echo=FALSE, collapse=TRUE}
+
+df <- head(refined_annotations, 1)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
+<br>
+
+<div style="margin-left: auto;
+            margin-right: auto;
+            width: 30%">
+| refined lipid metabolites |       
+| :----:      |
+
+</div>
+
+```{r, echo=FALSE, collapse=TRUE}
+df <- refined_annotations[11,]
+knitr::kable(df, format = "html", table.attr = "class='dataframe'",align = "c")
+```
+
+
+We can see that, for metabolites that are not lipids, the names are returned as NA, however those that are annoated as lipids have been simplified into a more human readable format.
+
+Some key m/z masses that were oberved and annotated in the [original publication](https://doi.org/10.1002/anie.200905559) are listed in the table below:
+
+
+<div style="margin-left: auto;
+            margin-right: auto;
+            width: 30%">
+|  m/z mass  | Annotated Metabolite   |       
+| :----:      |     :----:              |
+| 741.5307       | SM(34:1) | 
+| 798.5410      | PC(34:1) |
+| 812.5566      | PE(38:1) | 
+</div>
+
+
+
+Lets see how these m/z's are annotated using ***SpaMTP***
+
+
+```{r, echo=TRUE, results='hide'}
+key_mzs <- c(741.5307, 798.5410, 812.5566)
+key_mz_names <- c()
+
+for (mz in key_mzs){
+    key_mz_names <- c(key_mz_names, FindNearestMZ(bladder_annotated, mz)) #Find the nearest m/z in our dataset to the mass provided
+}
+
+matches <- refined_annotations[refined_annotations$mz_names %in% key_mz_names,][c("raw_mz","Species.Name.Simple")] 
+matches
+```
+
+
+<div style="margin-left: auto;
+            margin-right: auto;
+            width: 30%">
+|| raw_mz  | Species.Name.Simple   |       
+|:--:| :----:      |     :----:              |
+|196| 741.5306       | **SM(34:1)**; PA(37:1) | 
+|231| 798.5411      | **PC(34:1)**; PE(37:1) |
+|238| 812.5562      | PC(35:1); **PE(38:1)** | 
+
+</div>
+
+
+
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+ImageMZAnnotationPlot(bladder_annotated, metabolites = c("SM(34:1)", "PC(34:1)"), size = 1, column.name = "Species.Name.Simple", plot.exact = F, dark.background = F, plot.pixel = T) & coord_flip() & scale_x_reverse()  & scale_colour_gradientn(colors = viridis(100)) 
+```
+
+
+We can see that our annotations match those published previously. In this case because the metabolites are lipids there are multiple lipid names for the same m/z mass. Lets use a function to similfy the lipid Nomenclature
+
+<br>
+
+## Differential expression analysis of annotated metabolites
+
+
+One key step in understanding biological processes is determining genes, proteins or metabolites that demonstrate significantly different expression between given populations or cell types. Based on the analysis above, for this urinary bladder we identified 3 main tissue regions these being :
+
+
+<div style="margin-left: auto;
+            margin-right: auto;
+            width: 30%">
+
+|  ssc segment  | Tissue Region   |       
+| :----:      |     :----:              |
+| 2       | adventitia | 
+| 5      | muscle |
+| 6     | urothelium | 
+
+</div>
+
+These regions are identified also in the following references: [1](https://doi.org/10.1002/anie.200905559), [2](https://www.nature.com/articles/s41592-023-02070-z#citeas)
+
+
+
+Lets use SpaMTP's *FindAllDEPs()* function to identify differentially expressed m/z peaks (DEPs) between each of these three tissue regions. This function uses similar methods to those established for genetic data, whereby pixels are pseudo-bulked into random pools and assessed for differential expression ([EdgeR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/)). 
+
+
+```{r, warning=FALSE, message=FALSE}
+ROI <- subset(bladder_annotated, subset = ssc %in% c("2", "5", "6")) # subset our dataset to only include our 3 clusters (Region of Interest - ROI)
+```
+
+Now our object has been subset to only include our clusters of interest, we can now perform differential expression analysis.
+
+```{r, warning=FALSE, message=FALSE}
+# Performs pooling, pseudo-bulking and EdgeR Differential Expression Analysis
+cluster_DEPs <- FindAllDEPs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+                            DE_output_dir =NULL, return.individual = FALSE, 
+                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
+```
+
+    Pooling one sample into 3 replicates...
+    
+    Running edgeR DE Analysis for  FindAllDEPs  -> with samples [ 5, 2, 6 ]
+    
+    Starting condition: 5
+    
+    Starting condition: 2
+    
+    Starting condition: 6
+    
+
+
+Lets observe the top 10 DE metabolites for each cluster in a heatmap
+
+
+```{r, fig.width=15, fig.height=10}
+DEPsHeatmap(cluster_DEPs, only.pos = FALSE, order.by = "logFC",
+            plot_annotations_column = "annotations", nlabels.to.show = 1, 
+            n = 10, save_to_path = NULL
+            ,plot.save.height = 10, plot.save.width = 15)
+```
+
+
+We can also observe the spatial expression patterns of some top DE metabolites. 
+
+
+```{r, fig.width=33, fig.height=10, warning=FALSE, message=FALSE}
+(ImageDimPlot(ROI, group.by = "ssc", split.by = "ssc", size = 2, cols = col_palette)/
+ImageMZAnnotationPlot(ROI, metabolites = c("PC(20:4(5Z,8Z,11Z,14Z)/0:0)", "farnesyl triphosphate","SM(d18:1/19:0)"), size = 2)) & coord_flip() & scale_x_reverse()
+```
+
+
+We can see that the expression of these metabolites matches the spatial location of each of these three tissue regions quite well.
+
+Noted in the heatmap above, there are many lipids which are identified as being DE. In particular, there are two lipids of interest which have been identified in the original publication as key metabolites that differentiate the muscle (cluster 5) and urothelium (cluster 6). These being SM(34:1) and PC(34:1) respectively. 
+
+The code below performs differential expression analysis just between the the muscle (cluster 5) and urothelium (cluster 6) pixels, to determine if the differential expression of these lipids can be detected
+
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+### Subsets the original dataset to only include cluster 5 and 6
+ROI_x <- subset(bladder_annotated, subset = ssc %in% c("5", "6"))
+
+### Performs differential expression analysis between the two groups
+cluster_DEPs_x <- FindAllDEPs(data = ROI_x, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+                            DE_output_dir =NULL, return.individual = FALSE, 
+                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames" )
+
+### Runs lipid nomenclature simplification on the DEP results
+cluster_DEPs_x$DEPs <- RefineLipids(cluster_DEPs_x$DEPs, annotation.column = "annotations", lipid_info = "simple")
+
+### Subsets the DEP results to only get up regulated metabolites for cluster 5 and 6
+urothelium <- cluster_DEPs_x$DEPs[cluster_DEPs_x$DEPs$cluster == "6",]
+
+### Sets up colouring for significant spots in volcano plot
+keyvals <- ifelse(
+    urothelium$logFC < -2  & urothelium$PValue < 10e-4, 'royalblue',
+      ifelse(urothelium$logFC > 1 & urothelium$PValue < 10e-4, 'red',
+        'black'))
+  keyvals[is.na(keyvals)] <- 'black'
+  names(keyvals)[keyvals == 'red'] <- 'Cluster 6'
+  names(keyvals)[keyvals == 'black'] <- 'Non-Sig'
+  names(keyvals)[keyvals == 'royalblue'] <- 'Cluster 5'
+
+### Changes the shape of the lipid annotations  of interest in volcano plot
+metabolites <- matches$Species.Name.Simple[1:2]
+
+keyvals.shape <- ifelse(
+    urothelium$Species.Name.Simple == metabolites[1], 15,
+      ifelse(urothelium$Species.Name.Simple == metabolites[2], 17,
+        20))
+  keyvals.shape[is.na(keyvals.shape)] <- 20
+  names(keyvals.shape)[keyvals.shape == 20] <- 'Other'
+  names(keyvals.shape)[keyvals.shape == 15] <- metabolites[1]
+  names(keyvals.shape)[keyvals.shape == 17] <- metabolites[2]
+
+### Plots volcano plot with DEP results
+volc_plot <- EnhancedVolcano::EnhancedVolcano( urothelium,
+                                  selectLab = metabolites, 
+                                  lab = urothelium$Species.Name.Simple,
+                                  #FCcutoff = 0,
+                                  colCustom = keyvals,
+                                  shapeCustom = keyvals.shape,
+                                  cutoffLineType = 'blank',
+                                  pCutoff = 10e-4,
+                                  FCcutoff = 1,
+                                  pointSize = 6,
+                                  labSize = 5,
+                                  labCol = 'black',
+                                  labFace = 'bold',
+                                  colAlpha = 4/5,
+                                  x = 'logFC',
+                                  y = 'PValue', 
+                                  gridlines.major = FALSE,
+                                  gridlines.minor = FALSE)
+```
+
+
+```{r, fig.width=10, fig.height=10}
+volc_plot
+```
+
+
+In the volcano plot above we can see that our analysis correctly identified cluster 5 as having SM(34:1) upregulated, and PC(34:1) was up regualted in cluster 6. 
+
+Lipids are a key metabolite expressed within the urinary bladder. Lets take a deeper look into the differenitally expressed lipids groups with respect to their main catagory and class:
+
+
+```{r, message=FALSE, results='hide'}
+### Runs lipid nomenclature simplification on the DEP results generated between cluster 2, 5 and 6
+cluster_DEPs$DEPs <- RefineLipids(cluster_DEPs$DEPs, annotation.column = "annotations", lipid_info = "simple")
+```
+
+
+```{r, fig.width=7, fig.height=5, warning=FALSE, message=FALSE}
+# lets look at the Differenitally expressed Lipids groups
+UP <- cluster_DEPs$DEPs[cluster_DEPs$DEPs$regulate == "Up",] # lets get the upregulated lipids for each cluster
+
+# Compute counts of Lipid Maps Categories for 'Up' and 'Down' entries
+category_counts <- UP %>%
+  group_by(cluster, Lipid.Maps.Category) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+category_counts <- category_counts %>%
+  mutate(Lipid.Maps.Category = ifelse(is.na(Lipid.Maps.Category), "Non-Lipids", Lipid.Maps.Category))
+
+
+# Plot bar graph
+ggplot(category_counts, aes(x = Lipid.Maps.Category, y = count, fill = cluster)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Relative Number of Up Regulated Lipids Grouped by Catagory",
+       x = "Lipid Maps Category",
+       y = "Count") +
+  theme_classic() +
+  scale_fill_manual(values = col_palette) 
+
+```
+
+
+The results displayed in the bar graph above demonstrate the number of different types of lipid **catagories** differentailly expressed in each cluster. Lipid catagories are the most simple/broad annotation of a lipid. For example GL stands for glycerolipids which can represent such lipids classes as diglycerols and triglycerols. Likewise SP stands for Sphingolipids which include lipids from classes such as sphingomyelins and glycosphingolipids. For more infomation on different lipid Catagories and Classes please visit the following links ([1](https://doi.org/10.1016%2Fj.bbalip.2011.06.009),[2](https://doi.org/10.1021/acs.analchem.0c01690)).
+
+Lets now look at the different lipid classes that were differentially expressed by each cluster
+
+
+```{r, fig.width=15, fig.height=5, warning=FALSE, message=FALSE}
+# Compute counts of Lipid Maps Categories for 'Up' and 'Down' entries
+category_counts <- UP %>%
+  group_by(cluster, Lipid.Maps.Main.Class) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+category_counts <- category_counts %>%
+  mutate(Lipid.Maps.Category = ifelse(is.na(Lipid.Maps.Main.Class), "Non-Lipids", Lipid.Maps.Main.Class))
+
+
+# Plot bar graph
+ggplot(category_counts, aes(x = Lipid.Maps.Main.Class, y = count, fill = cluster)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Relative Number of Up Regulated Lipids Grouped by Classes",
+       x = "Lipid Maps Category",
+       y = "Count") +
+  theme_classic() +
+  scale_fill_manual(values = col_palette) 
+```
+
+
+```{r, include = FALSE}
+## The below code was used to generate the cirlce plot in the SpaMTP publication
+
+# normalize_lipid_class <- function(lipid_class) {
+#   if (lipid_class %in% c("PC; PE-NMe; PE", "PC; PE; PE-NMe", "PC; PE; PE-NMe2")) {
+#     return("PC; PE; PE-NMe")
+#   } else {
+#     return(lipid_class)
+#   }
+# }
+
+# # Apply the normalization and replace semicolons with "or"
+# df <- category_counts %>%
+#   mutate(
+#     Lipid.Maps.Main.Class = sapply(Lipid.Maps.Main.Class, normalize_lipid_class),
+#     Lipid.Maps.Main.Class = gsub(";", " or ", Lipid.Maps.Main.Class),
+#     Lipid.Maps.Category = sapply(Lipid.Maps.Category, normalize_lipid_class),
+#     Lipid.Maps.Category = gsub(";", " or ", Lipid.Maps.Category)
+#   )
+
+# df <- df[c(1:8,11:14),]
+# df[8,]$count <- 4 
+
+# category_counts <- df
+# empty_bar <- 2
+# to_add <- data.frame(matrix(NA, empty_bar*nlevels(category_counts$cluster), ncol(category_counts)) )
+# colnames(to_add) <- colnames(category_counts)
+# to_add$cluster <- rep(levels(category_counts$cluster), each=empty_bar)
+# category_counts <- rbind(category_counts, to_add)
+# category_counts <- category_counts %>% arrange(cluster)
+# category_counts$id <- seq(1, nrow(category_counts))
+
+# # Get the name and the y position of each label
+# label_data <- category_counts
+# number_of_bar <- nrow(label_data)
+# angle <- 90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+# label_data$hjust <- ifelse( angle < -90, 1, 0)
+# label_data$angle <- ifelse(angle < -90, angle+180, angle)
+
+# base_data <- category_counts %>% 
+#   dplyr::group_by(cluster) %>% 
+#   dplyr::summarize(start=min(id), end=max(id) - empty_bar) %>% 
+#   dplyr::rowwise() %>% 
+#   mutate(title=mean(c(start, end)))
+
+
+
+# options(repr.plot.width = 10, repr.plot.height = 10)
+
+
+# p <- ggplot(category_counts,aes(fill=cluster, y=count, x=id))+ 
+#     geom_bar(stat = "identity")+
+#    xlim(0,dim(category_counts)[1])+ylim(-10,10)+geom_text(data=label_data, aes(x=id, y = count+1,label=Lipid.Maps.Main.Class),size = 4, angle = label_data$angle)+ 
+#     geom_segment(data=base_data, aes(x = start, y = -3, xend = end+1, yend = -3), alpha=0.8, size=2 , inherit.aes = FALSE)+
+#     geom_text(data=base_data, aes(x = title, y = -1, label=cluster), alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)+
+#      coord_polar()+theme_minimal()+
+#   theme(axis.text = element_blank(),axis.title = element_blank(),panel.grid = element_blank())
+
+# p
+```
+
+<br>
+
+## Metabolite Expression Visualisation
+
+Based on the analysis performed above there are various ways we can visualise the data spatially. SpaMTP has a large range of methods to visualise data including binning common metabolites, 3D plots displaying metabolite/gene expression and more. Below we will demostrate some of the key plotting methods.
+
+First, using the DE lipid results from above we can plot the combined expression of all Glycerophospholipids (GP) that were up expressed by our urothelium cells (cluster 6)
+
+
+```{r}
+### Identified the m/z values that are GP lipids up expressed in cluster 6
+mz <- na.omit(UP[c(UP$cluster == "6"& UP$Lipid.Maps.Category == "GP"),]$gene)
+
+### Adds the binned expression value of all of these lipids into a column in the SpaMTP object's @meta.data slot
+ROI <- BinMetabolites(ROI, mz, slot = "counts", bin_name = "GPs")
+```
+
+
+```{r, echo=TRUE, results='hide'}
+head(ROI, n = 3)
+```
+
+```{r, echo=FALSE}
+df <- head(ROI, n = 3)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+```
+
+
+
+```{r, fig.width = 10, fig.height = 5, warning=FALSE, message=FALSE}
+ImageFeaturePlot(ROI, features = c("GPs"), size = 2, dark.background = F) & coord_flip() & scale_x_reverse()
+```
+
+
+We can see clearly that the combined expression of these GP lipids is highly expressed in the urothelium cells
+
+Next we can observe the expression of two key lipids (same as those described above) in a 3D plot:
+
+
+```{r, fig.width=10, fig.height=30}
+### Identified the m/z values that are to be plot
+mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = ROI, target_mz = x)))
+
+Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 100, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
+                     
+```
+
+
+## Pathway Analysis
+
+In order to understand biological processes and complex diseases at a deeper level, we oftern look at biological pathways as a whole rather the expression of just individual metabolites/genes. SpaMTP pathway analysis uses a reference dataset that contains various biological pathways (i.e. KEGG or RAMP_DB) to determine significant changes in biological, cellular or molecular processes.
+
+The first pathway analysis method uses principle component analysis (PCA) to determine metabolites that explain the most variance between each PCA. These metabolites are then checked against a reference pathway database to idetnify up- and down-regulated pathways for each PCA.
+
+Let run this analysis:
+
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+PCA_results <- principal_component_pathway_analysis(ROI,
+                                                path = "~/Downloads/",
+                                                ppm_error = NULL,
+                                                ion_mode = "positive",
+                                                tof_resolution = 30000,
+                                                num_retained_component = NULL,
+                                                variance_explained_threshold = 0.9,
+                                                resampling_factor = NULL,
+                                                p_val_threshold = 0.05,
+                                                byrow = T, flip_plot = T, show_variance_plot= F, 
+                                    assay = "Spatial", slot = "counts") 
+```
+
+
+This function returns a SpaMTP object with the relative PCA results, along with a list containing pathway analysis results. For ease of viewing this function also outputs an interactive HTML file containing all this information. Lets visualise this file below:
+
+```{r, include=FALSE}
+### TODO: get Ty to fix HTML code
+
+
+### For displaying pathway analysis results
+# Path to the HTML file
+#file_path <- "/scratch/user/uqacause/files/project_data_objects/SpaMTP/pca_analysis.html"
+
+# Read the HTML file
+#html_content <- readLines(file_path, warn = FALSE)
+#styled_html_content <- paste(
+#  '<div style="width: 100%; height: 100px; overflow: auto;">',
+#  paste(html_content, collapse = "\n"),
+#  '</div>'
+#)
+
+# Display the styled HTML content
+#display_html(styled_html_content)
+```
+
+The second form of pathway analysis is using *FishersExactTest* in an approach similarly to [GSEA](https://www.gsea-msigdb.org/gsea/index.jsp). Based on a list of metabolite and/or gene names that are differentially expressed, we can find which pathways are also significantly up- or down-regulated. 
+
+The below code is performing FishersExactTest Pathway analysis on metabolites significantly over expressed in the urothelium (cluster 6):
+
+```{r}
+## Subsets to include only UP-regulated m/z values in cluster 6 (relative to cluster 2 and 5)
+cluster_6 <- UP[UP$cluster == "6",] 
+```
+
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+cluster_6_pathways <- FisherexactTest(list(mz = cluster_6$gene),
+                            analyte_type = c("mz"),
+                            polarity = "positive",
+                            ppm_error = 10,
+                            max_path_size = 500,
+                            alternative = "greater",
+                            min_path_size = 5,
+                            pathway_all_info = F,
+                            pval_cutoff = 0.05,
+                            verbose = TRUE)
+```
+
+    Fisher Testing ......
+    Loading files ......
+    Loading files finished!
+    Expanding database to extract all potential metabolites
+    Parsing the information of given analytes class
+    Begin metabolic pathway analysis ......
+    Merging datasets
+    Running test
+    Calculating p value......
+    P value obtained
+    Done
+    
+
+```{r, echo=TRUE, results='hide'}
+cluster_6_pathways[1:4,]
+```
+
+```{r, echo=FALSE}
+df <- cluster_6_pathways[1:4,]
+knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+```
+
+
+```{r}
+#TODO: pathway analysis plot
+
+# **Ty what does the analytes in pathway vs total_in_pathway mean? 
+# **Ty also for all the other pathways there are many common lipid ones, any way to fix this???
+```
+
+
+## Re-Clustering using PCA and Seurat
+
+Because SpaMTP is build on the foundations of a *Seurat* Object, it allows the user to still use many useful *Seurat* functions on their spatial metabolomic data using SpaMTP. Below we will demonstrate how to use the PCA results from pathway analysis along with *Seurat's* clustering functions to identify a rare cell type identified in the original paper ([lamina propria](https://doi.org/10.1002/anie.200905559)), that *Cardinal's* ssc segmentation [cannot detect](https://doi.org/10.1038/s41592-023-02070-z). 
+
+First we will run clustering:
+
+```{r, warning=FALSE, message=FALSE}
+ROI <- FindNeighbors(PCA_results$object, dims = 1:30, verbose = FALSE) # use the SpaMTP object generated from PCA Pathway Analysis
+ROI <- RunUMAP(ROI, dims = 1:30, verbose = FALSE)
+ROI <- FindClusters(ROI, resolution = 0.3, cluster.name = "clusters", verbose = FALSE)
+```
+
+Lets now plot the results:
+
+```{r, warning=FALSE, message=FALSE, fig.width=30, fig.height=8}
+## Custom palette for SpaMTP/Seurat Clustering
+SpaMTP_palette = list("0" = "#0074B0", 
+                   "1" = "#008E87", 
+                   "2" = "#DE4D6C",
+                   "3" = "#BF212E", 
+                   "4" = "#C2B03B" ,
+                   "5" = "#92f09a",
+                   "6" = "#9FBEAC")
+
+DimPlot(ROI, group.by = "clusters", cols = SpaMTP_palette, pt.size = 2) | ImageDimPlot(ROI, size = 2, group.by = "clusters", cols = SpaMTP_palette)  + coord_flip() + scale_x_reverse()
+```
+
+
+Comparing these results to the ssc segmentation we can see this clustering can still detect the urinary bladder muscle (cluster <span style="color: #0074B0">0</span>/<span style="color: #008E87">1</span>), urothelium (cluster <span style="color: #DE4D6C">2</span>/<span style="color: #BF212E">3</span>) and the adventitia (cluster <span style="color: #C2B03B"> 4</span>). In addition, we are able to detect this region that matches a similar location to that of the lamina propria <span style="color: #92f09a">(cluster 5)</span> identified by the original publication.
+
+
+## Finding Spatially Correlated Metabolites
+
+An added benifit of using spatial technologies rather then single-cell/bulk methods is the retainment of spatial context. This allows us to analyse trends across the whole tissue section that would otherwise be lost in bulk analyses. 
+
+In the original publication they defined an m/z = 743.5482 as the lamina propria. 
+
+Lets use SpaMTP's feature colocalisation function to check the top metabolites that spatially correlate to cluster 5! 
+
+
+```{r, warning=FALSE, message=FALSE}
+correlated_features <- FindCorrelatedFeatures(ROI, ident = "clusters", SM.assay = "Spatial", nfeatures = 10) #find the spatial correlation between each cluster and their relative metabolites
+```
+
+
+Because we are interested in the lamina propria, lets focus on the top correlated metabolites with cluster 5
+
+
+```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=5}
+df <- correlated_features[correlated_features$ident == "5",] # subsets to only include results from cluster 5
+df$mz_name <- paste0("mz-",round(df$mz, digits = 6)) # simplifies the m/z names for the plot
+
+## Plots the top 10 results
+ggplot(df, aes(x = -rank, y = correlation)) + geom_bar(stat = "identity") + geom_text(aes(label = mz_name), vjust = -0.5, size = 3, color = "black") + coord_flip() + theme_classic()
+```
+
+
+we can see that our top hit is m/z = 734.5467, which is defined in *Cardinal's* paper as the peak defining the lamina propria
+
+We can check by looking at the spatial expression of this m/z
+
+
+```{r, warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
+## Formats Plots 
+plots <- list()
+for (i in c("0", "2", "3", "4", "5")){
+    suppressWarnings(clst <- subset(ROI, subset = clusters %in% i))
+    plots[[i]] <- ImageDimPlot(clst, group.by = "clusters", cols = SpaMTP_palette, size = 1.5)
+}
+plots[["mz"]] <- ImageFeaturePlot(ROI, features = 'mz-743.546752929688', size = 1.2) & scale_fill_gradientn(colors = viridis::turbo(100)) 
+
+
+## Plots data
+patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse()
+```
+
+
+In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is using Moran's I scores to determine the most spatially variable features.
+
+
+```{r, fig.width=30, fig.height=10, warning=FALSE, message=FALSE}
+ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
+
+ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
+```
+
+There are a large range of additional applications SpaMTP can be used for such as multi-modality analysis using both spatial transcriptomics and spatial metabolomics. Check out the SpaMTP github or documentation site for more. 
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
