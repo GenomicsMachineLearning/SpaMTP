@@ -82,7 +82,7 @@ Based on this we can read in the .csv file that contains our intensity and pixel
 
 
 ```{r, warning=FALSE, message=FALSE}
-msi <- ReadSM_mtx("vignette_data_files/Mouse_Brain/V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+msi <- ReadSM_mtx("vignette_data_files/Mouse_Brain/SM_data/V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
 ```
 
     Spliting matrix data from column 1 onwards .... 
@@ -142,7 +142,7 @@ Now that we have successfully loaded our metabolomic data lets load in the ST Vi
 
 
 ```{r, warning=FALSE, message=FALSE}
-vis <- Load10X_Spatial("/QRISdata/Q1851/Andrew_C/Metabolomics/Test_data/public_data/smamsi/sma/data/V11L12-109/V11L12-109_B1/output_data/V11L12-109_B1_RNA/outs/")
+vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
 ```
 
 
@@ -166,9 +166,9 @@ Lets now load this metadata and add it to our Visium Seurat object
 
 ```{r}
 ## Read in metadata files
-lesion <- read.csv("/QRISdata/Q1851/Andrew_C/Metabolomics/Test_data/public_data/smamsi/sma/data/V11L12-109/V11L12-109_B1/output_data/V11L12-109_B1_RNA/outs/lesion.csv", row.names = 1)
-region <- read.csv("/QRISdata/Q1851/Andrew_C/Metabolomics/Test_data/public_data/smamsi/sma/data/V11L12-109/V11L12-109_B1/output_data/V11L12-109_B1_RNA/outs/region.csv", row.names = 1)
-region_loupe <- read.csv("/QRISdata/Q1851/Andrew_C/Metabolomics/Test_data/public_data/smamsi/sma/data/V11L12-109/V11L12-109_B1/output_data/V11L12-109_B1_RNA/outs/RegionLoupe.csv", row.names = 1)
+lesion <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/lesion.csv", row.names = 1)
+region <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/region.csv", row.names = 1)
+region_loupe <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/RegionLoupe.csv", row.names = 1)
 
 ## Combine into one dataframe
 annotations <- cbind(lesion,region,region_loupe)
@@ -196,7 +196,7 @@ In this case, the matrix run was an FMP10 matrix, meaning the masses of our meta
 
 
 ```{r}
-fmp10_metabolites <- read.csv("/QRISdata/Q1851/Andrew_C/Metabolomics/Test_data/public_data/smamsi/Public_data_FMP10_Annotations.csv")
+fmp10_metabolites <- read.csv("vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv")
 ```
 
 ```{r, echo=TRUE, results='hide'}
