@@ -6,7 +6,7 @@
 \usage{
 loadSM(
   name,
-  path,
+  folder,
   mass.range = NULL,
   resolution = 10,
   units = "ppm",
@@ -18,7 +18,7 @@ loadSM(
 \arguments{
 \item{name}{Character string of the object name. This should match the filename.}
 
-\item{path}{Character string defining the directory path of the file. This should not include the file name.}
+\item{folder}{Character string defining the directory path of the file. This should not include the file name.}
 
 \item{mass.range}{Vector of numeric values indicating the mass range to use for the imported data (default = NULL).}
 
@@ -39,5 +39,5 @@ A new SpaMTP Seurat object contain the imported spatial metabolic intensity valu
 Loads in spatial metabolomic data directly to a SpaMTP Seurat Object
 }
 \examples{
-# data <-loadSM(name = "run1", path = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
+# data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 }

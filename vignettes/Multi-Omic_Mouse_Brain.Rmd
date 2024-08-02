@@ -333,7 +333,7 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
      0 0 1 
 
 ```{r, include=FALSE}
-msi_transformed <- readRDS()
+msi_transformed <- readRDS("vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS")
 ```    
 
 
@@ -669,3 +669,6 @@ Plot3DFeature(combined.data,
 
 TODO: Ty
 
+```{r}
+sessionInfo()
+```
