@@ -1,10 +1,161 @@
 url: https://genomicsmachinelearning.github.io/SpaMTP/
-
 template:
   bootstrap: 5
   bslib:
-    present: litera
+    preset: litera
     type: primary
-    pkgdown-nav-height: 100px
+  pkgdown-nav-height: 100px
+
 navbar:
   bg: primary
+  components:
+
+reference:
+  - title: "Loading Spatial Metabolic data into a SpaMTP Seurat Object"
+    desc: "Functions that allow the user to load in SM data in different formats"
+    contents:
+      - loadSM
+      - ReadSM_mtx
+  - title: "Converting Between Data Objects"
+    desc: "Functions that allow the user to convert between SpaMTP Seurat Objects and Cardinal Objects"
+    contents:
+      - CardinalToSeurat
+      - ConvertSeuratToCardinal
+  - title: "Analysis of Differentially Expressed Peaks"
+    desc: "Functions required for performing pseudo-bulking differential expression analysis"
+    contents:
+      - FindAllDEPs
+      - run_pooling
+      - run_DE
+  - title: "Visualising DEPs Analysis"
+    desc: "Functions used to generate a heatmap from DEP results"
+    contents:
+      - DEPsHeatmap
+      - save_pheatmap_as_pdf
+  - title: "Simplifying Lipid Nomenclature"
+    desc: "Function used to simplify lipid names into general lipid categories, classes, and more"
+    contents:
+      - RefineLipids
+  - title: "Annotating m/z Masses"
+    desc: "Functions required for performing and handling m/z annotation using a reference metabolic database"
+    contents:
+      - AnnotateSM
+      - getRefinedAnnotations
+      - SearchAnnotations
+      - FindDuplicateAnnotations
+      - SubsetMZFeatures
+  - title: "Helper Functions for Annotating m/z Masses"
+    desc: "Helper functions required for running 'AnnotateSM()'"
+    contents:
+      - labels_to_show
+      - add_backslashes_to_specialfeatures
+      - check_and_truncate_adduct_vector
+      - db_adduct_filter
+      - is_formula_valid
+      - formula_filter
+      - calculate_bounds
+      - ppm_error
+      - ppm_range_match
+      - proc_db
+  - title: "Metabolic and Transcriptomic Pathway Analysis"
+    desc: "Functions used to perform pathway analysis, both PCA and metabolite/gene set-based (GSEA)"
+    contents:
+      - principal_component_pathway_analysis
+      - FisherexactTest
+      - pathway_analysis
+      - get_analytes_db
+      - list_to_pprcomp
+      - find_index
+      - rescale
+      - ResizeMat
+  - title: "SpaMTP Metabolic Data Visualisation"
+    desc: "Functions that can be used to visualize data from SpaMTP object"
+    contents:
+      - ImageMZPlot
+      - ImageMZAnnotationPlot
+      - SpatialMZPlot
+      - SpatialMZAnnotationPlot
+      - Plot3DFeature
+      - MassIntensityPlot
+      - CheckAlignment
+      - getdensitymap
+  - title: "Additional SpaMTP Functions"
+    desc: "Functions that can be used to find the closest metabolite and bin the expression of multiple metabolites into one"
+    contents:
+      - FindNearestMZ
+      - BinMetabolites
+  - title: "SpaMTP Visualisation Helper Functions"
+    desc: "Helper functions used for SpaMTP data visualisation"
+    contents:
+      - bin.mz
+      - plusminus
+      - plot_plus_minus
+      - check_column_type
+      - pixelPlot
+      - get_optimal_layout
+  - title: "Exporting SpaMTP data"
+    desc: "Function to export SpaMTP data in .mtx, barcodes.csv, features.csv, metadata.csv, and feature.metadata.csv files"
+    contents:
+      - saveSpaMTPData
+  - title: "Spatial Analysis of Metabolomic Data"
+    desc: "Functions used to identify spatially correlated features (metabolites/genes)"
+    contents:
+      - FindCorrelatedFeatures
+      - FindSpatiallyVariableMetabolites
+      - GetSpatiallyVariableMetabolites
+      - RowVar
+  - title: "Multi-Omic Data Integration"
+    desc: "Functions used to Align, Map and Integrate Spatial Metabolomic and Transcriptomic data"
+    contents:
+      - MapSpatialOmics
+      - AlignSpatialOmics
+      - MultiOmicIntegration
+  - title: "Helper Functions for Multi-Omic Analysis"
+    desc: "Helper functions used in multi-omic analysis functions"
+    contents:
+      - split_pixel
+      - increase_SM_res
+      - generate_new_SM_counts
+      - translate
+      - mirror
+      - stretch
+      - rigid.rot
+      - rigid.transf
+      - rigid.transl
+      - rigid.refl
+      - rigid.stretch
+      - combine.tr
+  - title: "Pre-Processing SpaMTP Metabolic Data"
+    desc: "Functions for normalising and visualising the pre-processing of SpaMTP datasets"
+    contents:
+      - NormalizeSMData
+      - TMMNormalize
+      - MZRidgePlot
+      - MZVlnPlot
+      - MZBoxPlot
+      - statPlot
+  - title: "Reference Metabolite Datasets"
+    desc: "Metabolite datasets used for annotating m/z masses"
+    contents:
+      - HMDB_db
+      - Lipidmaps_db
+      - Chebi_db
+      - GNPS_db
+  - title: "Metabolic Pathway Datasets"
+    desc: "Various datasets required for pathway analysis"
+    contents:
+      - adduct_file
+      - analyte
+      - analytehaspathway
+      - chem_props
+      - pathway
+      - source_df
+  - title: "Cardinal Wrapper functions"
+    desc: "Functions used to alter Cardinal Objects."
+    contents:
+      - add_ssc_annotation
+  - title: "Additional Helper Functions"
+    desc: "Various helper functions used by SpaMTP"
+    contents:
+      - verbose_message
+      - subset_SPM

@@ -1,6 +1,6 @@
-library(Seurat)
-library(DropletUtils)
-library(data.table)
+#library(Seurat)
+#library(DropletUtils)
+#library(data.table)
 
 #### SpaMTP Saving Data Objects ########################################################################################################################################################################################
 
@@ -18,8 +18,8 @@ library(data.table)
 #' @export
 #'
 #' @examples
-#' # saveSeuratData(SeuratObject, "~/Documents/seuratobj_files/", annotations = TRUE)
-saveSeuratData <- function(data, outdir, assay = "Spatial", slot = "counts", annotations = FALSE, verbose = TRUE){
+#' # saveSpaMTPData(SeuratObject, "~/Documents/seuratobj_files/", annotations = TRUE)
+saveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", annotations = FALSE, verbose = TRUE){
 
   verbose_message(message_text = paste0("Generating new directory to store output here: ", outdir), verbose = verbose)
   verbose_message(message_text = paste0("Writing ", slot," slot to matrix.mtx, barcode.tsv, genes.tsv"), verbose = verbose)

@@ -406,7 +406,7 @@ matches
 
 <div style="margin-left: auto;
             margin-right: auto;
-            width: 30%">
+            width: 50%">
 || raw_mz  | Species.Name.Simple   |       
 |:--:| :----:      |     :----:              |
 |196| 741.5306       | **SM(34:1)**; PA(37:1) | 
