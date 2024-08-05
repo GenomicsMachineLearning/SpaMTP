@@ -6,7 +6,7 @@
 #' Loads in spatial metabolomic data directly to a SpaMTP Seurat Object
 #'
 #' @param name Character string of the object name. This should match the filename.
-#' @param folder Character string defining the directory path of the file. This should not include the file name.
+#' @param path Character string defining the directory path of the file. This should not include the file name.
 #' @param mass.range Vector of numeric values indicating the mass range to use for the imported data (default = NULL).
 #' @param resolution Numeric value defining the the accuracy to which the m/z values will be binned after reading. This value can be in either "ppm" or "mz" depending on the units type specified (default = 10).
 #' @param units Character string defining the resolution value unit type, either c("ppm", "mz") (default = "ppm")
@@ -19,8 +19,8 @@
 #'
 #' @examples
 #' # data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
-loadSM <- function (name, folder, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", ...){
-  data <- Cardinal::readImzML(name,folder = folder, mass.range =  mass.range, resolution = resolution, ...)
+loadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", ...){
+  data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, ...)
   data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
   return(data)
 }

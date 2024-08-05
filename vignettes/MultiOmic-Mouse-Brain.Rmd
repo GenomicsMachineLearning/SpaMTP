@@ -1,8 +1,8 @@
 ---
-title: "Multi-Omic_Mouse_Brain"
+title: "Multi-Omic Mouse Brain"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Multi-Omic_Mouse_Brain}
+  %\VignetteIndexEntry{Multi-Omic Mouse Brain}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -33,9 +33,9 @@ Using **SpaMTP** we will highlight:
 * Multi-Modality Pathway Analysis
 
 Author: Andrew Causer
+
 <br>
-
-
+<br>
 
 ## Load Data
 
@@ -59,6 +59,7 @@ library(EnhancedVolcano)
 
 ```
 
+<br>
 
 #### Load *SM* Data
 
@@ -135,6 +136,7 @@ msi <- subset(msi, subset = nCount_Spatial > 0)
 ImageFeaturePlot(msi, "nCount_Spatial", size = 1.3, dark.background = FALSE) | ImageFeaturePlot(msi, "nFeature_Spatial", size = 1.3, dark.background = FALSE)
 ```
 
+<br>
 
 #### Load *ST* Data
 
@@ -184,7 +186,7 @@ Now lets plot the results. We can use this information later for tissue alignmen
 SpatialDimPlot(vis, group.by = c("lesion","region", "RegionLoupe"))
 ```
 
-
+<br>
 
 ## Data preprocessing
 
@@ -282,6 +284,8 @@ ImageMZAnnotationPlot(msi_annotated, "Dopamine (single derivatized)", slot = "co
 
 There is a strong localisation of dopamine in the non-lesioned hemisphere. 
 
+<br>
+
 ## Align Multi-Omic Technologies 
 
 Although we have two omic datasets from the same sample, in their current state the coordinates are not alined. We can see this in the first plot below. 
@@ -301,16 +305,19 @@ p1|p2
 ```
 
 
+<br>
 
 
 To achieve multi-omic alignment we must perform 2 steps:
 
 **1. Align Coordinates:**
+
    * Here we will manually adjust the cooridnates of the SM data to match the H&E image of the visium data using a *Shiny app* generated through *ManualAlignImages()*
    * We can change whats data is plot/visualised to assist with correct alignment
    * This will output a SM *SpaMTP Seurat Class Object* with transformed cooridnates (transformed via an affine transformation)
 
 **2. Map Omic Data to Common Spots:**
+
    * The final step is to map or bin the SM data to each ST spot using *MapSpatialOmics()*
    * In step works by finding all SM data points within a radius of a ST spot and asigning their respective data
    * Increasing the SM resolution in this function can imporve the mapping by reducing the distance between pixel and spot centroids.
@@ -319,7 +326,7 @@ To achieve multi-omic alignment we must perform 2 steps:
 Lets run these functions on our sample:
 
 
-```{r, }
+```{r, eval=FALSE}
 msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 ```
 
@@ -413,6 +420,8 @@ SpatialDimPlot(combined.data, group.by = c("lesion", "RegionLoupe"))
 
 We can see now that we have removed spots that were associated with the outer border of the tissue. For example the bottom portion of this section has a fold in the H&E and thus is technical noise, meaning these spots need to be removed. 
 
+<br>
+
 ## Clustering/Downstream Analysis
 
 Now that our spatial datasets are cleaned and fully aligned we can perform some downstream analyses to determine cell types, differentially expressed genes and metabolites, and also upregulated metabolic pathways. 
@@ -487,6 +496,7 @@ SpatialFeaturePlot(combined.data, features = c("Ppp1r1b", "Gpr88", "Rgs9"), pt.s
 
 Identified in the original publication, the gene 'Pcp4' was highlighted as differentially expressed between the in-tact vs lesioned Striatum. Because the gene expression alone cannot differentiate between the lesion vs non-lession cells this gene is not observed in the top most differentially expressed genes. We will need to look at the metabolic data to identify this gene
 
+<br>
 
 #### Cluster SM data
 
@@ -525,7 +535,7 @@ combined.data <- BinMetabolites(combined.data, mzs = dopamine_mzs$mz_names, slot
 SpatialFeaturePlot(combined.data, features = "Dopamine", pt.size.factor = 2.1) + theme(legend.position = "right")
 ```
 
-
+<br>
 
 ## Multi-Modal Integrative Analysis
 
@@ -648,6 +658,7 @@ Supporting the findings from the orginal publication we can see that "Pcp4" is u
 SpatialFeaturePlot(integrated.data, features = "Pcp4", pt.size.factor = 2)
 ```
 
+<br>
 
 ## Multi-Omic Data Visualisation
 
@@ -659,11 +670,12 @@ Plot3DFeature(combined.data,
               features = c("Pcp4", "Dopamine"), 
               assays = c("SPT"), 
               between.layer.height = 10000, 
-              show.image = "slice1", 
+              #show.image = "slice1", 
               plot.height = 400, 
               plot.width = 800)
 ```
 
+<br>
 
 ## Multi-Modality Pathway Analysis
 
