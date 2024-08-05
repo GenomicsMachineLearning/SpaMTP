@@ -1,97 +1,297 @@
-<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/404.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/LICENSE-text.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/LICENSE.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/authors.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/index.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AlignSpatialOmics.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AnnotateSM.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/BinMetabolites.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CardinalToSeurat.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Chebi_db.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CheckAlignment.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ConvertSeuratToCardinal.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DEPsHeatmap.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindAllDEPs.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindCorrelatedFeatures.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindDuplicateAnnotations.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindNearestMZ.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindSpatiallyVariableMetabolites.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FisherexactTest.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/GNPS_db.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/GetSpatiallyVariableMetabolites.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/HMDB_db.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ImageMZAnnotationPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ImageMZPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Lipidmaps_db.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZBoxPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZRidgePlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZVlnPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MapSpatialOmics.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MassIntensityPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MultiOmicIntegration.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/NormalizeSMData.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Plot3DFeature.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ReadSM_mtx.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RefineLipids.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ResizeMat.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RowVar.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SearchAnnotations.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SpatialMZAnnotationPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SpatialMZPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SubsetMZFeatures.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/TMMNormalize.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/add_backslashes_to_specialfeatures.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/add_ssc_annotation.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/adduct_file.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/analyte.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/analytehaspathway.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/bin.mz.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/calculate_bounds.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/check_and_truncate_adduct_vector.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/check_column_type.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/chem_props.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/combine.tr.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/db_adduct_filter.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/find_index.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/formula_filter.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/generate_new_SM_counts.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getRefinedAnnotations.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_analytes_db.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_optimal_layout.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getdensitymap.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/increase_SM_res.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/index.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/is_formula_valid.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/labels_to_show.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/list_to_pprcomp.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/loadSM.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/mirror.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway_analysis.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pixelPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/plot_plus_minus.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/plusminus.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_error.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_range_match.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/principal_component_pathway_analysis.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/proc_db.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rescale.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.refl.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.rot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.stretch.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.transf.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.transl.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/run_DE.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/run_pooling.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/saveSeuratData.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/save_pheatmap_as_pdf.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/source_df.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/split_pixel.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/statPlot.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/stretch.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/subset_SPM.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/translate.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/verbose_message.html</loc></url>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/404.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse-Urinary-Bladder.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/MultiOmic-Mouse-Brain.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/SpaMTP.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/authors.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/index.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AlignSpatialOmics.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AnnotateSM.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/BinMetabolites.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CardinalToSeurat.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Chebi_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CheckAlignment.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ConvertSeuratToCardinal.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DEPsHeatmap.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindAllDEPs.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindCorrelatedFeatures.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindDuplicateAnnotations.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindNearestMZ.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindSpatiallyVariableMetabolites.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FisherexactTest.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/GNPS_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/GetSpatiallyVariableMetabolites.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/HMDB_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ImageMZAnnotationPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ImageMZPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Lipidmaps_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZBoxPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZRidgePlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZVlnPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MapSpatialOmics.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MassIntensityPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MultiOmicIntegration.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/NormalizeSMData.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Plot3DFeature.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ReadSM_mtx.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RefineLipids.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ResizeMat.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RowVar.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SearchAnnotations.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SpatialMZAnnotationPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SpatialMZPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SubsetMZFeatures.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/TMMNormalize.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/add_backslashes_to_specialfeatures.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/add_ssc_annotation.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/adduct_file.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/analyte.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/analytehaspathway.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/bin.mz.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/calculate_bounds.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/check_and_truncate_adduct_vector.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/check_column_type.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/chem_props.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/combine.tr.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/db_adduct_filter.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/find_index.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/formula_filter.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/generate_new_SM_counts.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getRefinedAnnotations.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_analytes_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_optimal_layout.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getdensitymap.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/increase_SM_res.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/is_formula_valid.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/labels_to_show.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/list_to_pprcomp.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/loadSM.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/mirror.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway_analysis.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pixelPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/plot_plus_minus.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/plusminus.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_error.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_range_match.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/principal_component_pathway_analysis.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/proc_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rescale.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.refl.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.rot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.stretch.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.transf.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.transl.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/run_DE.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/run_pooling.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/saveSpaMTPData.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/save_pheatmap_as_pdf.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/source_df.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/split_pixel.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/statPlot.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/stretch.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/subset_SPM.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/translate.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/verbose_message.html</loc>
+  </url>
 </urlset>
-
