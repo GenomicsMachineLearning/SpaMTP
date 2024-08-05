@@ -6,7 +6,7 @@
 \usage{
 loadSM(
   name,
-  folder,
+  path,
   mass.range = NULL,
   resolution = 10,
   units = "ppm",
@@ -18,7 +18,7 @@ loadSM(
 \arguments{
 \item{name}{Character string of the object name. This should match the filename.}
 
-\item{folder}{Character string defining the directory path of the file. This should not include the file name.}
+\item{path}{Character string defining the directory path of the file. This should not include the file name.}
 
 \item{mass.range}{Vector of numeric values indicating the mass range to use for the imported data (default = NULL).}
 
