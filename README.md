@@ -6,20 +6,17 @@
 <!-- badges: start -->
 
 
-## New *R*-based User-Friendly Spatial Metabolomic, Transcriptomic, and Proteomic Data Analysis Tool
+##*R*-based User-Friendly Spatial Metabolomic, Transcriptomic, and Proteomic Data Analysis Tool
 
 <br>
 
 <!-- badges: end -->
 
+SpaMTP is an R package designed for the integrative analysis of spatial metabolomics and spatial transcriptomics data. SpaMTP inherits functionalities from two well established R packages (Cardinal and Seurat) to present a user-friendly platform for integrative spatial-omics analysis. Build on the foundation of a [*Seurat Class Object*](https://satijalab.org/seurat/), this package has three major functionalities which include; (1) mass-to-charge ratio (m/z) metabolite annotation, (2) various downstream statistical analysis including differential metabolite expression and pathway analysis, and (3) integrative spatial-omics analysis. In addition, this package includes various functions for data visualisation and data import/export, permitting flexible usage with other established R and Python  packages.   
 
-SpaMTP is an *R* based wrapper package for [*Seurat*](https://satijalab.org/seurat/) for the analysis of spatial metabolomic data. This user-freindly package contains various function for the analysis, integration and visalisation of multi-modal datasets, in particularly focusing on metabolomic/transcriptomics integration.
-This package includes various functions to preform pre-processing,
-spatial visualisation, various down-stream biological centered analyses,
-data integration and data export of Spatial Metabolomic data. In
-addition, this package has the ability to use both Cardinal (Spatial
-Metabolomic based software) and Seurat (Spatial Transcriptomic based
-software) functions.
+<br>
+
+<img src="inst/figures/SpaMTP_Fig.png" height="400" alt="" style="background-color: white;" />
 
 <br>
 
