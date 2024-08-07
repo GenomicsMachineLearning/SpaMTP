@@ -16,7 +16,7 @@ SpaMTP is an R package designed for the integrative analysis of spatial metabolo
 
 <br>
 
-<img src="inst/figures/SpaMTP_Fig.png" height="400" alt="" style="background-color: white;" />
+<img src="inst/figures/SpaMTP_Fig.png" alt="" style="background-color: white;" />
 
 <br>
 
