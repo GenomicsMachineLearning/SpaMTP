@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 
-##*R*-based User-Friendly Spatial Metabolomic, Transcriptomic, and Proteomic Data Analysis Tool
+## *R*-based User-Friendly Spatial Metabolomic, Transcriptomic, and Proteomic Data Analysis Tool
 
 <br>
 
@@ -16,7 +16,7 @@ SpaMTP is an R package designed for the integrative analysis of spatial metabolo
 
 <br>
 
-<img src="inst/figures/SpaMTP_Fig.png" alt="" style="background-color: white;" />
+<img src="man/figures/SpaMTP_Fig.png" alt="" style="background-color: white;" />
 
 <br>
 
