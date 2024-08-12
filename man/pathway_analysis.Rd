@@ -27,7 +27,7 @@ pathway_analysis(
 
 \item{analyte_type}{Vector of character string defining the annotations to use for pathway analysis. Options can be one or multiple of: "metabolites" or "gene" or "mz" (default = c("mz", "gene")).}
 
-\item{...}{Additional arguments to pass to FisherexactTest. Check FisherexactTest documentation for possible inputs.}
+\item{...}{Additional arguments to pass to FishersPathwayAnalysis. Check FishersPathwayAnalysis documentation for possible inputs.}
 }
 \value{
 A dataframe with the relevant pathway information

@@ -7,7 +7,7 @@
 #' @param SM.assay Character string defining the SpaMTP assay that contains m/z values (default = "SPM").
 #' @param ST.assay Character string defining the SpaMTP assay that contains gene names (default = NULL).
 #' @param analyte_type Vector of character string defining the annotations to use for pathway analysis. Options can be one or multiple of: "metabolites" or "gene" or "mz" (default = c("mz", "gene")).
-#' @param ... Additional arguments to pass to FisherexactTest. Check FisherexactTest documentation for possible inputs.
+#' @param ... Additional arguments to pass to FishersPathwayAnalysis. Check FishersPathwayAnalysis documentation for possible inputs.
 #'
 #' @return A dataframe with the relevant pathway information
 #' @export
@@ -46,7 +46,7 @@ pathway_analysis <- function(object,
       analytes =  list(mz = met_analytes)
     }
 
-    results = FisherexactTest(analytes, # Runs FisherexactTest for pathways
+    results = FishersPathwayAnalysis(analytes, # Runs FishersPathwayAnalysis for pathways
                               polarity = polarity,
                               analyte_type = analyte_type,
                               ...)
@@ -66,7 +66,7 @@ pathway_analysis <- function(object,
 #' Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 #' Supported mz format: any string or numeric vector contains the m/z
 #' @param analyte_type = "metabolites" or "gene" or "mz", or a vector contains any combinations of them
-#' @param polarity Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).
+#' @param polarity The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
 #' @param ppm_error Integer defining the ppm threshold that matched analytes must be between (default = 10).
 #' @param max_path_size The max number of metabolites in a specific pathway
 #' @param min_path_size The min number of metabolites in a specific pathway
@@ -76,20 +76,20 @@ pathway_analysis <- function(object,
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @return a dataframe with the relevant pathway information
-#' @export
 #'
 #' @examples
-#' # HELPER FUNCTION
-FisherexactTest <- function (Analyte,
-                            analyte_type = c("mz","genes"),
-                            polarity = NULL,
-                            ppm_error = 10,
-                            max_path_size = 500,
-                            alternative = "greater",
-                            min_path_size = 5,
-                            pathway_all_info = F,
-                            pval_cutoff = 0.05,
-                            verbose = TRUE)
+#' mzs <- c("mz-448.234", "mz-558.432", "mz-998.001")
+#' # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
+FishersPathwayAnalysis <- function (Analyte,
+                             analyte_type = c("mz","genes"),
+                             polarity = NULL,
+                             ppm_error = 10,
+                             max_path_size = 500,
+                             alternative = "greater",
+                             min_path_size = 5,
+                             pathway_all_info = F,
+                             pval_cutoff = 0.05,
+                             verbose = TRUE)
 {
   require(dplyr)
   require(stringr)
@@ -125,50 +125,62 @@ FisherexactTest <- function (Analyte,
 
   verbose_message(message_text = "Loading files ......", verbose = verbose)
 
+  analytehaspathway = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/analytehaspathway.rds"))
+  pathway = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/pathway.rds"))
+  source = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/source.rds"))
+  chem_props = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/chem_props.rds"))
+  analyte = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/analyte.rds"))
+
   verbose_message(message_text = "Loading files finished!" , verbose = verbose)
 
 
   if ( "metabolites" %in% analyte_type) {
     analytes_met = Analyte[["metabolites"]]
-    source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
+    source_met = source[which(grepl(source$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
     analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),]
+    adduct_file = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/adduct_file.rds"))
   }
   if ("genes" %in% analyte_type) {
     if (!("genes" %in% names(Analyte))){
       stop("Cannot find gene list not present in Analyte object .... Please provide SpaMTP assay containing gene names, or remove 'gene' from analyte_type input!")
     }
     analytes_rna = Analyte[["genes"]]
-    source_rna = source_df[which(grepl(source_df$rampId, pattern = "RAMP_G") == T),]
+    source_rna = source[which(grepl(source$rampId, pattern = "RAMP_G") == T),]
     analytehaspathway_rna = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_G") == T),]
     analyte_rna = analyte[which(grepl(analyte$rampId, pattern = "RAMP_G") == T),]
   }
 
   if ("mz" %in% analyte_type) {
     analytes_mz = Analyte[["mz"]]
-
+    adduct_file = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/adduct_file.rds"))
+    #load(paste0(dirname(system.file(package = "SpaMTP")), "/data/Chebi_db.rda"))
+    #load(paste0(dirname(system.file(package = "SpaMTP")), "/data/Lipidmaps_db.rda"))
+    #load(paste0(dirname(system.file(package = "SpaMTP")), "/data/HMDB_db.rda"))
     # Since this file was tested in positive ion mode
     db = rbind(Chebi_db,
                Lipidmaps_db,
                HMDB_db)
-
+    rm(Chebi_db)
+    rm(Lipidmaps_db)
+    rm(HMDB_db)
     gc()
-    if (polarity == "positive") {
+    if (polarity == "Positive") {
       test_add_pos <- adduct_file$adduct_name[which(adduct_file$charge > 0)]
       # Using Chris' pipeline for annotation
       # 1) Filter DB by adduct.
       db_1 <- db_adduct_filter(db, test_add_pos, polarity = "pos", verbose = verbose)
-    } else if (polarity == "negative") {
+    } else if (polarity == "Negative") {
       test_add_neg <- adduct_file$adduct_name[which(adduct_file$charge < 0)]
       # Using Chris' pipeline for annotation
       # 1) Filter DB by adduct.
       db_1 <- db_adduct_filter(db, test_add_neg, polarity = "neg", verbose = verbose)
-    } else if (polarity == "neutral") {
+    } else if (polarity == "Neutral") {
       # Using Chris' pipeline for annotation
       # 1) Filter DB by adduct.
       db_1 <- db %>% mutate("M" = `M-H ` + 1.007276)
     }else{
-      stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
+      stop("Please enter correct polarity from: 'Positive', 'Negative', 'Neutral'")
     }
 
     # 2) only select natural elements
@@ -187,7 +199,7 @@ FisherexactTest <- function (Analyte,
 
     verbose_message(message_text = "Expanding database to extract all potential metabolites", verbose = verbose)
 
-    db_3list = pbapply::pblapply(1:nrow(db_3), function(i){
+    db_3list = pblapply(1:nrow(db_3), function(i){
       if (any(grepl(db_3[i, ], pattern = ";"))) {
         # Only take the first row
         ids = unlist(stringr::str_split(db_3[i, ]$Isomers, pattern = ";"))
@@ -199,9 +211,8 @@ FisherexactTest <- function (Analyte,
       }
     })
     expand_db3 = do.call(c,db_3list)
-
     analytes_mz = sub(" ", "", expand_db3)
-    source_mz = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
+    source_mz = source[which(grepl(source$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_mz = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
   }
 
@@ -264,8 +275,8 @@ FisherexactTest <- function (Analyte,
   # analytes_rampids = unique(na.omit(analytes_rampids))
   # (1) Get candidate pathways
   # Get all analytes and number of analytes within a specific pathway
-
-    source_non_duplicated = source_new[which(!duplicated(source_new$rampId)&(source_new$rampId %in% analytes_rampids)),]
+  pathway_db = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/pathway.rds"))
+  source_non_duplicated = source_new[which(!duplicated(source_new$rampId)&(source_new$rampId %in% analytes_rampids)),]
   # rampid = the subset of the database with our query data
   pathway_rampids = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids),]
   pathway_rampids_count = pathway_rampids %>% group_by(pathwayRampId) %>% dplyr::mutate(analytes_in_pathways  = n())
@@ -276,10 +287,10 @@ FisherexactTest <- function (Analyte,
 
   # Generate a dataframe contains: the list of metabolites IDs, the list of metabolites names, the number of elements in pathway, the number of elements in our dataset, for each pathway
   if(pathway_all_info == T){
-    enrichment_df = pbapply::pblapply(1:length(unique(pathway_rampids_count$pathwayRampId)), function(x){
+    enrichment_df = pblapply(1:length(unique(pathway_rampids_count$pathwayRampId)), function(x){
       #ananlytes_id_df = analytehaspathway_new[which(analytehaspathway_new$pathwayRampId == unique(pathway_rampids$pathwayRampId)[x]),]
       pathway_id = unique(pathway_rampids_count$pathwayRampId)[x]
-      pathway_info = pathway[which(pathway$pathwayRampId == pathway_id),]
+      pathway_info = pathway_db[which(pathway_db$pathwayRampId == pathway_id),]
       # get rampids associated with the pathway
       full_list = analytehaspathway_full[which(analytehaspathway_full$pathwayRampId == pathway_id),]
       screened_List = pathway_rampids_count[which(pathway_rampids_count$pathwayRampId == pathway_id),]
@@ -310,7 +321,7 @@ FisherexactTest <- function (Analyte,
     enrichment_df = merge(pathway_rampids_count[which(!duplicated(pathway_rampids_count$pathwayRampId)),], analytehaspathway_full[which(!duplicated(analytehaspathway_full$pathwayRampId)),],
                           by = "pathwayRampId")
     #colnames(enrichment_df)[which(colnames(enrichment_df) == "count")] = "total_in_pathways"
-    enrichment_df = merge(enrichment_df, pathway, by = "pathwayRampId")
+    enrichment_df = merge(enrichment_df, pathway_db, by = "pathwayRampId")
     enrichment_df = enrichment_df %>% filter(!duplicated(pathwayName))
   }
 
@@ -359,7 +370,7 @@ FisherexactTest <- function (Analyte,
   # (7) Reduce the dataframe with respected to the User input pathway size
 
   verbose_message(message_text = "Done" , verbose = verbose)
-
+  rm(chem_props)
   gc()
   #return(enrichment_df_with_both_info %>% select(-c(
   #  pathwayRampId,
@@ -376,9 +387,9 @@ FisherexactTest <- function (Analyte,
 
 ### PCA Pathway Analysis
 
-#' PCA driven pathway analaysis
+#' PCA driven pathway analysis
 #'
-#' @param object SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param seurat SpaMTP Seurat class object that contains spatial metabolic information.
 #' @param path Character string defining the output path for the visualization (default = getwd()).
 #' @param ppm_error is the parts-per-million error tolerance of matching m/z value with potential metabolites
 #' @param ion_mode is only needed when ppm_error is not specified, used to access the ppm_error based on polarity. Inputs must be either 'positive' or 'negative'(default = NULL).
@@ -401,8 +412,8 @@ FisherexactTest <- function (Analyte,
 #' @import dplyr
 #'
 #' @examples
-#' #principal_component_pathway_analysis(mass_matrix = readRDS("~/mass_matrix.rds")[,1:150],width = 912,height = 853,ppm_error = NULL,ion_mode = "positive",tof_resolution = 30000,input_mz = NULL,num_retained_component = NULL,variance_explained_threshold = 0.9,resampling_factor = 2,p_val_threshold = 0.05)
-principal_component_pathway_analysis = function(object,
+#' #PCAPathwayAnalysis(mass_matrix = readRDS("~/mass_matrix.rds")[,1:150],width = 912,height = 853,ppm_error = NULL,ion_mode = "positive",tof_resolution = 30000,input_mz = NULL,num_retained_component = NULL,variance_explained_threshold = 0.9,resampling_factor = 2,p_val_threshold = 0.05)
+PCAPathwayAnalysis = function(seurat,
                                                 path = getwd(),
                                                 ppm_error = NULL,
                                                 ion_mode = NULL,
@@ -411,7 +422,7 @@ principal_component_pathway_analysis = function(object,
                                                 variance_explained_threshold = 0.9,
                                                 resampling_factor = 2,
                                                 p_val_threshold = 0.05,
-                                                byrow = T,
+                                                byrow = F,
                                                 assay = "SPM",
                                                 slot = "counts",
                                                 flip_plot = FALSE,
@@ -420,9 +431,9 @@ principal_component_pathway_analysis = function(object,
   # PCA analysis
   verbose_message(message_text = "Scaling original matrix", verbose = verbose)
 
-  mass_matrix = Matrix::t(object[[assay]]@layers[[slot]])
+  mass_matrix = Matrix::t(seurat[[assay]]@layers[[slot]])
 
-  coords <- GetTissueCoordinates(object)[c("x", "y")]
+  coords <- GetTissueCoordinates(seurat)[c("x", "y")]
 
   if (flip_plot){
     colnames(coords) <- c("y", "x")
@@ -434,7 +445,7 @@ principal_component_pathway_analysis = function(object,
   width = max(coords[c("y")]) #- min(coords[c("y")])
   height = max(coords[c("x")]) # - min(coords[c("x")])
 
-  if (!is.null(resampling_factor)) {
+  if (!is.null(resampling_factor) & resampling_factor!= 1) {
     verbose_message(message_text = "Running matrix resampling...." , verbose = verbose)
     pb = txtProgressBar(
       min = 0,
@@ -598,7 +609,7 @@ principal_component_pathway_analysis = function(object,
   tryCatch({
     input_mz = data.frame(cbind(
       row_id = 1:ncol(resampled_mat),
-      mz = as.numeric(stringr::str_extract(row.names(object[[assay]]@features), pattern = "\\d+\\.?\\d*"))
+      mz = as.numeric(stringr::str_extract(row.names(seurat[[assay]]@features), pattern = "\\d+\\.?\\d*"))
     ))
   },
   error = function(cond) {
@@ -614,19 +625,20 @@ principal_component_pathway_analysis = function(object,
 
 
   #### Load the Cleaned and summarized DB ####
+  #load("data/Chebi_db.rda")
+  #load("data/HMDB_db.rda")
 
   # Set the db that you want to search against
   db = rbind(HMDB_db, Chebi_db)
   # set which adducts you want to search for
+  #load("data/adduct_file.rda")
 
   if (is.null(ion_mode)) {
     stop("Please enter correct polarity:'positive' or 'negative'")
-  } else{
-    if (ion_mode == "positive") {
-      test_add = sub(" ", "", adduct_file$adduct_name[which(adduct_file$charge >= 0)])
-    } else if (ion_mode == "negative") {
-      test_add = sub(" ", "", adduct_file$adduct_name[which(adduct_file$charge <= 0)])
-    }
+  } else if (ion_mode == "positive") {
+    test_add = sub(" ", "", adduct_file$adduct_name[which(adduct_file$charge >= 0)])
+  } else if (ion_mode == "negative") {
+    test_add = sub(" ", "", adduct_file$adduct_name[which(adduct_file$charge <= 0)])
   }
   # Using Chris' pipeline for annotation
   # 1) Filter DB by adduct.
@@ -642,7 +654,7 @@ principal_component_pathway_analysis = function(object,
   # Set error tolerance
   ppm_error = 1e6 / tof_resolution / sqrt(2 * log(2))
   db_3 = proc_db(input_mz, db_2, ppm_error) %>% mutate(entry = stringr::str_split(Isomers,
-                                                                         pattern = "; "))
+                                                                                  pattern = "; "))
 
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
 
@@ -664,7 +676,7 @@ principal_component_pathway_analysis = function(object,
   verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
 
   pb2 = txtProgressBar(
-    min = 0,
+    min = 1,
     max = nrow(db_3),
     initial = 0,
     style = 3
@@ -683,6 +695,11 @@ principal_component_pathway_analysis = function(object,
   # get rank pathway database
 
   verbose_message(message_text = "Getting reference pathways...." , verbose = verbose)
+
+  #load("data/analytehaspathway.rda")
+  #load("data/pathway.rda")
+  #load("data/source.rda")
+
 
   pathway_db = get_analytes_db(unlist(input_id), analytehaspathway,
                                chem_props, pathway)
@@ -743,24 +760,30 @@ principal_component_pathway_analysis = function(object,
     setTxtProgressBar(pb_new, i)
     # Make sure sign of loading is positive to make it positively correlate with the PC
     pca_sea_list = rlist::list.append(pca_sea_list,
-                               gsea_result)
+                                      gsea_result)
   }
   close(pb_new)
   names(pca_sea_list) = paste0("PC", 1:retained)
 
   ######################### Creating html
-  # image_matrix = matrix(
-  #   rowSums(resampled_mat),
+  image_matrix = matrix(
+    Matrix::rowSums(resampled_mat),
+    ncol = new.width,
+    nrow = new.height,
+    byrow = T
+  )
+
+  # # plot(mass_matrix_with_coord[,1],
+  # #      mass_matrix_with_coord[,2])
+  # image( matrix(
+  #  (resampled_mat[,1]),
   #   ncol = new.width,
   #   nrow = new.height,
   #   byrow = T
-  # )
-  # # plot(mass_matrix_with_coord[,1],
-  # #      mass_matrix_with_coord[,2])
-  # image(image_matrix)
+  # ))
   # Assign different colours to different layers
 
-  image_matrix =  Matrix::rowSums(resampled_mat)
+  #image_matrix =  Matrix::rowSums(resampled_mat)
 
   quantiles <-
     quantile(as.numeric(as.vector(image_matrix)), probs = seq(0, 1, 0.2))
@@ -785,17 +808,16 @@ principal_component_pathway_analysis = function(object,
 
   matrix_data_melted = data.frame(cbind(x = reshape2::melt(t(image_matrix))[,1],
                                         y = reshape2::melt(t(image_matrix))[,2],
-                                        image_matrix)) %>%
+                                        as.vector(image_matrix))) %>%
     mutate(color = col_index)
 
   matrix_data_melted = matrix_data_melted %>% rowwise() %>% mutate(col_nam  = colors[color])
 
-  index = which(matrix_data_melted$image_matrix!= 0)
+  #index = which(matrix_data_melted$image_matrix!= 0)
 
-  matrix_data_melted = matrix_data_melted[index, ]
   tissue_image <- list(
-    y = matrix_data_melted$x,
-    x = matrix_data_melted$y,
+    y = matrix_data_melted$y,
+    x = matrix_data_melted$x,
     value = matrix_data_melted$image_matrix,
     colour = matrix_data_melted$col_nam,
     width = new.width,
@@ -819,17 +841,17 @@ principal_component_pathway_analysis = function(object,
     center = pca$center,
     scale = pca$scale,
     sdev = pca$sdev,
-    x = t(pca$x[index, 1:num]),
-    mz = rownames(pca[["rotation"]]),
+    x = t(pca$x[, 1:num]),
+    mz =  row.names(seurat@assays[[assay]]@features),
     coordinate = t(cbind(
-      matrix_data_melted$x ,
+      matrix_data_melted$x,
       matrix_data_melted$y
-    )[index]),
+    )),
     name =  sprintf(
       "(%d,%d)",
       matrix_data_melted$x,
       matrix_data_melted$y
-    )[index]
+    )
   )
 
   ################### GSEA results
@@ -952,8 +974,8 @@ principal_component_pathway_analysis = function(object,
         <div id="pcaPlot" class="box" style="width: 600px; height: 400px;">
         </div>
         <div class="box" id="plot" style="position: relative;width: 600px; height: 400px;z-index: 2;">
-          <canvas id="rasterCanvas" style="position: absolute; top: 0; left: 0;width: 100%; height: 99%;z-index: 0;"></canvas>
-          <canvas id="pointCanvas" style="position: absolute; top: 0; left: 0;width: 100%; height: 99%;z-index: 1;"></canvas>
+          <canvas id="rasterCanvas" style="position: absolute; top: 0; left: 0;width:',600/new.width*98,'%; height: ',400/new.height*98,'%;z-index: 0;"></canvas>
+          <canvas id="pointCanvas" style="position: absolute; top: 0; left: 0;width: ',600/new.width*98,'%; height: ',400/new.height*98,'%;z-index: 1;"></canvas>
         </div>
       </div>
       <div>
@@ -1093,8 +1115,8 @@ const scaleY = canvas.height/matrixData[0].width/1.1;
 for (var i = 0; i < xCoordinates.length; i++) {
   //
             // Convert coordinates to canvas coordinates
-            var canvasX = xCoordinates[i] * scaleX;
-            var canvasY = yCoordinates[i] * scaleY;
+            var canvasX = xCoordinates[i]  ;
+            var canvasY = yCoordinates[i]  ;
             // Draw point
             ctx.fillStyle = colors[i];
             ctx.fillRect(canvasX, canvasY, 1, 1);
@@ -1175,8 +1197,8 @@ function updatepcaPlot() {
   for (var i = 0; i < yCoordinates.length; i++) {
   //
             // Convert coordinates to canvas coordinates
-            var canvasX = xCoordinates[i] * scaleX;
-            var canvasY = yCoordinates[i] * scaleY;
+            var canvasX = xCoordinates[i]  ;
+            var canvasY = yCoordinates[i]  ;
             // Draw point
             ctx.fillStyle = assignments[i];
             ctx.fillRect(canvasX, canvasY, 1, 1);
@@ -1205,8 +1227,8 @@ function updatepcaPlot() {
   for (var i = 0; i < yCoordinates.length; i++) {
   //
             // Convert coordinates to canvas coordinates
-            var canvasX = xCoordinates[i] * scaleX;
-            var canvasY = yCoordinates[i] * scaleY;
+            var canvasX = xCoordinates[i]  ;
+            var canvasY = yCoordinates[i]  ;
             // Draw point
             ctx.fillStyle = assignments[i];
             ctx.fillRect(canvasX, canvasY, 1, 1);
@@ -1328,26 +1350,6 @@ var layout_table2_new = {
 }
 Plotly.react("table2", data_table2_new ,layout_table2_new);
 Plotly.relayout("table2", layout_table2_new);
-
-document.getElementById("pcaPlot").on("plotly_hover", function(data){
-    // Get index of clicked point
-    var pointIndex = data.points[0].pointIndex;
-    // console.log(pointIndex)
-    let x_new_scatter = xCoordinates[pointIndex]*scaleX
-    let y_new_scatter = yCoordinates[pointIndex]*scaleY
-
-        ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-
-        // Draw new point
-        ctx2.fillStyle = "red";  // Color of the new point
-        ctx2.beginPath();
-        ctx2.arc(x_new_scatter, y_new_scatter , 3, 0, Math.PI * 2, true);  // Small circle for the point
-        console.log(x_new_scatter)
-        ctx2.fill();
-        // Update last point coordinates
-        lastX = x_new_scatter;
-        lastY = y_new_scatter;
-});
 }
 
 
@@ -1410,13 +1412,13 @@ document.getElementById("pcaPlot").on("plotly_hover", function(data){
     // Get index of clicked point
     var pointIndex = data.points[0].pointIndex;
     // console.log(pointIndex)
-    let x_new_scatter = xCoordinates[pointIndex]*scaleX
-    let y_new_scatter = yCoordinates[pointIndex]*scaleY
+    let x_new_scatter = xCoordinates[pointIndex]
+    let y_new_scatter = yCoordinates[pointIndex]
 
         ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 
         // Draw new point
-        ctx2.fillStyle = "yellow";  // Color of the new point
+        ctx2.fillStyle = "#42f5c2";  // Color of the new point
         ctx2.beginPath();
         ctx2.arc(x_new_scatter, y_new_scatter , 3, 0, Math.PI * 2, true);  // Small circle for the point
         console.log(x_new_scatter)
@@ -1447,19 +1449,8 @@ document.addEventListener("DOMContentLoaded", function() {
   writeLines(kmean,"kmeans.js")
 
   writeLines(html_temp,"pca_analysis.html")
-
-  ## Save PCA's in SpaMTP Seurat object slot
-
-  SpaMTP_pca <- pca
-
-  rownames(SpaMTP_pca$rotation) <- rownames(object[[assay]]@features)
-  rownames(SpaMTP_pca$x) <- rownames(object@meta.data)
-
-  SpaMTP_pcas <- CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_")
-
-  object[["pca"]] <- SpaMTP_pcas
-
-  return(list(object = object,
+  return(list(seurat = seurat,
+              pca = pca,
               pathway_enrichment_pc = pca_sea_list,
               new.width = as.integer(width/as.numeric(resampling_factor)),
               new.height = as.integer(height/as.numeric(resampling_factor))))
@@ -1596,7 +1587,6 @@ ResizeMat <- function(mat, ndim=dim(mat)){
 
   ans
 }
-
 
 
 

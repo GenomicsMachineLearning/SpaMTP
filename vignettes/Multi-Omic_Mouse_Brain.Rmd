@@ -667,10 +667,10 @@ Based on this analysis we can visualise this gene and metabolite of interest in 
 
 ```{r, fig.width=10, fig.height=30}
 Plot3DFeature(combined.data, 
-              features = c("Pcp4", "Dopamine"), 
-              assays = c("SPT"), 
+              features = c("Pcp4", "mz-674.2805"), 
+              assays = c("SPT", "SPM"), 
               between.layer.height = 10000, 
-              #show.image = "slice1", 
+              show.image = "slice1", 
               plot.height = 400, 
               plot.width = 800)
 ```
