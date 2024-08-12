@@ -1489,7 +1489,7 @@ Plot3DFeature <- function(data,
 
   if (!is.null(show.image)){
 
-    color_matrix <- as.raster(combined.data@images[[show.image]]@image)
+    color_matrix <- as.raster(data@images[[show.image]]@image)
     row_indices <- rep(seq_len(nrow(color_matrix)), each = ncol(color_matrix))
     col_indices <- rep(seq_len(ncol(color_matrix)), times = nrow(color_matrix))
 
