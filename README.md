@@ -29,7 +29,7 @@ You can install the current version of SpaMTP from
 if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
 
-devtools::install_github("BiomedicalMachineLearning/SpaMTP")
+devtools::install_github("GenomicsMachineLearning/SpaMTP")
 ```
 
 For tutorials and more information please visit the [SpaMTP website](https://genomicsmachinelearning.github.io/SpaMTP/)
