@@ -96,6 +96,10 @@ reference:
   - find_index
   - rescale
   - ResizeMat
+- title: PCA Metabolite Analysis
+  desc: Functions that are used for calculating PCA embeddings and projections based on SM data
+  contents:
+  - getPCA
   - RunMetabolicPCA
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
