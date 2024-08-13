@@ -4,7 +4,6 @@
 .httr-oauth
 .DS_Store
 .quarto
-.html
 .gitattributes
 docs
 inst/doc
