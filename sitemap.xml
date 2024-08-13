@@ -67,7 +67,7 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindSpatiallyVariableMetabolites.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FisherexactTest.html</loc>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FishersPathwayAnalysis.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/GNPS_db.html</loc>
@@ -109,6 +109,9 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/NormalizeSMData.html</loc>
   </url>
   <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PCAPathwayAnalysis.html</loc>
+  </url>
+  <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Plot3DFeature.html</loc>
   </url>
   <url>
@@ -122,6 +125,9 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RowVar.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RunMetabolicPCA.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/SearchAnnotations.html</loc>
@@ -184,6 +190,9 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/generate_new_SM_counts.html</loc>
   </url>
   <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getPCA.html</loc>
+  </url>
+  <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getRefinedAnnotations.html</loc>
   </url>
   <url>
@@ -220,9 +229,6 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway_analysis.html</loc>
-  </url>
-  <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pixelPlot.html</loc>
   </url>
   <url>
@@ -236,9 +242,6 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_range_match.html</loc>
-  </url>
-  <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/principal_component_pathway_analysis.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/proc_db.html</loc>
