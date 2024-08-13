@@ -89,14 +89,14 @@ reference:
   desc: Functions used to perform pathway analysis, both PCA and metabolite/gene set-based
     (GSEA)
   contents:
-  - principal_component_pathway_analysis
-  - FisherexactTest
-  - pathway_analysis
+  - PCAPathwayAnalysis
+  - FishersPathwayAnalysis
   - get_analytes_db
   - list_to_pprcomp
   - find_index
   - rescale
   - ResizeMat
+  - RunMetabolicPCA
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
   contents:
