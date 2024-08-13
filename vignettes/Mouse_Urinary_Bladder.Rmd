@@ -750,7 +750,7 @@ Let run this analysis:
 
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-PCA_results <- principal_component_pathway_analysis(ROI,
+PCA_results <- PCAPathwayAnalysis(ROI,
                                                 path = "~/Downloads/",
                                                 ppm_error = NULL,
                                                 ion_mode = "positive",

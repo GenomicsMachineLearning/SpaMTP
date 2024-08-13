@@ -2,19 +2,19 @@
 % Please edit documentation in R/PathwayAnalysis.R
 \name{PCAPathwayAnalysis}
 \alias{PCAPathwayAnalysis}
-\title{PCA driven pathway analysis}
+\title{PCA driven pathway analysis of a SpaMTP object}
 \usage{
 PCAPathwayAnalysis(
-  seurat,
+  SpaMTP,
   path = getwd(),
   ppm_error = NULL,
   ion_mode = NULL,
   tof_resolution = 30000,
   num_retained_component = NULL,
   variance_explained_threshold = 0.9,
-  resampling_factor = 2,
+  resampling_factor = 1,
   p_val_threshold = 0.05,
-  byrow = F,
+  byrow = FALSE,
   assay = "SPM",
   slot = "counts",
   flip_plot = FALSE,
@@ -23,7 +23,7 @@ PCAPathwayAnalysis(
 )
 }
 \arguments{
-\item{seurat}{SpaMTP Seurat class object that contains spatial metabolic information.}
+\item{SpaMTP}{SpaMTP Seurat class object that contains spatial metabolic information.}
 
 \item{path}{Character string defining the output path for the visualization (default = getwd()).}
 
@@ -31,17 +31,17 @@ PCAPathwayAnalysis(
 
 \item{ion_mode}{is only needed when ppm_error is not specified, used to access the ppm_error based on polarity. Inputs must be either 'positive' or 'negative'(default = NULL).}
 
-\item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion (ion mass,m/z)/(Full width at half height)}
+\item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]} (default = 30000).}
 
-\item{num_retained_component}{is an integer value to indicated preferred number of PCs to retain}
+\item{num_retained_component}{is an integer value to indicated preferred number of PCs to retain (default = NULL).}
 
 \item{variance_explained_threshold}{Numeric value defining the explained variance threshold (default = 0.9).}
 
-\item{resampling_factor}{is a numerical value >0, indicate how you want to resample the size of roginal matrix}
+\item{resampling_factor}{is a numerical value >0, indicate how you want to resample the size of original matrix (default = 1).}
 
-\item{p_val_threshold}{is the p value threshold for pathways to be significant}
+\item{p_val_threshold}{is the p value threshold for pathways to be significant (default = 0.05).}
 
-\item{byrow}{is a boolean to indicates whether each column of the matrix is built byrow or bycol.}
+\item{byrow}{is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).}
 
 \item{assay}{Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").}
 
@@ -54,11 +54,11 @@ PCAPathwayAnalysis(
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
 \value{
-PCA's and pathway_enrichment_pc is the pathway enrichment results for each PC
+Dataframe containing the pathway enrichment results for each PC
 }
 \description{
-PCA driven pathway analysis
+PCA driven pathway analysis of a SpaMTP object
 }
 \examples{
-#PCAPathwayAnalysis(mass_matrix = readRDS("~/mass_matrix.rds")[,1:150],width = 912,height = 853,ppm_error = NULL,ion_mode = "positive",tof_resolution = 30000,input_mz = NULL,num_retained_component = NULL,variance_explained_threshold = 0.9,resampling_factor = 2,p_val_threshold = 0.05)
+# PCAPathwayAnalysis(SpaMTP.obj, ion_mode = "positive",resampling_factor = 2,p_val_threshold = 0.05, verbose = FALSE)
 }

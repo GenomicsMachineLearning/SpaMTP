@@ -10,9 +10,9 @@ FishersPathwayAnalysis(
   polarity = NULL,
   ppm_error = 10,
   max_path_size = 500,
-  alternative = "greater",
   min_path_size = 5,
-  pathway_all_info = F,
+  alternative = "greater",
+  pathway_all_info = FALSE,
   pval_cutoff = 0.05,
   verbose = TRUE
 )
@@ -23,21 +23,21 @@ Supported metabolites format including, X stands for upper case of the coorespon
 Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 Supported mz format: any string or numeric vector contains the m/z}
 
-\item{analyte_type}{= "metabolites" or "gene" or "mz", or a vector contains any combinations of them}
+\item{analyte_type}{= "metabolites" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).}
 
-\item{polarity}{The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).}
+\item{polarity}{Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).}
 
 \item{ppm_error}{Integer defining the ppm threshold that matched analytes must be between (default = 10).}
 
-\item{max_path_size}{The max number of metabolites in a specific pathway}
+\item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
 
-\item{alternative}{The hypothesis of the fisher exact test}
+\item{min_path_size}{The min number of metabolites in a specific pathway (default = 5).}
 
-\item{min_path_size}{The min number of metabolites in a specific pathway}
+\item{alternative}{The hypothesis of the fisher exact test (default = "greater").}
 
-\item{pathway_all_info}{Whether to included all genes/metabolites screened in the return}
+\item{pathway_all_info}{Whether to included all genes/metabolites screened in the return (default = FALSE).}
 
-\item{pval_cutoff}{The cut off of raw p value to retain the pathways}
+\item{pval_cutoff}{The cut off of raw p value to retain the pathways (default = 0.05).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
@@ -48,6 +48,5 @@ a dataframe with the relevant pathway information
 Calculates Significant Metabolic Pathways using a Fisher Exact Test
 }
 \examples{
-mzs <- c("mz-448.234", "mz-558.432", "mz-998.001")
 # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
 }

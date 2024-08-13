@@ -1,98 +1,39 @@
 
-#' This the function used to compute the exact fisher test for over-representation based pathway analysis
-#'
-#' @param object A SpaMTP Seurat class object contains spatial metabolomics/transcriptomics features or both.
-#' @param group.by Character string defining the metadata column that contains the relative groupings. If NULL, will use whole sample as one group (default = NULL).
-#' @param polarity The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
-#' @param SM.assay Character string defining the SpaMTP assay that contains m/z values (default = "SPM").
-#' @param ST.assay Character string defining the SpaMTP assay that contains gene names (default = NULL).
-#' @param analyte_type Vector of character string defining the annotations to use for pathway analysis. Options can be one or multiple of: "metabolites" or "gene" or "mz" (default = c("mz", "gene")).
-#' @param ... Additional arguments to pass to FishersPathwayAnalysis. Check FishersPathwayAnalysis documentation for possible inputs.
-#'
-#' @return A dataframe with the relevant pathway information
-#' @export
-#'
-#' @examples
-#' # pathway_analysis(Seurat.Obj, polarity = "positive")
-pathway_analysis <- function(object,
-                             group.by = NULL,
-                            polarity = "positive",
-                            SM.assay = "SPM",
-                            ST.assay = NULL,
-                            analyte_type = c("mz","genes"),
-                            ...){
-
-  if (is.null(ident)){
-
-    group.by <- "ident1"
-    object@meta.data[[group.by]] <- group.by
-
-  }
-
-  pathway_results <- dplyr::bind_rows(lapply(unique(object@meta.data[[group.by]]), function(cluster){
-
-    Idents(object) <- group.by # subsets object by ident of group.by column in the meta.data
-    suppressWarnings({
-      data_subset <- subset(object, idents = cluster)
-    })
-
-    met_analytes = row.names(data_subset[[SM.assay]]@features) # extracts m/z values from SM assay
-
-    if (!is.null(ST.assay)){
-      rna_analytes = row.names(data_subset[[ST.assay]]@features)
-      analytes =  list(mz = met_analytes,
-                       genes = paste0("gene_symbol:",toupper(rna_analytes)))
-    } else {
-      analytes =  list(mz = met_analytes)
-    }
-
-    results = FishersPathwayAnalysis(analytes, # Runs FishersPathwayAnalysis for pathways
-                              polarity = polarity,
-                              analyte_type = analyte_type,
-                              ...)
-
-    results$cluster <- cluster #adds group name to df
-    results
-  }))
-
-  return(pathway_results)
-}
-
-
 #' Calculates Significant Metabolic Pathways using a Fisher Exact Test
 #'
 #' @param Analyte A list of analytes with 3 elements, namely "mz", "genes" and "metabolites", each is comprised of the corresponding labels, for metabolites,
 #' Supported metabolites format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X"
 #' Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 #' Supported mz format: any string or numeric vector contains the m/z
-#' @param analyte_type = "metabolites" or "gene" or "mz", or a vector contains any combinations of them
-#' @param polarity The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
+#' @param analyte_type = "metabolites" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).
+#' @param polarity Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).
 #' @param ppm_error Integer defining the ppm threshold that matched analytes must be between (default = 10).
-#' @param max_path_size The max number of metabolites in a specific pathway
-#' @param min_path_size The min number of metabolites in a specific pathway
-#' @param alternative The hypothesis of the fisher exact test
-#' @param pathway_all_info Whether to included all genes/metabolites screened in the return
-#' @param pval_cutoff The cut off of raw p value to retain the pathways
+#' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
+#' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
+#' @param alternative The hypothesis of the fisher exact test (default = "greater").
+#' @param pathway_all_info Whether to included all genes/metabolites screened in the return (default = FALSE).
+#' @param pval_cutoff The cut off of raw p value to retain the pathways (default = 0.05).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @return a dataframe with the relevant pathway information
+#' @export
+#'
+#' @import dplyr
+#' @import stringr
 #'
 #' @examples
-#' mzs <- c("mz-448.234", "mz-558.432", "mz-998.001")
 #' # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
 FishersPathwayAnalysis <- function (Analyte,
-                             analyte_type = c("mz","genes"),
-                             polarity = NULL,
-                             ppm_error = 10,
-                             max_path_size = 500,
-                             alternative = "greater",
-                             min_path_size = 5,
-                             pathway_all_info = F,
-                             pval_cutoff = 0.05,
-                             verbose = TRUE)
+                            analyte_type = c("mz","genes"),
+                            polarity = NULL,
+                            ppm_error = 10,
+                            max_path_size = 500,
+                            min_path_size = 5,
+                            alternative = "greater",
+                            pathway_all_info = FALSE,
+                            pval_cutoff = 0.05,
+                            verbose = TRUE)
 {
-  require(dplyr)
-  require(stringr)
 
   if((!"mz" %in% analyte_type) & (!"metabolites" %in% analyte_type) & (!"genes" %in% analyte_type)){
     stop(
@@ -125,62 +66,50 @@ FishersPathwayAnalysis <- function (Analyte,
 
   verbose_message(message_text = "Loading files ......", verbose = verbose)
 
-  analytehaspathway = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/analytehaspathway.rds"))
-  pathway = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/pathway.rds"))
-  source = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/source.rds"))
-  chem_props = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/chem_props.rds"))
-  analyte = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/analyte.rds"))
-
   verbose_message(message_text = "Loading files finished!" , verbose = verbose)
 
 
   if ( "metabolites" %in% analyte_type) {
     analytes_met = Analyte[["metabolites"]]
-    source_met = source[which(grepl(source$rampId, pattern = "RAMP_C") == T),]
+    source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
     analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),]
-    adduct_file = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/adduct_file.rds"))
   }
   if ("genes" %in% analyte_type) {
     if (!("genes" %in% names(Analyte))){
       stop("Cannot find gene list not present in Analyte object .... Please provide SpaMTP assay containing gene names, or remove 'gene' from analyte_type input!")
     }
     analytes_rna = Analyte[["genes"]]
-    source_rna = source[which(grepl(source$rampId, pattern = "RAMP_G") == T),]
+    source_rna = source_df[which(grepl(source_df$rampId, pattern = "RAMP_G") == T),]
     analytehaspathway_rna = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_G") == T),]
     analyte_rna = analyte[which(grepl(analyte$rampId, pattern = "RAMP_G") == T),]
   }
 
   if ("mz" %in% analyte_type) {
     analytes_mz = Analyte[["mz"]]
-    adduct_file = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/adduct_file.rds"))
-    #load(paste0(dirname(system.file(package = "SpaMTP")), "/data/Chebi_db.rda"))
-    #load(paste0(dirname(system.file(package = "SpaMTP")), "/data/Lipidmaps_db.rda"))
-    #load(paste0(dirname(system.file(package = "SpaMTP")), "/data/HMDB_db.rda"))
+
     # Since this file was tested in positive ion mode
     db = rbind(Chebi_db,
                Lipidmaps_db,
                HMDB_db)
-    rm(Chebi_db)
-    rm(Lipidmaps_db)
-    rm(HMDB_db)
+
     gc()
-    if (polarity == "Positive") {
+    if (polarity == "positive") {
       test_add_pos <- adduct_file$adduct_name[which(adduct_file$charge > 0)]
       # Using Chris' pipeline for annotation
       # 1) Filter DB by adduct.
       db_1 <- db_adduct_filter(db, test_add_pos, polarity = "pos", verbose = verbose)
-    } else if (polarity == "Negative") {
+    } else if (polarity == "negative") {
       test_add_neg <- adduct_file$adduct_name[which(adduct_file$charge < 0)]
       # Using Chris' pipeline for annotation
       # 1) Filter DB by adduct.
       db_1 <- db_adduct_filter(db, test_add_neg, polarity = "neg", verbose = verbose)
-    } else if (polarity == "Neutral") {
+    } else if (polarity == "neutral") {
       # Using Chris' pipeline for annotation
       # 1) Filter DB by adduct.
       db_1 <- db %>% mutate("M" = `M-H ` + 1.007276)
     }else{
-      stop("Please enter correct polarity from: 'Positive', 'Negative', 'Neutral'")
+      stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
     }
 
     # 2) only select natural elements
@@ -199,7 +128,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
     verbose_message(message_text = "Expanding database to extract all potential metabolites", verbose = verbose)
 
-    db_3list = pblapply(1:nrow(db_3), function(i){
+    db_3list = pbapply::pblapply(1:nrow(db_3), function(i){
       if (any(grepl(db_3[i, ], pattern = ";"))) {
         # Only take the first row
         ids = unlist(stringr::str_split(db_3[i, ]$Isomers, pattern = ";"))
@@ -211,8 +140,9 @@ FishersPathwayAnalysis <- function (Analyte,
       }
     })
     expand_db3 = do.call(c,db_3list)
+
     analytes_mz = sub(" ", "", expand_db3)
-    source_mz = source[which(grepl(source$rampId, pattern = "RAMP_C") == T),]
+    source_mz = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_mz = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
   }
 
@@ -275,8 +205,8 @@ FishersPathwayAnalysis <- function (Analyte,
   # analytes_rampids = unique(na.omit(analytes_rampids))
   # (1) Get candidate pathways
   # Get all analytes and number of analytes within a specific pathway
-  pathway_db = readRDS(paste0(dirname(system.file(package = "SpaMTP")), "/data/pathway.rds"))
-  source_non_duplicated = source_new[which(!duplicated(source_new$rampId)&(source_new$rampId %in% analytes_rampids)),]
+
+    source_non_duplicated = source_new[which(!duplicated(source_new$rampId)&(source_new$rampId %in% analytes_rampids)),]
   # rampid = the subset of the database with our query data
   pathway_rampids = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids),]
   pathway_rampids_count = pathway_rampids %>% group_by(pathwayRampId) %>% dplyr::mutate(analytes_in_pathways  = n())
@@ -287,10 +217,10 @@ FishersPathwayAnalysis <- function (Analyte,
 
   # Generate a dataframe contains: the list of metabolites IDs, the list of metabolites names, the number of elements in pathway, the number of elements in our dataset, for each pathway
   if(pathway_all_info == T){
-    enrichment_df = pblapply(1:length(unique(pathway_rampids_count$pathwayRampId)), function(x){
+    enrichment_df = pbapply::pblapply(1:length(unique(pathway_rampids_count$pathwayRampId)), function(x){
       #ananlytes_id_df = analytehaspathway_new[which(analytehaspathway_new$pathwayRampId == unique(pathway_rampids$pathwayRampId)[x]),]
       pathway_id = unique(pathway_rampids_count$pathwayRampId)[x]
-      pathway_info = pathway_db[which(pathway_db$pathwayRampId == pathway_id),]
+      pathway_info = pathway[which(pathway$pathwayRampId == pathway_id),]
       # get rampids associated with the pathway
       full_list = analytehaspathway_full[which(analytehaspathway_full$pathwayRampId == pathway_id),]
       screened_List = pathway_rampids_count[which(pathway_rampids_count$pathwayRampId == pathway_id),]
@@ -321,7 +251,7 @@ FishersPathwayAnalysis <- function (Analyte,
     enrichment_df = merge(pathway_rampids_count[which(!duplicated(pathway_rampids_count$pathwayRampId)),], analytehaspathway_full[which(!duplicated(analytehaspathway_full$pathwayRampId)),],
                           by = "pathwayRampId")
     #colnames(enrichment_df)[which(colnames(enrichment_df) == "count")] = "total_in_pathways"
-    enrichment_df = merge(enrichment_df, pathway_db, by = "pathwayRampId")
+    enrichment_df = merge(enrichment_df, pathway, by = "pathwayRampId")
     enrichment_df = enrichment_df %>% filter(!duplicated(pathwayName))
   }
 
@@ -370,7 +300,7 @@ FishersPathwayAnalysis <- function (Analyte,
   # (7) Reduce the dataframe with respected to the User input pathway size
 
   verbose_message(message_text = "Done" , verbose = verbose)
-  rm(chem_props)
+
   gc()
   #return(enrichment_df_with_both_info %>% select(-c(
   #  pathwayRampId,
@@ -385,20 +315,19 @@ FishersPathwayAnalysis <- function (Analyte,
 
 ##########################################################################################
 
-### PCA Pathway Analysis
 
-#' PCA driven pathway analysis
+#' PCA driven pathway analysis of a SpaMTP object
 #'
-#' @param seurat SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
 #' @param path Character string defining the output path for the visualization (default = getwd()).
 #' @param ppm_error is the parts-per-million error tolerance of matching m/z value with potential metabolites
 #' @param ion_mode is only needed when ppm_error is not specified, used to access the ppm_error based on polarity. Inputs must be either 'positive' or 'negative'(default = NULL).
-#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion (ion mass,m/z)/(Full width at half height)
-#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
+#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain (default = NULL).
 #' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
-#' @param resampling_factor is a numerical value >0, indicate how you want to resample the size of roginal matrix
-#' @param p_val_threshold is the p value threshold for pathways to be significant
-#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol.
+#' @param resampling_factor is a numerical value >0, indicate how you want to resample the size of original matrix (default = 1).
+#' @param p_val_threshold is the p value threshold for pathways to be significant (default = 0.05).
+#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
 #' @param slot Character string defining the assay slot contatin ght intesity values (default = "counts").
 #' @param flip_plot Boolean defining whether to rotate the plot 90 degrees (default = FALSE).
@@ -406,34 +335,36 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #'
-#' @return PCA's and pathway_enrichment_pc is the pathway enrichment results for each PC
+#' @return Dataframe containing the pathway enrichment results for each PC
 #' @export
 #'
 #' @import dplyr
 #'
 #' @examples
-#' #PCAPathwayAnalysis(mass_matrix = readRDS("~/mass_matrix.rds")[,1:150],width = 912,height = 853,ppm_error = NULL,ion_mode = "positive",tof_resolution = 30000,input_mz = NULL,num_retained_component = NULL,variance_explained_threshold = 0.9,resampling_factor = 2,p_val_threshold = 0.05)
-PCAPathwayAnalysis = function(seurat,
+#' # PCAPathwayAnalysis(SpaMTP.obj, ion_mode = "positive",resampling_factor = 2,p_val_threshold = 0.05, verbose = FALSE)
+PCAPathwayAnalysis <- function(SpaMTP,
                                                 path = getwd(),
                                                 ppm_error = NULL,
                                                 ion_mode = NULL,
                                                 tof_resolution = 30000,
                                                 num_retained_component = NULL,
                                                 variance_explained_threshold = 0.9,
-                                                resampling_factor = 2,
+                                                resampling_factor = 1,
                                                 p_val_threshold = 0.05,
-                                                byrow = F,
+                                                byrow = FALSE,
                                                 assay = "SPM",
                                                 slot = "counts",
                                                 flip_plot = FALSE,
                                                 show_variance_plot= FALSE,
                                                 verbose = TRUE) {
+
+
   # PCA analysis
   verbose_message(message_text = "Scaling original matrix", verbose = verbose)
 
-  mass_matrix = Matrix::t(seurat[[assay]]@layers[[slot]])
+  mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
 
-  coords <- GetTissueCoordinates(seurat)[c("x", "y")]
+  coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
 
   if (flip_plot){
     colnames(coords) <- c("y", "x")
@@ -609,7 +540,7 @@ PCAPathwayAnalysis = function(seurat,
   tryCatch({
     input_mz = data.frame(cbind(
       row_id = 1:ncol(resampled_mat),
-      mz = as.numeric(stringr::str_extract(row.names(seurat[[assay]]@features), pattern = "\\d+\\.?\\d*"))
+      mz = as.numeric(stringr::str_extract(row.names(SpaMTP[[assay]]@features), pattern = "\\d+\\.?\\d*"))
     ))
   },
   error = function(cond) {
@@ -842,7 +773,7 @@ PCAPathwayAnalysis = function(seurat,
     scale = pca$scale,
     sdev = pca$sdev,
     x = t(pca$x[, 1:num]),
-    mz =  row.names(seurat@assays[[assay]]@features),
+    mz =  row.names(SpaMTP@assays[[assay]]@features),
     coordinate = t(cbind(
       matrix_data_melted$x,
       matrix_data_melted$y
@@ -1449,12 +1380,12 @@ document.addEventListener("DOMContentLoaded", function() {
   writeLines(kmean,"kmeans.js")
 
   writeLines(html_temp,"pca_analysis.html")
-  return(list(seurat = seurat,
-              pca = pca,
-              pathway_enrichment_pc = pca_sea_list,
+  return(list(pathway_enrichment_pc = pca_sea_list,
               new.width = as.integer(width/as.numeric(resampling_factor)),
               new.height = as.integer(height/as.numeric(resampling_factor))))
 }
+
+
 
 
 
@@ -1587,6 +1518,281 @@ ResizeMat <- function(mat, ndim=dim(mat)){
 
   ans
 }
+
+
+
+
+#' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
+#'
+#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param variance_explained_threshold Numeric value defining the explained variance threshold.
+#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix.
+#' @param p_val_threshold is the p value threshold for pathways to be significant.
+#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol.
+#' @param assay Character string defining the SpaMTP assay to extract intensity values from.
+#' @param slot Character string defining the assay slot containing the intensity values.
+#' @param flip_plot Boolean defining whether to rotate the plot 90 degrees.
+#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis.
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed.
+#'
+#'
+#' @return PCA object contating embeddings and projections
+#'
+#' @import dplyr
+#'
+#' @examples
+#' # HELPER FUNCTION
+getPCA <- function(SpaMTP,
+                   num_retained_component,
+                   variance_explained_threshold,
+                   resampling_factor,
+                   byrow,
+                   assay,
+                   slot,
+                   flip_plot,
+                   show_variance_plot,
+                   verbose) {
+  # PCA analysis
+  verbose_message(message_text = "Scaling original matrix", verbose = verbose)
+
+  mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
+
+  coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
+
+  if (flip_plot){
+    colnames(coords) <- c("y", "x")
+  }
+
+
+  mass_matrix_with_coord = cbind(coords,
+                                 as.matrix(mass_matrix))
+  width = max(coords[c("y")]) #- min(coords[c("y")])
+  height = max(coords[c("x")]) # - min(coords[c("x")])
+
+  if (!is.null(resampling_factor) & resampling_factor!= 1) {
+    verbose_message(message_text = "Running matrix resampling...." , verbose = verbose)
+    pb = txtProgressBar(
+      min = 0,
+      max = ncol(mass_matrix),
+      initial = 0,
+      style = 3
+    )
+    if (!is.numeric(resampling_factor)) {
+      stop("Please enter correct resampling_factor")
+    }
+    new.width = as.integer(width / resampling_factor)
+    new.height = as.integer(height / resampling_factor)
+
+    resampled_mat = matrix(nrow =  new.height * new.width)
+    for (i in 1:ncol(mass_matrix)) {
+      temp_mz_matrix = matrix(mass_matrix[, i],
+                              ncol = width,
+                              nrow = height,
+                              byrow = byrow)
+      resampled_temp = ResizeMat(temp_mz_matrix, c(new.width,
+                                                   new.height))
+      resampled_mat = cbind(resampled_mat, as.vector(resampled_temp))
+      setTxtProgressBar(pb, i)
+    }
+    close(pb)
+    resampled_mat = resampled_mat[,-1]
+    colnames(resampled_mat) = colnames(mass_matrix)
+
+    verbose_message(message_text = "Resampling finished!" , verbose = verbose)
+
+    gc()
+  }else{
+    resampled_mat = mass_matrix
+    new.width = as.integer(width)
+    new.height = as.integer(height)
+  }
+
+  verbose_message(message_text = "Running the principal component analysis (can take some time)" , verbose = verbose)
+
+  # Runing PCA
+
+  resampled_mat_standardised = as.matrix(Matrix::t(
+    Matrix::t(resampled_mat) - Matrix::colSums(resampled_mat) / nrow(resampled_mat)
+  ))
+
+  verbose_message(message_text = "Computing the covariance" , verbose = verbose)
+  cov_mat <- cov(resampled_mat_standardised)
+
+  verbose_message(message_text = "Computing the eigenvalue/eigenvectors", verbose = verbose)
+  eigen_result <- eigen(cov_mat)
+  gc()
+  # Extract eigenvectors and eigenvalues
+  eigenvectors <- eigen_result$vectors
+  eigenvalues <- eigen_result$values
+
+  verbose_message(message_text = "Computing PCA", verbose = verbose)
+
+  pc = pbapply::pblapply(1:ncol(resampled_mat_standardised), function(i) {
+    temp = resampled_mat_standardised[, 1] * eigenvectors[1, i]
+    for (j in 2:ncol(resampled_mat_standardised)) {
+      temp = temp + resampled_mat_standardised[, j] * eigenvectors[j, i]
+    }
+    return(temp)
+  })
+  pc = do.call(cbind, pc)
+  colnames(pc) = paste0("PC", 1:ncol(eigenvectors))
+  # make pca object
+  colnames(eigenvectors) = paste0("PC", 1:ncol(eigenvectors))
+  rownames(eigenvectors) = colnames(resampled_mat)
+  pca = list(
+    sdev = sqrt(eigenvalues),
+    rotation = eigenvectors,
+    center = Matrix::colSums(resampled_mat) / nrow(resampled_mat),
+    scale = FALSE,
+    x = pc
+  )
+  pca = list_to_pprcomp(pca)
+
+  verbose_message(message_text = "PCA finished!", verbose = verbose)
+
+  rm(mass_matrix)
+  gc()
+  eigenvalues = pca$sdev ^ 2
+  # Step 5: Compute Principal Components
+  # Choose number of principal components, k
+  # if not input, use scree test to help find retained components
+
+  if (is.null(num_retained_component)) {
+    if (!is.null(variance_explained_threshold)) {
+      tryCatch({
+        cumulative_variance = cumsum(eigenvalues) / sum(eigenvalues)
+        threshold = variance_explained_threshold  # Example threshold
+
+        if (show_variance_plot){
+
+          par(mfrow = c(1, 1))
+          par(mar = c(2, 2, 1, 1))
+          # Plot cumulative proportion of variance explained
+          plot(
+            cumulative_variance,
+            type = 'b',
+            main = "Cumulative Variance Explained",
+            xlab = "Number of Principal Components",
+            ylab = "Cumulative Proportion of Variance Explained"
+          )
+
+          # Add a horizontal line at the desired threshold
+
+          abline(h = threshold,
+                 col = "red",
+                 lty = 2)
+        }
+
+        # Find the number of principal components to retain based on the threshold
+        retained =  which(cumulative_variance >= threshold)[1] - 1
+      },
+      error = function(cond) {
+        stop(
+          "Check if correct variance threshold for principle components are inputted, should be numeric value between 0 and 1"
+        )
+      },
+      warning = function(cond) {
+        stop(
+          "Check if correct variance threshold for principle components are inputted, should be numeric value between 0 and 1"
+        )
+      })
+
+    } else{
+      # if threshold not inputted, use Kaiser's criterion
+      verbose_message(message_text = "Both variance_explained_threshold and num_retained_component not inputted, use Kaiser's criterion for determination", verbose = verbose)
+
+
+      plot(
+        eigenvalues,
+        type = 'b',
+        main = "Scree Plot",
+        xlab = "Principal Component",
+        ylab = "Eigenvalue"
+      )
+
+      # Add a horizontal line at 1 (Kaiser's criterion)
+      abline(h = 1,
+             col = "red",
+             lty = 2)
+
+      # Add a vertical line at the elbow point
+      elbow_point <- which(diff(eigenvalues) < 0)[1]
+      abline(v = elbow_point,
+             col = "blue",
+             lty = 2)
+      retained = length(which(eigenvalues >= 1))
+    }
+  } else{
+    retained = as.integer(num_retained_component)
+    if (is.na(retained)) {
+      stop("Please enter correct number of principle components to retain")
+    }
+  }
+  return(pca)
+}
+
+
+
+#' Generates PCA analysis results for a SpaMTP Seurat Object
+#'
+#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
+#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
+#' @param p_val_threshold is the p value threshold for pathways to be significant (default = 0.05).
+#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
+#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
+#' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
+#' @param flip_plot Boolean defining whether to rotate the plot 90 degrees (default = FALSE).
+#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#'
+#' @return SpaMTP object with pca results stored in the
+#' @export
+#'
+#' @examples
+#' # HELPER FUNCTION
+RunMetabolicPCA <- function(SpaMTP,
+                   num_retained_component = NULL,
+                   variance_explained_threshold = 0.9,
+                   resampling_factor = 1,
+                   byrow = FALSE,
+                   assay = "SPM",
+                   slot = "counts",
+                   flip_plot = FALSE,
+                   show_variance_plot= FALSE,
+                   verbose = TRUE)
+{
+  verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
+
+  pca <- getPCA(SpaMTP = SpaMTP,
+                num_retained_component = num_retained_component,
+                variance_explained_threshold = variance_explained_threshold,
+                resampling_factor = resampling_factor,
+                byrow = byrow,
+                assay = assay,
+                slot = slot,
+                flip_plot = flip_plot,
+                show_variance_plot= show_variance_plot,
+                verbose = verbose)
+
+  SpaMTP_pca <- pca
+
+  rownames(SpaMTP_pca$rotation) <- rownames(SpaMTP[[assay]]@features)
+  rownames(SpaMTP_pca$x) <- rownames(SpaMTP@meta.data)
+
+  SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_")
+
+  SpaMTP[["pca"]] <- SpaMTP_pcas
+
+  return(SpaMTP)
+}
+
+
+
+
 
 
 
