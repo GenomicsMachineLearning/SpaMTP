@@ -22,6 +22,9 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html</loc>
+  </url>
+  <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/vignette_data_files/Mouse_Urinary_Bladder/pca_analysis.html</loc>
   </url>
   <url>
@@ -53,6 +56,9 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DEPsHeatmap.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DensityMap.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindAllDEPs.html</loc>
@@ -203,9 +209,6 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_optimal_layout.html</loc>
-  </url>
-  <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getdensitymap.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/increase_SM_res.html</loc>
