@@ -756,7 +756,7 @@ In addition this function also returns a list of Dataframes that contain the rel
 
 Let run this analysis:
 
-```{r, warning=FALSE, message=FALSE, results='hide'}
+```{r, eval=FALSE}
 Pathway_results <- PCAPathwayAnalysis(bladder_annotated,
                                   path = "vignette_data_files/Mouse_Urinary_Bladder/",
                                   ppm_error = NULL,
