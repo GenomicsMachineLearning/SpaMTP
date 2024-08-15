@@ -1521,26 +1521,25 @@ Plot3DFeature <- function(data,
 
 #' Generates a 3D density plot for specific m/z values
 #'
-#' @param seurat A seurat object contains spatial metabolomics data in either "SPM" or "Spatial" entry
-#' @param db_selection The databased used for annoation, in a vector format, e.g. db_selection = c("Chebi_db","HMDB_db")
-#' @param polarity The polarity of MALDI run, selected from one of ("pos","neg")
-#' @param folder The folder to keep the output file, default in current working directory
+#' @param object SpaMTP Seurat object contains spatial metabolomics data
+#' @param assay Character string defining the Seurat assay that contains intensity values to plot (default = "SPM").
+#' @param slot Character string defining the assay slot to extract the intensity values from (default = "counts").
+#' @param folder Character string defining the directory path to save the density map HTML file to (default = getwd()).
 #' @param ... Arguments passed to SpaMTP::AnnotateSeuratMALDI()
 #'
 #' @return Return a html contains the annotation/average intensity of peakbins/density of distribution of each peak
 #' @export
 #'
 #' @examples
-#' # getdensitymap(SpaMTP.obj)
-getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(),...){
+#' # DensityMap(SpaMTP.obj)
+DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),...){
 
-  annotated_seurat = seurat
-  mass_matrix = t(annotated_seurat[[assay]][slot])
-  annotated_table = annotated_seurat[[assay]]@meta.data
-  indices =  GetTissueCoordinates(annotated_seurat)[c("x", "y")]
+  mass_matrix = t(object[[assay]][slot])
+  annotated_table = object[[assay]]@meta.data
+  indices =  GetTissueCoordinates(object)[c("x", "y")]
   mzs =  annotated_table["raw_mz"]
   annotated_json  = '['
-  for (i in 1:length(mzs)) {
+  for (i in 1:nrow(mzs)) {
     annotated_json =
       paste0(
         annotated_json,
@@ -1568,10 +1567,10 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
 
   histogram_data_to_be_added  = ""
   mean_intensity = colSums(mass_matrix) / nrow(mass_matrix)
-  for (i in 1:length(mzs)) {
+  for (i in 1:nrow(mzs)) {
     histogram_data_to_be_added = paste0(histogram_data_to_be_added,
                                         "{ mz:",
-                                        mzs[i],
+                                        mzs[i,],
                                         ", mean:",
                                         mean_intensity[i],
                                         "},")
@@ -1588,14 +1587,14 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
 
   # Initialize an empty character vector to store the elements - the density map required item
   elements <- character(ncol(mass_matrix))
+  # Loop through each column of mass_matrix
+  print("Parsing mass matrix information")
   pb = txtProgressBar(
     min = 0,
     max = ncol(mass_matrix),
     initial = 0,
     style  =  3
   )
-  # Loop through each column of mass_matrix
-  print("Parsing mass matrix information")
   for (i in 1:ncol(mass_matrix)) {
     # Combine row and column indices
     element <- paste("[",
@@ -1673,6 +1672,14 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
           height: 450px;
           padding: 10px;
           margin-bottom: 0px;
+          z-index: 1;
+      }
+      #buttonContainer {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        left: 55%; /* Adjust to move horizontally within secPlot */
+        top: 5px; /* Adjust to move vertically within secPlot */
       }
       #tablePlot {
           width: 100%;
@@ -1681,16 +1688,38 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
           height: 300px;
           padding: 30px;
       }
+      #message {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        left: 55%; /* Adjust to move horizontally within secPlot */
+        top: 50px; /* Adjust to move vertically within secPlot */
+      }
   </style>
       <div id='container'>
         <div id='plots'>
             <div id='barPlot'></div>
-            <div id='secPlot'></div>
+            <div id='secPlot'>
+              <div id = 'warning'></div>
+              <div id='buttonContainer'>
+              <div id='message'>
+                  <strong>Instructions:</strong> Entry a number to describe the number of equally spaced points at which the density is to be estimated.
+                  <input type='number' id='numberEntry' min='0' max='",min(max(indices[,1],
+                                                                               indices[,2])),"' z-index ='10' width = '30' value = '30'/>
+              </div>
+              </div>
+            </div>
         </div>
         <div id='tablePlot'>
         </div>
     </div>
-                          <script>
+  <script>
+    document.getElementById('numberEntry').addEventListener('input', function() {
+    var value = parseInt(this.value);
+    if (value > 100) {
+        this.value = 100; // Cap the value at 100
+    }
+});
           const data = [",
     histogram_data_to_be_added,
     "];
@@ -1708,10 +1737,12 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
               x: kde[0],
               y: kde[1],
               mode: 'lines',
-              name: 'Kde curve',
+              name: 'Estimated average density spectrum',
               line: {shape: 'spline'},
               type: 'scatter',
-              width: 0.3
+              width: 0.3,
+              hoverinfo: null
+              //hoverinfo: 'Estimated density' + kde[1]
             };
 
             const xValues = data.map(d => d.mz);
@@ -1724,6 +1755,7 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
               type: 'bar',
               width: 0.3,
               name: 'Peak bins',
+              hoverinfo: 'm/z value' + xValues
             };
 
             // Create trace for the dot plot
@@ -1731,7 +1763,7 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
 
             // Set layout for bar plot
             var barLayout = {
-              hovermode: 'closest',
+              hovermode: 'x unified',
               title: 'Bar Plot',
               xaxis: {
                 title: 'm/z values'
@@ -1741,6 +1773,7 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
               },
               plot_bgcolor: 'rgba(0,0,0,0)', // Transparent background for the plot area
               paper_bgcolor: 'rgba(0,0,0,0)',
+              hoverdistance: 50
             };
 
             // Set layout for second plot
@@ -1758,9 +1791,30 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
               }
               return -1;
             }
+            document.querySelectorAll('.plotly .scatterlayer .trace').forEach(function(el, index) {
+            if(index === 0) {
+            el.style.pointerEvents = 'none';  // Disable interactivity for this trace
+            }
+            });
             // Add event listener for hover on bar plot
+            var ind = 0
+            function hideMessage() {
+              warning.textContent = ''; // Clear the message text
+              warning.style.display = 'none'; // Hide the message box
+        }
             document.getElementById('barPlot').on('plotly_click', function (data_event){
-              var pointNumber = data_event.points[0].pointNumber;
+              hideMessage()
+              if(data_event.points.length == 2){
+                var pointNumber = data_event.points[1].pointNumber;
+              }else if (data_event.points[0].fullData.type == 'bar'){
+                var pointNumber = data_event.points[0].pointNumber;
+              }else{
+                Plotly.purge('secPlot');
+                warning.textContent = 'No explicit peak bin selected, consider closing the density spetrum and zoom in to select explicit m/z peak'; // Set the message text
+                warning.style.display = 'block'; // Make the message box visible
+              }
+
+              ind = pointNumber
               console.log(pointNumber)
               var selected_mz = xValues[pointNumber]
               Plotly.purge('secPlot');
@@ -1802,10 +1856,15 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
             });
             // Get the density plot done
             // If the element exists, hide the loading message
+            var space  = 30
+            document.getElementById('numberEntry').addEventListener('blur', function() {
+            space = Number(event.target.value)
+            displaydensity(ind)
+            });
             function displaydensity(index) {
               var temp_x = json_array[index].map(coord => coord[0]);
               var temp_y = json_array[index].map(coord => coord[1]);
-              var n = 30;
+              var n = space;
               var shape = [n, 2];
               var strides = [1, n];
               var offset = 0;
@@ -1879,6 +1938,7 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
               </body>
               </html>"
   )
+
   if (!file.exists(folder)) {
     dir.create(paste0(file.path(folder), name))
     writeLines(javascript, paste0(file.path(folder), "/mzs_density_map.html"))
@@ -1886,6 +1946,7 @@ getdensitymap = function(seurat, assay = "SPM", slot = "counts", folder = getwd(
     writeLines(javascript, paste0(file.path(folder), "/mzs_density_map.html"))
   }
 }
+
 
 
 
