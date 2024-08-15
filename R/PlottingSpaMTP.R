@@ -1534,7 +1534,7 @@ Plot3DFeature <- function(data,
 #' # DensityMap(SpaMTP.obj)
 DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),...){
 
-  mass_matrix = t(object[[assay]][slot])
+  mass_matrix = Matrix::t(object[[assay]][slot])
   annotated_table = object[[assay]]@meta.data
   indices =  GetTissueCoordinates(object)[c("x", "y")]
   mzs =  annotated_table["raw_mz"]
@@ -1566,7 +1566,7 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
   # Histogram information, mz, mean_intensity, max_intensity
 
   histogram_data_to_be_added  = ""
-  mean_intensity = colSums(mass_matrix) / nrow(mass_matrix)
+  mean_intensity = Matrix::colSums(mass_matrix) / nrow(mass_matrix)
   for (i in 1:nrow(mzs)) {
     histogram_data_to_be_added = paste0(histogram_data_to_be_added,
                                         "{ mz:",

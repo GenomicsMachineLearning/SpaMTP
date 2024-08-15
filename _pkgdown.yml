@@ -111,7 +111,7 @@ reference:
   - Plot3DFeature
   - MassIntensityPlot
   - CheckAlignment
-  - getdensitymap
+  - DensityMap
 - title: Additional SpaMTP Functions
   desc: Functions that can be used to find the closest metabolite and bin the expression
     of multiple metabolites into one

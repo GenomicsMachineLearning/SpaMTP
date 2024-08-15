@@ -740,6 +740,28 @@ Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 10
 ```
 
 
+SpaMTP also includes a useful density plot function that generates a HTML which allows the user to simultaneously spatially visualise any m/z peak and it's relative metabolite annotation. Users have access to a mass intensity plot where they can select any m/z peak, which will then be plotted and all possible metabolite annotations will be listed below. Lets demonstrate:
+
+
+```{r, eval=FALSE}
+DensityMap(object = ROI, assay = "Spatial", slot = "counts", folder = "vignette_data_files/Mouse_Urinary_Bladder/")
+```
+
+<br>
+
+```{r echo=FALSE, results='asis', warning=FALSE}
+library(htmltools)
+
+file_path <- "vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html"  # Path to the HTML file
+
+
+# Include HTML content with a div wrapper for sizing
+includeHTML(file_path)
+
+```
+
+
+
 ## Pathway Analysis
 
 In order to understand biological processes and complex diseases at a deeper level, we oftern look at biological pathways as a whole rather the expression of just individual metabolites/genes. SpaMTP pathway analysis uses a reference dataset that contains various biological pathways (i.e. KEGG or RAMP_DB) to determine significant changes in biological, cellular or molecular processes.
