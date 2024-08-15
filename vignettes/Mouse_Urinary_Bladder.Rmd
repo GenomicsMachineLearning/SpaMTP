@@ -917,7 +917,7 @@ Lets use SpaMTP's feature colocalisation function to check the top metabolites t
 
 
 ```{r, warning=FALSE, message=FALSE}
-correlated_features <- FindCorrelatedFeatures(ROI, ident = "clusters", SM.assay = "Spatial", nfeatures = 10) #find the spatial correlation between each cluster and their relative metabolites
+correlated_features <- FindCorrelatedFeatures(ROI, ident = "clusters", SM.assay = "Spatial", nfeatures = 6) #find the spatial correlation between each cluster and their relative metabolites
 ```
 
 
