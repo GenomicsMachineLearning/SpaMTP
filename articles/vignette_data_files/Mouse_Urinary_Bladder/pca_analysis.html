@@ -664,11 +664,21 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     .points {
       position: absolute;
       z-index: 1;
+
     }
 
-    .box {
+    .boxupper {
       border: 1px solid black; /* Optional: Add borders for visibility */
       position: relative;
+      height: 300px;
+      width: 50%;
+    }
+
+    .boxlower {
+      border: 1px solid black; /* Optional: Add borders for visibility */
+      position: relative;
+      height: 300px;
+      width: 100%;
     }
 
     .input-container {
@@ -676,10 +686,10 @@ function kmeans(dataset, k, useNaiveSharding = true) {
         }
 
         /* Optional styling for label */
-        label {
+    .label {
             margin-right: 5px; /* Adjust spacing between label and input */
         }
-        .red-text {
+    .red-text {
     color: red;
     position: absolute;
     top: 0;
@@ -725,8 +735,8 @@ function kmeans(dataset, k, useNaiveSharding = true) {
 <div class="container">
     <!-- Top Row -->
     <div class="top-row">
-      <div id="pcaPlot" class="box" style="width: 50%; height: 300px;"></div>
-      <div id="plot" class="box" style="position: relative; width: 50%; height: 300px; z-index: 2;">
+      <div id="pcaPlot" class="boxupper" ></div>
+      <div id="plot" class="boxupper" style= "z-index: 2;">
         <canvas id="rasterCanvas" class = "raster"></canvas>
         <canvas id="pointCanvas" class = "points"></canvas>
       </div>
@@ -734,8 +744,8 @@ function kmeans(dataset, k, useNaiveSharding = true) {
 
     <!-- Bottom Row -->
     <div class="bottom-row">
-      <div id="table1" class="box" ></div>
-      <div id="table2" class="box" ></div>
+      <div id="table1" class="boxlower" ></div>
+      <div id="table2" class="boxlower" ></div>
     </div>
 </div>
 
