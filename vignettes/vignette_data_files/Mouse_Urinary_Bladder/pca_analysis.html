@@ -645,7 +645,7 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     .top-row {
       display: flex;
       justify-content: space-between;
-       /* Adjust as needed */
+      width: 100%; /* Adjust as needed */
       margin-bottom: 0px;
     }
 
@@ -653,6 +653,20 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     .bottom-row {
       width: 100%; /* Match the combined width of pcaPlot and plot */
     }
+
+    .raster {
+      /* Match the combined width of pcaPlot and plot */
+      position: absolute;
+      z-index: 0;
+    }
+
+    .points {
+      position: absolute;
+      z-index: 1;
+    }
+
+
+
 
     .box {
       border: 1px solid black; /* Optional: Add borders for visibility */
@@ -714,17 +728,17 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     <div class="container">
       <!-- Top Row -->
       <div class="top-row">
-        <div id="pcaPlot" class="box"></div>
-        <div id="plot" class="box">
-          <canvas id="rasterCanvas" style = "width: 600px;"></canvas>
-          <canvas id="pointCanvas" style = "width: 600px;"></canvas>
+        <div id="pcaPlot" class="box" style="width: 300px; height: 300px;"></div>
+        <div id="plot" class="box" style="position: relative; width: 50%; height: 300px; z-index: 2;">
+          <canvas id="rasterCanvas" class = "raster"></canvas>
+          <canvas id="pointCanvas" class = "points"></canvas>
         </div>
       </div>
 
       <!-- Bottom Row -->
       <div class="bottom-row">
         <div id="table1" class="box" ></div>
-        <div id="table2" class="box"></div>
+        <div id="table2" class="box" ></div>
       </div>
     </div>
   </body>
@@ -1004,7 +1018,7 @@ button.onclick = function(){
 
   var data_pc = [trace1pc];
   var pc_plot_width = "50%";
-  var pc_plot_height = "300px";
+  var pc_plot_height = 300;
   var layout_pc = {
     title: "PCA Plot",
     xaxis: { title: "PC1" },
@@ -1185,5 +1199,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 </script>
-</body>
 </html>
