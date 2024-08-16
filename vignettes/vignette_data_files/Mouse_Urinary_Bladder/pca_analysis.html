@@ -645,13 +645,13 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     .top-row {
       display: flex;
       justify-content: space-between;
-      width: 750px; /* Adjust as needed */
+       /* Adjust as needed */
       margin-bottom: 0px;
     }
 
     /* Bottom rows for table1 and table2 stacked */
     .bottom-row {
-      width: 750px; /* Match the combined width of pcaPlot and plot */
+      width: 100%; /* Match the combined width of pcaPlot and plot */
     }
 
     .box {
@@ -714,17 +714,17 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     <div class="container">
       <!-- Top Row -->
       <div class="top-row">
-        <div id="pcaPlot" class="box" style="width: 300px; height: 300px;"></div>
-        <div id="plot" class="box" style="position: relative; width: 450px; height: 300px; z-index: 2;">
-          <canvas id="rasterCanvas" style="position: absolute; top: 15%; left: 5%; width: 150%; height: 150%; z-index: 0;"></canvas>
-          <canvas id="pointCanvas" style="position: absolute; top: 15%; left: 5%; width: 150%; height: 150%; z-index: 1;"></canvas>
+        <div id="pcaPlot" class="box"></div>
+        <div id="plot" class="box">
+          <canvas id="rasterCanvas" style = "width: 600px;"></canvas>
+          <canvas id="pointCanvas" style = "width: 600px;"></canvas>
         </div>
       </div>
 
       <!-- Bottom Row -->
       <div class="bottom-row">
-        <div id="table1" class="box" style="width: 750px; height: 350px;"></div>
-        <div id="table2" class="box" style="width: 750px; height: 260px;"></div>
+        <div id="table1" class="box" ></div>
+        <div id="table2" class="box"></div>
       </div>
     </div>
   </body>
@@ -745,6 +745,7 @@ const matrixData = [{"y":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 
  var data_table1 = [{
   type: "table",
+  width: "80%",
   header: {
     values: [["<b>Pathway</b>"], ["<b>p_value</b>"],
 				 ["<b>NES</b>"], ["<b>metabolites</b>"]],
@@ -770,6 +771,7 @@ Plotly.newPlot("table1", data_table1, layout_table1);
 // Table 2
 var data_table2  = [{
   type: "table",
+  width: "80%",
   header: {
     values: [["<b>Pathway</b>"], ["<b>p_value</b>"],
 				 ["<b>NES</b>"], ["<b>metabolites</b>"]],
@@ -1001,8 +1003,8 @@ button.onclick = function(){
   };
 
   var data_pc = [trace1pc];
-  var pc_plot_width = 300;
-  var pc_plot_height = 300;
+  var pc_plot_width = "50%";
+  var pc_plot_height = "300px";
   var layout_pc = {
     title: "PCA Plot",
     xaxis: { title: "PC1" },
@@ -1183,4 +1185,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 </script>
+</body>
 </html>
