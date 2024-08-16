@@ -800,15 +800,7 @@ Lets first view the [HTML](https://github.com/GenomicsMachineLearning/SpaMTP/blo
 <br>
 
 
-```{r echo=FALSE, results='asis', warning=FALSE}
-library(htmltools)
 
-file_path <- "vignette_data_files/Mouse_Urinary_Bladder/pca_analysis.html"  # Path to the HTML file
-
-# Include HTML content with a div wrapper for sizing
-includeHTML(file_path)
-
-```
 
 <br>
 
