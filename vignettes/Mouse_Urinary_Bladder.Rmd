@@ -764,9 +764,9 @@ includeHTML(file_path)
 
 ## Pathway Analysis
 
-In order to understand biological processes and complex diseases at a deeper level, we oftern look at biological pathways as a whole rather the expression of just individual metabolites/genes. SpaMTP pathway analysis uses a reference dataset that contains various biological pathways (i.e. KEGG or RAMP_DB) to determine significant changes in biological, cellular or molecular processes.
+In order to understand biological processes and complex diseases at a deeper level, we often look at biological pathways as a whole rather the expression of just individual metabolites/genes. SpaMTP pathway analysis uses a reference dataset that contains various biological pathways (i.e. KEGG or RAMP_DB) to determine significant changes in biological, cellular or molecular processes.
 
-The first pathway analysis method uses principle component analysis (PCA) to determine metabolites that explain the most variance between each PCA. These metabolites are then checked against a reference pathway database to idetnify up- and down-regulated pathways for each PCA.
+The first pathway analysis method uses principle component analysis (PCA) to determine metabolites that explain the most variance between each PCA. These metabolites are then checked against a reference pathway database to identify up- and down-regulated pathways for each PCA.
 
 The *PCAPathwayAnalysis* generates an interactive HTML displaying:
       * Principle Component plot
@@ -800,6 +800,15 @@ Lets first view the [HTML](https://github.com/GenomicsMachineLearning/SpaMTP/blo
 <br>
 
 
+```{r echo=FALSE, results='asis', warning=FALSE}
+library(htmltools)
+
+file_path <- "vignette_data_files/Mouse_Urinary_Bladder/pca_analysis.html"  # Path to the HTML file
+
+# Include HTML content with a div wrapper for sizing
+includeHTML(file_path)
+
+```
 
 <br>
 

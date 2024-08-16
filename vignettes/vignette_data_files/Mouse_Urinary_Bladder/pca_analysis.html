@@ -20,26 +20,26 @@
 
 		// 'tmpArr' will hold sums of cluster resp., and inverses of those sums
 		this.tmpArr = new Float32Array(this.bufferSize);
-		
+
 		// cluster responsibilities cResps[cluster_idx][data_idx]
 		this.cResps = Array(this.clusters);
 		for(let k=0; k<this.clusters; k++) {
 			this.cResps[k] = new Float32Array(this.bufferSize);
 		}
-		
+
 		this.singularity = null;
-		
+
 		this.covCholeskies = null; // Choleskies = plural of Cholesky :)
 		this.covDeterminants = this.covariances.map(cov => cov[0][0]*cov[1][1]-cov[0][1]*cov[1][0]);
 	}
-	
-	addPoint(point) {		
+
+	addPoint(point) {
 		this.data[this.idx] = point;
 		this.idx++;
 		if(this.idx == this.bufferSize) this.idx = 0;
 		if(this.dataLength < this.bufferSize) this.dataLength++;
 	}
-	
+
 
 	runEM(iterations = 1) {
 		if(this.dataLength==0) return;
@@ -65,12 +65,12 @@
 			for(let k=0; k<this.clusters; k++) {
 				if(this.covDeterminants[k] <= 0) {
 					this.singularity = this.means[k];
-					return this.singularity;					
+					return this.singularity;
 				}
 			}
 		}
-	}	
-	
+	}
+
 	predict(point) {
 		let resps = Array(this.clusters);
 		for(let k=0; k<this.clusters; k++) {
@@ -79,7 +79,7 @@
 			let cov = this.covariances[k];
 			let covDet = this.covDeterminants[k];
 			let covCholesky = this.covCholeskies && this.covCholeskies[k];
-			
+
 			resps[k] = weight * pdf(point, mean, cov, covDet, covCholesky);
 		}
 		return resps;
@@ -105,14 +105,14 @@ function runExpectation() {
 		let cov = this.covariances[k];
 		let covDet = this.covDeterminants[k];
 		let covCholesky = this.covCholeskies && this.covCholeskies[k];
-		
+
 		for(let i=0; i<this.dataLength; i++) {
 			this.tmpArr[i] += resps[i] = weight * pdf(this.data[i], mean, cov, covDet, covCholesky);
 		}
 	}
-	
+
 	for(let i=0; i<this.dataLength; i++) this.tmpArr[i] = 1/this.tmpArr[i];
-	
+
 	for(let k=0; k<this.clusters; k++) {
 		let resps = this.cResps[k];
 		for(let i=0; i<this.dataLength; i++) {
@@ -125,17 +125,17 @@ function runExpectation() {
 function runMaximization() {
 	for(let k=0; k<this.clusters; k++) {
 		let resps = this.cResps[k];
-		
+
 		// soft count of data points in this cluster
 		let softCount = 0;
 		for(let i=0; i<this.dataLength; i++) {
 			softCount += resps[i];
 		}
 		let scInv = 1/softCount;
-		
+
 		// weights
 		this.weights[k] = softCount / this.dataLength;
-		
+
 		// means
 		let mean = this.means[k].fill(0);
 		for(let i=0; i<this.dataLength; i++) {
@@ -144,19 +144,19 @@ function runMaximization() {
 			}
 		}
 		for(let t=0; t<this.dimensions; t++) mean[t] *= scInv;
-		
+
 		// covariances
 		let cov = this.covariances[k];
-		for(let t=0; t<this.dimensions; t++) cov[t].fill(0);		
-		
+		for(let t=0; t<this.dimensions; t++) cov[t].fill(0);
+
 		let diff = Array(this.dimensions);
 		for(let i=0; i<this.dataLength; i++) {
 			let datum = this.data[i];
-			
+
 			for(let t=0; t<this.dimensions; t++) {
 				diff[t] = datum[t] - mean[t];
 			}
-			
+
 			for(let t1=0; t1<this.dimensions; t1++) {
 				for(let t2=0; t2<this.dimensions; t2++) {
 					cov[t1][t2] += resps[i]*diff[t1]*diff[t2];
@@ -292,14 +292,14 @@ class Draw {
 		this.yRangeInv = 1/(yMax-yMin);
 		this.ctx = canvas.getContext('2d');
 	}
-	
+
 	_point2pixel(point) {
 		return {
 			x: this.canvas.width  * this.xRangeInv*(point[0]-this.xMin),
 			y: this.canvas.height * this.yRangeInv*(point[1]-this.yMin)
-		};		
+		};
 	}
-	
+
 	points(points, colors) {
 		let w = this.canvas.width;
 		let h = this.canvas.height;
@@ -310,15 +310,15 @@ class Draw {
 			this.ctx.fillStyle = colors ? colors[i] : 'grey';
 
 			this.ctx.beginPath();
-			
+
 			let {x, y} = this._point2pixel(p);
 			this.ctx.arc(x, y, 3.5, 0, 2*Math.PI);
-			
+
 			this.ctx.fill();
 			this.ctx.stroke();
 		}
 	}
-	
+
 	ellipse(mean, covariance, color) {   // assuming cov matrix is symmetric
 		if(!color) color = 'black';
 		let w = this.canvas.width;
@@ -326,22 +326,22 @@ class Draw {
 		let a = covariance[0][0];
 		let b = covariance[0][1];
 		let d = covariance[1][1];
-		
+
 		let T = a+d;
 		let G = Math.sqrt(T*T*.25-a*d+b*b);
 		let lambda1 = .5*T + G;
 		let lambda2 = .5*T - G;
 		let r1 = Math.sqrt(lambda1)*s95;
 		let r2 = Math.sqrt(lambda2)*s95;
-		
+
 		// points to pixels (this probably works only for square grid)
 		let r1pix = r1 * this.canvas.width  * this.xRangeInv;
 		let r2pix = r2 * this.canvas.height * this.yRangeInv;
-		
+
 		let theta = Math.atan2(b, lambda1-d);
-		
+
 		let {x, y} = this._point2pixel(mean);
-		
+
 		this.ctx.globalAlpha = .7;
 		this.ctx.strokeStyle = color;
 		this.ctx.fillStyle = color;
@@ -352,12 +352,12 @@ class Draw {
 		this.ctx.stroke();
 		this.ctx.globalAlpha = 1;
 	}
-	
+
 	singularity(point) {
 		let w = this.canvas.width;
 		let h = this.canvas.height;
 		let {x, y} = this._point2pixel(point);
-		
+
 		let margin = 4;    // space between balloon and border of the canvas
 		let padding = 14;  // space between text and border of the balloon
 		let radius = 7;    // corner radius of the balloon
@@ -368,9 +368,9 @@ class Draw {
 		this.ctx.scale(1,-1);
 		this.ctx.textAlign = 'center';
 		this.ctx.textBaseline = 'middle';
-		
+
 		let sgn = y<.5*h ? 1 : -1;  // is balloon above or below the singular point
-		
+
 		// calculate center of the text
 		let textY = y+100*sgn;
 		let textX = x<.5*w ? x+.5*textWidth : x-.5*textWidth;
@@ -378,33 +378,33 @@ class Draw {
 		if(textX-.5*textWidth-padding-margin<0) textX = .5*textWidth+padding+margin;
 		if(textY-.5*textHeight-padding-margin<0) textY = .5*textHeight+padding+margin;
 		if(textY+.5*textHeight+padding+margin>h) textY = h-.5*textHeight-padding-margin;
-		
+
 		// draw balloon
 		this.ctx.beginPath();
 		this.ctx.moveTo(x, -y);
 		this.ctx.lineTo(textX-15, -textY+(.5*textHeight+padding)*sgn);
 		this.ctx.lineTo(textX-.5*textWidth-padding+radius, -textY+(.5*textHeight+padding)*sgn);
 		this.ctx.arcTo(
-			textX-.5*textWidth-padding, -textY+(.5*textHeight+padding)*sgn, 
-			textX-.5*textWidth-padding, -textY+(.5*textHeight+padding-radius)*sgn, 
+			textX-.5*textWidth-padding, -textY+(.5*textHeight+padding)*sgn,
+			textX-.5*textWidth-padding, -textY+(.5*textHeight+padding-radius)*sgn,
 			radius
 		);
 		this.ctx.lineTo(textX-.5*textWidth-padding, -textY+(-.5*textHeight-padding+radius)*sgn);
 		this.ctx.arcTo(
-			textX-.5*textWidth-padding, -textY+(-.5*textHeight-padding)*sgn, 
-			textX-.5*textWidth-padding+radius, -textY+(-.5*textHeight-padding)*sgn, 
+			textX-.5*textWidth-padding, -textY+(-.5*textHeight-padding)*sgn,
+			textX-.5*textWidth-padding+radius, -textY+(-.5*textHeight-padding)*sgn,
 			radius
 		);
 		this.ctx.lineTo(textX+.5*textWidth+padding-radius, -textY+(-.5*textHeight-padding)*sgn);
 		this.ctx.arcTo(
-			textX+.5*textWidth+padding, -textY+(-.5*textHeight-padding)*sgn, 
-			textX+.5*textWidth+padding, -textY+(-.5*textHeight-padding+radius)*sgn, 
+			textX+.5*textWidth+padding, -textY+(-.5*textHeight-padding)*sgn,
+			textX+.5*textWidth+padding, -textY+(-.5*textHeight-padding+radius)*sgn,
 			radius
 		);
 		this.ctx.lineTo(textX+.5*textWidth+padding, -textY+(.5*textHeight+padding-radius)*sgn);
 		this.ctx.arcTo(
-			textX+.5*textWidth+padding, -textY + (.5*textHeight + padding) * sgn, 
-			textX+.5*textWidth+padding-radius, -textY + (.5*textHeight + padding) * sgn, 
+			textX+.5*textWidth+padding, -textY + (.5*textHeight + padding) * sgn,
+			textX+.5*textWidth+padding-radius, -textY + (.5*textHeight + padding) * sgn,
 			radius
 		);
 		this.ctx.lineTo(textX+15, -textY + (.5*textHeight + padding) * sgn);
@@ -514,7 +514,7 @@ function getDistanceSQ(a, b) {
   return diffs.reduce((r, e) => (r + (e * e)), 0);
 }
 
-// Returns a label for each piece of data in the dataset. 
+// Returns a label for each piece of data in the dataset.
 function getLabels(dataSet, centroids) {
   // prep data structure:
   const labels = {};
@@ -525,7 +525,7 @@ function getLabels(dataSet, centroids) {
       centroid: centroids[c],
     };
   }
-  // For each element in the dataset, choose the closest centroid. 
+  // For each element in the dataset, choose the closest centroid.
   // Make that centroid the element's label.
   for (let i = 0; i < dataSet.length; i++) {
     const a = dataSet[i];
@@ -629,7 +629,7 @@ function kmeans(dataset, k, useNaiveSharding = true) {
   }
 }
 
-  </script> 
+  </script>
   </script>
   <title>Prcomp Visualization</title>
   <style>
@@ -695,23 +695,23 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     <div id = "Warning" class = "red-text"> </div>
     <div class="container">
       <div>
-        <div id="pcaPlot" class="box" style="width: 600px; height: 400px;">
+        <div id="pcaPlot" class="box" style="width: 300px; height: 400px;">
         </div>
-        <div class="box" id="plot" style="position: relative;width: 600px; height: 400px;z-index: 2;">
-          <canvas id="rasterCanvas" style="position: absolute; top: 0; left: 0;width:226.153846153846%; height: 292.537313432836%;z-index: 0;"></canvas>
-          <canvas id="pointCanvas" style="position: absolute; top: 0; left: 0;width: 226.153846153846%; height: 292.537313432836%;z-index: 1;"></canvas>
+        <div class="box" id="plot" style="position: relative;width: 300px; height: 260px;z-index: 2;">
+          <canvas id="rasterCanvas" style="position: absolute; top: 30%; left: 5%;width:100%; height: 100%;z-index: 0;"></canvas>
+          <canvas id="pointCanvas" style="position: absolute; top: 30%; left: 5%;width: 100%; height: 100%;z-index: 1;"></canvas>
         </div>
       </div>
       <div>
         <div id="table1" class="box" style="width: 600px; height: 400px;"></div>
-        <div class="box" id="table2" style="width: 600px; height: 400px;"></div>
+        <div class="box" id="table2" style="width: 600px; height: 260px;"></div>
       </div>
     </div>
 
   <script>
 
 
-  // Embed the JSON data directly 
+  // Embed the JSON data directly
 var PC1=[["2-Methyl-3-Hydroxybutryl CoA Dehydrogenase Deficiency","3-Hydroxy-3-Methylglutaryl-CoA Lyase Deficiency","3-Methylcrotonyl Coa Carboxylase Deficiency Type I","3-Methylglutaconic Aciduria Type I","3-Methylglutaconic Aciduria Type III","3-Methylglutaconic Aciduria Type IV","3-hydroxyisobutyric acid dehydrogenase deficiency","3-hydroxyisobutyric aciduria","Beta-Ketothiolase Deficiency","Biochemical pathways: part I","Fatty acid metabolism","Isobutyryl-coa dehydrogenase deficiency","Isovaleric Aciduria","Isovaleric acidemia","Malonic Aciduria","Malonyl-coa decarboxylase deficiency","Maple Syrup Urine Disease","Metabolism","Metabolism of lipids","Metabolism of steroids","Metabolism overview","Methylmalonate Semialdehyde Dehydrogenase Deficiency","Methylmalonic Aciduria","Methylmalonic Aciduria Due to Cobalamin-Related Disorders","Phospholipid Biosynthesis","Propanoate metabolism","Propionic Acidemia","Valine, leucine and isoleucine degradation"],[0.0013,0.0013,0.0013,0.0013,0.0013,0.0013,0.0013,0.0013,0.0013,0.0451,0.0001,0.0013,0.0013,0.0013,0.0012,0.0012,0.0013,0.0464,0.0028,0.0236,0.0115,0.0013,0.0013,0.0012,0.0027,0.0012,0.0013,0.0013],[-1.759,-1.759,-1.759,-1.759,-1.759,-1.759,-1.759,-1.759,-1.759,-1.5467,-1.8207,-1.759,-1.759,-1.759,-1.7616,-1.7616,-1.759,-1.3677,-1.7493,-1.6556,-1.6923,-1.759,-1.759,-1.7616,1.5485,-1.7616,-1.759,-1.759],["propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","xanthurenic acid↓, propionyl-coa↓, propinol adenylate↓","propionyl-coa↓, acetoacetyl-coa↓, formyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓, propinol adenylate↓","propionyl-coa↓, acetoacetyl-coa↓, propinol adenylate↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓, formyl-coa↓, mycophenolic acid o-acyl-glucuronide↓, cyclic amp↓","propionyl-coa↓, acetoacetyl-coa↓, formyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓, propinol adenylate↓","pc(16:0/16:0)↑, pgp(16:0/16:0)↑, lysopc(14:1(9z)/0:0)↑","propionyl-coa↓, acetoacetyl-coa↓, propinol adenylate↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓"]]
 var PC2=[["No Signifcant Pathway Found"],[null],[null],["NA"]]
 var PC3=[["2-Methyl-3-Hydroxybutryl CoA Dehydrogenase Deficiency","3-Hydroxy-3-Methylglutaryl-CoA Lyase Deficiency","3-Methylcrotonyl Coa Carboxylase Deficiency Type I","3-Methylglutaconic Aciduria Type I","3-Methylglutaconic Aciduria Type III","3-Methylglutaconic Aciduria Type IV","3-hydroxyisobutyric acid dehydrogenase deficiency","3-hydroxyisobutyric aciduria","Beta-Ketothiolase Deficiency","Biochemical pathways: part I","Fatty acid metabolism","Isobutyryl-coa dehydrogenase deficiency","Isovaleric Aciduria","Isovaleric acidemia","Maple Syrup Urine Disease","Metabolism","Metabolism of amino acids and derivatives","Metabolism of lipids","Metabolism of steroids","Metabolism overview","Methylmalonate Semialdehyde Dehydrogenase Deficiency","Methylmalonic Aciduria","Propionic Acidemia","Valine, leucine and isoleucine degradation"],[0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0367,0,0.0003,0.0003,0.0003,0.0003,0.0323,0.0447,0.001,0.0063,0.0239,0.0003,0.0003,0.0003,0.0003],[-1.558,-1.558,-1.558,-1.558,-1.558,-1.558,-1.558,-1.558,-1.558,-1.4035,-1.6009,-1.558,-1.558,-1.558,-1.558,-1.3743,-1.4078,-1.6071,-1.5359,-1.4702,-1.558,-1.558,-1.558,-1.558],["propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, xanthurenic acid↓","propionyl-coa↓, formyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, formyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓","propionyl-coa↓, formyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓","propionyl-coa↓, acetoacetyl-coa↓"]]
@@ -981,13 +981,14 @@ button.onclick = function(){
   };
 
   var data_pc = [trace1pc];
-
+  var pc_plot_width = 300;
+  var pc_plot_height = 400;
   var layout_pc = {
     title: "PCA Plot",
     xaxis: { title: "PC1" },
     yaxis: { title: "PC2" },
-    width: 600,
-    height: 400
+    width: pc_plot_width,
+    height: pc_plot_height
   };
 
   Plotly.newPlot("pcaPlot", data_pc, layout_pc);
@@ -1018,8 +1019,8 @@ button.onclick = function(){
       title: "PCA Plot",
       xaxis: { title: candidate[new_pc1_index] },
       yaxis: { title: candidate[new_pc2_index] },
-      width: 600,
-      height: 400
+      width: pc_plot_width,
+      height: pc_plot_height
      };
       var data_pc = [trace1pc];
 
