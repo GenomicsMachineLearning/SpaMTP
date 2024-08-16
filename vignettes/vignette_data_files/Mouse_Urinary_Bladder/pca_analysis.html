@@ -693,20 +693,47 @@ function kmeans(dataset, k, useNaiveSharding = true) {
         </label>
       </div>
     <div id = "Warning" class = "red-text"> </div>
-    <div class="container">
-      <div>
-        <div id="pcaPlot" class="box" style="width: 300px; height: 400px;">
-        </div>
-        <div class="box" id="plot" style="position: relative;width: 300px; height: 260px;z-index: 2;">
-          <canvas id="rasterCanvas" style="position: absolute; top: 30%; left: 5%;width:100%; height: 100%;z-index: 0;"></canvas>
-          <canvas id="pointCanvas" style="position: absolute; top: 30%; left: 5%;width: 100%; height: 100%;z-index: 1;"></canvas>
-        </div>
-      </div>
-      <div>
-        <div id="table1" class="box" style="width: 600px; height: 400px;"></div>
-        <div class="box" id="table2" style="width: 600px; height: 260px;"></div>
-      </div>
+   <style>
+    /* Container that holds the top row and bottom row */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Top row for pcaPlot and plot side-by-side */
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      width: 750px; /* Adjust as needed */
+      margin-bottom: 0px;
+    }
+
+    /* Bottom rows for table1 and table2 stacked */
+    .bottom-row {
+      width: 750px; /* Match the combined width of pcaPlot and plot */
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Top Row -->
+  <div class="top-row">
+    <div id="pcaPlot" class="box" style="width: 300px; height: 300px;"></div>
+    <div id="plot" class="box" style="position: relative; width: 450px; height: 300px; z-index: 2;">
+      <canvas id="rasterCanvas" style="position: absolute; top: 15%; left: 5%; width: 150%; height: 150%; z-index: 0;"></canvas>
+      <canvas id="pointCanvas" style="position: absolute; top: 15%; left: 5%; width: 150%; height: 150%; z-index: 1;"></canvas>
     </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="bottom-row">
+    <div id="table1" class="box" style="width: 750px; height: 350px;"></div>
+    <div id="table2" class="box" style="width: 750px; height: 260px;"></div>
+  </div>
+</div>
 
   <script>
 
@@ -982,7 +1009,7 @@ button.onclick = function(){
 
   var data_pc = [trace1pc];
   var pc_plot_width = 300;
-  var pc_plot_height = 400;
+  var pc_plot_height = 300;
   var layout_pc = {
     title: "PCA Plot",
     xaxis: { title: "PC1" },
