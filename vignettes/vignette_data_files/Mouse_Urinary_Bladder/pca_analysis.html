@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Prcomp Visualization</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script>
     class GMM {
@@ -630,10 +631,10 @@ function kmeans(dataset, k, useNaiveSharding = true) {
 }
 
   </script>
-  </script>
-  <title>Prcomp Visualization</title>
-  <style>
+</head>
+<body>
 
+<style>
     /* Container that holds the top row and bottom row */
     .container {
       display: flex;
@@ -665,9 +666,6 @@ function kmeans(dataset, k, useNaiveSharding = true) {
       z-index: 1;
     }
 
-
-
-
     .box {
       border: 1px solid black; /* Optional: Add borders for visibility */
       position: relative;
@@ -687,12 +685,9 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     top: 0;
     left: 0;
     }
-  </style>
-  </head>
-  <body>
+</style>
 
-  <h1>Prcomp Data</h1>
-  <div class="input-container"></div>
+<div class="input-container"></div>
   <label>x-axis selection
     <select id="xSelect">
         <option value="" disabled selected>Select your PC</option>
@@ -702,19 +697,19 @@ function kmeans(dataset, k, useNaiveSharding = true) {
         <option value="PC4">PC4</option>
         <option value="PC5">PC5</option>
     </select>
-    </label>
-    <label>y-axis selection
-      <select id="ySelect">
-          <option value="" disabled selected>Select your PC</option>
-          <option value="PC1">PC1</option>
-          <option value="PC2"selected="selected">PC2</option>
-          <option value="PC3">PC3</option>
-          <option value="PC4">PC4</option>
-          <option value="PC5">PC5</option>
-      </select>
-      </label>
-      <label for="integerInput">Enter an Integer for Cluster Numbers:</label>
-      <input type="number" id="numcluster" name="integerInput" step="1" min = "2">
+  </label>
+  <label>y-axis selection
+    <select id="ySelect">
+        <option value="" disabled selected>Select your PC</option>
+        <option value="PC1">PC1</option>
+        <option value="PC2"selected="selected">PC2</option>
+        <option value="PC3">PC3</option>
+        <option value="PC4">PC4</option>
+        <option value="PC5">PC5</option>
+    </select>
+  </label>
+  <label for="integerInput">Enter an Integer for Cluster Numbers:</label>
+    <input type="number" id="numcluster" name="integerInput" step="1" min = "2">
       <label>Clustering method
         <select id="clustering">
             <option value="" disabled selected>Select clustering method</option>
@@ -722,26 +717,28 @@ function kmeans(dataset, k, useNaiveSharding = true) {
             <option value="Kmean">Kmean</option>
         </select>
         <button type="button" id= "button1">Regenerate Clusters</button>
-        </label>
-      </div>
-    <div id = "Warning" class = "red-text"> </div>
-    <div class="container">
-      <!-- Top Row -->
-      <div class="top-row">
-        <div id="pcaPlot" class="box" style="width: 50%; height: 300px;"></div>
-        <div id="plot" class="box" style="position: relative; width: 50%; height: 300px; z-index: 2;">
-          <canvas id="rasterCanvas" class = "raster"></canvas>
-          <canvas id="pointCanvas" class = "points"></canvas>
-        </div>
-      </div>
+      </label>
+    </input>
 
-      <!-- Bottom Row -->
-      <div class="bottom-row">
-        <div id="table1" class="box" ></div>
-        <div id="table2" class="box" ></div>
+<div id = "Warning" class = "red-text"> </div>
+
+<div class="container">
+    <!-- Top Row -->
+    <div class="top-row">
+      <div id="pcaPlot" class="box" style="width: 50%; height: 300px;"></div>
+      <div id="plot" class="box" style="position: relative; width: 50%; height: 300px; z-index: 2;">
+        <canvas id="rasterCanvas" class = "raster"></canvas>
+        <canvas id="pointCanvas" class = "points"></canvas>
       </div>
     </div>
-  </body>
+
+    <!-- Bottom Row -->
+    <div class="bottom-row">
+      <div id="table1" class="box" ></div>
+      <div id="table2" class="box" ></div>
+    </div>
+</div>
+
   <script>
 
 
@@ -1196,4 +1193,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 </script>
-</html>
+             </body>
+             </html>
