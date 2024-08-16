@@ -728,7 +728,7 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     <div class="container">
       <!-- Top Row -->
       <div class="top-row">
-        <div id="pcaPlot" class="box" style="width: 300px; height: 300px;"></div>
+        <div id="pcaPlot" class="box" style="width: 50%; height: 300px;"></div>
         <div id="plot" class="box" style="position: relative; width: 50%; height: 300px; z-index: 2;">
           <canvas id="rasterCanvas" class = "raster"></canvas>
           <canvas id="pointCanvas" class = "points"></canvas>
@@ -1017,14 +1017,12 @@ button.onclick = function(){
   };
 
   var data_pc = [trace1pc];
-  var pc_plot_width = "50%";
-  var pc_plot_height = 300;
   var layout_pc = {
     title: "PCA Plot",
     xaxis: { title: "PC1" },
     yaxis: { title: "PC2" },
-    width: pc_plot_width,
-    height: pc_plot_height
+    autosize: true
+
   };
 
   Plotly.newPlot("pcaPlot", data_pc, layout_pc);
@@ -1055,8 +1053,7 @@ button.onclick = function(){
       title: "PCA Plot",
       xaxis: { title: candidate[new_pc1_index] },
       yaxis: { title: candidate[new_pc2_index] },
-      width: pc_plot_width,
-      height: pc_plot_height
+      autosize: true
      };
       var data_pc = [trace1pc];
 
