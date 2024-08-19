@@ -315,11 +315,9 @@ FishersPathwayAnalysis <- function (Analyte,
       # Detected metabolites in pathway, in analytelist
       as.numeric(analytes_in_pathways),
       # Detected metabolites in pathway, not in analytelist
-      as.numeric(total_in_pathways -
-                   analytes_in_pathways),
+      max(0,as.numeric(total_in_pathways - analytes_in_pathways)),
       # Detected metabolites not in pathway, in analyte list
-      as.numeric(total_inlist_analytes -
-                   total_in_pathways),
+      max(0,as.numeric(total_inlist_analytes - total_in_pathways)),
       # Detected metabolites not in pathway
       # Pathway elements not detected
       as.numeric(total_in_background -
@@ -1876,7 +1874,7 @@ VisualisePathways = function(SpaMTP,
     style = 3
   )
   while (length(index) != 0) {
-    pattern = str_extract(pathway_df$pathway_name[index[1]], pattern = "[A-Z][A-Z]\\([a-z0-9]")
+    pattern = stringr::str_extract(pathway_df$pathway_name[index[1]], pattern = "[A-Z][A-Z]\\([a-z0-9]")
     if (length(pattern) != 0 & !is.na(pattern)) {
       frst_ind = which(grepl(
         pathway_df$pathway_name,
@@ -2009,7 +2007,7 @@ VisualisePathways = function(SpaMTP,
   close(pb)
   for (k in 1:length(image_raster)) {
     gg_bar1 =  gg_bar1 + annotation_custom(
-      rasterGrob(
+      grid::rasterGrob(
         image_raster[[k]],
         width = unit(1, "npc"),
         height = unit(1, "npc")
