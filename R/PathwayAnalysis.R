@@ -2007,7 +2007,7 @@ VisualisePathways = function(SpaMTP,
   close(pb)
   for (k in 1:length(image_raster)) {
     gg_bar1 =  gg_bar1 + annotation_custom(
-      grid::rasterGrob(
+      ggplot2::rasterGrob(
         image_raster[[k]],
         width = unit(1, "npc"),
         height = unit(1, "npc")
