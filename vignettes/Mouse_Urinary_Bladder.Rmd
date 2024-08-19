@@ -875,7 +875,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 lets now visualise these results
 
 ```{r}
-SpaMTP:::VisualisePathways(ROI,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
+VisualisePathways(ROI,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
 <br>

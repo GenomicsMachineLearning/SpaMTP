@@ -322,7 +322,7 @@ FishersPathwayAnalysis <- function (Analyte,
                    total_in_pathways),
       # Detected metabolites not in pathway
       # Pathway elements not detected
-      as.numeric(total_in_selected_pathways -
+      as.numeric(total_in_background -
                    total_inlist_analytes - total_in_pathways + analytes_in_pathways)
     ),
     2,
@@ -330,7 +330,7 @@ FishersPathwayAnalysis <- function (Analyte,
   ),
   alternative = alternative)$p.value)
   enrichment_df = cbind(enrichment_df,
-                        fdr = p.adjust(enrichment_df$p_val, method = "fdr")) %>% mutate(background_analytes_number = total_in_selected_pathways)
+                        fdr = p.adjust(enrichment_df$p_val, method = "fdr")) %>% mutate(background_analytes_number = total_in_background)
 
   enrichment_df = enrichment_df%>% mutate(ratio = analytes_in_pathways/total_in_pathways)
 
