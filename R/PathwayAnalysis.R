@@ -24,17 +24,17 @@
 #' @examples
 #' # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
 FishersPathwayAnalysis <- function (Analyte,
-                            analyte_type = c("mz","genes"),
-                            polarity = NULL,
-                            ppm_error = 10,
-                            max_path_size = 500,
-                            min_path_size = 5,
-                            alternative = "greater",
-                            pathway_all_info = FALSE,
-                            pval_cutoff = 0.05,
-                            verbose = TRUE)
+                                    analyte_type = c("mz","genes"),
+                                    polarity = NULL,
+                                    ppm_error = 10,
+                                    max_path_size = 500,
+                                    min_path_size = 5,
+                                    alternative = "greater",
+                                    pathway_all_info = FALSE,
+                                    pval_cutoff = 0.05,
+                                    verbose = TRUE)
 {
-
+  data(pathway, package = "SpaMTP")
   if((!"mz" %in% analyte_type) & (!"metabolites" %in% analyte_type) & (!"genes" %in% analyte_type)){
     stop(
       "analyte_type was not specified correctly.  Please specify one of the following options: metabolites, genes"
@@ -63,11 +63,6 @@ FishersPathwayAnalysis <- function (Analyte,
                                  pattern = pattern) == F)][rep(1, times = nrow(identifiers)), ],
                  identifiers))
   }
-
-  verbose_message(message_text = "Loading files ......", verbose = verbose)
-
-  verbose_message(message_text = "Loading files finished!" , verbose = verbose)
-
 
   if ( "metabolites" %in% analyte_type) {
     analytes_met = Analyte[["metabolites"]]
@@ -134,13 +129,24 @@ FishersPathwayAnalysis <- function (Analyte,
         ids = unlist(stringr::str_split(db_3[i, ]$Isomers, pattern = ";"))
         ids[which(grepl(ids, pattern = "HMDB"))] = paste0("HMDB:",ids[which(grepl(ids, pattern = "HMDB"))])
         ids[which(grepl(ids, pattern = "LM"))] = paste0("LIPIDMAPS:",ids[which(grepl(ids, pattern = "LM"))])
-        return()
+        ids = sub(" ","",ids)
+        mzs = rep(db_3[i, ]$observed_mz, times = length(ids))
+        adducts = rep(db_3[i, ]$Adduct, times = length(ids))
+        return(cbind(ids,mzs,adducts))
       } else{
-        return(db_3[i,]$Isomers)
+        ids = db_3[i,]$Isomers
+        ids[which(grepl(ids, pattern = "HMDB"))] = paste0("HMDB:",ids[which(grepl(ids, pattern = "HMDB"))])
+        ids[which(grepl(ids, pattern = "LM"))] = paste0("LIPIDMAPS:",ids[which(grepl(ids, pattern = "LM"))])
+        ids = sub(" ","",ids)
+        mzs = rep(db_3[i, ]$observed_mz, times = length(ids))
+        adducts = rep(db_3[i, ]$Adduct, times = length(ids))
+        return(cbind(ids,mzs,adducts))
       }
     })
-    expand_db3 = do.call(c,db_3list)
-
+    expand_db3_df = do.call(rbind, db_3list)
+    expand_db3 = expand_db3_df[,1]
+    mz_db3 = expand_db3_df[,2]
+    adducts_db3 = expand_db3_df[,3]
     analytes_mz = sub(" ", "", expand_db3)
     source_mz = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_mz = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
@@ -149,7 +155,7 @@ FishersPathwayAnalysis <- function (Analyte,
   verbose_message(message_text = "Parsing the information of given analytes class" , verbose = verbose)
 
   analyte_new = analytehaspathway_new = source_new =  data.frame()
-  analytes_new = c()
+  analytes_new = mz_array = adducts_array = c()
   if("mz" %in% analyte_type){
     analyte_new = rbind(analyte_new,
                         analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
@@ -159,6 +165,8 @@ FishersPathwayAnalysis <- function (Analyte,
                        source_mz)
     analytes_new = c(analytes_new,
                      analytes_mz)
+    mz_array = c(mz_array,mz_db3)
+    adducts_array = c(adducts_array, adducts_db3)
   }
 
   if("metabolites" %in% analyte_type){
@@ -170,6 +178,8 @@ FishersPathwayAnalysis <- function (Analyte,
                        source_met)
     analytes_new = c(analytes_new,
                      analytes_met)
+    mz_array = c(mz_array,rep(NA, times = length(analytes_met)))
+    adducts_array = c(adducts_array,rep(NA, times = length(analytes_met)))
   }
 
   if("genes" %in% analyte_type){
@@ -182,20 +192,28 @@ FishersPathwayAnalysis <- function (Analyte,
                        source_rna)
     analytes_new = c(analytes_new,
                      analytes_rna)
+    mz_array = c(mz_array,rep(NA, times = length(analytes_rna)))
+    adducts_array = c(adducts_array,rep(NA, times = length(analytes_met)))
   }
+  # Merge as data.frame to minimise query time
+  temp_mz_analyte = data.frame(cbind(mz_array = mz_array,
+                                     sourceId = analytes_new,
+                                     adduct = adducts_array)) %>% filter(!duplicated(sourceId))
 
   analytehaspathway_new = unique(analytehaspathway_new)
   source_new = unique(source_new)
-  analytes_new = unique(analytes_new)
-
+  analytes_new = temp_mz_analyte$sourceId
+  mzs_new = temp_mz_analyte$mz_array
+  adducts_new = temp_mz_analyte$adduct
   # Pathway enrichment
 
   ############ Metabolites pathway analysis ##############
   verbose_message(message_text = "Begin metabolic pathway analysis ......" , verbose = verbose)
+  analytes_rampids_df = merge(source_new %>% mutate(sourceId = tolower(sourceId)),
+                              temp_mz_analyte%>% mutate(sourceId = tolower(sourceId)),
+                              by = "sourceId")
 
-  analytes_rampids = c()
-  unique_analytes = unique(analytes_new)
-  analytes_rampids = unique(source_new$rampId[which(tolower(source_new$sourceId) %in% tolower(unique_analytes))])
+  analytes_rampids = unique(analytes_rampids_df$rampId)
   # for(k in 1:length(unique_analytes)){
   #   pattern = unique_analytes[k]
   #   analytes_rampids = c(analytes_rampids,
@@ -206,45 +224,66 @@ FishersPathwayAnalysis <- function (Analyte,
   # (1) Get candidate pathways
   # Get all analytes and number of analytes within a specific pathway
 
-    source_non_duplicated = source_new[which(!duplicated(source_new$rampId)&(source_new$rampId %in% analytes_rampids)),]
+  source_non_duplicated = analytes_rampids_df[!duplicated(analytes_rampids_df$rampId),]
   # rampid = the subset of the database with our query data
   pathway_rampids = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids),]
   pathway_rampids_count = pathway_rampids %>% group_by(pathwayRampId) %>% dplyr::mutate(analytes_in_pathways  = n())
   # analytespathway_new. = the subset of the database with all pathways
   analytehaspathway_full = analytehaspathway_new %>%
     group_by(pathwayRampId) %>% dplyr::mutate(total_in_pathways = n())
+  # Filter out too large/small pathways
   analytehaspathway_full =analytehaspathway_full[which(analytehaspathway_full$total_in_pathways>= min_path_size & analytehaspathway_full$total_in_pathways <= max_path_size),]
 
   # Generate a dataframe contains: the list of metabolites IDs, the list of metabolites names, the number of elements in pathway, the number of elements in our dataset, for each pathway
   if(pathway_all_info == T){
-    enrichment_df = pbapply::pblapply(1:length(unique(pathway_rampids_count$pathwayRampId)), function(x){
+    unipathids = unique(pathway_rampids_count$pathwayRampId)
+    sub_src = source_non_duplicated[which(source_non_duplicated$rampId  %in% pathway_rampids_count$rampId),]
+    src_rid = sub_src$rampId
+    src_cn = sub_src$commonName
+    src_sid = sub_src$sourceId
+    src_adduct = sub_src$adduct
+    src_mz = sub_src$mz_array
+
+    enrichment_df = pbapply::pblapply(1:length(unipathids), function(x){
       #ananlytes_id_df = analytehaspathway_new[which(analytehaspathway_new$pathwayRampId == unique(pathway_rampids$pathwayRampId)[x]),]
-      pathway_id = unique(pathway_rampids_count$pathwayRampId)[x]
+      pathway_id = unipathids[x]
       pathway_info = pathway[which(pathway$pathwayRampId == pathway_id),]
       # get rampids associated with the pathway
-      full_list = analytehaspathway_full[which(analytehaspathway_full$pathwayRampId == pathway_id),]
-      screened_List = pathway_rampids_count[which(pathway_rampids_count$pathwayRampId == pathway_id),]
-      # Get screened index
-      source_index_met = which(source_non_duplicated$rampId %in% screened_List$rampId[which(grepl(screened_List$rampId,
-                                                                                                  pattern = "RAMP_C_"))])
-      source_index_gene = which(source_non_duplicated$rampId %in% screened_List$rampId[which(grepl(screened_List$rampId,
-                                                                                                   pattern = "RAMP_G_"))])
-      #met
-      ananlytes_name_list_met = list(source_non_duplicated$commonName[source_index_met])
-      ananlytes_id_list_met = list(source_non_duplicated$sourceId[source_index_met])
-      #gene
-      ananlytes_name_list_gene = list(source_non_duplicated$commonName[source_index_gene])
-      ananlytes_id_list_gene = list(source_non_duplicated$sourceId[source_index_gene])
+      full_list = analytehaspathway_full[which(analytehaspathway_full$pathwayRampId == pathway_id)[1],4]
+      screened_List_full = pathway_rampids_count[which(pathway_rampids_count$pathwayRampId == pathway_id),]
 
-      analytes_in_pathways = screened_List$count[1]
-      total_in_pathways = full_list$count[1]
+      # Get screened index
+      met_ind = which(grepl(screened_List_full$rampId,
+                            pattern = "RAMP_C_"))
+      source_index_met = which(src_rid %in% screened_List_full$rampId[met_ind])
+      source_index_gene = which(src_rid %in% screened_List_full$rampId[which(grepl(screened_List_full$rampId,
+                                                                                   pattern = "RAMP_G_"))])
+      #met
+      ananlytes_name_list_met = paste0(src_cn[source_index_met], collapse = ";")
+      ananlytes_id_list_met = paste0(src_sid[source_index_met], collapse = ";")
+
+      #met
+      ananlytes_mz_adduct = paste0(paste0(src_mz[source_index_met],"[",
+                                          src_adduct[source_index_met]
+                                          ,"]"), collapse = ";")
+      #gene
+      ananlytes_name_list_gene = paste0(src_cn[source_index_gene], collapse = ";")
+      ananlytes_id_list_gene = paste0(src_sid[source_index_gene], collapse = ";")
+
+      analytes_in_pathways = screened_List_full[1,4]
+      total_in_pathways = full_list
       return_df = data.frame(pathway_name = pathway_info$pathwayName,
-                             pathway_id = pathway_info$sourceId) %>% mutate(metabolite_name_list=ananlytes_name_list_met) %>%
-        mutate(metabolite_id_list= ananlytes_id_list_met) %>% mutate(total_in_pathways = total_in_pathways) %>%
-        mutate(gene_name_list = ananlytes_name_list_gene) %>% mutate(gene_id_list = ananlytes_id_list_gene) %>%
-        mutate(analytes_in_pathways = analytes_in_pathways)
+                             pathway_id = pathway_info$sourceId,
+                             metabolite_name_list=ananlytes_name_list_met,
+                             metabolite_id_list= ananlytes_id_list_met,
+                             total_in_pathways = total_in_pathways,
+                             gene_name_list = ananlytes_name_list_gene,
+                             gene_id_list = ananlytes_id_list_gene,
+                             analytes_in_pathways = analytes_in_pathways,
+                             adduct_info = ananlytes_mz_adduct)
       return(return_df)
     })
+    enrichment_df = do.call(rbind, enrichment_df)
   }else{
     verbose_message(message_text = "Merging datasets" , verbose = verbose)
 
@@ -265,24 +304,26 @@ FishersPathwayAnalysis <- function (Analyte,
   verbose_message(message_text = "Running test" , verbose = verbose)
 
   # (2) Conduct pathway enrichment
-  total_analytes = length(unique(pathway_rampids_count$rampId))
-  total_in_selected_pathways = length(unique(analytehaspathway_full$rampId))
+  total_inlist_analytes = length(unique(analytes_rampids_df$rampId))
+  total_in_background = length(unique(analytehaspathway_full$rampId))
 
   verbose_message(message_text = "Calculating p value......" , verbose = verbose)
 
-
+  enrichment_df = na.omit(enrichment_df )
   enrichment_df = enrichment_df %>% rowwise() %>% mutate(p_val = fisher.test(matrix(
     c(
-      analytes_in_pathways,
-      # Detected metabolites in pathway
-      total_analytes -
-        analytes_in_pathways,
+      # Detected metabolites in pathway, in analytelist
+      as.numeric(analytes_in_pathways),
+      # Detected metabolites in pathway, not in analytelist
+      as.numeric(total_in_pathways -
+                   analytes_in_pathways),
+      # Detected metabolites not in pathway, in analyte list
+      as.numeric(total_inlist_analytes -
+                   total_in_pathways),
       # Detected metabolites not in pathway
-      total_in_pathways -
-        analytes_in_pathways,
       # Pathway elements not detected
-      total_in_selected_pathways -
-        total_in_pathways - total_analytes + analytes_in_pathways
+      as.numeric(total_in_selected_pathways -
+                   total_inlist_analytes - total_in_pathways + analytes_in_pathways)
     ),
     2,
     2
@@ -290,6 +331,8 @@ FishersPathwayAnalysis <- function (Analyte,
   alternative = alternative)$p.value)
   enrichment_df = cbind(enrichment_df,
                         fdr = p.adjust(enrichment_df$p_val, method = "fdr")) %>% mutate(background_analytes_number = total_in_selected_pathways)
+
+  enrichment_df = enrichment_df%>% mutate(ratio = analytes_in_pathways/total_in_pathways)
 
   verbose_message(message_text = "P value obtained" , verbose = verbose)
 
@@ -307,7 +350,11 @@ FishersPathwayAnalysis <- function (Analyte,
   #  ananlytes_id_list,
   #  screened_analytes
   #)))
-  return =enrichment_df %>% select(-c(pathwayRampId,rampId.y, pathwaySource.y)) %>% filter(p_val<=pval_cutoff)
+  if(any(grepl(colnames(enrichment_df), pattern = "/.y"))){
+    return =enrichment_df %>% select(-c(pathwayRampId,rampId.y, pathwaySource.y))
+  }else{
+    return =enrichment_df
+  }
   return(return)
 }
 
@@ -1792,6 +1839,266 @@ RunMetabolicPCA <- function(SpaMTP,
 
 
 
+
+
+
+#' Displays the pathway analysis results form running the 'FishersPathwayAnalysis()' function
+#'
+#' @param SpaMTP SpaMTP Seurat object used to run FishersPathwayAnalysis function.
+#' @param pathway_df Dataframe containing the pathway enrichment results (output from SpaMTP::FishersPathwayAnalysis function).
+#' @param assay Character string defining the SpaMTP assay that contains m/z values (default = "SPM").
+#' @param p_val_threshold The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").
+#' @param slot Character string defining the assay slot contatin ght intesity values (default = "counts").
+#' @param ... The arguments pass to stats::hclust
+#'
+#' @return A combined gg, ggplot object with pathway and dendrogram
+#' @export
+#'
+#' @examples
+#' # SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
+
+VisualisePathways = function(SpaMTP,
+                      pathway_df,
+                      assay = "SPM",
+                      slot = "counts",
+                      p_val_threshold = 0.1,
+                      method = "ward.D2",
+                      verbose = TRUE,
+                      ...) {
+  pathway_df = pathway_df[which(pathway_df$analytes_in_pathways>=3),]
+  verbose_message(message_text = "Reducing synonymous pathways", verbose = verbose)
+  index = c(1:nrow(pathway_df))
+  merged_pathways = data.frame()
+  pb = txtProgressBar(
+    min = 0,
+    max = length(index),
+    initial = 0,
+    style = 3
+  )
+  while (length(index) != 0) {
+    pattern = str_extract(pathway_df$pathway_name[index[1]], pattern = "[A-Z][A-Z]\\([a-z0-9]")
+    if (length(pattern) != 0 & !is.na(pattern)) {
+      frst_ind = which(grepl(
+        pathway_df$pathway_name,
+        pattern = sub("\\(", "\\\\(", pattern)
+      ))
+      all_pathways = pathway_df[frst_ind, ]
+      second_ind = which(duplicated(
+        paste0(
+          all_pathways$gene_name_list,
+          all_pathways$met_name_list
+        )
+      ))
+      index = index[-which(index %in% frst_ind)]
+      merged_pathways = rbind(merged_pathways, all_pathways[-second_ind, ])
+    } else{
+      merged_pathways = rbind(merged_pathways, pathway_df[index[1], ])
+      index = index[-1]
+    }
+    setTxtProgressBar(pb, nrow(pathway_df) - length(index))
+  }
+  close(pb)
+  merged_pathways = merged_pathways %>% filter(p_val <= p_val_threshold) %>% mutate(signif_at_005level =   ifelse(p_val <= 0.05, "Significant", "Non-significant"))
+
+  retain_ind = 1:nrow(merged_pathways)
+  for(z in 1:nrow(merged_pathways)){
+    mzs = paste0("mz-",
+                 str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
+    mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
+    if(length(mat_ind)<=2){
+      retain_ind =   retain_ind[-which(retain_ind == z)]
+    }
+  }
+  merged_pathways  =  merged_pathways[retain_ind,]
+  gg_bar1 = with(
+    merged_pathways,
+    ggplot() +  geom_bar(
+      aes(
+        x = paste0(pathway_name, "(", pathway_id, ")"),
+        y = total_in_pathways,
+        color = "Total analytes in pathway"
+      ),
+      stat = "identity",
+      fill = NA,
+      position = "dodge"
+    ) +
+      geom_bar(
+        aes(
+          x = paste0(pathway_name, "(", pathway_id, ")"),
+          y = analytes_in_pathways,
+          colour = "Analytes detected in pathway"
+        ),
+        stat = "identity",
+        fill = "blue",
+        position = "dodge"
+      ) +
+      geom_point(
+        aes(
+          x = paste0(pathway_name, "(", pathway_id, ")"),
+          y = 1.05 * max(total_in_pathways),
+          size = p_val,
+          fill = signif_at_005level
+        ),
+        color = "black",
+        shape = 21,
+        position = position_nudge(y = 0.5)
+      ) +
+      scale_size_area(max_size = 5, name = "p value") +
+      scale_fill_manual(
+        values = c(
+          "Significant" = "green",
+          "Non-significant" = "red"
+        ),
+        name = ""
+      ) + scale_colour_manual(
+        values = c(
+          "Analytes detected in pathway" = "blue",
+          "Total analytes in pathway" = "grey"
+        ),
+        name = ""
+      ) +
+      theme_minimal() + coord_flip() +
+      theme(
+        legend.position = "left",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()
+      )+labs(y= "Number of analytes in pathway", x = "Pathway names")
+  )
+
+  # Get the raster illustration for each pathway
+  image_raster = list()
+  verbose_message(message_text = "\nRunning PCA for dimension reduction", verbose = verbose)
+  pb = txtProgressBar(
+    min = 0,
+    max = nrow(merged_pathways),
+    initial = 0,
+    style = 3
+  )
+  mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
+
+
+
+  for (i in 1:nrow(merged_pathways)) {
+    mzs = paste0("mz-",
+                 str_extract_all(merged_pathways$adduct_info[i], "\\d+\\.\\d+")[[1]])
+    mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
+    pca_result <- prcomp(mass_matrix[, mat_ind])
+    nc = 3
+    pca_re_df <- pca_result[["x"]][, 1:nc]
+    pca_df_normalized <- as.data.frame(apply(
+      pca_re_df,
+      MARGIN = 2 ,
+      FUN =  function(x)
+        (x - min(x)) / (max(x) - min(x))
+    ))
+    coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
+    # Convert the normalized UMAP result to an image matrix
+    # 3 channels side by side
+
+    rgb_m = array(dim = c(max(coords[, 1]), max(coords[, 2]), nc))
+    for (j in 1:nc) {
+      rgb_m[, , j] = matrix(pca_df_normalized[, j], nrow = max(coords[, 1]))
+    }
+    # Convert the image matrix to a raster object
+    image_raster[[i]] <- as.raster(rgb_m)
+    # # Plot the RGB image using ggplot2
+    # ggplot() + annotation_custom(rasterGrob(image_raster, width = unit(1, "npc"), height = unit(1, "npc"))) +
+    #   theme_void()
+    setTxtProgressBar(pb, i)
+  }
+  close(pb)
+  for (k in 1:length(image_raster)) {
+    gg_bar1 =  gg_bar1 + annotation_custom(
+      rasterGrob(
+        image_raster[[k]],
+        width = unit(1, "npc"),
+        height = unit(1, "npc")
+      ),
+      xmin = k - 0.5,
+      xmax = k + 0.5,
+      ymin = -3.5 ,
+      ymax = -0.3
+    )
+  }
+
+  gg_bar1 =  gg_bar1 + ylim(-2, max(merged_pathways$total_in_pathways) + 5)
+  #gg_bar1
+
+  # Adding the dendrogram
+
+  # data(pathway, package = "SpaMTP")
+  # data(analytehaspathway, package = "SpaMTP")
+  jaccard_matrix = matrix(nrow = nrow(merged_pathways),
+                          ncol = nrow(merged_pathways))
+
+  for (i in 1:(nrow(merged_pathways) - 1)) {
+    pathway_id_i = merged_pathways$pathway_id[i]
+    pathway_content_i = unique(analytehaspathway$rampId[which(analytehaspathway$pathwayRampId == pathway$pathwayRampId[which(pathway$sourceId == pathway_id_i)])])
+    for (j in (i + 1):nrow(merged_pathways)) {
+      pathway_id_j = merged_pathways$pathway_id[j]
+      pathway_content_j = unique(analytehaspathway$rampId[which(analytehaspathway$pathwayRampId == pathway$pathwayRampId[which(pathway$sourceId == pathway_id_j)])])
+
+      jc_simi = length(intersect(pathway_content_i, pathway_content_j)) / length(union(pathway_content_i, pathway_content_j))
+      jaccard_matrix[i, j] = jaccard_matrix[j, i] = jc_simi
+    }
+  }
+  diag(jaccard_matrix) = 1
+
+
+  # Generate a dendrogram
+  hc <- as.dendrogram(hclust(as.dist(jaccard_matrix), ...))
+  # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
+  segment_hc <- with(ggdendro::segment(dendro_data(hc)),
+                     data.frame(
+                       x = y,
+                       y = x,
+                       xend = yend,
+                       yend = xend
+                     ))
+  pos_table <- with(dendro_data(hc)$labels,
+                    data.frame(
+                      y_center = x,
+                      gene = as.character(label),
+                      height = 1
+                    ))
+  axis_limits <- with(pos_table, c(min(y_center - 0.5 * height), max(y_center + 0.5 * height))) + 0.1 * c(-1, 1)
+
+  plt_dendr <- ggplot(segment_hc) +
+    geom_segment(aes(
+      x = sqrt(x),
+      y = y,
+      xend = sqrt(xend),
+      yend = yend
+    )) +
+    scale_x_continuous(expand = c(0, 0.5),
+                       limits = c(0,max(segment_hc$xend))) +
+    scale_y_continuous(
+      expand = c(0, 0),
+      breaks = pos_table$y_center,
+      labels = pos_table$gene,
+      limits = axis_limits,
+      position = "right"
+    ) +
+    labs(
+      x = "Jacard distance",
+      y = "",
+      colour = "",
+      size = ""
+    ) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank())
+
+  # # Combine the dendrogram and bar plot
+  # combined_plot <- grid.arrange(gg_bar1,ggplotify::as.ggplot(dendro), widths = c(5, 1), nrow =1)
+
+  combined_plot = plot_grid(gg_bar1,
+                            plt_dendr,
+                            align = 'h',
+                            rel_widths = c(6, 1))
+  verbose_message(message_text = "\nDone", verbose = verbose)
+  # Show the plot
+  return(combined_plot)
+}
 
 
 
