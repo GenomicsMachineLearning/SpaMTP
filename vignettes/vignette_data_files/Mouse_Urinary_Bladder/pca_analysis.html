@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -646,12 +647,14 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     .top-row {
       display: flex;
       justify-content: space-between;
+      height: 300px;
       width: 100%; /* Adjust as needed */
       margin-bottom: 0px;
     }
 
     /* Bottom rows for table1 and table2 stacked */
     .bottom-row {
+      height:600px;
       width: 100%; /* Match the combined width of pcaPlot and plot */
     }
 
@@ -685,10 +688,6 @@ function kmeans(dataset, k, useNaiveSharding = true) {
             display: inline-block;
         }
 
-        /* Optional styling for label */
-    .label {
-            margin-right: 5px; /* Adjust spacing between label and input */
-        }
     .red-text {
     color: red;
     position: absolute;
@@ -697,7 +696,7 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     }
 </style>
 
-<div class="input-container"></div>
+<div class="input-container">
   <label>x-axis selection
     <select id="xSelect">
         <option value="" disabled selected>Select your PC</option>
@@ -726,9 +725,9 @@ function kmeans(dataset, k, useNaiveSharding = true) {
             <option value="GMM">GMM</option>
             <option value="Kmean">Kmean</option>
         </select>
-        <button type="button" id= "button1">Regenerate Clusters</button>
       </label>
-    </input>
+    <button type="button" id= "button1">Regenerate Clusters</button>
+</div>
 
 <div id = "Warning" class = "red-text"> </div>
 
