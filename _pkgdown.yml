@@ -90,6 +90,7 @@ reference:
   contents:
   - PCAPathwayAnalysis
   - FishersPathwayAnalysis
+  - VisualisePathways
   - get_analytes_db
   - list_to_pprcomp
   - find_index
