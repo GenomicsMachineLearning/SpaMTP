@@ -637,7 +637,7 @@ function kmeans(dataset, k, useNaiveSharding = true) {
 
 <style>
     /* Container that holds the top row and bottom row */
-    .container {
+    .pcacontainer {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -688,6 +688,10 @@ function kmeans(dataset, k, useNaiveSharding = true) {
             display: inline-block;
         }
 
+        /* Optional styling for label */
+    .label {
+            margin-right: 5px; /* Adjust spacing between label and input */
+        }
     .red-text {
     color: red;
     position: absolute;
@@ -731,7 +735,7 @@ function kmeans(dataset, k, useNaiveSharding = true) {
 
 <div id = "Warning" class = "red-text"> </div>
 
-<div class="container">
+<div class="pcacontainer">
     <!-- Top Row -->
     <div class="top-row">
       <div id="pcaPlot" class="boxupper" ></div>
