@@ -24,7 +24,8 @@ DEPsHeatmap(
   save_to_path = NULL,
   plot.save.width = 20,
   plot.save.height = 20,
-  nlabels.to.show = NULL
+  nlabels.to.show = NULL,
+  annotation_colors = NA
 )
 }
 \arguments{
@@ -65,6 +66,8 @@ DEPsHeatmap(
 \item{plot.save.height}{Integer value representing the height of the saved pdf plot (default = 20).}
 
 \item{nlabels.to.show}{Numeric value defining the number of annotations to show per m/z (default = NULL).}
+
+\item{annotation_colors}{List for specifying annotation_row and annotation_col track colors manually. Check pheatmap R-Package documentation for details. If set to 'NA', default coloring will be used (default = NA).}
 }
 \value{
 A heatmap plot of significantly differentially expressed peaks defined in the edgeR ouput object.
