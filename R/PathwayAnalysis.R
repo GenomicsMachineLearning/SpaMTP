@@ -1853,16 +1853,14 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @export
 #'
 #' @examples
-#' # SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
-
 VisualisePathways = function(SpaMTP,
-                      pathway_df,
-                      assay = "SPM",
-                      slot = "counts",
-                      p_val_threshold = 0.1,
-                      method = "ward.D2",
-                      verbose = TRUE,
-                      ...) {
+                             pathway_df,
+                             assay = "SPM",
+                             slot = "counts",
+                             p_val_threshold = 0.1,
+                             method = "ward.D2",
+                             verbose = TRUE,
+                             ...) {
   pathway_df = pathway_df[which(pathway_df$analytes_in_pathways>=3),]
   verbose_message(message_text = "Reducing synonymous pathways", verbose = verbose)
   index = c(1:nrow(pathway_df))
@@ -1901,7 +1899,7 @@ VisualisePathways = function(SpaMTP,
   retain_ind = 1:nrow(merged_pathways)
   for(z in 1:nrow(merged_pathways)){
     mzs = paste0("mz-",
-                 str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
+                 stringr::str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
     mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
     if(length(mat_ind)<=2){
       retain_ind =   retain_ind[-which(retain_ind == z)]
@@ -1978,7 +1976,7 @@ VisualisePathways = function(SpaMTP,
 
   for (i in 1:nrow(merged_pathways)) {
     mzs = paste0("mz-",
-                 str_extract_all(merged_pathways$adduct_info[i], "\\d+\\.\\d+")[[1]])
+                 stringr::str_extract_all(merged_pathways$adduct_info[i], "\\d+\\.\\d+")[[1]])
     mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
     pca_result <- prcomp(mass_matrix[, mat_ind])
     nc = 3
@@ -2007,7 +2005,7 @@ VisualisePathways = function(SpaMTP,
   close(pb)
   for (k in 1:length(image_raster)) {
     gg_bar1 =  gg_bar1 + annotation_custom(
-      ggplot2::rasterGrob(
+      grid::rasterGrob(
         image_raster[[k]],
         width = unit(1, "npc"),
         height = unit(1, "npc")
@@ -2046,14 +2044,14 @@ VisualisePathways = function(SpaMTP,
   # Generate a dendrogram
   hc <- as.dendrogram(hclust(as.dist(jaccard_matrix), ...))
   # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
-  segment_hc <- with(ggdendro::segment(dendro_data(hc)),
+  segment_hc <- with(ggdendro::segment(ggdendro::dendro_data(hc)),
                      data.frame(
                        x = y,
                        y = x,
                        xend = yend,
                        yend = xend
                      ))
-  pos_table <- with(dendro_data(hc)$labels,
+  pos_table <- with(ggdendro::dendro_data(hc)$labels,
                     data.frame(
                       y_center = x,
                       gene = as.character(label),
@@ -2089,15 +2087,11 @@ VisualisePathways = function(SpaMTP,
   # # Combine the dendrogram and bar plot
   # combined_plot <- grid.arrange(gg_bar1,ggplotify::as.ggplot(dendro), widths = c(5, 1), nrow =1)
 
-  combined_plot = plot_grid(gg_bar1,
-                            plt_dendr,
-                            align = 'h',
-                            rel_widths = c(6, 1))
+  combined_plot = cowplot::plot_grid(gg_bar1,
+                                     plt_dendr,
+                                     align = 'h',
+                                     rel_widths = c(6, 1))
   verbose_message(message_text = "\nDone", verbose = verbose)
   # Show the plot
   return(combined_plot)
 }
-
-
-
-

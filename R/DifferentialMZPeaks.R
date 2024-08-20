@@ -253,6 +253,7 @@ FindAllDEPs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
 #' @param plot.save.width Integer value representing the width of the saved pdf plot (default = 20).
 #' @param plot.save.height Integer value representing the height of the saved pdf plot (default = 20).
 #' @param nlabels.to.show Numeric value defining the number of annotations to show per m/z (default = NULL).
+#' @param annotation_colors List for specifying annotation_row and annotation_col track colors manually. Check pheatmap R-Package documentation for details. If set to 'NA', default coloring will be used (default = NA).
 #'
 #' @returns A heatmap plot of significantly differentially expressed peaks defined in the edgeR ouput object.
 #' @export
@@ -281,7 +282,8 @@ DEPsHeatmap <- function(edgeR_output,
                          save_to_path = NULL,
                          plot.save.width = 20,
                          plot.save.height = 20,
-                         nlabels.to.show = NULL){
+                         nlabels.to.show = NULL,
+                         annotation_colors = NA){
 
 
   degs <- edgeR_output$DEPs
@@ -352,7 +354,7 @@ DEPsHeatmap <- function(edgeR_output,
   }
 
   p <- pheatmap::pheatmap(mtx,scale=scale,color=color,cluster_cols = cluster_cols, annotation_col=col_annot, cluster_rows = cluster_rows,
-                          fontsize_row = fontsize_row, fontsize_col = fontsize_col, cutree_cols = cutree_cols, silent = silent)
+                          fontsize_row = fontsize_row, fontsize_col = fontsize_col, cutree_cols = cutree_cols, silent = silent, annotation_colors = annotation_colors)
 
    if (!(is.null(save_to_path))){
      save_pheatmap_as_pdf(pheatmap = p, filename = save_to_path, width = plot.save.width, height = plot.save.height)
