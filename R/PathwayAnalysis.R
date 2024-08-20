@@ -1853,6 +1853,7 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @export
 #'
 #' @examples
+#' # SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 VisualisePathways = function(SpaMTP,
                              pathway_df,
                              assay = "SPM",
