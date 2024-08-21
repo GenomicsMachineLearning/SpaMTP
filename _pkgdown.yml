@@ -10,7 +10,7 @@ authors:
     href: https://github.com/ChemCharles
   GML Lab:
     href: https://github.com/GenomicsMachineLearning
-    html: "<img src='man/figures/GML_invert.png' height='36' width='36' alt='GML'/>"
+    html: "<img src='https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/man/figures/GML_invert.png' height='10' alt=''/>"
 template:
   bootstrap: 5
   bslib:
