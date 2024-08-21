@@ -878,10 +878,13 @@ lets now visualise these results
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
-```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
-VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
+```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+p <- VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
 ```
 
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
+p
+```
 
 
 <br>
