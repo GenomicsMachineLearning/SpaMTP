@@ -2,11 +2,11 @@ url: https://genomicsmachinelearning.github.io/SpaMTP/
 home:
   title: SpaMTP
 authors:
-  Andrew Causer:
+  - name: Andrew Causer
     href: https://github.com/agc888
-  GML Lab:
+  - name: GML Lab
     href: https://github.com/GenomicsMachineLearning
-    html: <img src='vignettes/pkgdown_figures/GML_invert.png' height='36' width='20'alt='GML'/>
+    html: "<img src='vignettes/pkgdown_figures/GML_invert.png' height='36' width='36' alt='GML'/>"
 template:
   bootstrap: 5
   bslib:

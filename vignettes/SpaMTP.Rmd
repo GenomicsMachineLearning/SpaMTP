@@ -25,7 +25,7 @@ You can install the current version of SpaMTP from
 if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
 
-devtools::install_github("BiomedicalMachineLearning/SpaMTP")
+devtools::install_github("GenomicsMachineLearning/SpaMTP")
 ```
 <br>
 
@@ -39,10 +39,9 @@ conda activate SpaMTP
 ```
 
 Within the SpaMTP environment open *R* and install ***SpaMTP***
-packages
 
 ``` r
-devtools::install_github("BiomedicalMachineLearning/SpaMTP")
+devtools::install_github("GenomicsMachineLearning/SpaMTP")
 ```
 
 <br>
