@@ -1,9 +1,10 @@
 Package: SpaMTP
 Title: User Friendly Spatial Metabolomic Data Analysis Package
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person("Andrew", "Causer", , "a.causer@uq.edu.au", role = c("aut", "cre"),
-           comment = c(ORCID = "0009-0001-7341-8366"))
+           comment = c(ORCID = "0009-0001-7341-8366")),
+    person("GML", "Lab", role = "cre"))
 Description: This is an easy-to-use spatial metabolomic data analysis package that harnesses the functionality of Cardinal and Seurat. In addition to easier and quicker plotting, this package contains additional function for various downstream analyses such as differential peak analysis, merging of Metabolomic and Spatial Transcriptomic (Visium) data, m/z metabolite annotation, and others.
 License: MIT + file LICENSE
 Encoding: UTF-8
