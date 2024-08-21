@@ -1883,6 +1883,7 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @export
 #'
 #' @import grid
+#' @import ggplot2
 #'
 #' @examples
 #' #SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
