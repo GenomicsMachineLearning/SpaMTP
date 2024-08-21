@@ -35,5 +35,5 @@ A combined gg, ggplot object with pathway and dendrogram
 Displays the pathway analysis results form running the 'FishersPathwayAnalysis()' function
 }
 \examples{
-# SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
+#SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 }

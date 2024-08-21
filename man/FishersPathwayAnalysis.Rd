@@ -6,7 +6,7 @@
 \usage{
 FishersPathwayAnalysis(
   Analyte,
-  analyte_type = c("mz", "genes"),
+  analyte_type = c("mz"),
   polarity = NULL,
   ppm_error = 10,
   max_path_size = 500,

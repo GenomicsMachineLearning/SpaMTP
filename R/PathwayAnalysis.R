@@ -24,7 +24,7 @@
 #' @examples
 #' # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
 FishersPathwayAnalysis <- function (Analyte,
-                                    analyte_type = c("mz","genes"),
+                                    analyte_type = c("mz"),
                                     polarity = NULL,
                                     ppm_error = 10,
                                     max_path_size = 500,
@@ -227,7 +227,7 @@ FishersPathwayAnalysis <- function (Analyte,
   source_non_duplicated = analytes_rampids_df[!duplicated(analytes_rampids_df$rampId),]
   # rampid = the subset of the database with our query data
   pathway_rampids = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids),]
-  pathway_rampids_count = pathway_rampids %>% group_by(pathwayRampId) %>% dplyr::mutate(analytes_in_pathways  = n())
+  pathway_rampids_count = pathway_rampids %>% dplyr::group_by(pathwayRampId) %>% dplyr::mutate(analytes_in_pathways  = n())
   # analytespathway_new. = the subset of the database with all pathways
   analytehaspathway_full = analytehaspathway_new %>%
     group_by(pathwayRampId) %>% dplyr::mutate(total_in_pathways = n())
@@ -262,7 +262,7 @@ FishersPathwayAnalysis <- function (Analyte,
       ananlytes_name_list_met = paste0(src_cn[source_index_met], collapse = ";")
       ananlytes_id_list_met = paste0(src_sid[source_index_met], collapse = ";")
 
-      #met
+      #met_adductt
       ananlytes_mz_adduct = paste0(paste0(src_mz[source_index_met],"[",
                                           src_adduct[source_index_met]
                                           ,"]"), collapse = ";")
@@ -274,6 +274,8 @@ FishersPathwayAnalysis <- function (Analyte,
       total_in_pathways = full_list
       return_df = data.frame(pathway_name = pathway_info$pathwayName,
                              pathway_id = pathway_info$sourceId,
+                             type = pathway_info$type,
+                             pathwayCategory = pathway_info$pathwayCategory ,
                              metabolite_name_list=ananlytes_name_list_met,
                              metabolite_id_list= ananlytes_id_list_met,
                              total_in_pathways = total_in_pathways,
@@ -284,14 +286,17 @@ FishersPathwayAnalysis <- function (Analyte,
       return(return_df)
     })
     enrichment_df = do.call(rbind, enrichment_df)
+    #enrichment_df = enrichment_df %>% dplyr::filter(!duplicated(pathway_name))
   }else{
+    unipathids = unique(pathway_rampids_count$pathwayRampId)
     verbose_message(message_text = "Merging datasets" , verbose = verbose)
+    analytehaspathway_sub = analytehaspathway_full[which(analytehaspathway_full$pathwayRampId %in% unipathids),] %>% filter(!duplicated(pathwayRampId))
 
-    enrichment_df = merge(pathway_rampids_count[which(!duplicated(pathway_rampids_count$pathwayRampId)),], analytehaspathway_full[which(!duplicated(analytehaspathway_full$pathwayRampId)),],
-                          by = "pathwayRampId")
+    enrichment_df = base::merge(pathway_rampids_count[which(!duplicated(pathway_rampids_count$pathwayRampId)),], analytehaspathway_sub,
+                                by = "pathwayRampId")
     #colnames(enrichment_df)[which(colnames(enrichment_df) == "count")] = "total_in_pathways"
-    enrichment_df = merge(enrichment_df, pathway, by = "pathwayRampId")
-    enrichment_df = enrichment_df %>% filter(!duplicated(pathwayName))
+    enrichment_df = base::merge(enrichment_df, pathway, by = "pathwayRampId")
+    #enrichment_df = enrichment_df %>% dplyr::filter(!duplicated(pathwayName))
   }
 
   # abbb = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids)[1:100],] %>% rowwise() %>%
@@ -309,8 +314,8 @@ FishersPathwayAnalysis <- function (Analyte,
 
   verbose_message(message_text = "Calculating p value......" , verbose = verbose)
 
-  enrichment_df = na.omit(enrichment_df )
-  enrichment_df = enrichment_df %>% rowwise() %>% mutate(p_val = fisher.test(matrix(
+  enrichment_df = na.omit(enrichment_df)
+  enrichment_df = enrichment_df %>% rowwise() %>% mutate(p_val = stats::fisher.test(matrix(
     c(
       # Detected metabolites in pathway, in analytelist
       as.numeric(analytes_in_pathways),
@@ -348,10 +353,35 @@ FishersPathwayAnalysis <- function (Analyte,
   #  ananlytes_id_list,
   #  screened_analytes
   #)))
-  if(any(grepl(colnames(enrichment_df), pattern = "/.y"))){
-    return =enrichment_df %>% select(-c(pathwayRampId,rampId.y, pathwaySource.y))
+  if(pathway_all_info == F){
+    return =enrichment_df %>% dplyr::select(-c(pathwayRampId,rampId.y, pathwaySource.y)) %>% dplyr::select(pathwayName,
+                                                                                                           sourceId,
+                                                                                                           type,
+                                                                                                           pathwayCategory,
+                                                                                                           p_val,
+                                                                                                           fdr,ratio,
+                                                                                                           analytes_in_pathways,
+                                                                                                           total_in_pathways) %>% arrange(p_val)
+    colnames(return)[1:4] = c("pathway_name",
+                              "pathway_id",
+                              "type",
+                              "pathwayCategory")
+
   }else{
-    return =enrichment_df
+    return = data.frame(enrichment_df) %>% dplyr::select(pathway_name,
+                                                         pathway_id,
+                                                         type,
+                                                         pathwayCategory,
+                                                         p_val,
+                                                         fdr,ratio,
+                                                         analytes_in_pathways,
+                                                         total_in_pathways,
+                                                         metabolite_name_list,
+                                                         metabolite_id_list,
+                                                         adduct_info,
+                                                         gene_name_list,
+                                                         gene_id_list)%>% arrange(p_val)
+
   }
   return(return)
 }
@@ -1852,8 +1882,10 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @return A combined gg, ggplot object with pathway and dendrogram
 #' @export
 #'
+#' @import grid
+#'
 #' @examples
-#' # SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
+#' #SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 VisualisePathways = function(SpaMTP,
                              pathway_df,
                              assay = "SPM",
