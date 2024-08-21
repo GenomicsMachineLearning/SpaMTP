@@ -14,7 +14,7 @@ authors:
 template:
   bootstrap: 5
   bslib:
-    preset: zephyr
+    preset: default
     type: primary
   pkgdown-nav-height: 100px
 navbar:
