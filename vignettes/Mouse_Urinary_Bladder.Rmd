@@ -842,7 +842,7 @@ cluster_6_pathways <- FishersPathwayAnalysis(list(mz = cluster_6$gene),
                             max_path_size = 500,
                             alternative = "greater",
                             min_path_size = 5,
-                            pathway_all_info = T,
+                            pathway_all_info = F,
                             pval_cutoff = 0.05,
                             verbose = TRUE)
 ```
@@ -874,11 +874,15 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 
 lets now visualise these results
 
-```{r}
-
-### TO DO
+```{r, eval=FALSE}
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
+
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
+```
+
+
 
 <br>
 
