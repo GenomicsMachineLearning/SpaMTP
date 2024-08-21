@@ -4,6 +4,13 @@ home:
 authors:
   Andrew Causer:
     href: https://github.com/agc888
+  Ty Lu:
+    href: https://github.com/BCRL-tylu
+  Christopher Fitzgerald:
+    href: https://github.com/ChemCharles
+  GML Lab:
+    href: https://github.com/GenomicsMachineLearning
+    html: "<img src='https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/man/figures/GML_invert.png' height='10' alt=''/>"
 template:
   bootstrap: 5
   bslib:
