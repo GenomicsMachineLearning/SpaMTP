@@ -1883,7 +1883,6 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @export
 #'
 #' @import grid
-#' @import ggplot2
 #'
 #' @examples
 #' #SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
@@ -2038,7 +2037,7 @@ VisualisePathways = function(SpaMTP,
   }
   close(pb)
   for (k in 1:length(image_raster)) {
-    gg_bar1 =  gg_bar1 + annotation_custom(
+    gg_bar1 =  gg_bar1 + ggplot2::annotation_custom(
       grid::rasterGrob(
         image_raster[[k]],
         width = unit(1, "npc"),
