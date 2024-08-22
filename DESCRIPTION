@@ -6,7 +6,7 @@ Authors@R: c(
            comment = c(ORCID = "0009-0001-7341-8366")),
     person("Tianyao", "Lu", ,"lu.t@wehi.edu.au", role = c("aut")),
     person("Christopher", "Fitzgerald", , "", role = c("aut")),
-    person("GML", "Lab", ,,role = "fnd"))
+    person("GML", "Lab", ,, role = "fnd"))
 Description: This is an easy-to-use spatial metabolomic data analysis package that harnesses the functionality of Cardinal and Seurat. In addition to easier and quicker plotting, this package contains additional function for various downstream analyses such as differential peak analysis, merging of Metabolomic and Spatial Transcriptomic (Visium) data, m/z metabolite annotation, and others.
 License: MIT + file LICENSE
 Encoding: UTF-8
