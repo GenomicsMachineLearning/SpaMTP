@@ -193,7 +193,7 @@ FishersPathwayAnalysis <- function (Analyte,
     analytes_new = c(analytes_new,
                      analytes_rna)
     mz_array = c(mz_array,rep(NA, times = length(analytes_rna)))
-    adducts_array = c(adducts_array,rep(NA, times = length(analytes_met)))
+    adducts_array = c(adducts_array,rep(NA, times = length(analytes_rna)))
   }
   # Merge as data.frame to minimise query time
   temp_mz_analyte = data.frame(cbind(mz_array = mz_array,
