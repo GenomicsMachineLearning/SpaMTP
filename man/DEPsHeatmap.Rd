@@ -25,7 +25,7 @@ DEPsHeatmap(
   plot.save.width = 20,
   plot.save.height = 20,
   nlabels.to.show = NULL,
-  annotation_colors = NA
+  annotation_colors = NULL
 )
 }
 \arguments{

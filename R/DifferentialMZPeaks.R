@@ -283,7 +283,7 @@ DEPsHeatmap <- function(edgeR_output,
                          plot.save.width = 20,
                          plot.save.height = 20,
                          nlabels.to.show = NULL,
-                         annotation_colors = NA){
+                         annotation_colors = NULL){
 
 
   degs <- edgeR_output$DEPs
@@ -340,6 +340,12 @@ DEPsHeatmap <- function(edgeR_output,
 
   col_annot <- data.frame(sample = edgeR_output$samples$ident)
   row.names(col_annot) <- colnames(as.data.frame(edgeR::cpm(edgeR_output,log=TRUE)))
+
+  if (!is.null(annotation_colors)){
+    annotation_colors <- list(sample = unlist(annotation_colors))
+  } else {
+    annotation_colors <- NA
+  }
 
   mtx <- as.matrix(as.data.frame(edgeR::cpm(edgeR_output,log=TRUE))[unique(df$gene),])
   if (!(is.null(plot_annotations_column))){
