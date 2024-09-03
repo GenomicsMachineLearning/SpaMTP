@@ -75,6 +75,7 @@ reference:
   - SearchAnnotations
   - FindDuplicateAnnotations
   - SubsetMZFeatures
+  - AddCustomMZAnnotations
 - title: Helper Functions for Annotating m/z Masses
   desc: Helper functions required for running 'AnnotateSM()'
   contents:

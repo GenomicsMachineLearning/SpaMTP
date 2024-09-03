@@ -9,7 +9,7 @@ formula_filter(df, elements = NULL)
 \arguments{
 \item{df}{DataFrame of the reference database.}
 
-\item{elements}{Vector of character strings of elements to include (default = c("H", "C", "N", "O", "S", "Cl", "Br", "F", "Na", "P", "I")).}
+\item{elements}{Vector of character strings of elements to include (default = c("H", "C", "N", "O", "S", "Cl", "Br", "F", "Na", "P", "I", "Si")).}
 }
 \value{
 A refined DataFrame which only includes annotations containing the specified elements

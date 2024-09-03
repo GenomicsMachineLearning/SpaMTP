@@ -400,7 +400,7 @@ is_formula_valid <- function(formula,allowed_elements) {
 #' Filters reference Database to only select natural elements
 #'
 #' @param df DataFrame of the reference database.
-#' @param elements Vector of character strings of elements to include (default = c("H", "C", "N", "O", "S", "Cl", "Br", "F", "Na", "P", "I")).
+#' @param elements Vector of character strings of elements to include (default = c("H", "C", "N", "O", "S", "Cl", "Br", "F", "Na", "P", "I", "Si")).
 #'
 #' @return A refined DataFrame which only includes annotations containing the specified elements
 #'
@@ -625,4 +625,59 @@ proc_db <- function(observed_df,
 
 ########################################################################################################################################################################################################################
 
+#' Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)
+#'
+#' @param data SpaMTP Seurat object containing m/z intensity values.
+#' @param annotations data.frame containing two columns named 'compound' and 'Mass'. These columns should contain the custom metabolite annotation and the relative m/z mass respectively.
+#' @param assay Character string defining the Seurat object assay to store the respective annotations in the feature meta.data dataframe (default = "Spatial").
+#' @param return.only.annotated Boolean defining whether to return a SpaMTP Seurat object containing only successfully annotated m/z values (default = FALSE).
+#' @param mass.threshold Numeric value defining the acceptable threshold (plus-minus) between the custom annotations and the actual m/z values contained within the SpaMTP object (default = 0.05).
+#' @param annotation.column Character string defining the feature meta.data column name that will contain the assigned annotations (default = "all_IsomerNames").
+#'
+#' @return SpaMTP Seurat object containing the custom annotations stored in the feature metadata dataframe.
+#' @export
+#'
+#' @examples
+#' # annotated_data <- AddCustomMZAnnotations(SpaMTP.obj, annotation.df)
+AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.only.annotated = FALSE, mass.threshold = 0.05, annotation.column = "all_IsomerNames"){
+
+  if (!(colnames(annotations) %in% c("annotation","mass"))) {
+    stop("Error: The annotation columns provided does not match the required format. Must bet 'annotation' and 'mass'")
+  }
+
+  true_mzs <- c()
+  for (mass in annotations$mass){
+    true_mz <- FindNearestMZ(data, mass)
+    true_mzs <- c(true_mzs,true_mz)
+  }
+
+  annotations$true_mzs_name <- true_mzs
+  annotations$true_mzs <- gsub("mz-", "", annotations$true_mzs_name)
+  annotations$ppm_diff <- abs(annotations$mass - as.numeric(annotations$true_mzs))
+
+  if (!is.null(mass.threshold)){
+    annotations <- annotations %>% filter(ppm_diff < mass.threshold)
+  }
+
+  if (return.only.annotated) {
+
+    data_sub <- subsetMZFeatures(data,features = annotations$true_mzs_name, assay = assay)
+    data_sub[[assay]]@meta.data["all_IsomerNames"] <- annotations$annotation
+
+  } else {
+    metabolites <- lapply(rownames(data), function(x) {
+
+      if (x %in% annotations$true_mzs_name) {
+        annotations[annotations$true_mzs_name == x,][["annotation"]]
+      } else {
+        x
+      }
+    })
+
+    data_sub <-  data
+    data_sub[[assay]]@meta.data["all_IsomerNames"] <- unlist(metabolites)
+  }
+
+  return(data_sub)
+}
 

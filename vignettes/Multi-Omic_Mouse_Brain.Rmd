@@ -211,48 +211,6 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 ```
 
 
-```{r}
-## This function subsets the data and adds the metabolite names to the provided seurat object
-AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.only.annotated = FALSE, mass.threshold = 0.05){
-    
-    true_mzs <- c()
-    for (mass in annotations$Mass){
-        true_mz <- FindNearestMZ(data, mass)
-        true_mzs <- c(true_mzs,true_mz)
-    }
-
-    annotations$true_mzs_name <- true_mzs
-    annotations$true_mzs <- gsub("mz-", "", annotations$true_mzs_name)
-    annotations$ppm_diff <- abs(annotations$Mass - as.numeric(annotations$true_mzs))
-
-    if (!is.null(mass.threshold)){
-        annotations <- annotations %>% filter(ppm_diff < mass.threshold)
-    }
-    
-    if (return.only.annotated) {
-        
-        data_sub <- subsetMZFeatures(data,features = annotations$true_mzs_name, assay = assay)
-        data_sub[[assay]]@meta.data$all_IsomerNames <- annotations$compound
-    
-    } else {
-        metabolites <- lapply(rownames(data), function(x) {
-
-            if (x %in% annotations$true_mzs_name) {
-              annotations[annotations$true_mzs_name == x,][["compound"]]
-            } else {
-                x
-            }      
-        })
-        
-        data_sub <-  data
-        data_sub[[assay]]@meta.data$all_IsomerNames <- unlist(metabolites)
-    }
-
-
-    return(data_sub)
-}
-```
-
 
 ```{r}
 msi_annotated <- AddCustomMZAnnotations(msi, fmp10_metabolites)
