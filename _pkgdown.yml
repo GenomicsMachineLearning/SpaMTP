@@ -10,13 +10,10 @@ authors:
     href: https://github.com/ChemCharles
   GML Lab:
     href: https://github.com/GenomicsMachineLearning
-    html: "<img src='figures/GML_invert.png' height='30' alt=''/>"
+    html: "<img src='man/figures/GML_invert.png' height='30' alt=''/>"
 template:
-  bootstrap: 5
-  bslib:
-    preset: default
-    type: primary
-  pkgdown-nav-height: 100px
+  params:
+    bootswatch: flatly
 navbar:
   bg: primary
   structure:
