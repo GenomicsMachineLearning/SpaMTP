@@ -201,6 +201,7 @@ In this case, the matrix run was an FMP10 matrix, meaning the masses of our meta
 fmp10_metabolites <- read.csv("vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv")
 ```
 
+
 ```{r, echo=TRUE, results='hide'}
 fmp10_metabolites
 ```

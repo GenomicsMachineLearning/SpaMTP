@@ -628,7 +628,7 @@ proc_db <- function(observed_df,
 #' Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)
 #'
 #' @param data SpaMTP Seurat object containing m/z intensity values.
-#' @param annotations data.frame containing two columns named 'compound' and 'Mass'. These columns should contain the custom metabolite annotation and the relative m/z mass respectively.
+#' @param annotations data.frame containing two columns named 'annotation' and 'mass'. These columns should contain the custom metabolite annotation and the relative m/z mass respectively.
 #' @param assay Character string defining the Seurat object assay to store the respective annotations in the feature meta.data dataframe (default = "Spatial").
 #' @param return.only.annotated Boolean defining whether to return a SpaMTP Seurat object containing only successfully annotated m/z values (default = FALSE).
 #' @param mass.threshold Numeric value defining the acceptable threshold (plus-minus) between the custom annotations and the actual m/z values contained within the SpaMTP object (default = 0.05).
@@ -641,7 +641,7 @@ proc_db <- function(observed_df,
 #' # annotated_data <- AddCustomMZAnnotations(SpaMTP.obj, annotation.df)
 AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.only.annotated = FALSE, mass.threshold = 0.05, annotation.column = "all_IsomerNames"){
 
-  if (!(colnames(annotations) %in% c("annotation","mass"))) {
+  if (!all(c("annotation", "mass") %in% colnames(annotations))) {
     stop("Error: The annotation columns provided does not match the required format. Must bet 'annotation' and 'mass'")
   }
 

@@ -16,7 +16,7 @@ AddCustomMZAnnotations(
 \arguments{
 \item{data}{SpaMTP Seurat object containing m/z intensity values.}
 
-\item{annotations}{data.frame containing two columns named 'compound' and 'Mass'. These columns should contain the custom metabolite annotation and the relative m/z mass respectively.}
+\item{annotations}{data.frame containing two columns named 'annotation' and 'mass'. These columns should contain the custom metabolite annotation and the relative m/z mass respectively.}
 
 \item{assay}{Character string defining the Seurat object assay to store the respective annotations in the feature meta.data dataframe (default = "Spatial").}
 
