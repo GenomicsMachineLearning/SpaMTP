@@ -12,11 +12,9 @@ authors:
     href: https://github.com/GenomicsMachineLearning
     html: "<img src='man/figures/GML_invert.png' height='30' alt=''/>"
 template:
-  bootstrap: 5
-  bslib:
-    preset: flatly
-    type: primary
-  pkgdown-nav-height: 100px
+  light-switch: true
+  theme: gruvbox-light
+  theme-dark: gruvbox-dark
 navbar:
   bg: primary
   structure:
@@ -27,6 +25,7 @@ navbar:
     right:
     - search
     - github
+    - lightswitch
   components:
     github:
       icon: fa-github
