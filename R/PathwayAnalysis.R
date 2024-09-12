@@ -2335,14 +2335,14 @@ PathwaysPerRegion = function(SpaMTP,
   # Generate a dendrogram
   hc <- as.dendrogram(hclust(as.dist(jaccard_matrix)))
   # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
-  segment_hc <- with(ggdendro::segment(dendro_data(hc)),
+  segment_hc <- with(ggdendro::segment(ggdendro::dendro_data(hc)),
                      data.frame(
                        x = y,
                        y = x,
                        xend = yend,
                        yend = xend
                      ))
-  pos_table <- with(dendro_data(hc)$labels,
+  pos_table <- with(ggdendro::dendro_data(hc)$labels,
                     data.frame(
                       y_center = x,
                       gene = as.character(label),
@@ -2379,7 +2379,7 @@ PathwaysPerRegion = function(SpaMTP,
   gg_dot = ggplot(data = gsea_all_cluster_sig, aes(x = factor(Cluster_id,
                                                               levels = sort(unique(Cluster_id))
   ),
-  y = factor(pathnameid,levels = dendro_data(hc)$labels$label))
+  y = factor(pathnameid,levels = ggdendro::dendro_data(hc)$labels$label))
   ) +
     geom_point(aes(colour = as.numeric(NES), size = as.numeric(size))) +
     scale_colour_gradient2(

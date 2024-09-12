@@ -887,6 +887,14 @@ p
 ```
 
 
+
+```{r, eval=FALSE}
+PathwaysPerRegion(bladder_annotated,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
+```
+
+
+
+
 <br>
 
 ## Re-Clustering using PCA and Seurat
