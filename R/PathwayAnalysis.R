@@ -2128,3 +2128,314 @@ VisualisePathways = function(SpaMTP,
   # Show the plot
   return(combined_plot)
 }
+
+
+
+#' Plotting of differentially expressed metabolic pathways per grouping identity
+#'
+#' @param SpaMTP A seurat object contains spatial metabolomics/transcriptomics features or both.
+#' @param ident Character string defining the metadata column used for grouping.
+#' @param polarity The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
+#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
+#' @param slot Character string specifying which slot to pull the m/z inensity values from (default = "counts").
+#' @param ppm_error is the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL).
+#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
+#'
+#' @return A list consists of a ggplot2 object and a dataframe containing the set enrichment results
+#' @export
+#'
+#' @examples
+#' # PathwaysPerRegion(SpaMTP, ident = "clusters", polarity = "positive")
+PathwaysPerRegion = function(SpaMTP,
+                      ident,
+                      polarity = NULL,
+                      assay = "Spatial",
+                      slot = "counts",
+                      fisherpathwaydf = NULL,
+                      tof_resolution =30000,
+                      ppm_error = NULL,
+                      pval_cutoff = NULL,
+                      verbose = TRUE
+){
+  #(1) Get the rank entry for each cluster
+  assignment = SpaMTP@meta.data[[ident]]
+  cluster = unique(assignment)
+  mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
+
+  # (2) Annotation
+  tryCatch({
+    input_mz = data.frame(cbind(
+      row_id = 1:ncol(mass_matrix),
+      mz = as.numeric(stringr::str_extract(row.names(SpaMTP[[assay]]@features), pattern = "\\d+\\.?\\d*"))
+    ))
+  },
+  error = function(cond) {
+    stop(
+      "Check whether column names of the input matrix is correctly labelled as the m/z ratio"
+    )
+  },
+  warning = function(cond) {
+    stop(
+      "Check whether column names of the input matrix is correctly labelled as the m/z ratio"
+    )
+  })
+  # Set the db that you want to search against
+  db = rbind(HMDB_db, Chebi_db)
+  # set which adducts you want to search for
+  #load("data/adduct_file.rda")
+
+  if (is.null(polarity)) {
+    stop("Please enter correct ion_mode:ion_mode = 'positive' or ion_mode ='negative'")
+  } else if (polarity == "positive") {
+    test_add = sub(" ", "", adduct_file$adduct_name[which(adduct_file$charge >= 0)])
+  } else if (polarity == "negative") {
+    test_add = sub(" ", "", adduct_file$adduct_name[which(adduct_file$charge <= 0)])
+  }
+  # Using Chris' pipeline for annotation
+  # 1) Filter DB by adduct.
+  db_1 = db_adduct_filter(db, test_add, polarity = ifelse(polarity== "positive",
+                                                          "pos", "neg"), verbose = verbose)
+
+  # 2) only select natural elements
+  db_2 = formula_filter(db_1)
+
+  # 3) search db against mz df return results
+  # Need to specify ppm error
+  # If ppm_error not specified, use function to estimate
+  # Set error tolerance
+  ppm_error = ppm_error %||% (1e6 / tof_resolution / sqrt(2 * log(2)))
+  db_3 = proc_db(input_mz, db_2, ppm_error) %>% mutate(entry = stringr::str_split(Isomers,
+                                                                                  pattern = "; "))
+
+  verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
+
+  input_id = lapply(db_3$entry, function(x) {
+    x = unlist(x)
+    index_hmdb = which(grepl(x, pattern = "HMDB"))
+    x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
+    index_chebi = which(grepl(x, pattern = "CHEBI"))
+    x[index_chebi] = tolower(x[index_chebi])
+    return(x)
+  })
+
+  #load("/data/chem_props.rda")
+
+  db_3 = db_3 %>% mutate(inputid = input_id)
+  rampid = c()
+  chem_source_id = unique(chem_props$chem_source_id)
+
+  verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
+
+  pb2 = txtProgressBar(
+    min = 1,
+    max = nrow(db_3),
+    initial = 0,
+    style = 3
+  )
+  for (i in 1:nrow(db_3)) {
+    rampid[i] = (chem_props$ramp_id[which(chem_source_id %in% db_3$inputid[i][[1]])])[1]
+    setTxtProgressBar(pb2, i)
+  }
+  close(pb2)
+  db_3 = cbind(db_3, rampid)
+
+  verbose_message(message_text = "Query finished!" , verbose = verbose)
+  # get names for the ranks
+  name_rank = lapply(input_mz$mz, function(x) {
+    return(unique(na.omit(db_3[which(db_3$observed_mz == x),])))
+  })
+
+
+  name_rank_ids = lapply(input_mz$mz, function(x) {
+    return(unique(na.omit(db_3$rampid[which(db_3$observed_mz == x)])))
+  })
+  # Get pathway db
+  verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
+  pathway_db = get_analytes_db(unlist(input_id), analytehaspathway,
+                               chem_props, pathway)
+
+  pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
+  verbose_message(message_text = "Run set enrichment for each cluster" , verbose = verbose)
+  pb3 = txtProgressBar(
+    min = 0,
+    max = length(cluster),
+    initial = 0,
+    style = 3
+  )
+  gsea_all_cluster = data.frame()
+  for(i in 1:length(cluster )){
+    # Get coordinates for the elements in the cluster
+    clu_wise = which(assignment  == cluster[i])
+    sub_mass_mat = colSums(mass_matrix[clu_wise,])/length(clu_wise)
+    other_region = colSums(mass_matrix[-clu_wise,])/(nrow(mass_matrix) - length(clu_wise))
+    log_fc = scale(log(sub_mass_mat/other_region+0.1), center = 0)
+
+    ranks = unlist(lapply(1:length(log_fc), function(x) {
+      pc_new = rep(log_fc[x], times = length(name_rank[[x]]$rampid)) +
+        sample(-5:5, length(name_rank[[x]]$rampid), replace = T) * 1e-7
+      names(pc_new) = name_rank[[x]]$rampid
+      return(pc_new)
+    }))
+
+    ranks = ranks[which(!duplicated(names(ranks)))]
+    suppressWarnings({
+      gsea_result = fgsea::fgsea(
+        pathways =  pathway_db,
+        stats = ranks,
+        minSize = 5,
+        maxSize = 500
+      )  %>% mutate(Cluster_id = paste0("Cluster", i)) %>% mutate(leadingEdge_metabolites = lapply(leadingEdge, function(x) {
+        temp = unique(unlist(x))
+        metabolites_name = c()
+        for (z in 1:length(temp)) {
+          index <- find_index(name_rank_ids, temp[z])
+          direction = log_fc
+          metabolites_name = c(metabolites_name,
+                               paste0(
+                                 tolower(chem_props$common_name[which(chem_props$ramp_id == temp[z])])[1],
+                                 ifelse(direction >= 0, "↑", "↓")
+                               ))
+        }
+        return(metabolites_name)
+      }))
+    })
+    gsea_all_cluster = rbind(gsea_all_cluster,gsea_result)
+    setTxtProgressBar(pb3, i)
+  }
+  close(pb3)
+  gsea_all_cluster_sig =   gsea_all_cluster %>% filter(pval<=(pval_cutoff %||% 0.01)) %>% mutate(Significance = ifelse(pval <=0.05,
+                                                                                                                       "Significant at 5% significance level",
+                                                                                                                       "Not statistically significant"))
+  colnames(gsea_all_cluster_sig )[1] = "pathwayName"
+  gsea_all_cluster_sig = merge(gsea_all_cluster_sig,
+                               pathway, by = "pathwayName")
+
+  ########################################################
+  #Plot#
+  #dendrogram based on jaccard distance
+  gsea_all_cluster_sig = gsea_all_cluster_sig %>% mutate(pathnameid = paste0(pathwayName,
+                                                                             "(",sourceId,")"))
+  pathwaynames = unique(gsea_all_cluster_sig$pathnameid)
+  n = length(unique(gsea_all_cluster_sig$pathnameid))
+  jaccard_matrix = matrix(nrow = n,
+                          ncol = n)
+  colnames(jaccard_matrix) = rownames(jaccard_matrix) = pathwaynames
+  verbose_message(message_text = "computing jaccard distance between pathways" , verbose = verbose)
+  for (i in 1:(n - 1)) {
+    pathway_id_i = sub(".*\\(([^)]+)\\).*", "\\1", pathwaynames[i])
+    pathway_content_i = unique(analytehaspathway$rampId[which(analytehaspathway$pathwayRampId == pathway$pathwayRampId[which(pathway$sourceId == pathway_id_i)])])
+    for (j in (i + 1):n) {
+      pathway_id_j = sub(".*\\(([^)]+)\\).*", "\\1", pathwaynames[j])
+      pathway_content_j = unique(analytehaspathway$rampId[which(analytehaspathway$pathwayRampId == pathway$pathwayRampId[which(pathway$sourceId == pathway_id_j)])])
+      jc_simi = length(intersect(pathway_content_i, pathway_content_j)) / length(union(pathway_content_i, pathway_content_j))
+      jaccard_matrix[i, j] = jaccard_matrix[j, i] = jc_simi
+    }
+  }
+  diag(jaccard_matrix) = 1
+  # Generate a dendrogram
+  hc <- as.dendrogram(hclust(as.dist(jaccard_matrix)))
+  # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
+  segment_hc <- with(ggdendro::segment(dendro_data(hc)),
+                     data.frame(
+                       x = y,
+                       y = x,
+                       xend = yend,
+                       yend = xend
+                     ))
+  pos_table <- with(dendro_data(hc)$labels,
+                    data.frame(
+                      y_center = x,
+                      gene = as.character(label),
+                      height = 1
+                    ))
+
+  axis_limits <- with(pos_table, c(min(y_center - 0.5 * height), max(y_center + 0.5 * height))) + 0.1 * c(-1, 1)
+
+  plt_dendr <- ggplot(segment_hc) +
+    geom_segment(aes(
+      x = sqrt(x),
+      y = y,
+      xend = sqrt(xend),
+      yend = yend
+    )) +
+    scale_x_continuous(expand = c(0, 0.1),
+                       limits = c(0,max(segment_hc$xend))) +
+    scale_y_continuous(
+      expand = c(0, 0),
+      breaks = pos_table$y_center,
+      labels = pos_table$gene,
+      limits = axis_limits,
+      position = "right"
+    ) +
+    labs(
+      x = "Jacard distance",
+      y = "",
+      colour = "",
+      size = ""
+    ) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank())
+  #### ggplot
+  gg_dot = ggplot(data = gsea_all_cluster_sig, aes(x = factor(Cluster_id,
+                                                              levels = sort(unique(Cluster_id))
+  ),
+  y = factor(pathnameid,levels = dendro_data(hc)$labels$label))
+  ) +
+    geom_point(aes(colour = as.numeric(NES), size = as.numeric(size))) +
+    scale_colour_gradient2(
+      name = "Normalised enrichment score",
+      low = "blue",   # Original low color
+      high = "red",   # Original high color
+      limits = c(min(gsea_all_cluster_sig$NES), max(gsea_all_cluster_sig$NES))
+    ) +
+    scale_size_continuous(name = "Number of altered metabolites \n in the pathway") +
+    new_scale_colour() +
+    geom_point(shape = 1, aes(colour = Significance, size = as.numeric(size)+0.1)) +
+    scale_color_manual(
+      values = c(
+        "Significant at 5% significance level" = "red",
+        "Not statistically significant" = "black"
+      )
+    ) +
+    labs(title = "Comparason of pathways expression between different cluster",
+         y = "Pathways", x = "Clusters") +
+    theme(
+      title = element_text(size = 8, face = 'bold'),
+      axis.text.x = element_text(
+        size = 12,
+        angle = 90,
+        vjust = 0.5,
+        hjust = 1,
+      ),
+      #20
+      axis.title = element_text(size = 9),
+      #40
+      legend.key.size = unit(1, 'cm'),
+      legend.title = element_text(size = 9),
+      legend.text = element_text(size = 9)
+    ) +
+    new_scale_colour() + theme(panel.background = element_rect(fill = "white"),
+                               panel.grid = element_line(color = "grey")) +   theme(
+                                 legend.position = "left",
+                                 axis.text.y = element_blank())
+  combined_plot = plot_grid(gg_dot,
+                            plt_dendr,
+                            align = 'h',
+                            rel_widths = c(1, 2))
+  print(combined_plot)
+  return(list(ggplot_item = combined_plot,
+              pathway_df = gsea_all_cluster_sig))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
