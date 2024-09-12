@@ -37,6 +37,7 @@ Imports:
     fgsea,
     fields,
     ggdendro,
+    ggnewscale,
     ggplot2,
     ggridges,
     ggtree,

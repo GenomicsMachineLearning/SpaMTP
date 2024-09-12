@@ -2389,7 +2389,7 @@ PathwaysPerRegion = function(SpaMTP,
       limits = c(min(gsea_all_cluster_sig$NES), max(gsea_all_cluster_sig$NES))
     ) +
     scale_size_continuous(name = "Number of altered metabolites \n in the pathway") +
-    new_scale_colour() +
+    ggnewscale::new_scale_colour() +
     geom_point(shape = 1, aes(colour = Significance, size = as.numeric(size)+0.1)) +
     scale_color_manual(
       values = c(
@@ -2414,7 +2414,7 @@ PathwaysPerRegion = function(SpaMTP,
       legend.title = element_text(size = 9),
       legend.text = element_text(size = 9)
     ) +
-    new_scale_colour() + theme(panel.background = element_rect(fill = "white"),
+    ggnewscale::new_scale_colour() + theme(panel.background = element_rect(fill = "white"),
                                panel.grid = element_line(color = "grey")) +   theme(
                                  legend.position = "left",
                                  axis.text.y = element_blank())
