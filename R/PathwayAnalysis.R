@@ -2418,6 +2418,7 @@ PathwaysPerRegion = function(SpaMTP,
                                panel.grid = element_line(color = "grey")) +   theme(
                                  legend.position = "left",
                                  axis.text.y = element_blank())
+  return(list(gg_dot, plt_dendr))
   combined_plot = plot_grid(gg_dot,
                             plt_dendr,
                             align = 'h',
