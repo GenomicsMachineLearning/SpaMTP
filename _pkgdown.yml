@@ -12,22 +12,17 @@ authors:
     href: https://github.com/GenomicsMachineLearning
     html: "<img src='man/figures/GML_invert.png' height='30' alt=''/>"
 template:
-  bootstrap: 5
-  bslib:
-    preset: flatly
-    type: primary
-  css:
-    - pkgdown/custom.css
+  params:
+      bootswatch: flatly
 navbar:
   bg: primary
   structure:
     left:
-    - intro
-    - reference
-    - articles
+      - intro
+      - reference
+      - articles
     right:
-    - search
-    - github
+      - github
   components:
     github:
       icon: fa-github
