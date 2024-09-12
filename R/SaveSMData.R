@@ -26,11 +26,11 @@ saveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", ann
   DropletUtils::write10xCounts(data[[assay]][slot], path = outdir, overwrite = TRUE)
 
   verbose_message(message_text = "Writing @metadata slot to metadata.csv", verbose = verbose)
-  data.table::fwrite(data@meta.data, paste0(outdir,"barcode_metadata.csv"))
+  data.table::fwrite(data@meta.data, paste0(outdir,"/barcode_metadata.csv"))
 
   if (annotations){
     verbose_message(message_text = "Writing feature metadata annotations to feature_metadata.csv", verbose = verbose)
-    data.table::fwrite(data[[assay]]@meta.data, paste0(outdir,"feature_metadata.csv"))
+    data.table::fwrite(data[[assay]]@meta.data, paste0(outdir,"/feature_metadata.csv"))
   }
 
 }
