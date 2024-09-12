@@ -2266,8 +2266,8 @@ PathwaysPerRegion = function(SpaMTP,
   for(i in 1:length(cluster)){
     # Get coordinates for the elements in the cluster
     clu_wise = which(assignment  == cluster[i])
-    sub_mass_mat = colSums(mass_matrix[clu_wise,])/length(clu_wise)
-    other_region = colSums(mass_matrix[-clu_wise,])/(nrow(mass_matrix) - length(clu_wise))
+    sub_mass_mat = Matrix::colSums(mass_matrix[clu_wise,])/length(clu_wise)
+    other_region = Matrix::colSums(mass_matrix[-clu_wise,])/(nrow(mass_matrix) - length(clu_wise))
     log_fc = scale(log(sub_mass_mat/other_region+0.1), center = 0)
 
     ranks = unlist(lapply(1:length(log_fc), function(x) {
