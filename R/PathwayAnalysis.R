@@ -2159,7 +2159,7 @@ PathwaysPerRegion = function(SpaMTP,
 ){
   #(1) Get the rank entry for each cluster
   assignment = SpaMTP@meta.data[[ident]]
-  cluster = unique(assignment)
+  cluster = levels(assignment)
   mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
 
   # (2) Annotation
@@ -2263,7 +2263,7 @@ PathwaysPerRegion = function(SpaMTP,
     style = 3
   )
   gsea_all_cluster = data.frame()
-  for(i in 1:length(cluster )){
+  for(i in 1:length(cluster)){
     # Get coordinates for the elements in the cluster
     clu_wise = which(assignment  == cluster[i])
     sub_mass_mat = colSums(mass_matrix[clu_wise,])/length(clu_wise)
