@@ -10,10 +10,10 @@ PathwaysPerRegion(
   polarity = NULL,
   assay = "Spatial",
   slot = "counts",
-  fisherpathwaydf = NULL,
   tof_resolution = 30000,
   ppm_error = NULL,
-  pval_cutoff = NULL,
+  pval_cutoff = 0.01,
+  plot.sig = 0.05,
   verbose = TRUE
 )
 }
@@ -31,6 +31,12 @@ PathwaysPerRegion(
 \item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]} (default = 30000).}
 
 \item{ppm_error}{is the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL).}
+
+\item{pval_cutoff}{Numeric value defining the p-value cutoff that defines significant pathways (default = 0.01).}
+
+\item{plot.sig}{Numeric value defining the p-value cutoff that highlights the significant pathways on the plot (default = 0.05).}
+
+\item{verbose}{Boolean}
 }
 \value{
 A list consists of a ggplot2 object and a dataframe containing the set enrichment results

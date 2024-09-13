@@ -26,6 +26,8 @@ VisualisePathways(
 
 \item{p_val_threshold}{The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").}
 
+\item{method}{Character string defining the statistical method used to calculate}
+
 \item{...}{The arguments pass to stats::hclust}
 }
 \value{

@@ -1875,8 +1875,9 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @param SpaMTP SpaMTP Seurat object used to run FishersPathwayAnalysis function.
 #' @param pathway_df Dataframe containing the pathway enrichment results (output from SpaMTP::FishersPathwayAnalysis function).
 #' @param assay Character string defining the SpaMTP assay that contains m/z values (default = "SPM").
-#' @param p_val_threshold The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").
 #' @param slot Character string defining the assay slot contatin ght intesity values (default = "counts").
+#' @param p_val_threshold The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").
+#' @param method Character string defining the statistical method used to calculate
 #' @param ... The arguments pass to stats::hclust
 #'
 #' @return A combined gg, ggplot object with pathway and dendrogram
@@ -2138,8 +2139,11 @@ VisualisePathways = function(SpaMTP,
 #' @param polarity The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
 #' @param slot Character string specifying which slot to pull the m/z inensity values from (default = "counts").
-#' @param ppm_error is the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL).
 #' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
+#' @param ppm_error is the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL).
+#' @param pval_cutoff Numeric value defining the p-value cutoff that defines significant pathways (default = 0.01).
+#' @param plot.sig Numeric value defining the p-value cutoff that highlights the significant pathways on the plot (default = 0.05).
+#' @param verbose Boolean
 #'
 #' @return A list consists of a ggplot2 object and a dataframe containing the set enrichment results
 #' @export
@@ -2151,10 +2155,10 @@ PathwaysPerRegion = function(SpaMTP,
                       polarity = NULL,
                       assay = "Spatial",
                       slot = "counts",
-                      fisherpathwaydf = NULL,
                       tof_resolution =30000,
                       ppm_error = NULL,
-                      pval_cutoff = NULL,
+                      pval_cutoff = 0.01,
+                      plot.sig = 0.05,
                       verbose = TRUE
 ){
   #(1) Get the rank entry for each cluster
@@ -2284,7 +2288,7 @@ PathwaysPerRegion = function(SpaMTP,
         stats = ranks,
         minSize = 5,
         maxSize = 500
-      )  %>% mutate(Cluster_id = paste0("Cluster", i)) %>% mutate(leadingEdge_metabolites = lapply(leadingEdge, function(x) {
+      )  %>% mutate(Cluster_id =  paste0(i)) %>% mutate(leadingEdge_metabolites = lapply(leadingEdge, function(x) {
         temp = unique(unlist(x))
         metabolites_name = c()
         for (z in 1:length(temp)) {
@@ -2303,9 +2307,11 @@ PathwaysPerRegion = function(SpaMTP,
     setTxtProgressBar(pb3, i)
   }
   close(pb3)
-  gsea_all_cluster_sig =   gsea_all_cluster %>% filter(pval<=(pval_cutoff %||% 0.01)) %>% mutate(Significance = ifelse(pval <=0.05,
-                                                                                                                       "Significant at 5% significance level",
-                                                                                                                       "Not statistically significant"))
+  gsea_p_val <- (pval_cutoff %||% 0.01)
+  plot.sig <- (plot.sig %||% 0.05)
+  gsea_all_cluster_sig =   gsea_all_cluster %>% filter(pval<=gsea_p_val) %>% mutate(Significance = ifelse(pval <= plot.sig,
+                                                                                                                       paste0("> ", plot.sig),
+                                                                                                                       "Non-Significant"))
   colnames(gsea_all_cluster_sig )[1] = "pathwayName"
   gsea_all_cluster_sig = merge(gsea_all_cluster_sig,
                                pathway, by = "pathwayName")
@@ -2393,12 +2399,12 @@ PathwaysPerRegion = function(SpaMTP,
     geom_point(shape = 1, aes(colour = Significance, size = as.numeric(size)+0.1)) +
     scale_color_manual(
       values = c(
-        "Significant at 5% significance level" = "red",
-        "Not statistically significant" = "black"
+        setNames("black", paste0("> ", plot.sig)),
+        "Non-Significant" = NA
       )
     ) +
-    labs(title = "Comparason of pathways expression between different cluster",
-         y = "Pathways", x = "Clusters") +
+    labs(title = "",
+         y = "Pathways", x = "Idents") +
     theme(
       title = element_text(size = 8, face = 'bold'),
       axis.text.x = element_text(
@@ -2418,12 +2424,10 @@ PathwaysPerRegion = function(SpaMTP,
                                panel.grid = element_line(color = "grey")) +   theme(
                                  legend.position = "left",
                                  axis.text.y = element_blank())
-  return(list(gg_dot, plt_dendr))
-  combined_plot = plot_grid(gg_dot,
-                            plt_dendr,
-                            align = 'h',
-                            rel_widths = c(1, 2))
-  print(combined_plot)
+
+  combined_plot = gg_dot| plt_dendr
+
+
   return(list(ggplot_item = combined_plot,
               pathway_df = gsea_all_cluster_sig))
 }
