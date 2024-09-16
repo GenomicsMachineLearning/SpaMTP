@@ -1877,7 +1877,7 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @param assay Character string defining the SpaMTP assay that contains m/z values (default = "SPM").
 #' @param slot Character string defining the assay slot contatin ght intesity values (default = "counts").
 #' @param p_val_threshold The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").
-#' @param method Character string defining the statistical method used to calculate
+#' @param method Character string defining the statistical method used to calculate hclust (default = "ward.D2").
 #' @param ... The arguments pass to stats::hclust
 #'
 #' @return A combined gg, ggplot object with pathway and dendrogram
@@ -2076,7 +2076,7 @@ VisualisePathways = function(SpaMTP,
 
 
   # Generate a dendrogram
-  hc <- as.dendrogram(hclust(as.dist(jaccard_matrix), ...))
+  hc <- as.dendrogram(hclust(as.dist(jaccard_matrix), method = method, ...))
   # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
   segment_hc <- with(ggdendro::segment(ggdendro::dendro_data(hc)),
                      data.frame(
@@ -2135,7 +2135,7 @@ VisualisePathways = function(SpaMTP,
 #' Plotting of differentially expressed metabolic pathways per grouping identity
 #'
 #' @param SpaMTP A seurat object contains spatial metabolomics/transcriptomics features or both.
-#' @param ident Character string defining the metadata column used for grouping.
+#' @param ident Character string defining the metadata column used for grouping. NOTE: Metadata column must be a factor.
 #' @param polarity The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
 #' @param slot Character string specifying which slot to pull the m/z inensity values from (default = "counts").
@@ -2288,7 +2288,7 @@ PathwaysPerRegion = function(SpaMTP,
         stats = ranks,
         minSize = 5,
         maxSize = 500
-      )  %>% mutate(Cluster_id =  paste0(i)) %>% mutate(leadingEdge_metabolites = lapply(leadingEdge, function(x) {
+      )  %>% mutate(Cluster_id =  paste0(cluster[i])) %>% mutate(leadingEdge_metabolites = lapply(leadingEdge, function(x) {
         temp = unique(unlist(x))
         metabolites_name = c()
         for (z in 1:length(temp)) {
@@ -2396,7 +2396,7 @@ PathwaysPerRegion = function(SpaMTP,
     ) +
     scale_size_continuous(name = "Number of altered metabolites \n in the pathway") +
     ggnewscale::new_scale_colour() +
-    geom_point(shape = 1, aes(colour = Significance, size = as.numeric(size)+0.1)) +
+    geom_point(shape = 1, aes(colour = Significance, size = as.numeric(size)+0.2)) +
     scale_color_manual(
       values = c(
         setNames("black", paste0("> ", plot.sig)),

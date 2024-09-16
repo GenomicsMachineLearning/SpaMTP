@@ -484,7 +484,7 @@ Lets observe the top 10 DE metabolites for each cluster in a heatmap
 DEPsHeatmap(cluster_DEPs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
             n = 10, save_to_path = NULL
-            ,plot.save.height = 10, plot.save.width = 15)
+            ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("2","5","6")])
 ```
 
 
@@ -891,7 +891,13 @@ p
 ```{r, eval=FALSE}
 PathwaysPerRegion(bladder_annotated,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
 ```
+```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+p <- PathwaysPerRegion(bladder_annotated,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
+```
 
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
+p[[1]]
+```
 
 
 

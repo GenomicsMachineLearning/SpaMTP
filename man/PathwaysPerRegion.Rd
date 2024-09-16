@@ -20,7 +20,7 @@ PathwaysPerRegion(
 \arguments{
 \item{SpaMTP}{A seurat object contains spatial metabolomics/transcriptomics features or both.}
 
-\item{ident}{Character string defining the metadata column used for grouping.}
+\item{ident}{Character string defining the metadata column used for grouping. NOTE: Metadata column must be a factor.}
 
 \item{polarity}{The polarity of the MALDI experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).}
 
