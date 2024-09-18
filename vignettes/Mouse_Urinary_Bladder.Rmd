@@ -1,5 +1,5 @@
 ---
-title: "Mouse Urinary Bladder"
+title: "SpaMTP: Mouse Urinary Bladder Vignette"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Mouse Urinary Bladder}
@@ -15,10 +15,6 @@ knitr::opts_chunk$set(
 ```
 
 
-<br>
-
-# SpaMTP: Mouse Urinary Bladder Vignette
-<br>
 This tutorial highlights the utility of [**SpaMTP**](https://github.com/GenomicsMachineLearning/SpaMTP) on single-cell resolution Spatial Metabolomics. This vignette will use public mouse bladder Spatial Metabolomics data first published by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559), and used in the [*Cardinal V3* article](https://doi.org/10.1038/s41592-023-02070-z). 
 
 
