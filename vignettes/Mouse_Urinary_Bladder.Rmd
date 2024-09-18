@@ -31,7 +31,10 @@ Using **SpaMTP** we will highlight:
 * Finding Spatially Correlated Metabolites
 
 Author: Andrew Causer
+
 <br>
+<br>
+
 
 ## Install and Import *R* Libraries
 
@@ -61,7 +64,7 @@ library(EnhancedVolcano)
 
 ## Load SM Data using SpaMTP
 
-#### Sample Pre-Processing
+### Sample Pre-Processing
 
 Pre-Processing is an import step in any pipeline and should be performed prior to any downstream analysis. For spatial metabolic data there are various packages which have robust functions and applications for removing technical noise from a SM dataset, these include *Cardinal* and *SCILS-LAB*. This pre-processing pipeline is copied from *Cardinal's* V3 Vignette. We will not run it in this case because it can take some time. The code required for the preprocessing is provided below but we will just load the processed data object below.
 
@@ -102,7 +105,9 @@ Pre-Processing is an import step in any pipeline and should be performed prior t
 
 </details> 
 
-#### Load Processed *SM* Data
+<br>
+
+### Load Processed *SM* Data
 
 The first step is loading the data. In this case our pre-processed data was saved in the format of .ibd and .imzML files. Alternative formats that data can be loaded into SpaMTP are through a intensity matrix or a Cardinal Object. These are displayed in different vignettes.
 
