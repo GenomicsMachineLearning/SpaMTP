@@ -15,7 +15,7 @@ authors:
     html: "<img src='man/figures/GML_invert.png' height='30' alt=''/>"
   WEHI Institute:
     href: https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/
-    html: "<img src='https://en.wikipedia.org/wiki/WEHI#/media/File:Wehi-logo-2020.png' height='30' alt='WEHI Logo'/>"
+    html: "<img src='https://upload.wikimedia.org/wikipedia/en/7/7d/Wehi-logo-2020.png' height='30' alt='WEHI Logo'/>"
   UQ Institute:
     href: https://imb.uq.edu.au/research-groups/nguyen
     html: "<img src='https://upload.wikimedia.org/wikipedia/en/8/8c/Logo_of_the_University_of_Queensland.svg' height='30' alt='University of Queensland Logo'/>"
