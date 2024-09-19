@@ -15,10 +15,10 @@ authors:
     html: "<img src='man/figures/GML_invert.png' height='30' alt=''/>"
   WEHI Institute:
     href: https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/
-    html: "<img src='https://upload.wikimedia.org/wikipedia/en/1/10/Wehi-logo-2020.png' height='30' alt='WEHI Logo'/>"
+    html: "<img src='https://en.wikipedia.org/wiki/WEHI#/media/File:Wehi-logo-2020.png' height='30' alt='WEHI Logo'/>"
   UQ Institute:
     href: https://imb.uq.edu.au/research-groups/nguyen
-    html: "<img src='https://upload.wikimedia.org/wikipedia/en/b/b0/Logo_of_the_University_of_Queensland.svg' height='30' alt='University of Queensland Logo'/>"
+    html: "<img src='https://upload.wikimedia.org/wikipedia/en/8/8c/Logo_of_the_University_of_Queensland.svg' height='30' alt='University of Queensland Logo'/>"
   QIMR Institute:
     href: https://www.qimrberghofer.edu.au/our-research/infection-and-inflammation/genomics-and-machine-learning-lab-2/
     html: "<img src='https://upload.wikimedia.org/wikipedia/commons/5/5a/Logo_of_the_QIMR.png' height='30' alt='QIMR Logo'/>"
