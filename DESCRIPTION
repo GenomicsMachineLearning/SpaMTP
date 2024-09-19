@@ -9,11 +9,20 @@ Authors@R: c(
             comment = c(ORCID = "0009-0001-7341-8366")),
     person("Tianyao", "Lu",
             email = "lu.t@wehi.edu.au", 
-            role = c("aut")),
+            role = c("aut","cre")),
     person("Christopher", "Fitzgerald",
             role = c("aut")),
     person("GML", "Lab",
-            role = c("fnd")))
+            role = c("lbr")),
+    person("Brain Cancer Research", "Lab",
+            role = c("lbr")),
+    person("WEHI", "Institute",
+            role = c("fnd")),
+    person("UQ", "Institute",
+            role = c("fnd")),
+    person("QIMR", "Institute",
+            role = c("fnd"))
+            )
 Maintainer: Andrew Causer <a.causer@uq.edu.au>
 Description: This is an easy-to-use spatial metabolomic data analysis package that harnesses the functionality of Cardinal and Seurat. In addition to easier and quicker plotting, this package contains additional function for various downstream analyses such as differential peak analysis, merging of Metabolomic and Spatial Transcriptomic (Visium) data, m/z metabolite annotation, and others.
 License: MIT + file LICENSE

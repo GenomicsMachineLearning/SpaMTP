@@ -33,7 +33,6 @@ Using **SpaMTP** we will highlight:
 Author: Andrew Causer
 
 <br>
-<br>
 
 
 ## Install and Import *R* Libraries
@@ -186,7 +185,7 @@ We can see that our data has converted properlly to a *Cardinal* Object. Now we 
 
 <br>
 
-#### Tissue Segmentation using SSC 
+### Tissue Segmentation using SSC 
 
 Following the *Cardinal* tutorial we will use the same values for: 
 
@@ -252,7 +251,7 @@ image(test, mz =798.5410)
 
 <br>
 
-#### Add SSC segmentation results to SpaMTP Object
+### Add SSC segmentation results to SpaMTP Object
 
 Below we will add the relative results from the ssc analysis to our SpaMTP object
 
