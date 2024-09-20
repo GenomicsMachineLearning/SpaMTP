@@ -12,7 +12,7 @@ authors:
     href: https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/
   GML Lab:
     href: https://github.com/GenomicsMachineLearning
-    html: "<img src='man/figures/GML_invert.png' height='30' alt=''/>"
+    html: "<img src='man/figures/GML_invert.png' height='50' alt=''/>"
   WEHI Institute:
     href: https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/
     html: "<img src='https://upload.wikimedia.org/wikipedia/en/7/7d/Wehi-logo-2020.png' height='30' alt='WEHI Logo'/>"
