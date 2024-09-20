@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r fxns, include = FALSE}
+### Code Modified from Seurat: https://github.com/satijalab/seurat/
 library('htmlTable')
 make_list <- function(items) {
   paste0("<ul>", sprintf('<li>%s</li>', items), '</ul>', collapse = '')
