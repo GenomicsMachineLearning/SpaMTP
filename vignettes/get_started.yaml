@@ -5,7 +5,7 @@ vignettes:
     name: Mouse_Urinary_Bladder
     summary: |
       An introduction to integrating analysing spatial metabolomic datasets using SpaMTP.
-    image: assets/SM_Analysis.png
+    image: assets/sm_analysis.png
 
   - title: Multi-Modal Integration of Spatial Data using SpaMTP
     name: Multi-Omic_Mouse_Brain
