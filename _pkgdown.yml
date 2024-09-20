@@ -23,9 +23,9 @@ authors:
     href: https://www.qimrberghofer.edu.au/our-research/infection-and-inflammation/genomics-and-machine-learning-lab-2/
     html: "<img src='https://upload.wikimedia.org/wikipedia/commons/5/5a/Logo_of_the_QIMR.png' height='30' alt='QIMR Logo'/>"
   footer:
-    roles[aut, cre]
+    roles: [aut, cre]
   sidebar:
-    roles[aut, cre, lbr, fnd]
+    roles: [aut, cre, lbr, fnd]
 template:
   params:
       bootswatch: flatly
