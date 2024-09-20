@@ -98,7 +98,75 @@
 
     
     
-<p><br></p>
+<style>
+.two-column-htmltable {
+  width: 66.666%;
+}
+.one-column-htmltable {
+  width: 33.333%;
+}
+
+</style>
+<p>Listed below are a number of useful tutorials demonstrating how to
+use SpaMTP when analysing your spatial metabolomic datasets. For more
+documentation of each function used in these tutorials please visit our
+<a href="../reference/index.html">Reference page</a>.</p>
+<div class="section level2">
+<h2 id="usefull-spamtp-vignettes">Usefull SpaMTP Vignettes<a class="anchor" aria-label="anchor" href="#usefull-spamtp-vignettes"></a>
+</h2>
+<p>For a general introduction in importing data, annotating metabolites
+and running key analysis pipelines on your spatial metabolomic data we
+suggest starting with the Spatial Metabolomic Analysis Tutorial. This
+vignette uses mouse bladder data and demonstrates how to perform general
+tasks such as plotting, subset, and manipulating SpaMTP Seurat objects.
+For those with paired multi-modal datasets we suggest working through
+the Multi-Modal Integration Tutorial. Here, we provide methods to align
+your two datasets to the same coordinates, map spatial metabolomic
+pixels to spatial transcriptomic spots and then run various analysis
+using this integrated data.</p>
+<table class="table two-column-htmltable" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;"><tbody>
+<tr style="border-top: 2px solid grey;">
+<td style="padding-left: .75em; width: 50%; border-top: 2px solid grey; border-left: 1px solid black; border-right: 1px solid black; text-align: left;">
+<div style="text-align:center; font-size:large; font-weight:bold">
+<a href="Mouse_Urinary_Bladder.html">Spatial Metabolomics Analysis using
+SpaMTP</a>
+</div>
+</td>
+<td style="padding-left: .75em; width: 50%; border-top: 2px solid grey; border-right: 1px solid black; text-align: left;">
+<div style="text-align:center; font-size:large; font-weight:bold">
+<a href="Multi-Omic_Mouse_Brain.html">Multi-Modal Integration of Spatial
+Data using SpaMTP</a>
+</div>
+</td>
+</tr>
+<tr>
+<td style="padding-left: .75em; width: 50%; border-left: 1px solid black; border-right: 1px solid black; text-align: left;">
+<img src="assets/SM_Analysis.png" width="3000">
+</td>
+<td style="padding-left: .75em; width: 50%; border-right: 1px solid black; text-align: left;">
+<img src="assets/mm_integration.png" width="3000">
+</td>
+</tr>
+<tr>
+<td style="padding-left: .75em; width: 50%; border-left: 1px solid black; border-right: 1px solid black; text-align: left;">
+An introduction to integrating analysing spatial metabolomic datasets
+using SpaMTP.
+</td>
+<td style="padding-left: .75em; width: 50%; border-right: 1px solid black; text-align: left;">
+Align, map and integrate spatial metabolomic and spatial transcriptomics
+datasets together using SpaMTP.
+</td>
+</tr>
+<tr>
+<td style="padding-left: .75em; width: 50%; border-bottom: 2px solid grey; border-left: 1px solid black; border-right: 1px solid black; text-align: left;">
+<a class="btn btn-primary" href="Mouse_Urinary_Bladder.html" role="button" style="width:100%">GO</a>
+</td>
+<td style="padding-left: .75em; width: 50%; border-bottom: 2px solid grey; border-right: 1px solid black; text-align: left;">
+<a class="btn btn-primary" href="Multi-Omic_Mouse_Brain.html" role="button" style="width:100%">GO</a>
+</td>
+</tr>
+</tbody></table>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -109,9 +177,9 @@
 <span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span></code></pre></div>
 <p><br></p>
-<div class="section level4">
-<h4 id="installing-with-conda-environment">Installing with conda environment<a class="anchor" aria-label="anchor" href="#installing-with-conda-environment"></a>
-</h4>
+<div class="section level3">
+<h3 id="installing-with-conda-environment">Installing with conda environment<a class="anchor" aria-label="anchor" href="#installing-with-conda-environment"></a>
+</h3>
 <p>Below is an example of how to set up SpaMTP using a conda
 environment</p>
 <pre class="console"><code>conda create -n SpaMTP -c conda-forge r-base=4.3.3 r-essentials r-devtools
@@ -122,12 +190,12 @@ conda activate SpaMTP</code></pre>
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span></code></pre></div>
 <p><br></p>
 </div>
+<div class="section level3">
+<h3 id="possible-installiation-errors">Possible Installiation Errors<a class="anchor" aria-label="anchor" href="#possible-installiation-errors"></a>
+</h3>
 <div class="section level4">
-<h4 id="possible-installiation-errors">Possible Installiation Errors<a class="anchor" aria-label="anchor" href="#possible-installiation-errors"></a>
+<h4 id="cairo-failed-to-install">Cairo failed to install<a class="anchor" aria-label="anchor" href="#cairo-failed-to-install"></a>
 </h4>
-<div class="section level5">
-<h5 id="cairo-failed-to-install">Cairo failed to install<a class="anchor" aria-label="anchor" href="#cairo-failed-to-install"></a>
-</h5>
 <pre class="console"><code>checking if R was compiled with the RConn patch... no
 checking for cairo.h... no
 configure: error: Cannot find cairo.h! Please install cairo (http://www.cairographics.org/) and/or set CAIRO_CFLAGS/LIBS correspondingly.
@@ -138,9 +206,9 @@ ERROR: configuration failed for package ‘Cairo’</code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"scater"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="cardinal-failed-to-install">Cardinal Failed to install<a class="anchor" aria-label="anchor" href="#cardinal-failed-to-install"></a>
-</h5>
+<div class="section level4">
+<h4 id="cardinal-failed-to-install">Cardinal Failed to install<a class="anchor" aria-label="anchor" href="#cardinal-failed-to-install"></a>
+</h4>
 <pre class="console"><code>ERROR: dependency ‘EBImage’ is not available for package ‘Cardinal’
 
 BiocManager::install("EBImage")
@@ -169,10 +237,10 @@ conda install conda-forge::fftw</code></pre>
 <em>Cardinal</em> directly through <em>conda</em>:</p>
 <pre class="console"><code>conda install bioconda::bioconductor-cardinal  </code></pre>
 </div>
-<div class="section level5">
-<h5 id="rgoslin-failed-to-install">
+<div class="section level4">
+<h4 id="rgoslin-failed-to-install">
 <em>rgoslin</em> Failed to install<a class="anchor" aria-label="anchor" href="#rgoslin-failed-to-install"></a>
-</h5>
+</h4>
 <p>If rgoslin fails to install please head to their <a href="https://github.com/lifs-tools/rgoslin" class="external-link">github</a>. Alternative,
 you can try installing through BiocManager or mamba shown below:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -197,7 +265,7 @@ you can try installing through BiocManager or mamba shown below:</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>, <a href="https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/" class="external-link"><img src="https://upload.wikimedia.org/wikipedia/en/7/7d/Wehi-logo-2020.png" height="30" alt="WEHI Logo"></a>, <a href="https://imb.uq.edu.au/research-groups/nguyen" class="external-link"><img src="https://upload.wikimedia.org/wikipedia/en/8/8c/Logo_of_the_University_of_Queensland.svg" height="30" alt="University of Queensland Logo"></a>, <a href="https://www.qimrberghofer.edu.au/our-research/infection-and-inflammation/genomics-and-machine-learning-lab-2/" class="external-link"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Logo_of_the_QIMR.png" height="30" alt="QIMR Logo"></a>.</p>
+<p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
