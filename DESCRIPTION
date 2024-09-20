@@ -9,18 +9,18 @@ Authors@R: c(
             comment = c(ORCID = "0009-0001-7341-8366")),
     person("Tianyao", "Lu",
             email = "lu.t@wehi.edu.au", 
-            role = c("aut","cre")),
+            role = c("aut")),
     person("Christopher", "Fitzgerald",
             role = c("aut")),
-    person("GML", "Lab",
-            role = c("lbr")),
     person("Brain Cancer Research", "Lab",
             role = c("lbr")),
-    person("WEHI", "Institute",
-            role = c("fnd")),
+    person("GML", "Lab",
+            role = c("lbr")),
     person("UQ", "Institute",
             role = c("fnd")),
     person("QIMR", "Institute",
+            role = c("fnd")),
+    person("WEHI", "Institute",
             role = c("fnd"))
             )
 Maintainer: Andrew Causer <a.causer@uq.edu.au>
