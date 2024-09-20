@@ -110,7 +110,7 @@ vdat <- read_yaml(file = "get_started.yaml")
 Listed below are a number of useful tutorials demonstrating how to use SpaMTP when analysing your spatial metabolomic datasets. For more documentation of each function used in these tutorials please visit our [Reference page](../reference/index.html).
 
 
-# Usefull SpaMTP Vignettes
+## Usefull SpaMTP Vignettes
 
 For a general introduction in importing data, annotating metabolites and running key analysis pipelines on your spatial metabolomic data we suggest starting with the Spatial Metabolomic Analysis Tutorial. This vignette uses mouse bladder data and demonstrates how to perform general tasks such as plotting, subset, and manipulating SpaMTP Seurat objects. For those with paired multi-modal datasets we suggest working through the Multi-Modal Integration Tutorial. Here, we provide methods to align your two datasets to the same coordinates, map spatial metabolomic pixels to spatial transcriptomic spots and then run various analysis using this integrated data. 
 
@@ -118,7 +118,6 @@ For a general introduction in importing data, annotating metabolites and running
 make_vignette_card_section(vdat = vdat)
 ```
 
-<br>
 
 ## Installation
 
@@ -133,7 +132,7 @@ devtools::install_github("GenomicsMachineLearning/SpaMTP")
 ```
 <br>
 
-#### Installing with conda environment
+### Installing with conda environment
 
 Below is an example of how to set up SpaMTP using a conda environment
 
@@ -150,9 +149,9 @@ devtools::install_github("GenomicsMachineLearning/SpaMTP")
 
 <br>
 
-#### Possible Installiation Errors
+### Possible Installiation Errors
 
-##### Cairo failed to install
+#### Cairo failed to install
 
 ``` console
 checking if R was compiled with the RConn patch... no
@@ -173,7 +172,7 @@ This should resolve any issues. Rerun:
 BiocManager::install("scater")
 ```
 
-##### Cardinal Failed to install
+#### Cardinal Failed to install
 
 ``` console
 ERROR: dependency ‘EBImage’ is not available for package ‘Cardinal’
@@ -220,7 +219,7 @@ If none of the above methods resolve instiallation issues, install *Cardinal* di
 conda install bioconda::bioconductor-cardinal  
 ```
 
-##### *rgoslin* Failed to install
+#### *rgoslin* Failed to install
 
 If rgoslin fails to install please head to their [github](https://github.com/lifs-tools/rgoslin). Alternative, you can try installing through BiocManager or mamba shown below:
 
