@@ -135,7 +135,7 @@ AnnotateSM <- function(data, db, feature.metadata.assay = "Spatial", feature.met
 
   # If you want to remove the "present" column, you can do:
   feature_metadata <- dplyr::select(feature_metadata, -present)
-
+                                                                                                                                                                                                   
   data[[feature.metadata.assay]][[]] <- feature_metadata
   if (return.only.annotated == TRUE){
 
@@ -307,6 +307,8 @@ db_adduct_filter <- function(db, adduct, polarity = "neg", verbose = TRUE) {
   if (polarity == "neg") {
     neg_adducts_1 <-
       c(
+        "M-3H",
+        "M-2H",
         "M-H2O-H",
         "M-H",
         "M+Na-2H",
@@ -344,7 +346,20 @@ db_adduct_filter <- function(db, adduct, polarity = "neg", verbose = TRUE) {
         "2M+Na",
         "2M+K",
         "2M+ACN+H",
-        "2M+ACN+Na"
+        "2M+ACN+Na",
+        "M+3H",
+        "M+2H+Na",
+        "M+H+2Na",
+        "M+3Na",
+        "M+2H",
+        "M+H+NH4",
+        "M+H+Na",
+        "M+H+K",
+        "M+ACN+2H",
+        "M+2Na",
+        "M+2ACN+2H",
+        "M+3ACN+2H",
+        "2M+3H2O+2H"
       )
     pol <- pos_adducts_1
   } else{
