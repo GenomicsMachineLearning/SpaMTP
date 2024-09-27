@@ -19,6 +19,9 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/SpaMTP.html</loc>
   </url>
   <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/SpaMTP_Additional_Features.html</loc>
+  </url>
+  <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/index.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AddCustomMZAnnotations.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AddSMImage.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AlignSpatialOmics.html</loc>
