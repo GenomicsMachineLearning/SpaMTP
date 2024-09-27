@@ -55,6 +55,7 @@ Imports:
     grid,
     imager,
     limma,
+    magick,
     magrittr,
     Matrix,
     matter,

@@ -163,6 +163,7 @@ reference:
   - MapSpatialOmics
   - AlignSpatialOmics
   - MultiOmicIntegration
+  - AddSMImage
 - title: Helper Functions for Multi-Omic Analysis
   desc: Helper functions used in multi-omic analysis functions
   contents:

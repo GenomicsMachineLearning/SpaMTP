@@ -54,9 +54,6 @@ library(ggplot2)
 library(dplyr)
 library(ggplot2)
 library(EnhancedVolcano)
-
-#Visualising HTML files in JupyterLab
-#library(IRdisplay)
 ```
 
 <br>

@@ -986,7 +986,10 @@ get_optimal_layout <- function(list_length) {
 
 
 
-#' Plots mean mass spectrometry intensity values for a given Seurat Object, and groups by categories if supplied.
+#' MassIntensityPlot
+#'
+#' @description
+#' A short Plots mean mass spectrometry intensity values for a given Seurat Object, and groups by categories if supplied.
 #'
 #' @param data Seurat object containing data to be plot.
 #' @param group.by Character string defining the name of the meta.data column to group the data by. Results from each group will be overlayed on the one plot (default = NULL).

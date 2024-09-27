@@ -223,3 +223,6 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
   return(mm.integration)
 }
 
+
+
+

@@ -1130,3 +1130,139 @@ generate.map.affine <- function (
 }
 
 
+
+#' Manually align an image (e.g. H&E, Immuno) to a SM SpaMTP dataset
+#'
+#' @param image_path Character string defining the full path of the image to align.
+#' @param SpaMTP SpaMTP Seurat object to align the image to.
+#' @param fov Character string defining the image fov that contains the SM data coordinates (default = "fov").
+#' @param grey.scale Numeric value defining the grey scale to use for generating a tissue mask from the provided image (default = 0.5).
+#' @param plot.greyscale Boolean indicating whether to display the grey scale plot used to generate the tissue mask (default = FALSE).
+#' @param seed Integer value defining the seed to use for calculating random fake gene values for aligning the image (default = 123).
+#' @param n.spots Integer specifying the number of fake spots to generate for the aligned image. If NULL the number of spots will match that of the SpaMTP object provided (default = NULL).
+#' @param ... Additional inputs used by the AlignSpatialOmics function. Please see documentation or call ?AlignSpatialOmics for more infomation.
+#'
+#' @return A SpaMTP Seurat object with the provided image aligned to the SM data. The image is stored in the `@image$slice1` slot.
+#'
+#' @export
+#'
+#' @examples
+#' # AddSMImage(image_path = "../HnE_image.png", SpaMTP = SpaMTP_obj)
+AddSMImage <- function(image_path, SpaMTP, fov = "fov", grey.scale = 0.5, plot.greyscale = FALSE, seed = 123, n.spots = NULL, ...) {
+
+  ## Load Image
+  img <- magick::image_read(image_path)
+
+  ## Convert Image to Array
+  img_data <- magick::image_data(img)
+  img_array <- as.integer(img_data)/255
+
+  ## Get Tissue mask for fake gene counts matching tissue feature
+  gray_img <- EBImage::channel(img_array, "gray")
+
+  tissue_mask <- gray_img < grey.scale  # Adjust this threshold based on your image
+
+  # Get tissue pixel coordinates
+  tissue_coords <- which(tissue_mask, arr.ind = TRUE)
+
+  if (plot.greyscale) {
+    numeric_tissue_mask <- as.numeric(tissue_mask)
+
+    # Reshape it back to matrix form
+    numeric_tissue_mask <- matrix(numeric_tissue_mask, nrow = nrow(tissue_mask), ncol = ncol(tissue_mask))
+    EBImage::display(numeric_tissue_mask, method = "raster", title = "Tissue Mask", all = TRUE)
+  }
+
+  ## Make Fake Seurat Object Coordinates
+  image_height <- dim(img_array)[1]
+  image_width <- dim(img_array)[2]
+
+  set.seed(seed)  # for reproducibility
+  if (is.null(n.spots)){
+    n_spots <- dim(SpaMTP)[2]
+  } else {
+    n_spots <- as.numeric(n.spots)
+  }
+
+  sampled_coords <- tissue_coords[sample(1:nrow(tissue_coords), n_spots), ]
+  x_coords <- sampled_coords[, 2]  # X coordinates (column index)
+  y_coords <- sampled_coords[, 1]  # Y coordinates (row index)
+
+
+  ## Create fake gene expression data
+  n_genes <- 200  # Number of genes
+  fake_expr_matrix <- matrix(rnorm(n_spots * n_genes), nrow = n_genes, ncol = n_spots)
+
+  ## Create a data frame with spatial coordinates
+  metadata <- data.frame(
+    x = x_coords,
+    y = y_coords,
+    row.names = paste0("spot_", 1:n_spots)
+  )
+
+  ## Create Seurat Object
+  seurat_obj <- Seurat::CreateSeuratObject(counts = fake_expr_matrix)
+  seurat_obj <- Seurat::AddMetaData(seurat_obj, metadata)
+
+  ## Add Spatial Coordinates
+  seurat_obj@meta.data$cell <- rownames(seurat_obj@meta.data)
+
+  fake_coords <- seurat_obj@meta.data
+  fake_coords$imagerow <- fake_coords$y
+  fake_coords$imagecol <- fake_coords$x
+  rownames(fake_coords) <- fake_coords$cell
+  fake_coords$x <- fake_coords$x - min(fake_coords$x)
+  fake_coords$y <- fake_coords$y - min(fake_coords$y)
+  fake_fov <- CreateFOV(
+    fake_coords[, c("imagerow", "imagecol")],
+    type = "centroids",
+    radius = SpaMTP@images[[fov]]$centroids@radius,
+    assay = "Spatial",
+    key = Key("slice", quiet = TRUE)
+  )
+
+  scale.factors <- Seurat::scalefactors(spot = 1, fiducial = 30, hires = 1, lowres = 1)
+
+  ## Add Image to Seurat Object
+  visium.fov <- new(
+    Class = "VisiumV2",
+    boundaries = fake_fov@boundaries,
+    molecules = fake_fov@molecules,
+    assay = fake_fov@assay,
+    key = fake_fov@key,
+    image = img_array,
+    scale.factors = scale.factors
+  )
+  seurat_obj@images[["slice1"]] <- visium.fov
+
+  ## Manually Align H&E Image
+  aligned_SpaMTP <- AlignSpatialOmics(sm.data = SpaMTP, st.data = seurat_obj, image.slice = "slice1", fov = fov, ...)
+
+  real_coords <- Seurat::GetTissueCoordinates(aligned_SpaMTP, image = fov)
+  real_coords$imagerow <- real_coords$x
+  real_coords$imagecol <- real_coords$y
+  rownames(real_coords) <- real_coords$cell
+
+  real_fov <- SeuratObject::CreateFOV(
+    real_coords[, c("imagerow", "imagecol")],
+    type = "centroids",
+    radius = aligned_SpaMTP@images[[fov]]$centroids@radius,
+    assay = "Spatial",
+    key = SeuratObject::Key("slice", quiet = TRUE)
+  )
+
+  new.visium.fov <- methods::new(
+    Class = "VisiumV2",
+    boundaries = real_fov@boundaries,
+    molecules = real_fov@molecules,
+    assay = real_fov@assay,
+    key = real_fov@key,
+    image = img_array,
+    scale.factors = scale.factors
+  )
+
+  aligned_SpaMTP@images[["slice1"]] <- new.visium.fov
+
+  return(aligned_SpaMTP)
+}
+
