@@ -227,7 +227,7 @@ This function will activate an interactive window where you can change the MSI c
 
 Here is an example of what the alignment GUI looks like, and also the perimeters we used to align the H&E image:
 
-```{r echo=FALSE, fig.align="center", out.width="50%"}
+```{r echo=FALSE, fig.align="center", out.width="100%"}
 knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment.png")
 ```
 
@@ -240,6 +240,7 @@ bladder_HE <- readRDS("vignette_data_files/Mouse_Urinary_Bladder/bladder_HE.RDS"
 ```{r fig.width=30, fig.height=5, warning=FALSE, message=FALSE}
 bladder_HE@images
 ```
+
 Lets now visualise this:
 
 ```{r fig.width=20, fig.height=10, warning=FALSE, message=FALSE}
@@ -250,15 +251,16 @@ Lets now visualise this:
 
 This also means that we can now visualise our data using the *Plot3D()* function with a H&E image:
 
-```{r, fig.width=10, fig.height=30, warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
 ### Identified the m/z values that are to be plot
 mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = bladder_annotated, target_mz = x)))
 ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
 
 Plot3DFeature(ROI_HE, features = mzs, show.image = "slice1", assays = "Spatial", 
-              between.layer.height = 200, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
+              between.layer.height = 200, names = c("PC(34:1)","SM(34:1)"), plot.height = 300, plot.width = 600)
                      
 ```
+
 
 
 ## Data Export
