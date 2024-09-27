@@ -51,6 +51,8 @@ navbar:
         href: articles/Mouse_Urinary_Bladder.html
       - text: Multi-Omic Mouse Brain
         href: articles/Multi-Omic_Mouse_Brain.html
+      - text: Additional SpaMTP Features
+        href: articles/SpaMTP_Additional_Features.html
 reference:
 - title: Loading Spatial Metabolic data into a SpaMTP Seurat Object
   desc: Functions that allow the user to load in SM data in different formats
