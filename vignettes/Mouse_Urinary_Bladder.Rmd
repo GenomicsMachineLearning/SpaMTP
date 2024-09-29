@@ -48,10 +48,9 @@ if (!require("SpaMTP"))
 library(SpaMTP)
 library(Cardinal)
 library(Seurat)
+library(dplyr)
 
 #For plotting + DE plots
-library(ggplot2)
-library(dplyr)
 library(ggplot2)
 library(EnhancedVolcano)
 ```
