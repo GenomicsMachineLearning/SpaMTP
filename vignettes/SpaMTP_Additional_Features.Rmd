@@ -380,8 +380,9 @@ trace1 <-
                         colorscale = col.palette[2])
 
     )
+```  
   
-  
+```{r}
 sampled_df <- df[sample(nrow(df), 0.05 * nrow(df)), ]
 
 # To maintain some visual structure, sort by row and column after sampling
