@@ -1,6 +1,9 @@
 library(RColorBrewer)
 library(ggnewscale)
-
+library(ggplotify)
+library(ggpubr)
+library(ggdendro)
+library(cowplot)
 
 #' This the function is used to check the normalisation/scaling/clustering/dimension reduction status
 #'
@@ -208,6 +211,7 @@ region_sea = function(SpaMTP,
         cluster_name = st_cluster_name,
         ...
       )
+      gene_matrix = Matrix::t(SpaMTP[[spatial_transcriptomic_assay]]@layers[[slot]])
     }
   }
   if ("metabolites" %in% analyte_types) {
@@ -230,18 +234,35 @@ region_sea = function(SpaMTP,
         cluster_name = sm_cluster_name,
         ...
       )
+      mass_matrix = Matrix::t(SpaMTP[[spatial_metabolomic_assay]]@layers[[slot]])
     }
   }
-  
+  empty_theme = theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
   if (!is.null(cluster_vector)) {
     cluster_vector = as.factor(cluster_vector)
-    if ((length(cluster_vector) != nrow(Matrix::t(SpaMTP[[assay]]@layers[[slot]])))) {
+    
+    if ((("metabolites" %in% analyte_types)&length(cluster_vector)!= nrow(mass_matrix)) |
+        (("gene" %in% analyte_types)&length(cluster_vector)!= nrow(gene_matrix)) ) {
       stop(
         "Please make sure the input cluster is a vector has same length as the number of elements and is a factor"
       )
     } else{
+      
       assignment = cluster_vector
       cluster = levels(cluster_vector)
+      sscs = "Custome_clustering"
+      user_input = 1
+      sscs[user_input]
+      SpaMTP@meta.data[[sscs[user_input]]] = assignment
     }
   } else{
     verbose_message(message_text = "Checking for whether spatial Shrunken centroid or clustering is finisher" , verbose = verbose)
@@ -255,16 +276,7 @@ region_sea = function(SpaMTP,
         "No spatial shrunken centroid done, please either run spatial shrunken centroid or provide a clustering index (cluster)"
       )
     } else{
-      empty_theme = theme(
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank()
-      )
+
       gg_cluster = lapply(sscs, function(x) {
         assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == x)][, 1]))
         assignment[which(is.na(assignment))] = sample(levels(assignment), size =
@@ -322,19 +334,17 @@ region_sea = function(SpaMTP,
         }
       }
     }
+    assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
   }
   
-  assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
   
   
   #(1) Get the rank entry for each cluster
-  mass_matrix = Matrix::t(SpaMTP[[spatial_metabolomic_assay]]@layers[[slot]])
-  gene_matrix = Matrix::t(SpaMTP[[spatial_transcriptomic_assay]]@layers[[slot]])
+
   
   
   if (is.null(background_cluster)) {
-    #
-    assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
+    #assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
     assignment[which(is.na(assignment))] = sample(levels(assignment), size =
                                                     1)
     cluster = levels(assignment)
@@ -355,7 +365,7 @@ region_sea = function(SpaMTP,
     names(palette) = cluster
     
     gg = ggplot() + geom_raster(aes(x = coordnate[, 1], y = coordnate[, 2], fill = assignment)) + scale_fill_manual(values = palette) +
-      empty_theme + ggtitle(sscs[user_input])
+      empty_theme + ggtitle(ifelse(exists("sscs"),sscs[user_input],"Custom cluster"))
     suppressWarnings({
       print(gg)
     })
@@ -368,7 +378,7 @@ region_sea = function(SpaMTP,
       cc = c(cluster, "pseudo")
       verbose_message(
         message_text = paste0(
-          "Select any regions can be considered as background signals(if no background, type 'none', if all background regions selected, type 'done'): \n",
+          "Select any regions can be considered as background/Baseline signals(if no need to selected, type 'none', if all background regions selected, type 'done'): \n",
           paste0(c(cc[-which(cc %in% sel_bacground)], "none", "done"), collapse =
                    " \n")
         ) ,
@@ -425,7 +435,7 @@ region_sea = function(SpaMTP,
         )
       })
       # Set the db that you want to search against
-      db = rbind(HMDB_db, Chebi_db)
+      db = rbind(HMDB_db, Chebi_db, Lipidmaps_db)
       # set which adducts you want to search for
       #load("data/adduct_file.rda")
       
@@ -502,12 +512,12 @@ region_sea = function(SpaMTP,
   }
   ###########################
   verbose_message(message_text = "Calculating metabolomics differentially expressed cluster ..." , verbose = verbose)
-  indices = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[[sscs[user_input]]]))
-  levels(indices) = c(levels(indices), "background")
+  indices = assignment
+  levels(indices) = c(levels(indices), "Baseline")
   background_clu = background_clu[-which(background_clu == "done" |
                                            background_clu == "none")]
-  indices[which(indices %in% background_clu)] = "background"
-  u = paste0(sscs[user_input], "_background")
+  indices[which(indices %in% background_clu)] = "Baseline"
+  u = paste0(sscs[user_input], "_Baseline")
   SpaMTP@meta.data[[u]] = indices
   
   Idents(SpaMTP) = u
@@ -519,28 +529,27 @@ region_sea = function(SpaMTP,
   DE_met = DE_met %>% mutate(mz_name = gene)
   db_3 = merge(db_3 , DE_met, by = "mz_name")
   verbose_message(message_text = "Calculating transcriptomics differentially expressed cluster ..." , verbose = verbose)
-  DE_rna <- FindAllMarkers(
-    SpaMTP,
-    assay = "SPT",
-    ident = sscs[user_input] ,
-    only.pos = F,
-    test.use = test_use
+  DE_rna <- FindAllMarkers(SpaMTP,
+                           assay = "SPT",
+                           only.pos = F,
+                           test.use = test_use
   )
   DE_rna = DE_rna %>% mutate(commonName = toupper(gene))
-  source_gene = merge(DE_rna, source_df, by = "commonName")
+  source_gene = merge(DE_rna, source_df[which(grepl(source_df$rampId,
+                                                    pattern = "RAMP_G")),], by = "commonName")
   
   SpaMTP@misc[[paste0("DE_",
                       spatial_metabolomic_assay,
                       "_",
                       sscs[user_input],
                       "_",
-                      paste0(c(background_clu, "background"), collapse = "."))]] = db_3
+                      paste0(c(background_clu, "Baseline"), collapse = "."))]] = db_3
   SpaMTP@misc[[paste0("DE_",
                       spatial_transcriptomic_assay,
                       "_",
                       sscs[user_input],
                       "_",
-                      paste0(c(background_clu, "background"), collapse = "."))]] = source_gene
+                      paste0(c(background_clu, "Baseline"), collapse = "."))]] = source_gene
   
   gc()
   
@@ -567,11 +576,11 @@ region_sea = function(SpaMTP,
         clu_wise = which(background_cluster == 1)
       }
       # Get coordinates for the elements in the cluster
-      sub_db3 = db_3[which(db_3$cluster == "background"), ] %>% filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% filter(!duplicated(ramp_id))
+      sub_db3 = db_3[which(db_3$cluster == "Baseline"), ] %>% filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% filter(!duplicated(ramp_id))
       ranks = scale(sub_db3$avg_log2FC, center = 0)
       names(ranks) = sub_db3$ramp_id
       
-      sub_de_gene = source_gene[which(source_gene$cluster == "background"), ] %>% filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% filter(!duplicated(rampId))
+      sub_de_gene = source_gene[which(source_gene$cluster == "Baseline"), ] %>% filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% filter(!duplicated(rampId))
       ranks_gene_vector = scale(sub_de_gene$avg_log2FC, center = 0)
       names(ranks_gene_vector) = sub_de_gene$rampId
       # Genes and metabolites
@@ -584,7 +593,7 @@ region_sea = function(SpaMTP,
       
       sub_de_gene = source_gene[which(as.character(source_gene$cluster) == as.character(non_bac_cluster[i])), ] %>% filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% filter(!duplicated(rampId))
       ranks_gene_vector = scale(sub_de_gene$avg_log2FC, center = 0)
-      names(ranks_gene_vector) = sub_de_gene$commonName
+      names(ranks_gene_vector) = sub_de_gene$rampId
       # Genes and metabolites
       ranks = c(ranks, ranks_gene_vector)
     }
@@ -600,7 +609,7 @@ region_sea = function(SpaMTP,
       )  %>%  dplyr::mutate(Cluster_id = ifelse(
         i <= length(non_bac_cluster),
         paste0("Cluster", non_bac_cluster[i]),
-        "Background"
+        "Baseline"
       ))
     })
     gsea_result = na.omit(gsea_result)
@@ -643,7 +652,7 @@ region_sea = function(SpaMTP,
   gsea_all_cluster_return = merge(gsea_all_cluster_return, pathway, by = "pathwayName")
   ########################################################
   #Plot#
-  SpaMTP@misc[[paste0("set_enriched_", sscs[user_input], "_", paste0(c(background_clu, "background"), collapse =
+  SpaMTP@misc[[paste0("set_enriched_", sscs[user_input], "_", paste0(c(background_clu, "baseline"), collapse =
                                                                        "."))]] = gsea_all_cluster_return
   return(SpaMTP)
 }
@@ -656,7 +665,6 @@ region_sea = function(SpaMTP,
 #' @param pval_cutoff_pathway A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways
 #' @param num_display Number of pathways that to be output in the figures
 #' @param text_size A numerical value contols the text size of the plot
-
 
 
 plotsea = function(SpaMTP,
@@ -688,6 +696,7 @@ plotsea = function(SpaMTP,
       ))
     }
   }
+  gsea_all_cluster_sig = gsea_all_cluster_sig %>% filter(Cluster_id!="Cluster9")
   
   cluster_indent = sub("set_enriched_", "", sub("_[^_]*$", "", enriched_names[user_input]))
   clus = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[[cluster_indent]]))
@@ -710,22 +719,8 @@ plotsea = function(SpaMTP,
   uid = unique(gsea_all_cluster_sig$Cluster_id)
   clu_names = data.frame(cluster = levels(clus),
                          clu_name = paste0("Cluster", levels(clus)))
-  colours_df = c()
-  for (i in 1:length(uid)) {
-    if (uid[i] %in% clu_names$clu_name) {
-      temp_clu = clu_names$cluster[which(clu_names$clu_name == uid[i])]
-      colours_df[which(clus %in% temp_clu)] = palette[which(names(palette) == temp_clu)]
-    } else{
-      temp_clu = clu_names$cluster[which(!clu_names$clu_name %in% uid)]
-      colours_df[which(clus %in% temp_clu)] = "#A9A9A9"
-    }
-  }
-  coordnate = data.frame(coordnate)  %>% mutate(colour = colours_df)
-  
-  
-  
   colnames(gsea_all_cluster_sig)[1] = "pathwayName"
-  gsea_all_cluster_sig = gsea_all_cluster_sig %>% dplyr::group_by(pathwayName) %>% dplyr::filter(any(as.numeric(pval) <= (pval_cutoff_pathway %||% 0.05))) %>% dplyr::mutate(
+  gsea_all_cluster_sig = gsea_all_cluster_sig %>% dplyr::group_by(pathwayName) %>% dplyr::mutate(
     Significance = ifelse(
       pval <= 0.05,
       "Significant at 5% significance level",
@@ -780,7 +775,6 @@ plotsea = function(SpaMTP,
                     ))
   
   axis_limits <- with(pos_table, c(min(y_center - 0.5 * height), max(y_center + 0.5 * height))) + 0.1 * c(-1, 1)
-  
   plt_dendr <- ggplot(segment_hc) +
     geom_segment(aes(
       x = sqrt(x),
@@ -811,7 +805,7 @@ plotsea = function(SpaMTP,
       x = factor(Cluster_id, levels = sort(unique(Cluster_id))),
       y = factor(pathnameid, levels = dendro_data(hc)$labels$label)
     )) +
-      geom_point(aes(colour = as.numeric(NES), size = as.numeric(size) * 2.1)) +
+      geom_point(aes(colour = as.numeric(NES), size = as.numeric(sqrt(size)) * 5.1)) +
       scale_colour_gradient2(
         name = "Normalised enrichment score",
         low = "blue",
@@ -865,10 +859,10 @@ plotsea = function(SpaMTP,
   gg_dotnl = gg_dot + theme(legend.position = "none")
   
   
-  
+  uid = c("Cluster9", "Cluster2")
   raster_image = list()
   for (j in 1:length(uid)) {
-    temp_matrix = coordnate
+    temp_matrix = data.frame(coordnate) %>% mutate(colour = "red")
     if (sub("cluster", "", tolower(uid[j])) %in% tolower(clus)) {
       temp_matrix$colour = "red"
       temp_matrix$colour[which(tolower(clus) != sub("cluster", "", tolower(uid[j])))] = "#A9A9A9"
