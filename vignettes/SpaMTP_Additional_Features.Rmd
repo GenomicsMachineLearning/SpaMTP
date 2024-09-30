@@ -9,8 +9,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse = FALSE,
+  comment = "##"
 )
 ```
 
@@ -44,15 +44,21 @@ Here we will be using already processed, clustered (via spatially-aware Shrunken
 bladder_annotated <- readRDS("vignette_data_files/Mouse_Urinary_Bladder/bladder_annotated.RDS")
 ```    
 
-<br>
 
 ## Querying an ***SpaMTP*** Dataset 
 
 ***SpaMTP*** stores the relative m/z value annotations in the objects feature metadata slot. We can see this below:
 
-```{r warning=FALSE, message=FALSE}
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 head(bladder_annotated@assays$Spatial@meta.data)
-```  
+```
+
+```{r, echo=FALSE}
+df <- head(bladder_annotated@assays$Spatial@meta.data)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
+
 
 However, there is are some useful functions that lets the user search through their ***SpaMTP** dataset to find either exact m/z values or metabolite names that they are interested in. Lets see how each works:
 
@@ -63,31 +69,53 @@ FindNearestMZ(bladder_annotated, 741.5)
 ```  
 
 This is useful if the metabolite of interest has a known m/z mass, or if the user wants to use *Seurat's* feature plotting functions. 
+<br> 
 
 The second is *SearchAnnotations()*, this function lets query a metabolite to find if it is present within their dataset. 
 
-```{r warning=FALSE, message=FALSE}
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 SearchAnnotations(bladder_annotated, metabolite = "Isorhamnetin 3-(6''-malonylglucoside)", search.exact = TRUE)
-```  
+```
+
+```{r, echo=FALSE}
+df <-SearchAnnotations(bladder_annotated, metabolite = "Isorhamnetin 3-(6''-malonylglucoside)", search.exact = TRUE)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
+
 
 The `search.exact` parameter specifies whether there needs to be an exact match to the metabolite name. If set to `FALSE`, users can find all metabolites with similar names. For example we want to see all the different types of `(3'-sulfo)Galbeta-Cer` lipids in our dataset.
-
-```{r warning=FALSE, message=FALSE}
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 SearchAnnotations(bladder_annotated, metabolite = "(3'-sulfo)Galbeta-Cer", search.exact = FALSE)
-``` 
+```
+
+```{r, echo=FALSE}
+df <-SearchAnnotations(bladder_annotated, metabolite = "(3'-sulfo)Galbeta-Cer", search.exact = FALSE)
+
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
+
 
 This function also lets users select the feature metadata column they want to Query. For example, if *RefineLipis()* has been run users can search for all lipids of the Class "GlcCer". 
-
-```{r warning=FALSE, message=FALSE}
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 SearchAnnotations(bladder_annotated, metabolite = "GlcCer", search.exact = FALSE, column.name = "Lipid.Maps.Main.Class")
-``` 
+```
+
+```{r, echo=FALSE}
+df <-SearchAnnotations(bladder_annotated, metabolite = "GlcCer", search.exact = FALSE, column.name = "Lipid.Maps.Main.Class")
+
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
+
+
 
 ## Subsetting a ***SpaMTP*** Dataset by Metabolites
 
 In some cases, we may want to reduce the number of features present in our dataset. Often there are thousands or millions of metabolites in one dataset, removing unwanted metabolites can often reduce the computational load. Below we demonstrate how to subset our bladder dataset to only include Glycerophospholipids.
 
 ```{r warning=FALSE, message=FALSE}
-
 GPs <- SearchAnnotations(bladder_annotated, metabolite = "GP", search.exact = FALSE, column.name = "Lipid.Maps.Category")
 
 bladder_GPs <- SubsetMZFeatures(bladder_annotated, features = GPs$mz_names)
@@ -112,26 +140,24 @@ An important part of any analysis pipeline is to generate informative and clear 
 Plotting in ***SpaMTP*** builds on *ggplot2* allowing for easy organisation and plot manipulation. Below we will plot the expression of the m/z 741.530578613281 using *Seurat's* plotting function *ImageFeaturePlot()*. Below we use ggplot helper functions to orientate the image correctly.  
 
 ```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
-ImageFeaturePlot(bladder_annotated, features = "mz-741.530578613281", size = 2) & 
-  coord_flip() & 
-  scale_x_reverse()
+ImageFeaturePlot(bladder_annotated, features = "mz-741.530578613281", size = 2) & coord_flip() & scale_x_reverse()
 ```
 
 
 Comparatively, the ***SpaMTP*** function *ImageMZPlot()* provides more SM-based functionality, including:
+
 * Plotting the closest m/z value to the numeric value provided.
 * Plotting the combined expression of &#177; the mz value in ppm
 * Plotting the spots as either circles (*ST*) or pixels (*SM*)
 
 ```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
-ImageMZPlot(bladder_annotated, mz = 741.53057, plusminus = 1, size = 1, plot.pixel = TRUE) & 
-  coord_flip() & 
-  scale_x_reverse()
+ImageMZPlot(bladder_annotated, mz = 741.53057, plusminus = 1, size = 1, plot.pixel = TRUE) & coord_flip() & scale_x_reverse()
 ```
 
 ### Plotting a Metabolite Name
 
 In addition, ***SpaMTP*** also has a function *ImageMZAnnotationPlot()* which allows users to plot the spatial expression of named metabolites. In addition to the features above, this function also lets users:
+
 * Plot from a specific column in the feature metadata containing the m/z metabolite annotations
 * Combine the expression of all metabolites that match the specified name (as described above using plot.exact = `FALSE`). 
 
@@ -146,8 +172,7 @@ mb
 Lets plot them individually
 
 ```{r, fig.width=22, fig.height=5, warning=FALSE, message=FALSE}
-ImageMZAnnotationPlot(bladder_annotated, metabolites = c("(3'-sulfo)Galbeta-Cer(d18:1/22:0(2OH))", "(3'-sulfo)Galbeta-Cer(d18:1/24:0(2OH))"), slot = "counts", plot.exact = FALSE, size = 1.5) & coord_flip() & 
-  scale_x_reverse()
+ImageMZAnnotationPlot(bladder_annotated, metabolites = c("(3'-sulfo)Galbeta-Cer(d18:1/22:0(2OH))", "(3'-sulfo)Galbeta-Cer(d18:1/24:0(2OH))"), slot = "counts", plot.exact = FALSE, size = 1.5) & coord_flip() & scale_x_reverse()
 ```
 
 Lets plot them combined
@@ -165,48 +190,52 @@ Often we are interested in different patterns of metabolite expression between g
 
 
 ```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
-
 ROI <- subset(bladder_annotated, subset = ssc %in% c("2", "5", "6")) 
 
-p <- MassIntensityPlot(ROI, group.by = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
-              
+MassIntensityPlot(ROI, group.by = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
 ```
 
 Based on this plot we can see that our metabolite "PC(34:1)" has been annotated on the plot. The plot looks quite crowded though. We can either change the mass range to only show the specific region on the spectrum, or we could generate indiviudal plots for each cluster. We will show both approachs below:
 
 Change the mass range:
 ```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
-p <- MassIntensityPlot(ROI, group.by = "ssc", mass.range = c(750, 850), label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
+MassIntensityPlot(ROI, group.by = "ssc", mass.range = c(750, 850), label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
 ```
 
 Generate indiviudal plots per cluster:
 ```{r, fig.width=20, fig.height=10, warning=FALSE, message=FALSE}
-p <- MassIntensityPlot(ROI, split.by  = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
+MassIntensityPlot(ROI, split.by  = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
 ```
 
 Now we can clearly see that this metabolite is highly expressed by cluster 6!
 
 
-There are various additional visualisation techniques such as 3D Density Kernel plotting and various DE and pathway analysis plotting functions. These can all bee seen in either the [SM data analysis]https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html) or [Multi-Omic data](https://genomicsmachinelearning.github.io/SpaMTP/articles/Multi-Omic_Mouse_Brain.html) analysis vingettes.
+There are various additional visualisation techniques such as 3D Density Kernel plotting and various DE and pathway analysis plotting functions. These can all bee seen in either the [SM data analysis](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html) or [Multi-Omic data](https://genomicsmachinelearning.github.io/SpaMTP/articles/Multi-Omic_Mouse_Brain.html) analysis vingettes.
 
 
 ## Binning Metabolites
 
 Expression of specific metabolites on their own can sometime be difficult to detect, however when combining the expression of similar metabolites these patterns can become more observable. ***SpaMTP*** has the function *BinMetabolites()* which lets users specify the metabolites they want to combine the expression of. These values are then stored in the `@metadata` slot of the ***SpaMTP*** *Seurat* object and can be plotted or used for further analysis. Below we will demonstrate how to bin the expression of all Glycerophospholipids. 
 
-```{r warning=FALSE, message=FALSE}
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 mzs <- SearchAnnotations(bladder_annotated, metabolite = "GP", search.exact = FALSE, column.name = "Lipid.Maps.Category")$mz_names
 
 bladder_annotated <- BinMetabolites(bladder_annotated, mzs = mzs, assay = "Spatial", slot = "counts", bin_name = "Binned_GPs")
 
 head(bladder_annotated@meta.data)
 ```
+
+```{r, echo=FALSE}
+df <-head(bladder_annotated@meta.data)
+
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
+
 We can see the expression values have been stored in the `@meta.data` column "Binnde_GPs". Now lets plot the results:
 
 ```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
-ImageFeaturePlot(bladder_annotated, features = "Binned_GPs", size = 2) & 
-  coord_flip() & 
-  scale_x_reverse() & scale_fill_gradientn(colors = viridis::viridis(100))
+ImageFeaturePlot(bladder_annotated, features = "Binned_GPs", size = 2) & coord_flip() & scale_x_reverse() & scale_fill_gradientn(colors = viridis::viridis(100))
 ```
 
 We can see that there is high expression of GP's in the urothelium and adventitia layers of the bladder. This feature is especially usefull to combine metabolites that are all up expressed in a specific condition/cluster (following differential expression analysis).
@@ -226,7 +255,7 @@ This function will activate an interactive window where you can change the MSI c
 
 Here is an example of what the alignment GUI looks like, and also the perimeters we used to align the H&E image:
 
-```{r echo=FALSE, fig.align="center", out.width="100%"}
+```{r echo=FALSE, fig.align="center", out.width="100%", dpi=1000}
 knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment.png")
 ```
 

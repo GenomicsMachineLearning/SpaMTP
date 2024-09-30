@@ -9,8 +9,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse = FALSE,
+  comment = "##"
 )
 ```
 
@@ -67,7 +67,7 @@ As mentioned above, the format of the MSI data is in a mtx format. This is diffe
 
 <div style="margin-left: auto;
             margin-right: auto;
-            width: 30%">
+            width: 100%">
 
 |  x  | y  | mz_1| mz_2| mz_3| ... | mz_n|        
 | :--:| :---:|:---:|:---:|:---:|:---:|:---:|
@@ -624,14 +624,14 @@ SpatialFeaturePlot(integrated.data, features = "Pcp4", pt.size.factor = 2)
 Based on this analysis we can visualise this gene and metabolite of interest in the same 3D plot ("Pcp4" and "Dopamine")
 
 
-```{r, fig.width=10, fig.height=30}
+```{r, fig.width=10, fig.height=10}
 Plot3DFeature(combined.data, 
               features = c("Pcp4", "mz-674.2805"), 
               assays = c("SPT", "SPM"), 
               between.layer.height = 10000, 
               show.image = "slice1", 
               plot.height = 400, 
-              plot.width = 800, 
+              plot.width = 700, 
               downscale.image = 2)
 ```
 
