@@ -629,9 +629,10 @@ Plot3DFeature(combined.data,
               features = c("Pcp4", "mz-674.2805"), 
               assays = c("SPT", "SPM"), 
               between.layer.height = 10000, 
-              #show.image = "slice1", 
+              show.image = "slice1", 
               plot.height = 400, 
-              plot.width = 800)
+              plot.width = 800, 
+              downscale.image = 2)
 ```
 
 <br>
