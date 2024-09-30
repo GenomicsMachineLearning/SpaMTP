@@ -383,11 +383,27 @@ trace1 <-
 ```  
   
 ```{r}
+
+color_matrix <- as.raster(data@images[[show.image]]@image)
+    row_indices <- rep(seq_len(nrow(color_matrix)), each = ncol(color_matrix))
+    col_indices <- rep(seq_len(ncol(color_matrix)), times = nrow(color_matrix))
+
+    # Flatten the color matrix into a vector
+    colors <- as.vector(color_matrix)
+
+    # Create a data frame
+    df <- data.frame(row = row_indices,
+                     col = col_indices,
+                     color = colors)
+
+
 sampled_df <- df[sample(nrow(df), 0.05 * nrow(df)), ]
 
 # To maintain some visual structure, sort by row and column after sampling
 sampled_df <- sampled_df[order(sampled_df$row, sampled_df$col), ]
+```
 
+```{r}
 p1 <- plot%>% plotly::add_trace(sampled_df,
                x = sampled_df$row / ROI_HE@images[["slice1"]]@scale.factors[["lowres"]],
                y = sampled_df$col / ROI_HE@images[["slice1"]]@scale.factors[["lowres"]],
