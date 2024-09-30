@@ -285,8 +285,17 @@ mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = bla
 ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
 
 Plot3DFeature(ROI_HE, features = mzs, show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800, downscale.image = 2)
-                     
 ```
+
+
+This function is designed for plotting 2 features simultaneously. If we only want to visualise one of the features we can use a work around to only show a single trace, where trace 1 = feature1, 2 = feature2 and 3 = image. Here we just provide one feature to plot. To stop this one feature being replicated we can add an additional line of code shown below:
+
+```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+p <- Plot3DFeature(ROI_HE, features = mzs[2], show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("SM(34:1)", "SM(34:1)"), plot.height = 400, plot.width = 800, downscale.image = 2)
+
+plotly::style(p, visible = FALSE, traces = 1)
+```
+
 
 
 

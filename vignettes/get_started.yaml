@@ -13,3 +13,8 @@ vignettes:
       Align, map and integrate spatial metabolomic and spatial transcriptomics datasets together using SpaMTP.
     image: assets/mm_integration.png
 
+  - title: Additional SpaMTP Functionality
+    name: SpaMTP_Additional_Features
+    summary: |
+      Examples of additional SpaMTP visualisation and analysis functions that are useful for SM analysis pipelines.
+    image: assets/AdditionalFeatures.png

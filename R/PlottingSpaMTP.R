@@ -1409,6 +1409,9 @@ Plot3DFeature <- function(data,
   if (length(col.palette) ==  1 ){
     col.palette <- c(col.palette, col.palette)
   }
+  if (length(names) ==  1 ){
+    names <- c(names, names)
+  }
 
 
 

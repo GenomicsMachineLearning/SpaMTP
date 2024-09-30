@@ -22,7 +22,8 @@ Plot3DFeature(
   show.image = NULL,
   plot.height = 800,
   plot.width = 1500,
-  image.sf = "lowres"
+  image.sf = "lowres",
+  downscale.image = NULL
 )
 }
 \arguments{
@@ -61,6 +62,8 @@ Plot3DFeature(
 \item{plot.width}{Numeric value defining the width of the returned plot (default = 1500).}
 
 \item{image.sf}{Character string defining the image scalefactor to use (default = "lowres").}
+
+\item{downscale.image}{Numeric value defining the amount to downscale the image by. This parameter is only necessary when show.image != NULL. Downscaling the image is not necessary, however when rendering plotly to HTML excessively large images can cause issues whereby setting a downscaling value can improve this (default = NULL).}
 }
 \value{
 A 3D Plotly plot
