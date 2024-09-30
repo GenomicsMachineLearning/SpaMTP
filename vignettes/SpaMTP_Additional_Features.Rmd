@@ -259,7 +259,7 @@ ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
                      
 ```
 
-```{r}
+```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
 library(plotly)
 data <- ROI_HE
 assays = c("SPT", "SPM")
