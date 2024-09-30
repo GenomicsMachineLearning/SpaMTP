@@ -1354,6 +1354,7 @@ CheckAlignment <- function(SM.data, ST.data, image.res = NULL, names = c("SM", "
 #' @param plot.height Numeric value defining the height of the returned plot (default = 800).
 #' @param plot.width Numeric value defining the width of the returned plot (default = 1500).
 #' @param image.sf Character string defining the image scalefactor to use (default = "lowres").
+#' @param downscale.image Numeric value defining the amount to downscale the image by. This parameter is only necessary when show.image != NULL. Downscaling the image is not necessary, however when rendering plotly to HTML excessively large images can cause issues whereby setting a downscaling value can improve this (default = NULL).
 #'
 #'
 #' @return A 3D Plotly plot
@@ -1380,7 +1381,8 @@ Plot3DFeature <- function(data,
                           show.image = NULL,
                           plot.height = 800,
                           plot.width = 1500,
-                          image.sf = "lowres"
+                          image.sf = "lowres",
+                          downscale.image = NULL
                           ){
 
   ## handeling of inncorect input legnths
@@ -1508,7 +1510,25 @@ Plot3DFeature <- function(data,
                      col = col_indices,
                      color = colors)
 
+    if (!is.null(downscale.image)){
 
+      grid_df <- df
+      grid_size <- as.numeric(downscale.image)
+
+      # Create a new column to identify grid cells
+      grid_df$grid_row <- floor(grid_df$row / grid_size)
+      grid_df$grid_col <- floor(grid_df$col / grid_size)
+
+      # Aggregate points by grid cell
+      df <- grid_df %>%
+        dplyr::group_by(grid_row, grid_col) %>%
+        dplyr::summarize(
+          row = mean(row),
+          col = mean(col),
+          color = dplyr::first(color),  # Or use a method to choose color
+          .groups = "drop"
+        )
+    }
     plot <- plot %>% add_trace(df,
                                x = df$row / data@images[[show.image]]@scale.factors[[image.sf]],
                                y = df$col / data@images[[show.image]]@scale.factors[[image.sf]],
