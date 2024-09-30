@@ -255,9 +255,151 @@ This also means that we can now visualise our data using the *Plot3D()* function
 mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = bladder_annotated, target_mz = x)))
 ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
 
-Plot3DFeature(ROI_HE, features = mzs, show.image = "slice1", assays = "Spatial", 
-              between.layer.height = 200, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
+#Plot3DFeature(ROI_HE, features = mzs, show.image = "slice1", assays = "Spatial", between.layer.height = 200, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
                      
+```
+
+```{r}
+library(plotly)
+data <- ROI_HE
+assays = c("SPT", "SPM")
+slots = "counts"
+between.layer.height = 100
+names= NULL
+size = 3
+col.palette = "Reds"
+x.axis.label = "x"
+y.axis.label = "y"
+z.axis.label = "z"
+show.x.ticks = FALSE
+show.y.ticks = FALSE
+show.z.ticks = FALSE
+show.image = NULL
+plot.height = 800
+plot.width = 1500
+image.sf = "lowres"
+features = mzs
+show.image = "slice1"
+assays = "Spatial"
+between.layer.height = 200
+names = c("PC(34:1)","SM(34:1)")
+plot.height = 400
+plot.width = 800
+
+if (length(features) ==  1 ){
+    features <- c(features, features)
+  }
+  if (length(assays) ==  1 ){
+    assays <- c(assays, assays)
+  }
+  if (length(slots) ==  1 ){
+    slots <- c(slots, slots)
+  }
+  if (length(col.palette) ==  1 ){
+    col.palette <- c(col.palette, col.palette)
+  }
+
+
+
+ feature_data <- list()
+
+  i <- 1
+  default_names <- c()
+  for (feature in features) {
+
+    if (feature %in% colnames(data@meta.data)){
+      default_names <- c(default_names, feature)
+      feature_data[[i]] <- data@meta.data[[feature]]
+    } else {
+      if (length(assays) != 0){
+
+        feature_data[[i]] <- tryCatch({data[[assays[i]]][slots[i]][feature,]},
+                                      error = function(err){
+                                        stop("The feature provided does not exist in the ", assays[i],": ",slots[i], " object. Please provide a value feature")})
+      } else {
+        stop("No assay supplied. The feature ", feature," either does not exist in @meta.data slot, or no matching assay was provided for the gene/feature. Please check SpaMTP object")
+      }
+      default_names <- c(default_names, paste0(feature,"_", assays[i]))
+    }
+    i <- i + 1
+  }
+  if (!(is.null(names))){
+    if (length(names) == 2) {
+      default_names <- names
+    } else {
+      warning("length of names must be == 2. Default names will be used instead ... ")
+    }
+  }
+
+trace1 <-
+    plot_ly(GetTissueCoordinates(data),
+            x = ~x,
+            y = ~y,
+            z = rep(0 + between.layer.height, times = dim(GetTissueCoordinates(data))[1]),
+            type = "scatter3d",
+            mode = "markers",
+            height = plot.height,
+            width = plot.width,
+            name = default_names[1],
+            marker = list(color = feature_data[[1]],
+                          coloraxis = 'coloraxis', size = size)) %>%
+    layout(scene = list(
+      aspectmode = "data",
+      xaxis = list(title = x.axis.label, showticklabels = show.x.ticks),
+      yaxis = list(title = y.axis.label, showticklabels = show.y.ticks),
+      zaxis = list(title = z.axis.label, showticklabels = show.z.ticks)))
+
+  plot <-  trace1 %>% add_trace(GetTissueCoordinates(data),
+                                x = ~x,
+                                y = ~y,
+                                z = rep(0, times = dim(GetTissueCoordinates(data))[1]),
+                                type = "scatter3d",
+                                mode = "markers",
+                                name = default_names[2],
+                                marker = list(color = feature_data[[2]],
+                                              coloraxis = 'coloraxis2')) %>% layout(autosize = F,
+      scene = list(
+        aspectmode = "data",
+        xaxis = list(title = x.axis.label, showticklabels = show.x.ticks),
+        yaxis = list(title = y.axis.label, showticklabels = show.y.ticks),
+        zaxis = list(title = z.axis.label, showticklabels = show.z.ticks)),
+      coloraxis = list(colorbar = list(orientation = "v",
+                                       xanchor ="right",
+                                       x = 0,
+                                       len = 0.5,
+                                       title = list( side = "top",
+                                                     text = default_names[1]
+                                       )),
+                       colorscale = col.palette[1]),
+      coloraxis2 = list(colorbar = list(orientation = "v",
+                                        xanchor ="left",
+                                        len = 0.5,
+                                        x = 0,
+                                        title = list( side = "top",
+                                                      text = default_names[2]
+                                        )),
+                        colorscale = col.palette[2])
+
+    )
+  
+  
+sampled_df <- df[sample(nrow(df), size = 0.05 * nrow(df)), ]
+
+# To maintain some visual structure, sort by row and column after sampling
+sampled_df <- sampled_df[order(sampled_df$row, sampled_df$col), ]
+
+p1 <- plot%>% plotly::add_trace(sampled_df,
+               x = sampled_df$row / ROI_HE@images[["slice1"]]@scale.factors[["lowres"]],
+               y = sampled_df$col / ROI_HE@images[["slice1"]]@scale.factors[["lowres"]],
+               z = rep(0 - 200, times = dim(sampled_df)[1]),
+               type = "scatter3d",
+               mode = "markers",
+               name = "H&E",
+               marker = list(color = sampled_df$color))
+
+p1
+
+#print(dim(sampled_df)[1]+length(feature_data[[1]])+length(feature_data[[2]]))
 ```
 
 
