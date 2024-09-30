@@ -266,7 +266,6 @@ assays = c("SPT", "SPM")
 slots = "counts"
 between.layer.height = 100
 names= NULL
-size = 3
 col.palette = "Reds"
 x.axis.label = "x"
 y.axis.label = "y"
@@ -342,7 +341,7 @@ trace1 <-
             width = plot.width,
             name = default_names[1],
             marker = list(color = feature_data[[1]],
-                          coloraxis = 'coloraxis', size = size)) %>%
+                          coloraxis = 'coloraxis', size = 3)) %>%
     layout(scene = list(
       aspectmode = "data",
       xaxis = list(title = x.axis.label, showticklabels = show.x.ticks),
@@ -383,7 +382,7 @@ trace1 <-
     )
   
   
-sampled_df <- df[sample(nrow(df), size = 0.05 * nrow(df)), ]
+sampled_df <- df[sample(nrow(df), 0.05 * nrow(df)), ]
 
 # To maintain some visual structure, sort by row and column after sampling
 sampled_df <- sampled_df[order(sampled_df$row, sampled_df$col), ]
