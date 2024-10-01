@@ -107,15 +107,18 @@ reference:
   desc: Functions used to perform pathway analysis, both PCA and metabolite/gene set-based
     (GSEA)
   contents:
-  - PCAPathwayAnalysis
   - FishersPathwayAnalysis
-  - VisualisePathways
-  - PathwaysPerRegion
+  - FindRegionalPathways
   - get_analytes_db
   - list_to_pprcomp
   - find_index
   - rescale
   - ResizeMat
+- title: Metabolic and Transcriptomic Pathway Visualisation
+  desc: Functions used to visualise pathway analysis results
+  contents:
+  - VisualisePathways
+  - PlotRegionalPathways
 - title: PCA Metabolite Analysis
   desc: Functions that are used for calculating PCA embeddings and projections based on SM data
   contents:
