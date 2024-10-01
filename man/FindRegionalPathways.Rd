@@ -6,65 +6,47 @@
 \usage{
 FindRegionalPathways(
   SpaMTP,
-  polarity,
+  ident,
+  SM_DE,
+  ST_DE = NULL,
+  polarity = NULL,
   adduct = NULL,
   analyte_types = c("gene", "metabolites"),
-  spatial_metabolomic_assay = "SPM",
-  spatial_transcriptomic_assay = "SPT",
-  slot = "counts",
-  npcs = 30,
-  resolution = 0.5,
-  algorithm = 1,
+  SM_assay = "SPM",
+  ST_assay = "SPT",
+  SM_slot = "counts",
+  ST_slot = "counts",
   test_use = "wilcox",
-  st_cluster_name = "ST_clusters",
-  sm_cluster_name = "SM_clusters",
   tof_resolution = 30000,
   min_path_size = 5,
   max_path_size = 500,
-  cluster_vector = NULL,
-  background_cluster = NULL,
   ppm_error = NULL,
   pval_cutoff_pathway = NULL,
   pval_cutoff_mets = NULL,
   pval_cutoff_genes = NULL,
-  verbose = T,
-  ...
+  verbose = T
 )
 }
 \arguments{
-\item{SpaMTP}{A seurat object contains spatial metabolomics/transcriptomics features or both.}
+\item{SpaMTP}{A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.}
 
 \item{polarity}{The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).}
 
-\item{adduct}{A vector subset of SpaMTP::adduct_file$adduct_name, e.g. c("M+K","M+H "), default will take the full list of SpaMTP::adduct_file$adduct_name}
+\item{adduct}{Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).}
 
-\item{analyte_types}{A subset of c("gene", "metabolites"), can be c("gene"), c("metabolites") or both}
+\item{analyte_types}{Vector of character strings defining which analyte types to use. Options can be c("gene"), c("metabolites") or both (default = c("gene", "metabolites")).}
 
-\item{spatial_metabolomic_assay}{A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from, default is "SPM"}
+\item{SM_assay}{A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").}
 
-\item{spatial_transcriptomic_assay}{A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from(default = "SPT").}
+\item{ST_assay}{A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").}
 
-\item{slot}{The slot name in each assay to access the matrix data of each omics, default is "count"}
-
-\item{npcs}{A numerical integer, representing the number of principle components that the PCA will reduce to.}
-
-\item{resolution}{Goes to seurat::FindClusters Value of the resolution parameter, use a value above (below) 1.0 if you want to obtain a larger (smaller) number of communities.}
-
-\item{algorithm}{Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python}
-
-\item{st_cluster_name}{A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done}
-
-\item{sm_cluster_name}{A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"}
+\item{SM_slot}{The slot name containing the SM assay matrix data (default = "counts").}
 
 \item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]} (default = 30000).}
 
 \item{min_path_size}{The min number of metabolites in a specific pathway (default = 5).}
 
 \item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
-
-\item{cluster_vector}{A factor vector where each levels indicates the different clustered regions in tissue}
-
-\item{background_cluster}{A vector consist of 0 and 1, where 1 indicates the intended background region}
 
 \item{ppm_error}{A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )}
 
@@ -75,6 +57,18 @@ FindRegionalPathways(
 \item{pval_cutoff_genes}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs}
 
 \item{verbose}{A boolean value indicates whether verbose is shown}
+
+\item{algorithm}{Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python}
+
+\item{npcs}{A numerical integer, representing the number of principle components that the PCA will reduce to.}
+
+\item{st_cluster_name}{A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done}
+
+\item{sm_cluster_name}{A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"}
+
+\item{cluster_vector}{A factor vector where each levels indicates the different clustered regions in tissue}
+
+\item{background_cluster}{A vector consist of 0 and 1, where 1 indicates the intended background region}
 
 \item{...}{The other parameters goes to Seurat methods}
 }
