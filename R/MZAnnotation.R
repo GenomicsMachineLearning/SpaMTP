@@ -90,7 +90,7 @@ AnnotateSM <- function(data, db, feature.metadata.assay = "Spatial", feature.met
   # 1) Filter DB by adduct.
   verbose_message(message_text = paste0("Filtering '", db_name, "' database by ", paste0(test_add_pos, collapse = ", "), " adduct/s"), verbose = verbose)
 
-  db_1 <- db_adduct_filter(db, test_add_pos, polarity = "pos", verbose = verbose)
+  db_1 <- db_adduct_filter(db, test_add_pos, polarity = polarity, verbose = verbose)
 
   # 2) only select natural elements
   db_2 <- formula_filter(db_1)

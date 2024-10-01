@@ -90,16 +90,16 @@ FishersPathwayAnalysis <- function (Analyte,
     gc()
     if (polarity == "positive") {
       test_add_pos <- adduct_file$adduct_name[which(adduct_file$charge > 0)]
-      # Using Chris' pipeline for annotation
+
       # 1) Filter DB by adduct.
       db_1 <- db_adduct_filter(db, test_add_pos, polarity = "pos", verbose = verbose)
     } else if (polarity == "negative") {
       test_add_neg <- adduct_file$adduct_name[which(adduct_file$charge < 0)]
-      # Using Chris' pipeline for annotation
+
       # 1) Filter DB by adduct.
       db_1 <- db_adduct_filter(db, test_add_neg, polarity = "neg", verbose = verbose)
     } else if (polarity == "neutral") {
-      # Using Chris' pipeline for annotation
+
       # 1) Filter DB by adduct.
       db_1 <- db %>% mutate("M" = `M-H ` + 1.007276)
     }else{
@@ -406,8 +406,6 @@ FishersPathwayAnalysis <- function (Analyte,
 check_spamtp = function(SpaMTP,
                         assay,
                         resolution = 0.5,
-                        npcs = 30,
-                        algorithm = 1,
                         verbose = T,
                         cluster_name = NULL,
                         ...) {
@@ -518,15 +516,14 @@ check_spamtp = function(SpaMTP,
 
 #' This the function used to compute the exact fisher test for over-representation based pathway analysis
 #'
-#' @param SpaMTP A seurat object contains spatial metabolomics/transcriptomics features or both.
+#' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.
 #' @param polarity The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
-#' @param adduct A vector subset of SpaMTP::adduct_file$adduct_name, e.g. c("M+K","M+H "), default will take the full list of SpaMTP::adduct_file$adduct_name
-#' @param analyte_types A subset of c("gene", "metabolites"), can be c("gene"), c("metabolites") or both
-#' @param spatial_metabolomic_assay A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from, default is "SPM"
-#' @param spatial_transcriptomic_assay A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from(default = "SPT").
-#' @param resolution Goes to seurat::FindClusters Value of the resolution parameter, use a value above (below) 1.0 if you want to obtain a larger (smaller) number of communities.
+#' @param adduct Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).
+#' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("gene"), c("metabolites") or both (default = c("gene", "metabolites")).
+#' @param SM_assay A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").
+#' @param ST_assay A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").
 #' @param algorithm Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python
-#' @param slot The slot name in each assay to access the matrix data of each omics, default is "count"
+#' @param SM_slot The slot name containing the SM assay matrix data (default = "counts").
 #' @param npcs A numerical integer, representing the number of principle components that the PCA will reduce to.
 #' @param st_cluster_name A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done
 #' @param sm_cluster_name A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"
@@ -548,261 +545,71 @@ check_spamtp = function(SpaMTP,
 #' @examples
 #' # SpaMTP = FindRegionalPathways(SpaMTP, polarity = "positive")
 FindRegionalPathways = function(SpaMTP,
-                                polarity,
+                                ident,
+                                SM_DE,
+                                ST_DE = NULL,
+                                polarity = NULL,
                                 adduct = NULL,
                                 analyte_types = c("gene", "metabolites"),
-                                spatial_metabolomic_assay = "SPM",
-                                spatial_transcriptomic_assay = "SPT",
-                                slot = "counts",
-                                npcs = 30,
-                                resolution = 0.5,
-                                algorithm = 1,
+                                SM_assay = "SPM",
+                                ST_assay = "SPT",
+                                SM_slot = "counts",
+                                ST_slot = "counts",
                                 test_use = "wilcox",
-                                st_cluster_name = "ST_clusters",
-                                sm_cluster_name = "SM_clusters",
                                 tof_resolution = 30000,
                                 min_path_size = 5,
                                 max_path_size = 500,
-                                cluster_vector = NULL,
-                                background_cluster = NULL,
                                 ppm_error = NULL,
                                 pval_cutoff_pathway = NULL,
                                 pval_cutoff_mets = NULL,
                                 pval_cutoff_genes = NULL,
-                                verbose = T,
-                                ...) {
+                                verbose = T
+                                ) {
   if ("gene" %in% analyte_types) {
-    if (is.null(SpaMTP@assays[[spatial_transcriptomic_assay]])) {
+    if (is.null(SpaMTP@assays[[ST_assay]]@layers[[ST_slot]])) {
       stop(
-        paste0(
-          "If you are use genetice data with 'gene' in 'analyte_types' (e.g spatial transcriptolomics), please ensure that '",
-          spatial_transcriptomic_assay,
-          "' is inside the input seurat object"
+        paste0("No data exists in object[[",ST_assay,"]][",ST_slot,
+               "] .. If you are using transcriptomic data with 'gene' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'gene' from analyte_tpes")
         )
-      )
     } else{
-      SpaMTP = check_spamtp(
-        SpaMTP,
-        spatial_transcriptomic_assay,
-        resolution = resolution,
-        npcs = npcs,
-        algorithm = algorithm,
-        verbose = verbose,
-        cluster_name = st_cluster_name,
-        ...
-      )
-      gene_matrix = Matrix::t(SpaMTP[[spatial_transcriptomic_assay]]@layers[[slot]])
+      gene_matrix = Matrix::t(SpaMTP[[ST_assay]]@layers[[ST_slot]])
     }
   }
   if ("metabolites" %in% analyte_types) {
-    if (is.null(SpaMTP@assays[[spatial_metabolomic_assay]])) {
+    if (is.null(SpaMTP@assays[[SM_assay]]@layers[[SM_slot]])) {
       stop(
-        paste0(
-          "If you are use metabolic data with 'metabolites' in 'analyte_types' (e.g spatial metabolomics), please ensure that '",
-          spatial_metabolomic_assay,
-          "' is inside the input seurat object"
-        )
+        paste0("No data exists in object[[",SM_assay,"]][",SM_slot,
+               "] .. If you are using metabolic data with 'metabolites' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'metabolites' from analyte_tpes")
       )
     } else{
-      SpaMTP = check_spamtp(
-        SpaMTP,
-        spatial_metabolomic_assay,
-        resolution = resolution,
-        npcs = npcs,
-        algorithm = algorithm,
-        verbose = verbose,
-        cluster_name = sm_cluster_name,
-        ...
-      )
-      mass_matrix = Matrix::t(SpaMTP[[spatial_metabolomic_assay]]@layers[[slot]])
+      mass_matrix = Matrix::t(SpaMTP[[SM_assay]]@layers[[SM_slot]])
     }
   }
-  empty_theme = theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.line = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-  )
-  if (!is.null(cluster_vector)) {
-    cluster_vector = as.factor(cluster_vector)
 
-    if ((("metabolites" %in% analyte_types)&length(cluster_vector)!= nrow(mass_matrix)) |
+  if (!(ident %in% colnames(SpaMTP@meta.data))) {
+    stop("Ident: ", ident, " not found in SpaMTP object's @meta.data slot ... Make sure the ident column is in your @metadata and is a factor!")
+  }
+
+  cluster_vector = as.factor(SpaMTP@meta.data[[ident]])
+
+  if ((("metabolites" %in% analyte_types)&length(cluster_vector)!= nrow(mass_matrix)) |
         (("gene" %in% analyte_types)&length(cluster_vector)!= nrow(gene_matrix)) ) {
       stop(
-        "Please make sure the input cluster is a vector has same length as the number of elements and is a factor"
+        "Please make sure the input ident is a vector the same length as the number of spots/cells"
       )
-    } else{
-
+  } else{
       assignment = cluster_vector
       cluster = levels(cluster_vector)
-      sscs = "Custome_clustering"
-      user_input = 1
-      sscs[user_input]
-      SpaMTP@meta.data[[sscs[user_input]]] = assignment
-    }
-  } else{
-    verbose_message(message_text = "Checking for whether spatial Shrunken centroid or clustering is finisher" , verbose = verbose)
-    sscs = names(SpaMTP@meta.data)[which(
-      grepl(names(SpaMTP@meta.data), pattern = "ssc") |
-        grepl(names(SpaMTP@meta.data), pattern = st_cluster_name) |
-        grepl(names(SpaMTP@meta.data), pattern = sm_cluster_name)
-    )]
-    if (length(sscs) == 0) {
-      stop(
-        "No spatial shrunken centroid done, please either run spatial shrunken centroid or provide a clustering index (cluster)"
-      )
-    } else{
-
-      gg_cluster = lapply(sscs, function(x) {
-        assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == x)][, 1]))
-        assignment[which(is.na(assignment))] = sample(levels(assignment), size =
-                                                        1)
-        cluster = levels(assignment)
-        coordnate = sapply(
-          SpaMTP@meta.data[, which(grepl(
-            colnames(SpaMTP@meta.data),
-            pattern = "coord",
-            ignore.case = T
-          ))],
-          FUN = function(x) {
-            as.numeric(gsub("\\,.*", "", x))
-          }
-        )
-        palette <- brewer.pal(length(cluster), "Set3")
-        if (length(cluster) > length(palette)) {
-          palette <- colorRampPalette(brewer.pal(9, "Set3"))(length(cluster))
-        }
-        names(palette) = cluster
-
-        gg = ggplot() + geom_raster(aes(
-          x = coordnate[, 1],
-          y = coordnate[, 2],
-          fill = assignment
-        )) + scale_fill_manual(values = palette) + empty_theme + ggtitle(x)
-        return(gg)
-      })
-      suppressWarnings({
-        print(do.call(grid.arrange, c(gg_cluster, nrow = 2)))
-      })
-      repeat {
-        # Prompt user for input
-        user_input = readline(
-          prompt = paste0(
-            "Please enter the index of one the following (i.e. 1,2...) to specify the spatial neighborhood radius of nearby pixels to consider: \n",
-            paste0(1:length(sscs), ".", sscs, collapse = " \n")
-          )
-        )
-        # Check if user wants to exit
-        user_input = as.numeric(user_input)
-        if (user_input %in% 1:length(sscs)) {
-          cat(paste0("Selected ", sscs[user_input]))
-          assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
-          assignment[which(is.na(assignment))] = sample(levels(assignment), size =
-                                                          1)
-          cluster = levels(assignment)
-          break
-        } else{
-          cat(paste0(
-            "\n Please enter correct one of followings:",
-            paste0(sscs, collapse = "\n"),
-            collapse = ";"
-          ))
-        }
-      }
-    }
-    assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
   }
-
-
-
-  #(1) Get the rank entry for each cluster
-
-
-
-  if (is.null(background_cluster)) {
-    #assignment = as.factor(gsub("\\,.*", "", SpaMTP@meta.data[which(names(SpaMTP@meta.data) == sscs[user_input])][, 1]))
-    assignment[which(is.na(assignment))] = sample(levels(assignment), size =
-                                                    1)
-    cluster = levels(assignment)
-    coordnate = sapply(
-      SpaMTP@meta.data[, which(grepl(
-        colnames(SpaMTP@meta.data),
-        pattern = "coord",
-        ignore.case = T
-      ))],
-      FUN = function(x) {
-        as.numeric(gsub("\\,.*", "", x))
-      }
-    )
-    palette <- brewer.pal(length(cluster), "Set3")
-    if (length(cluster) > length(palette)) {
-      palette <- colorRampPalette(brewer.pal(9, "Set3"))(length(cluster))
-    }
-    names(palette) = cluster
-
-    gg = ggplot() + geom_raster(aes(x = coordnate[, 1], y = coordnate[, 2], fill = assignment)) + scale_fill_manual(values = palette) +
-      empty_theme + ggtitle(ifelse(exists("sscs"),sscs[user_input],"Custom cluster"))
-    suppressWarnings({
-      print(gg)
-    })
-
-    background_cluster = rep(0, times = length(assignment))
-    sel_bacground = c("pseudo")
-    background_clu = c()
-    repeat {
-      # Prompt user for input
-      cc = c(cluster, "pseudo")
-      verbose_message(
-        message_text = paste0(
-          "Select any regions can be considered as background/Baseline signals(if no need to selected, type 'none', if all background regions selected, type 'done'): \n",
-          paste0(c(cc[-which(cc %in% sel_bacground)], "none", "done"), collapse =
-                   " \n")
-        ) ,
-        verbose = verbose
-      )
-      user_input_background = readline(prompt = "")
-      background_clu = c(background_clu, user_input_background)
-      if (user_input_background  %in% c("none", "done")) {
-        break
-      } else if (user_input_background %in% cc) {
-        sel_bacground = c(sel_bacground, user_input_background)
-        background_cluster[which(assignment == user_input_background)] = 1
-      } else{
-        verbose_message(
-          paste0(
-            "\n Please enter correct one of followings:\n",
-            paste0(c(cc[-which(cc %in% sel_bacground)], "none", "done"), collapse =
-                     " \n"),
-            collapse = ";"
-          ),
-          verbose = verbose
-        )
-      }
-    }
-    background_cluster = as.factor(background_cluster)
-  } else{
-    background_cluster = as.factor(background_cluster)
-    if ((!all(levels(background_cluster) %in% c(0, 1))) |
-        (length(background_cluster) != length(assignment))) {
-      stop(
-        "Please ensure that background_cluster is a vecter of 0 and 1 where 1 indicates the background region"
-      )
-    }
-  }
-
 
   # (2) Annotation
-  if (!is.null(SpaMTP@assays[[spatial_metabolomic_assay]])) {
-    if (!all(c("pathway_db", "annotated_db") %in% names(SpaMTP@assays[[spatial_metabolomic_assay]]@misc))) {
+  if (!is.null(SpaMTP@assays[[SM_assay]])) {
+    if (!all(c("pathway_db", "annotated_db") %in% names(SpaMTP@assays[[SM_assay]]@misc))) {
       tryCatch({
         input_mz = data.frame(cbind(
           row_id = 1:ncol(mass_matrix),
           mz = as.numeric(
-            stringr::str_extract(row.names(SpaMTP[[spatial_metabolomic_assay]]@features), pattern = "\\d+\\.?\\d*")
+            stringr::str_extract(row.names(SpaMTP[[SM_assay]]@features), pattern = "\\d+\\.?\\d*")
           )
         ))
       }, error = function(cond) {
@@ -884,25 +691,20 @@ FindRegionalPathways = function(SpaMTP,
       pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
                                 lapply(pathway_db, length) <= max_path_size]
 
-      SpaMTP@assays[[spatial_metabolomic_assay]]@misc = list(pathway_db = pathway_db, annotated_db =   db_3)
+      SpaMTP@assays[[SM_assay]]@misc = list(pathway_db = pathway_db, annotated_db =   db_3)
     } else{
-      pathway_db = SpaMTP@assays[[spatial_metabolomic_assay]]@misc[["pathway_db"]]
-      db_3 =   SpaMTP@assays[[spatial_metabolomic_assay]]@misc[["annotated_db"]]
+      pathway_db = SpaMTP@assays[[SM_assay]]@misc[["pathway_db"]]
+      db_3 =   SpaMTP@assays[[SM_assay]]@misc[["annotated_db"]]
     }
   }
-  ###########################
-  verbose_message(message_text = "Calculating metabolomics differentially expressed cluster ..." , verbose = verbose)
-  indices = assignment
-  levels(indices) = c(levels(indices), "Baseline")
-  background_clu = background_clu[-which(background_clu == "done" |
-                                           background_clu == "none")]
-  indices[which(indices %in% background_clu)] = "Baseline"
-  u = paste0(sscs[user_input], "_Baseline")
-  SpaMTP@meta.data[[u]] = indices
 
-  Idents(SpaMTP) = u
+  return(SpaMTP)
+
+  ###########################
+  Idents(SpaMTP) = assignment
   DE_met <- FindAllMarkers(SpaMTP,
-                           assay = "SPM",
+                           assay = SM_assay,
+                           slot = SM_slot,
                            only.pos = F,
                            test.use = test_use)
   db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
@@ -919,13 +721,13 @@ FindRegionalPathways = function(SpaMTP,
                                                     pattern = "RAMP_G")),], by = "commonName")
 
   SpaMTP@misc[[paste0("DE_",
-                      spatial_metabolomic_assay,
+                      SM_assay,
                       "_",
                       sscs[user_input],
                       "_",
                       paste0(c(background_clu, "Baseline"), collapse = "."))]] = db_3
   SpaMTP@misc[[paste0("DE_",
-                      spatial_transcriptomic_assay,
+                      ST_assay,
                       "_",
                       sscs[user_input],
                       "_",
