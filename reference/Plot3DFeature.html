@@ -87,7 +87,8 @@
 <span>  show.image <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot.height <span class="op">=</span> <span class="fl">800</span>,</span>
 <span>  plot.width <span class="op">=</span> <span class="fl">1500</span>,</span>
-<span>  image.sf <span class="op">=</span> <span class="st">"lowres"</span></span>
+<span>  image.sf <span class="op">=</span> <span class="st">"lowres"</span>,</span>
+<span>  downscale.image <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -163,6 +164,10 @@
 
 <dt>image.sf</dt>
 <dd><p>Character string defining the image scalefactor to use (default = "lowres").</p></dd>
+
+
+<dt>downscale.image</dt>
+<dd><p>Numeric value defining the amount to downscale the image by. This parameter is only necessary when show.image != NULL. Downscaling the image is not necessary, however when rendering plotly to HTML excessively large images can cause issues whereby setting a downscaling value can improve this (default = NULL).</p></dd>
 
 </dl></div>
     <div id="value">
