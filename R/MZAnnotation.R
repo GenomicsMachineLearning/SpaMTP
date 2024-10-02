@@ -101,7 +101,8 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
   if (polarity == "positive") {
     test_add_pos = adduct_file$adduct_name[which(adduct_file$charge > 0)]
-    test_add_pos = test_add_pos[which(test_add_pos %in% (adducts %||% adduct_file$adduct_name))]
+    test_add_pos <- gsub(" ", "", test_add_pos)
+    test_add_pos = test_add_pos[which(test_add_pos %in% (adducts %||% test_add_pos))]
     # Using Chris' pipeline for annotation
     # 1) Filter DB by adduct.
     db_1 <- db_adduct_filter(db,
@@ -110,7 +111,8 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
                             verbose = verbose)
   } else if (polarity == "negative") {
     test_add_neg = adduct_file$adduct_name[which(adduct_file$charge < 0)]
-    test_add_neg = test_add_neg[which(test_add_neg %in% (adducts %||% adduct_file$adduct_name))]
+    test_add_neg <- gsub(" ", "", test_add_neg)
+    test_add_neg = test_add_neg[which(test_add_neg %in% (adducts %||% test_add_neg))]
     # Using Chris' pipeline for annotation
     # 1) Filter DB by adduct.
     db_1 <- db_adduct_filter(db,
