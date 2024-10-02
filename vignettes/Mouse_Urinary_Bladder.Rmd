@@ -277,7 +277,7 @@ One of the major steps in the analysis of metabolomics is the identification/ann
 
 
 ```{r, warning=FALSE, message=FALSE}
-bladder_annotated <- AnnotateSM(bladder, db = Lipidmaps_db, ppm_error = 15, test_add_pos = "M+K", polarity = "pos")
+bladder_annotated <- AnnotateSM(bladder, db = Lipidmaps_db, ppm_error = 15, adducts = "M+K", polarity = "positive")
 ```
 
     Filtering 'Lipidmaps_db' database by M+K adduct/s
@@ -892,25 +892,11 @@ p
 
 
 ```{r, eval=FALSE}
-FindRegionalPathways(bladder_annotated,
-                     ident = "ssc",polarity = "positive",
+x <- FindRegionalPathways(SpaMTP = bladder_annotated,
+                                ident = "ssc",
+                                DE.list = list(cluster_DEPs$DEPs),
                                 analyte_types = c("metabolites"),
-                                SM_DE = NULL,
-                                ST_DE = NULL,
-                                adduct = NULL,
-                                SM_assay = "Spatial",
-                                ST_assay = NULL,
-                                SM_slot = "counts",
-                                ST_slot = "counts",
-                                test_use = "wilcox",
-                                tof_resolution = 30000,
-                                min_path_size = 5,
-                                max_path_size = 500,
-                                ppm_error = NULL,
-                                pval_cutoff_pathway = NULL,
-                                pval_cutoff_mets = NULL,
-                                pval_cutoff_genes = NULL,
-                                verbose = T)
+                                SM_assay = "Spatial")
 ```
 
 

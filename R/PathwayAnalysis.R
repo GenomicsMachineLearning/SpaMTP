@@ -391,7 +391,7 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.
 #' @param polarity The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
 #' @param adduct Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).
-#' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("gene"), c("metabolites") or both (default = c("gene", "metabolites")).
+#' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).
 #' @param SM_assay A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").
 #' @param ST_assay A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").
 #' @param algorithm Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python
@@ -421,7 +421,7 @@ FishersPathwayAnalysis <- function (Analyte,
 FindRegionalPathways = function(SpaMTP,
                                 ident,
                                 DE.list,
-                                analyte_types = c("gene", "metabolites"),
+                                analyte_types = c("genes", "metabolites"),
                                 SM_assay = "SPM",
                                 ST_assay = "SPT",
                                 SM_slot = "counts",
@@ -430,7 +430,7 @@ FindRegionalPathways = function(SpaMTP,
                                 tof_resolution = 30000,
                                 min_path_size = 5,
                                 max_path_size = 500,
-                                ppm_threshold = NULL,
+                                baseline_cluster = NULL,
                                 pval_cutoff_pathway = NULL,
                                 pval_cutoff_mets = NULL,
                                 pval_cutoff_genes = NULL,
@@ -447,11 +447,11 @@ FindRegionalPathways = function(SpaMTP,
   cluster = levels(cluster_vector)
 
   ## Checks for data in SM and/or ST assay
-  if ("gene" %in% analyte_types) {
+  if ("genes" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[ST_assay]]@layers[[ST_slot]])) {
       stop(
         paste0("No data exists in object[[",ST_assay,"]][",ST_slot,
-               "] .. If you are using transcriptomic data with 'gene' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'gene' from analyte_tpes")
+               "] .. If you are using transcriptomic data with 'genes' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'genes' from analyte_tpes")
         )
     } else{
       gene_matrix = Matrix::t(SpaMTP[[ST_assay]]@layers[[ST_slot]])
@@ -544,7 +544,7 @@ FindRegionalPathways = function(SpaMTP,
   verbose_message(message_text = "Constructing DE dataframes.... ", verbose = verbose)
 
   for (i in 1:length(analyte_types)){
-    verbose_message(message_text = paste0("Assuming DE.list[",i,"] contains ", analyte_types[i] , "results .... "), verbose = verbose)
+    verbose_message(message_text = paste0("Assuming DE.list[",i,"] contains ", analyte_types[i] , " results .... "), verbose = verbose)
 
     DE <- DE.list[[i]]
 
@@ -552,6 +552,16 @@ FindRegionalPathways = function(SpaMTP,
         any(c("p_val_adj", "FDR") %in% colnames(DE)) &&
         "cluster" %in% colnames(DE) &&
         "gene" %in% colnames(DE)){
+
+      if ("logFC" %in% colnames(DE)) {
+        colnames(DE)[colnames(DE) == "logFC"] <- "avg_log2FC"
+      }
+
+      # Rename FDR to p_val_adj if FDR exists
+      if ("FDR" %in% colnames(DE)) {
+        colnames(DE)[colnames(DE) == "FDR"] <- "p_val_adj"
+      }
+
       if (analyte_types[i] == "metabolites"){
           DE = DE %>% mutate(mz_name = gene)
           db_3 = merge(db_3 , DE, by = "mz_name")
@@ -575,62 +585,44 @@ FindRegionalPathways = function(SpaMTP,
 
   gsea_all_cluster = data.frame()
   all_ranks = list()
-  non_bac_cluster = na.omit(unique(indices[which(background_cluster == 0)]))
+
   pb3 = txtProgressBar(
     min = 0,
-    max = ifelse(
-      all(background_cluster == 0),
-      length(non_bac_cluster),
-      (length(non_bac_cluster) + 1)
-    ),
+    max = length(cluster),
     initial = 0,
     style = 3
   )
-  for (i in 1:(length(non_bac_cluster) + 1)) {
-    # Consider the background pathway
-    ranks = c()
-    if (i == (length(non_bac_cluster) + 1)) {
-      if (all(background_cluster == 0)) {
-        next
-      } else{
-        clu_wise = which(background_cluster == 1)
-      }
-      # Get coordinates for the elements in the cluster
-      sub_db3 = db_3[which(db_3$cluster == "Baseline"), ] %>% filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% filter(!duplicated(ramp_id))
-      ranks = scale(sub_db3$avg_log2FC, center = 0)
-      names(ranks) = sub_db3$ramp_id
 
-      sub_de_gene = source_gene[which(source_gene$cluster == "Baseline"), ] %>% filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% filter(!duplicated(rampId))
-      ranks_gene_vector = scale(sub_de_gene$avg_log2FC, center = 0)
-      names(ranks_gene_vector) = sub_de_gene$rampId
-      # Genes and metabolites
-      ranks = c(ranks, ranks_gene_vector)
-      ####################################################### non background
-    } else{
-      sub_db3 = db_3[which(as.character(db_3$cluster) == as.character(non_bac_cluster[i])), ] %>% filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% filter(!duplicated(ramp_id))
-      ranks = sub_db3$avg_log2FC
-      names(ranks) = sub_db3$ramp_id
-
-      sub_de_gene = source_gene[which(as.character(source_gene$cluster) == as.character(non_bac_cluster[i])), ] %>% filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% filter(!duplicated(rampId))
-      ranks_gene_vector = scale(sub_de_gene$avg_log2FC, center = 0)
-      names(ranks_gene_vector) = sub_de_gene$rampId
-      # Genes and metabolites
-      ranks = c(ranks, ranks_gene_vector)
+  for (i in cluster){
+    ranks <- c()
+    if ("metabolites" %in% names(DE.list)){
+      ## metabolites
+      DE_met <- DE.list[["metabolites"]]
+      sub_db3 = DE_met[which(as.character(DE_met$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% dplyr::filter(!duplicated(ramp_id))
+      met_ranks = sub_db3$avg_log2FC
+      names(met_ranks) = sub_db3$ramp_id
+      ranks <- c(ranks, met_ranks)
     }
+
+    if ("genes"%in% names(DE.list)){
+      ## genes
+      DE_rna <- DE.list[["genes"]]
+      sub_de_gene = DE_rna[which(as.character(DE_rna$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% dplyr::filter(!duplicated(rampId))
+      ranks_gene_vector = scale(sub_de_gene$avg_log2FC, center = 0)
+      names(ranks_gene_vector) = sub_de_gene$rampId
+      # Genes and metabolites
+      ranks <- c(ranks, ranks_gene_vector)
+    }
+
     ranks = ranks[which(!duplicated(names(ranks)))]
     all_ranks[[i]] = ranks[is.finite(ranks)]
-    names(all_ranks)[i] = paste0("cluster", i)
     suppressWarnings({
       gsea_result = fgsea::fgsea(
         pathways =  pathway_db,
         stats = ranks,
-        minSize = 5,
-        maxSize = 500
-      )  %>%  dplyr::mutate(Cluster_id = ifelse(
-        i <= length(non_bac_cluster),
-        paste0("Cluster", non_bac_cluster[i]),
-        "Baseline"
-      ))
+        minSize = min_path_size,
+        maxSize = max_path_size
+      )  %>%  dplyr::mutate(Cluster_id = i)
     })
     gsea_result = na.omit(gsea_result)
     short_source = source_df[which((source_df$rampId %in% names(ranks)) &
@@ -653,7 +645,9 @@ FindRegionalPathways = function(SpaMTP,
     gsea_all_cluster = rbind(gsea_all_cluster, gsea_result)
     setTxtProgressBar(pb3, i)
   }
+
   close(pb3)
+
   gsea_all_cluster_sig = gsea_all_cluster %>% dplyr::group_by(pathway) %>% dplyr::filter(any(as.numeric(pval) <= (pval_cutoff_pathway %||% 0.05))) %>% dplyr::mutate(
     Significance = ifelse(
       pval <= 0.05,

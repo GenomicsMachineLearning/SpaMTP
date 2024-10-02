@@ -8,7 +8,7 @@ FindRegionalPathways(
   SpaMTP,
   ident,
   DE.list,
-  analyte_types = c("gene", "metabolites"),
+  analyte_types = c("genes", "metabolites"),
   SM_assay = "SPM",
   ST_assay = "SPT",
   SM_slot = "counts",
@@ -17,7 +17,7 @@ FindRegionalPathways(
   tof_resolution = 30000,
   min_path_size = 5,
   max_path_size = 500,
-  ppm_threshold = NULL,
+  baseline_cluster = NULL,
   pval_cutoff_pathway = NULL,
   pval_cutoff_mets = NULL,
   pval_cutoff_genes = NULL,
@@ -27,7 +27,7 @@ FindRegionalPathways(
 \arguments{
 \item{SpaMTP}{A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.}
 
-\item{analyte_types}{Vector of character strings defining which analyte types to use. Options can be c("gene"), c("metabolites") or both (default = c("gene", "metabolites")).}
+\item{analyte_types}{Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).}
 
 \item{SM_assay}{A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").}
 
@@ -40,8 +40,6 @@ FindRegionalPathways(
 \item{min_path_size}{The min number of metabolites in a specific pathway (default = 5).}
 
 \item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
-
-\item{ppm_threshold}{A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )}
 
 \item{pval_cutoff_pathway}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways}
 
@@ -62,6 +60,8 @@ FindRegionalPathways(
 \item{st_cluster_name}{A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done}
 
 \item{sm_cluster_name}{A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"}
+
+\item{ppm_threshold}{A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )}
 
 \item{cluster_vector}{A factor vector where each levels indicates the different clustered regions in tissue}
 
