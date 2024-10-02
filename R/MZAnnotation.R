@@ -52,29 +52,39 @@ labels_to_show <- function(annotation_column, n = 3) {
 #'
 #' @param data Seurat Spatial Metabolomic Object containing m/z values for annotation.
 #' @param db Reference metabolite dataset in the form of a Data.Frame.
-#' @param feature.metadata.assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
-#' @param feature.metadata.slot Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
-#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = 5).
-#' @param test_add_pos List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.) Look at db_adduct_filter() documentation for list of the possible adducts (default = "M+H").
-#' @param polarity Character string defining the polarity of adducts to use, either "pos" or "neg" (default = "pos").
+#' @param assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
+#' @param raw.mz.column Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
+#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
+#' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
+#' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
+#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
 #' @param filepath Character string of the directory to store the _annotated_mz_peaks.csv. Else, set to NULL as default.
 #' @param return.only.annotated Boolean value indicating if the annotated Seurat Object should only include m/z values that were successfully annotated (default = TRUE).
+#' @param save.intermediate Boolean indicating whether to save an intermediate file in the `@tools` slot of the SpaMTP object required for later analysis functions such as `FindRegionalPathways()` (default = TRUE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @returns A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj`[["Spatial"]][[]]`)
 #' @export
 #'
+#' @importFrom rlang %||%
+#'
 #' @examples
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
-AnnotateSM <- function(data, db, feature.metadata.assay = "Spatial", feature.metadata.slot = "raw_mz", ppm_error = 5, test_add_pos = c("M+H"), polarity = "pos", filepath = NULL, return.only.annotated = TRUE, verbose = TRUE){
+AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, verbose = TRUE){
 
-  mz_df <- data[[feature.metadata.assay]][[feature.metadata.slot]]
-  mz_df$mz <- mz_df[[feature.metadata.slot]]
-  mz_df$row_id <- seq(1, length(mz_df[[feature.metadata.slot]]))
+  if (is.null(data@assays[[assay]])) {
+    stop(paste0("No assay '",assay,"'exists in SpaMTP object! Please check assay name input ..."))
+  }
+
+  ## Extracting m/z values from SpaMTP@assay@meta.data
+  mz_df <- data[[assay]][[raw.mz.column]]
+  mz_df$mz <- mz_df[[raw.mz.column]]
+  mz_df$row_id <- seq(1, length(mz_df[[raw.mz.column]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
   db_name <- deparse(substitute(db))
+
 
   # Uses:
   # db: db that you want to search against
@@ -84,13 +94,37 @@ AnnotateSM <- function(data, db, feature.metadata.assay = "Spatial", feature.met
 
   # ppm_error: the ppm error/threshold for searching
 
-
   # Three main steps relates to the three main functions
   # Steps 1) & 2) are aimed at condensing the databases by applying 1) a filter to only consider the adducts that the user specifies. 2) Filtering the molecular formulas to contain only elements that the user specifies. # Step 3) This last function then does the database matching and searching.
   # 1) Filter DB by adduct.
-  verbose_message(message_text = paste0("Filtering '", db_name, "' database by ", paste0(test_add_pos, collapse = ", "), " adduct/s"), verbose = verbose)
+  verbose_message(message_text = paste0("Filtering '", db_name, "' database by ", paste0(adducts, collapse = ", "), " adduct/s"), verbose = verbose)
 
-  db_1 <- db_adduct_filter(db, test_add_pos, polarity = polarity, verbose = verbose)
+  if (polarity == "positive") {
+    test_add_pos = adduct_file$adduct_name[which(adduct_file$charge > 0)]
+    test_add_pos = test_add_pos[which(test_add_pos %in% (adducts %||% adduct_file$adduct_name))]
+    # Using Chris' pipeline for annotation
+    # 1) Filter DB by adduct.
+    db_1 <- db_adduct_filter(db,
+                            test_add_pos,
+                            polarity = "pos",
+                            verbose = verbose)
+  } else if (polarity == "negative") {
+    test_add_neg = adduct_file$adduct_name[which(adduct_file$charge < 0)]
+    test_add_neg = test_add_neg[which(test_add_neg %in% (adducts %||% adduct_file$adduct_name))]
+    # Using Chris' pipeline for annotation
+    # 1) Filter DB by adduct.
+    db_1 <- db_adduct_filter(db,
+                            test_add_neg,
+                            polarity = "neg",
+                            verbose = verbose)
+  } else if (polarity == "neutral") {
+    # Using Chris' pipeline for annotation
+    # 1) Filter DB by adduct.
+    db_1 <- db %>% mutate("M" = `M-H ` + 1.007276)
+  } else{
+    stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
+  }
+
 
   # 2) only select natural elements
   db_2 <- formula_filter(db_1)
@@ -98,8 +132,17 @@ AnnotateSM <- function(data, db, feature.metadata.assay = "Spatial", feature.met
   # 3) search db against mz df return results
   verbose_message(message_text = "Searching database against input m/z's to return annotaiton results", verbose = verbose)
 
+  if (is.null(ppm_error) && is.null(tof_resolution)){
+    stop("ppm_error and tof_resolution cannot both = NULL! Please set one of these variables to calculate the ppm threshold for annotations ... ")
+  }
+
+  ppm_error = ppm_error %||% (1e6 / tof_resolution / sqrt(2 * log(2)))
+
   db_3 <- proc_db(mz_df, db_2, ppm_error)
 
+  if (save.intermediate){
+    data@tools$db_3 <- db_3
+  }
 
   if (!(is.null(filepath))){
     path <- paste0(filepath,db_name,"_annotated_mz_peaks.csv")
@@ -122,21 +165,21 @@ AnnotateSM <- function(data, db, feature.metadata.assay = "Spatial", feature.met
 
   result_df$mz_names <- rownames(result_df)
 
-  data[[feature.metadata.assay]][["mz_names"]] <- rownames(data[[feature.metadata.assay]][[]])
+  data[[assay]][["mz_names"]] <- rownames(data[[assay]][[]])
 
 
   result_df <- result_df %>% dplyr::mutate(present = TRUE)
 
 
   # Perform left join and replace NAs with "No Annotation"
-  feature_metadata <- data[[feature.metadata.assay]][[]] %>%
+  feature_metadata <- data[[assay]][[]] %>%
     dplyr::left_join(result_df, by = "mz_names") %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ifelse(is.na(.), "No Annotation", .)))
 
   # If you want to remove the "present" column, you can do:
   feature_metadata <- dplyr::select(feature_metadata, -present)
 
-  data[[feature.metadata.assay]][[]] <- feature_metadata
+  data[[assay]][[]] <- feature_metadata
   if (return.only.annotated == TRUE){
 
     verbose_message(message_text = "Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features", verbose = verbose)

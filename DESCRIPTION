@@ -65,6 +65,7 @@ Imports:
     RColorBrewer,
     reshape2,
     rgoslin,
+    rlang,
     rlist,
     scater,
     Seurat,

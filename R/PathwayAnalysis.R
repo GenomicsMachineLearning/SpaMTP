@@ -402,7 +402,7 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
 #' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
 #' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
-#' @param ppm_error A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )
+#' @param ppm_threshold A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )
 #' @param cluster_vector A factor vector where each levels indicates the different clustered regions in tissue
 #' @param background_cluster A vector consist of 0 and 1, where 1 indicates the intended background region
 #' @param pval_cutoff_pathway A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways
@@ -414,14 +414,13 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @return A SpaMTP object with set enrichment on given analyte types.
 #' @export
 #'
+#' @importFrom rlang %||%
+#'
 #' @examples
 #' # SpaMTP = FindRegionalPathways(SpaMTP, polarity = "positive")
 FindRegionalPathways = function(SpaMTP,
                                 ident,
-                                SM_DE,
-                                ST_DE = NULL,
-                                polarity = NULL,
-                                adduct = NULL,
+                                DE.list,
                                 analyte_types = c("gene", "metabolites"),
                                 SM_assay = "SPM",
                                 ST_assay = "SPT",
@@ -431,12 +430,23 @@ FindRegionalPathways = function(SpaMTP,
                                 tof_resolution = 30000,
                                 min_path_size = 5,
                                 max_path_size = 500,
-                                ppm_error = NULL,
+                                ppm_threshold = NULL,
                                 pval_cutoff_pathway = NULL,
                                 pval_cutoff_mets = NULL,
                                 pval_cutoff_genes = NULL,
                                 verbose = T
                                 ) {
+
+  ## Checks for ident in SpaMTP Object
+  if (!(ident %in% colnames(SpaMTP@meta.data))) {
+    stop("Ident: ", ident, " not found in SpaMTP object's @meta.data slot ... Make sure the ident column is in your @metadata and is a factor!")
+  }
+
+  cluster_vector = as.factor(SpaMTP@meta.data[[ident]])
+  assignment = cluster_vector
+  cluster = levels(cluster_vector)
+
+  ## Checks for data in SM and/or ST assay
   if ("gene" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[ST_assay]]@layers[[ST_slot]])) {
       stop(
@@ -445,6 +455,11 @@ FindRegionalPathways = function(SpaMTP,
         )
     } else{
       gene_matrix = Matrix::t(SpaMTP[[ST_assay]]@layers[[ST_slot]])
+      if (length(cluster_vector)!= nrow(gene_matrix)){
+        stop(
+          "Please make sure the input ident is a vector the same length as the number of spots/cells in the gene assay!"
+        )
+      }
     }
   }
   if ("metabolites" %in% analyte_types) {
@@ -453,159 +468,104 @@ FindRegionalPathways = function(SpaMTP,
         paste0("No data exists in object[[",SM_assay,"]][",SM_slot,
                "] .. If you are using metabolic data with 'metabolites' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'metabolites' from analyte_tpes")
       )
-    } else{
+    }else{
       mass_matrix = Matrix::t(SpaMTP[[SM_assay]]@layers[[SM_slot]])
+      if (length(cluster_vector)!= nrow(mass_matrix)){
+        stop(
+          "Please make sure the input ident is a vector the same length as the number of spots/cells in the metabolite assay!"
+        )
+      }
     }
   }
 
-  if (!(ident %in% colnames(SpaMTP@meta.data))) {
-    stop("Ident: ", ident, " not found in SpaMTP object's @meta.data slot ... Make sure the ident column is in your @metadata and is a factor!")
-  }
-
-  cluster_vector = as.factor(SpaMTP@meta.data[[ident]])
-
-  if ((("metabolites" %in% analyte_types)&length(cluster_vector)!= nrow(mass_matrix)) |
-        (("gene" %in% analyte_types)&length(cluster_vector)!= nrow(gene_matrix)) ) {
-      stop(
-        "Please make sure the input ident is a vector the same length as the number of spots/cells"
-      )
-  } else{
-      assignment = cluster_vector
-      cluster = levels(cluster_vector)
-  }
 
   # (2) Annotation
-  if (!is.null(SpaMTP@assays[[SM_assay]])) {
-    if (!all(c("pathway_db", "annotated_db") %in% names(SpaMTP@assays[[SM_assay]]@misc))) {
-      tryCatch({
-        input_mz = data.frame(cbind(
-          row_id = 1:ncol(mass_matrix),
-          mz = as.numeric(
-            stringr::str_extract(row.names(SpaMTP[[SM_assay]]@features), pattern = "\\d+\\.?\\d*")
-          )
-        ))
-      }, error = function(cond) {
-        stop(
-          "Check whether column names of the input matrix is correctly labelled as the m/z ratio"
-        )
-      }, warning = function(cond) {
-        stop(
-          "Check whether column names of the input matrix is correctly labelled as the m/z ratio"
-        )
-      })
-      # Set the db that you want to search against
-      db = rbind(HMDB_db, Chebi_db, Lipidmaps_db)
-      # set which adducts you want to search for
-      #load("data/adduct_file.rda")
+  if (is.null(SpaMTP@tools$db_3)) {
+    stop("@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
+         "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ...")
+  }
+  db_3 <- data@tools$db_3
 
-      if (polarity == "positive") {
-        test_add_pos = adduct_file$adduct_name[which(adduct_file$charge > 0)]
-        test_add_pos = test_add_pos[which(test_add_pos %in% (adduct %||% adduct_file$adduct_name))]
-        # Using Chris' pipeline for annotation
-        # 1) Filter DB by adduct.
-        db_1 = db_adduct_filter(db,
-                                test_add_pos,
-                                polarity = "pos",
-                                verbose = verbose)
-      } else if (polarity == "negative") {
-        test_add_neg = adduct_file$adduct_name[which(adduct_file$charge < 0)]
-        test_add_neg = test_add_neg[which(test_add_neg %in% (adduct %||% adduct_file$adduct_name))]
-        # Using Chris' pipeline for annotation
-        # 1) Filter DB by adduct.
-        db_1 = db_adduct_filter(db,
-                                test_add_neg,
-                                polarity = "neg",
-                                verbose = verbose)
-      } else if (polarity == "neutral") {
-        # Using Chris' pipeline for annotation
-        # 1) Filter DB by adduct.
-        db_1 = db %>% mutate("M" = `M-H ` + 1.007276)
-      } else{
-        stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
+  db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
+  verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
+  input_id = lapply(db_3$entry, function(x) {
+    x = unlist(x)
+    index_hmdb = which(grepl(x, pattern = "HMDB"))
+    x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
+    index_chebi = which(grepl(x, pattern = "CHEBI"))
+    x[index_chebi] = tolower(x[index_chebi])
+    return(x)
+  })
+
+    db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
+
+
+    ####### PATHWAY
+    rampid = c()
+    chem_source_id = unique(chem_props$chem_source_id)
+
+    verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
+
+    db_3 = merge(chem_props, db_3, by = "chem_source_id")
+
+    verbose_message(message_text = "Query finished!" , verbose = verbose)
+    # get names for the ranks
+    name_rank = lapply(input_mz$mz, function(x) {
+      return(unique(na.omit(db_3[which(db_3$observed_mz == x), ])))
+    })
+
+
+    name_rank_ids = lapply(input_mz$mz, function(x) {
+      return(unique(na.omit(db_3$rampid[which(db_3$observed_mz == x)])))
+    })
+    # Get pathway db
+    verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
+    chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
+
+    pathway_db = split(chempathway$rampId, chempathway$pathwayName)
+    pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
+    pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
+                              lapply(pathway_db, length) <= max_path_size]
+
+
+  ### Adding DE Results
+  db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
+
+  if (length(DE.list) != length(analyte_types)){
+    stop("Number of DE data.frames provided does not match the number of analyte types specified. Please make sure a DE dataframe is provided for each analyte type")
+  }
+
+  verbose_message(message_text = "Constructing DE dataframes.... ", verbose = verbose)
+
+  for (i in 1:length(analyte_types)){
+    verbose_message(message_text = paste0("Assuming DE.list[",i,"] contains ", analyte_types[i] , "results .... "), verbose = verbose)
+
+    DE <- DE.list[[i]]
+
+    if (any(c("avg_log2FC", "logFC") %in% colnames(DE)) &&
+        any(c("p_val_adj", "FDR") %in% colnames(DE)) &&
+        "cluster" %in% colnames(DE) &&
+        "gene" %in% colnames(DE)){
+      if (analyte_types[i] == "metabolites"){
+          DE = DE %>% mutate(mz_name = gene)
+          db_3 = merge(db_3 , DE, by = "mz_name")
+          DE.list[[i]] <- db_3
+      } else {
+        DE = DE %>% mutate(commonName = toupper(gene))
+        source_gene = merge(DE, source_df[which(grepl(source_df$rampId,
+                                                          pattern = "RAMP_G")),], by = "commonName")
+        DE.list[[i]] <- source_gene
       }
-      db_2 = formula_filter(db_1)
-      ppm_error = ppm_error %||% (1e6 / tof_resolution / sqrt(2 * log(2)))
-      db_3 = proc_db(input_mz, db_2, ppm_error) %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
-      verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
-      input_id = lapply(db_3$entry, function(x) {
-        x = unlist(x)
-        index_hmdb = which(grepl(x, pattern = "HMDB"))
-        x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
-        index_chebi = which(grepl(x, pattern = "CHEBI"))
-        x[index_chebi] = tolower(x[index_chebi])
-        return(x)
-      })
+      names(DE.list) <- analyte_types
 
-      db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
-      rampid = c()
-      chem_source_id = unique(chem_props$chem_source_id)
-
-      verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
-
-      db_3 = merge(chem_props, db_3, by = "chem_source_id")
-
-      verbose_message(message_text = "Query finished!" , verbose = verbose)
-      # get names for the ranks
-      name_rank = lapply(input_mz$mz, function(x) {
-        return(unique(na.omit(db_3[which(db_3$observed_mz == x), ])))
-      })
-
-
-      name_rank_ids = lapply(input_mz$mz, function(x) {
-        return(unique(na.omit(db_3$rampid[which(db_3$observed_mz == x)])))
-      })
-      # Get pathway db
-      verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
-      chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
-
-      pathway_db = split(chempathway$rampId, chempathway$pathwayName)
-      pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
-      pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
-                                lapply(pathway_db, length) <= max_path_size]
-
-      SpaMTP@assays[[SM_assay]]@misc = list(pathway_db = pathway_db, annotated_db =   db_3)
-    } else{
-      pathway_db = SpaMTP@assays[[SM_assay]]@misc[["pathway_db"]]
-      db_3 =   SpaMTP@assays[[SM_assay]]@misc[["annotated_db"]]
+    } else {
+      stop("DE dataframe [", i, "] provided does not have the correct column names ... column names MUST include 'cluster', 'gene', ('avg_log2FC' or 'logFC') and ('p_val_adj' or 'FDR'). Please adjust column names in all DE data.frames to match ...")
     }
   }
 
-  return(SpaMTP)
-
-  ###########################
-  Idents(SpaMTP) = assignment
-  DE_met <- FindAllMarkers(SpaMTP,
-                           assay = SM_assay,
-                           slot = SM_slot,
-                           only.pos = F,
-                           test.use = test_use)
-  db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
-  DE_met = DE_met %>% mutate(mz_name = gene)
-  db_3 = merge(db_3 , DE_met, by = "mz_name")
-  verbose_message(message_text = "Calculating transcriptomics differentially expressed cluster ..." , verbose = verbose)
-  DE_rna <- FindAllMarkers(SpaMTP,
-                           assay = "SPT",
-                           only.pos = F,
-                           test.use = test_use
-  )
-  DE_rna = DE_rna %>% mutate(commonName = toupper(gene))
-  source_gene = merge(DE_rna, source_df[which(grepl(source_df$rampId,
-                                                    pattern = "RAMP_G")),], by = "commonName")
-
-  SpaMTP@misc[[paste0("DE_",
-                      SM_assay,
-                      "_",
-                      sscs[user_input],
-                      "_",
-                      paste0(c(background_clu, "Baseline"), collapse = "."))]] = db_3
-  SpaMTP@misc[[paste0("DE_",
-                      ST_assay,
-                      "_",
-                      sscs[user_input],
-                      "_",
-                      paste0(c(background_clu, "Baseline"), collapse = "."))]] = source_gene
-
   gc()
+  return(list("obj" = SpaMTP,
+              "DE" = DE.list))
 
   gsea_all_cluster = data.frame()
   all_ranks = list()

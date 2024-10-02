@@ -728,17 +728,16 @@ We can see clearly that the combined expression of these GP lipids is highly exp
 Next we can observe the expression of two key lipids (same as those described above) in a 3D plot:
 
 
-```{r, fig.width=10, fig.height=30}
+```{r, fig.width=10, fig.height=30, warning=FALSE, message=FALSE}
 ### Identified the m/z values that are to be plot
 mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = ROI, target_mz = x)))
 
-#Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 100, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
+Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 100, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
                      
 ```
 
 
-SpaMTP also includes a useful density plot function that generates a HTML which allows the user to simultaneously spatially visualise any m/z peak and it's relative metabolite annotation. Users have access to a mass intensity plot where they can select any m/z peak, which will then be plotted and all possible metabolite annotations will be listed below. Lets demonstrate:
-
+SpaMTP also includes a useful density plot function that generates a [HTML](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/vignettes/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html) which allows the user to simultaneously spatially visualise any m/z peak and it's relative metabolite annotation. Users have access to a mass intensity plot where they can select any m/z peak, which will then be plotted and all possible metabolite annotations will be listed below. Lets demonstrate:
 
 ```{r, eval=FALSE}
 DensityMap(object = ROI, assay = "Spatial", slot = "counts", folder = "vignette_data_files/Mouse_Urinary_Bladder/")
@@ -868,7 +867,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 
 <br>
 
-lets now visualise these results
+Lets now visualise these results
 
 ```{r, eval=FALSE}
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
@@ -883,10 +882,40 @@ p
 ```
 
 
+```{r}
+
+
+```
+
+
+
+
 
 ```{r, eval=FALSE}
-PathwaysPerRegion(bladder_annotated,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
+FindRegionalPathways(bladder_annotated,
+                     ident = "ssc",polarity = "positive",
+                                analyte_types = c("metabolites"),
+                                SM_DE = NULL,
+                                ST_DE = NULL,
+                                adduct = NULL,
+                                SM_assay = "Spatial",
+                                ST_assay = NULL,
+                                SM_slot = "counts",
+                                ST_slot = "counts",
+                                test_use = "wilcox",
+                                tof_resolution = 30000,
+                                min_path_size = 5,
+                                max_path_size = 500,
+                                ppm_error = NULL,
+                                pval_cutoff_pathway = NULL,
+                                pval_cutoff_mets = NULL,
+                                pval_cutoff_genes = NULL,
+                                verbose = T)
 ```
+
+
+
+
 ```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
 p <- PathwaysPerRegion(bladder_annotated,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
 ```

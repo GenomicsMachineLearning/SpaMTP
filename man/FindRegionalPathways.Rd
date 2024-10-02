@@ -7,10 +7,7 @@
 FindRegionalPathways(
   SpaMTP,
   ident,
-  SM_DE,
-  ST_DE = NULL,
-  polarity = NULL,
-  adduct = NULL,
+  DE.list,
   analyte_types = c("gene", "metabolites"),
   SM_assay = "SPM",
   ST_assay = "SPT",
@@ -20,7 +17,7 @@ FindRegionalPathways(
   tof_resolution = 30000,
   min_path_size = 5,
   max_path_size = 500,
-  ppm_error = NULL,
+  ppm_threshold = NULL,
   pval_cutoff_pathway = NULL,
   pval_cutoff_mets = NULL,
   pval_cutoff_genes = NULL,
@@ -29,10 +26,6 @@ FindRegionalPathways(
 }
 \arguments{
 \item{SpaMTP}{A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.}
-
-\item{polarity}{The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).}
-
-\item{adduct}{Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).}
 
 \item{analyte_types}{Vector of character strings defining which analyte types to use. Options can be c("gene"), c("metabolites") or both (default = c("gene", "metabolites")).}
 
@@ -48,7 +41,7 @@ FindRegionalPathways(
 
 \item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
 
-\item{ppm_error}{A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )}
+\item{ppm_threshold}{A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )}
 
 \item{pval_cutoff_pathway}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways}
 
@@ -57,6 +50,10 @@ FindRegionalPathways(
 \item{pval_cutoff_genes}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs}
 
 \item{verbose}{A boolean value indicates whether verbose is shown}
+
+\item{polarity}{The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).}
+
+\item{adduct}{Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).}
 
 \item{algorithm}{Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python}
 

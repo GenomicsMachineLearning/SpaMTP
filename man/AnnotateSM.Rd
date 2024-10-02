@@ -7,13 +7,15 @@
 AnnotateSM(
   data,
   db,
-  feature.metadata.assay = "Spatial",
-  feature.metadata.slot = "raw_mz",
-  ppm_error = 5,
-  test_add_pos = c("M+H"),
-  polarity = "pos",
+  assay = "Spatial",
+  raw.mz.column = "raw_mz",
+  ppm_error = NULL,
+  adducts = NULL,
+  polarity = "positive",
+  tof_resolution = 30000,
   filepath = NULL,
   return.only.annotated = TRUE,
+  save.intermediate = TRUE,
   verbose = TRUE
 )
 }
@@ -22,19 +24,23 @@ AnnotateSM(
 
 \item{db}{Reference metabolite dataset in the form of a Data.Frame.}
 
-\item{feature.metadata.assay}{Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").}
+\item{assay}{Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").}
 
-\item{feature.metadata.slot}{Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").}
+\item{raw.mz.column}{Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").}
 
-\item{ppm_error}{Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = 5).}
+\item{ppm_error}{Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).}
 
-\item{test_add_pos}{List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.) Look at db_adduct_filter() documentation for list of the possible adducts (default = "M+H").}
+\item{adducts}{List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of adducts (default = NULL).}
 
-\item{polarity}{Character string defining the polarity of adducts to use, either "pos" or "neg" (default = "pos").}
+\item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
+
+\item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]}. This value is used to estimate ppm_error when set to NULL (default = 30000).}
 
 \item{filepath}{Character string of the directory to store the _annotated_mz_peaks.csv. Else, set to NULL as default.}
 
 \item{return.only.annotated}{Boolean value indicating if the annotated Seurat Object should only include m/z values that were successfully annotated (default = TRUE).}
+
+\item{save.intermediate}{Boolean indicating whether to save an intermediate file in the \verb{@tools} slot of the SpaMTP object required for later analysis functions such as \code{FindRegionalPathways()} (default = TRUE).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
