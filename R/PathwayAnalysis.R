@@ -580,8 +580,6 @@ FindRegionalPathways = function(SpaMTP,
   }
 
   gc()
-  return(list("obj" = SpaMTP,
-              "DE" = DE.list))
 
   gsea_all_cluster = data.frame()
   all_ranks = list()
