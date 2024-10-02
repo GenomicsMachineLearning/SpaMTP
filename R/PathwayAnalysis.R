@@ -485,6 +485,7 @@ FindRegionalPathways = function(SpaMTP,
          "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ...")
   }
   db_3 <- SpaMTP@tools$db_3
+  input_mz <- as.numeric(gsub("mz-", "", rownames(SpaMTP[[SM_assay]])))
 
   db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
@@ -494,6 +495,8 @@ FindRegionalPathways = function(SpaMTP,
     x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
     index_chebi = which(grepl(x, pattern = "CHEBI"))
     x[index_chebi] = tolower(x[index_chebi])
+    index_lipidm = which(grepl(x, pattern = "^LM"))
+    x[index_lipidm] = paste0("LIPIDMAPS:", x[index_lipidm])
     return(x)
   })
 
@@ -510,14 +513,17 @@ FindRegionalPathways = function(SpaMTP,
 
     verbose_message(message_text = "Query finished!" , verbose = verbose)
     # get names for the ranks
-    name_rank = lapply(input_mz$mz, function(x) {
+
+
+    name_rank = lapply(input_mz, function(x) {
       return(unique(na.omit(db_3[which(db_3$observed_mz == x), ])))
     })
 
 
-    name_rank_ids = lapply(input_mz$mz, function(x) {
-      return(unique(na.omit(db_3$rampid[which(db_3$observed_mz == x)])))
+    name_rank_ids = lapply(input_mz, function(x) {
+      return(unique(na.omit(db_3$ramp_id[which(db_3$observed_mz == x)])))
     })
+
     # Get pathway db
     verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
     chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
