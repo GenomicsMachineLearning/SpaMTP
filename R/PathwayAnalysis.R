@@ -484,7 +484,7 @@ FindRegionalPathways = function(SpaMTP,
     stop("@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
          "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ...")
   }
-  db_3 <- data@tools$db_3
+  db_3 <- SpaMTP@tools$db_3
 
   db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
