@@ -37,6 +37,7 @@ Suggests:
 Config/testthat/edition: 3
 biocViews:
 Imports: 
+    cowplot,
     Cardinal,
     data.table,
     dendextend,
@@ -45,9 +46,11 @@ Imports:
     edgeR,
     fgsea,
     fields,
+    ggpubr,
     ggdendro,
     ggnewscale,
     ggplot2,
+    ggplotify,
     ggridges,
     ggtree,
     graphics,
