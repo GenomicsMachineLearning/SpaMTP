@@ -500,38 +500,14 @@ FindRegionalPathways = function(SpaMTP,
     return(x)
   })
 
-    db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
+  db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
 
+  db_3 <- db_3 %>%
+    tidyr::unnest(cols = c(chem_source_id))
 
-    ####### PATHWAY
-    rampid = c()
-    chem_source_id = unique(chem_props$chem_source_id)
+  verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
 
-    verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
-
-    db_3 = merge(chem_props, db_3, by = "chem_source_id")
-
-    verbose_message(message_text = "Query finished!" , verbose = verbose)
-    # get names for the ranks
-
-
-    name_rank = lapply(input_mz, function(x) {
-      return(unique(na.omit(db_3[which(db_3$observed_mz == x), ])))
-    })
-
-
-    name_rank_ids = lapply(input_mz, function(x) {
-      return(unique(na.omit(db_3$ramp_id[which(db_3$observed_mz == x)])))
-    })
-
-    # Get pathway db
-    verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
-    chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
-
-    pathway_db = split(chempathway$rampId, chempathway$pathwayName)
-    pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
-    pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
-                              lapply(pathway_db, length) <= max_path_size]
+  db_3 = merge(chem_props, db_3, by = "chem_source_id")
 
 
   ### Adding DE Results
@@ -579,6 +555,16 @@ FindRegionalPathways = function(SpaMTP,
     }
   }
 
+
+  # Get pathway db
+  verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
+  chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
+
+  pathway_db = split(chempathway$rampId, chempathway$pathwayName)
+  pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
+  pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
+                            lapply(pathway_db, length) <= max_path_size]
+
   gc()
 
   gsea_all_cluster = data.frame()
@@ -592,6 +578,7 @@ FindRegionalPathways = function(SpaMTP,
   )
 
   for (i in cluster){
+    i <- as.character(i)
     ranks <- c()
     if ("metabolites" %in% names(DE.list)){
       ## metabolites
@@ -614,17 +601,36 @@ FindRegionalPathways = function(SpaMTP,
 
     ranks = ranks[which(!duplicated(names(ranks)))]
     all_ranks[[i]] = ranks[is.finite(ranks)]
-    suppressWarnings({
+
+    gsea_result <- c()
+    if (length(all_ranks[[i]]) > 0){
+
+      suppressWarnings({
       gsea_result = fgsea::fgsea(
         pathways =  pathway_db,
-        stats = ranks,
+        stats = all_ranks[[i]],
         minSize = min_path_size,
         maxSize = max_path_size
-      )  %>%  dplyr::mutate(Cluster_id = i)
-    })
+      )  %>%  dplyr::mutate(Cluster_id = i)})
+
+    } else {
+      gsea_result <- data.table::data.table(
+        pathway = character(0),
+        pval = numeric(0),
+        padj = numeric(0),
+        log2err = numeric(0),
+        ES = numeric(0),
+        NES = numeric(0),
+        size = integer(0),
+        leadingEdge = list(),
+        Cluster_id = i
+      )
+    }
+
     gsea_result = na.omit(gsea_result)
-    short_source = source_df[which((source_df$rampId %in% names(ranks)) &
+    short_source = source_df[which((source_df$rampId %in% names(all_ranks[[i]])) &
                                      !duplicated(source_df$rampId)), ]
+
     addtional_entry = do.call(rbind, lapply(1:nrow(gsea_result), function(x) {
       temp = unique(unlist(gsea_result$leadingEdge[x]))
       temp_ref = db_3[which(db_3$ramp_id %in% temp), ] %>% dplyr::mutate(adduct_info = paste0(observed_mz, "[", Adduct, "]")) %>% dplyr::filter(!duplicated(adduct_info))
@@ -645,28 +651,30 @@ FindRegionalPathways = function(SpaMTP,
   }
 
   close(pb3)
+  gsea_all_cluster <- na.omit(gsea_all_cluster)
+  gsea_all_cluster_sig = gsea_all_cluster %>% dplyr::group_by(pathway) %>% dplyr::filter(any(as.numeric(pval) <= (pval_cutoff_pathway %||% 0.05))) %>% #dplyr::mutate(
+    #Significance = ifelse(
+    #  pval <= 0.05,
+    #  "Significant at 5% significance level",
+    #  "Not statistically significant"
+    #)
+  #) %>%
+  dplyr::mutate(group_importance = sum(abs(NES)))
 
-  gsea_all_cluster_sig = gsea_all_cluster %>% dplyr::group_by(pathway) %>% dplyr::filter(any(as.numeric(pval) <= (pval_cutoff_pathway %||% 0.05))) %>% dplyr::mutate(
-    Significance = ifelse(
-      pval <= 0.05,
-      "Significant at 5% significance level",
-      "Not statistically significant"
-    )
-  ) %>% dplyr::mutate(group_importance = sum(abs(NES)))
-  gsea_all_cluster_return =   gsea_all_cluster %>%  dplyr::mutate(
-    Significance = ifelse(
-      pval <= 0.05,
-      "Significant at 5% significance level",
-      "Not statistically significant"
-    )
-  )
+  gsea_all_cluster_return =   gsea_all_cluster #%>%  dplyr::mutate(
+   # Significance = ifelse(
+   #   pval <= 0.05,
+   #  "Significant at 5% significance level",
+   #   "Not statistically significant"
+   #  )
+  #)
   colnames(gsea_all_cluster_return)[1] = "pathwayName"
   gsea_all_cluster_return = merge(gsea_all_cluster_return, pathway, by = "pathwayName")
   ########################################################
   #Plot#
-  SpaMTP@misc[[paste0("set_enriched_", sscs[user_input], "_", paste0(c(background_clu, "baseline"), collapse =
-                                                                       "."))]] = gsea_all_cluster_return
-  return(SpaMTP)
+  #SpaMTP@misc[[paste0("set_enriched_", sscs[user_input], "_", paste0(c(background_clu, "baseline"), collapse =
+  #                                                                     "."))]] = gsea_all_cluster_return
+  return(gsea_all_cluster_return)
 }
 
 
