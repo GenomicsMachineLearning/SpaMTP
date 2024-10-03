@@ -671,9 +671,7 @@ FindRegionalPathways = function(SpaMTP,
   colnames(gsea_all_cluster_return)[1] = "pathwayName"
   gsea_all_cluster_return = merge(gsea_all_cluster_return, pathway, by = "pathwayName")
   ########################################################
-  #Plot#
-  #SpaMTP@misc[[paste0("set_enriched_", sscs[user_input], "_", paste0(c(background_clu, "baseline"), collapse =
-  #                                                                     "."))]] = gsea_all_cluster_return
+
   return(gsea_all_cluster_return)
 }
 
