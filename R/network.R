@@ -33,6 +33,8 @@ spa_network  = function(SpaMTP,
           "' is inside the input seurat object"
         )
       )
+    }else{
+      gene_matrix = Matrix::t(SpaMTP[[spatial_transcriptomic_assay]]@layers[[slot]])
     }
   }
   if ("metabolites" %in% analyte_types) {
@@ -44,11 +46,13 @@ spa_network  = function(SpaMTP,
           "' is inside the input seurat object"
         )
       )
+    }else{
+      mass_matrix = Matrix::t(SpaMTP[[spatial_metabolomic_assay]]@layers[[slot]])
     }
   }
   if (("metabolites" %in% analyte_types) &
       ("gene" %in% analyte_types)) {
-    if (nrow(mass_matrix) != nrow(gene_matrix)) {
+    if (ncol(SpaMTP@assays[[spatial_metabolomic_assay]]) != ncol(SpaMTP@assays[[spatial_transcriptomic_assay]])) {
       stop("Please align the spatial data before processing")
     }
   }
@@ -228,7 +232,7 @@ spa_network  = function(SpaMTP,
         enriched_df = SpaMTP@misc[[which(names(SpaMTP@misc) == default_enrich)]] %>% dplyr::filter(sub("Cluster", "", Cluster_id) %in% as.character(cluster))
         returnname = default_enrich
       } else{
-        enriched_df = SpaMTP@misc[[which(names(SpaMTP@misc) == candidate_enriched[user_input4])]] %>% dplyr::filter(sub("Cluster", "", enriched_df$Cluster_id) %in% as.character(cluster))
+        enriched_df = SpaMTP@misc[[which(names(SpaMTP@misc) == candidate_enriched[user_input4])]] %>% dplyr::filter(sub("Cluster", "", Cluster_id) %in% as.character(cluster))
         returnname = candidate_enriched[user_input4]
       }
       break
