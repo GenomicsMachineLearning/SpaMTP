@@ -356,7 +356,7 @@ db_adduct_filter <- function(db, adduct, polarity = "neg", verbose = TRUE) {
         "M-H",
         "M+Na-2H",
         "M+Cl",
-        "M+K-2",
+        "M+K-2H",
         "M+FA-H",
         "M+Hac-H",
         "M+Br",
