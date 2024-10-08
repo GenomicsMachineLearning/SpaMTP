@@ -188,12 +188,12 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
     if(length(Assays(object = data)) != 1){
       features = c()
-      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=assay)]){
+      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=feature.metadata.assay)]){
         features =  c(features, rownames(SpaMTP@assays[[non_met_assay]]@features))
       }
-      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = c( result_df$mz_names, features))})
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = feature.metadata.assay, features = c(result_df$mz_names, features))})
     }else{
-      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = result_df$mz_names)})
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = feature.metadata.assay, features = result_df$mz_names)})
     }
   }
 
