@@ -532,7 +532,7 @@ FindRegionalPathways = function(SpaMTP,
       ),
       verbose = verbose
     )
-    DE <- DE.list[[analyte_types[i]]]
+    DE <- DE.list[[i]]
     if (any(c("avg_log2FC", "logFC") %in% colnames(DE)) &&
         any(c("p_val_adj", "FDR") %in% colnames(DE)) &&
         "cluster" %in% colnames(DE) &&
