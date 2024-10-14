@@ -575,7 +575,7 @@ FindRegionalPathways = function(SpaMTP,
   all_ranks = list()
   pb3 = txtProgressBar(
     min = 0,
-    max = length(cluster) - 1,
+    max = length(cluster),
     initial = 0,
     style = 3
   )
@@ -586,7 +586,7 @@ FindRegionalPathways = function(SpaMTP,
       ## metabolites
       DE_met <- DE.list[["metabolites"]]
       sub_db3 = DE_met[which(as.character(DE_met$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% dplyr::filter(!duplicated(ramp_id))
-      met_ranks = sub_db3$avg_log2FC
+      met_ranks = scale(sub_db3$avg_log2FC, center = 0)
       names(met_ranks) = sub_db3$ramp_id
       ranks <- c(ranks, met_ranks)
     }
