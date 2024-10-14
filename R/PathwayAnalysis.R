@@ -386,30 +386,24 @@ FishersPathwayAnalysis <- function (Analyte,
 }
 
 
-#' This the function used to compute the exact fisher test for over-representation based pathway analysis
+#' This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data
 #'
-#' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.
-#' @param polarity The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
+#' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics(SM)/transcriptomics(ST) data or both, if contains SM data, it should be annotated via SpaMTP::AnnotateSM function.
+#' @param ident A name character to specific the cluster vector for regions in `SpaMTP@meta.data` slot.
+#' @param DE.list A list consist of differetial expression output from FindAllMarkers() function, with items in same order as analyte_types.
+#' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).
 #' @param adduct Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).
-#' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("genes"), c("") or both (default = c("genes", "")).
 #' @param SM_assay A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").
 #' @param ST_assay A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").
-#' @param algorithm Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python
 #' @param SM_slot The slot name containing the SM assay matrix data (default = "counts").
-#' @param npcs A numerical integer, representing the number of principle components that the PCA will reduce to.
-#' @param st_cluster_name A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done
-#' @param sm_cluster_name A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"
-#' @param max_path_size The max number of  in a specific pathway (default = 500).
-#' @param min_path_size The min number of  in a specific pathway (default = 5).
+#' @param ST_slot The slot name containing the ST assay matrix data (default = "counts").
+#' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
+#' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
 #' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
-#' @param ppm_threshold A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential  (default = NULL, calculated by )
-#' @param cluster_vector A factor vector where each levels indicates the different clustered regions in tissue
-#' @param background_cluster A vector consist of 0 and 1, where 1 indicates the intended background region
 #' @param pval_cutoff_pathway A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways
-#' @param pval_cutoff_mets A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for 
+#' @param pval_cutoff_mets A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for metabolites
 #' @param pval_cutoff_genes A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs
 #' @param verbose A boolean value indicates whether verbose is shown
-#' @param ... The other parameters goes to Seurat methods
 #'
 #' @return A SpaMTP object with set enrichment on given analyte types.
 #' @export
@@ -421,16 +415,14 @@ FishersPathwayAnalysis <- function (Analyte,
 FindRegionalPathways = function(SpaMTP,
                                 ident,
                                 DE.list,
-                                analyte_types = c("genes", ""),
+                                analyte_types = c("genes", "metabolites"),
                                 SM_assay = "SPM",
                                 ST_assay = "SPT",
                                 SM_slot = "counts",
                                 ST_slot = "counts",
-                                test_use = "wilcox",
                                 tof_resolution = 30000,
                                 min_path_size = 5,
                                 max_path_size = 500,
-                                baseline_cluster = NULL,
                                 pval_cutoff_pathway = NULL,
                                 pval_cutoff_mets = NULL,
                                 pval_cutoff_genes = NULL,
@@ -467,7 +459,7 @@ FindRegionalPathways = function(SpaMTP,
       }
     }
   }
-  if ("" %in% analyte_types) {
+  if ("metabolites" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[SM_assay]]@layers[[SM_slot]])) {
       stop(
         paste0(
@@ -475,7 +467,7 @@ FindRegionalPathways = function(SpaMTP,
           SM_assay,
           "]][",
           SM_slot,
-          "] .. If you are using metabolic data with '' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove '' from analyte_tpes"
+          "] .. If you are using metabolic data with 'metabolites' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'metabolites' from analyte_tpes"
         )
       )
     } else{
@@ -495,22 +487,21 @@ FindRegionalPathways = function(SpaMTP,
     )
   }
   db_3 <- SpaMTP@tools$db_3
-  input_mz <- as.numeric(gsub("mz-", "", rownames(SpaMTP[[SM_assay]])))
-  db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
+  db_3 = db_3 %>%
+    tidyr::separate_rows(Isomers, sep = ";")
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
-  input_id = lapply(db_3$entry, function(x) {
+  input_id = lapply(db_3$Isomers, function(x) {
     x = unlist(x)
     index_hmdb = which(grepl(x, pattern = "HMDB"))
     x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
     index_chebi = which(grepl(x, pattern = "CHEBI"))
     x[index_chebi] = tolower(x[index_chebi])
-    index_lipidm = which(grepl(x, pattern = "^LM"))
-    x[index_lipidm] = paste0("LIPIDMAPS:", x[index_lipidm])
+    index_lm = which(grepl(x, pattern = "LMPK"))
+    x[index_lm] = tolower(x[index_lm])
     return(x)
   })
   db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
-  db_3 <- db_3 %>%
-    tidyr::unnest(cols = c(chem_source_id))
+  rampid = c()
   verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
   db_3 = merge(chem_props, db_3, by = "chem_source_id")
   ### Adding DE Results
@@ -544,8 +535,8 @@ FindRegionalPathways = function(SpaMTP,
       if ("FDR" %in% colnames(DE)) {
         colnames(DE)[colnames(DE) == "FDR"] <- "p_val_adj"
       }
-      if (analyte_types[i] == "") {
-        DE = DE %>% mutate(mz_name = gene)
+      if (analyte_types[i] == "metabolites") {
+        DE = DE %>% rename(mz_name = gene)
         db_3 = merge(db_3 , DE, by = "mz_name")
         DE.list[[analyte_types[i]]] <- db_3
       } else {
@@ -584,7 +575,7 @@ FindRegionalPathways = function(SpaMTP,
     ranks <- c()
     if ("metabolites" %in% analyte_types) {
       ## metabolites
-      DE_met <- DE.list[[which(analyte_types == "metabolites")]]
+      DE_met <- DE.list[["metabolites"]]
       sub_db3 = DE_met[which(as.character(DE_met$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% dplyr::filter(!duplicated(ramp_id))
       met_ranks = scale(sub_db3$avg_log2FC, center = 0)
       names(met_ranks) = sub_db3$ramp_id
@@ -592,11 +583,11 @@ FindRegionalPathways = function(SpaMTP,
     }
     if ("genes" %in% names(DE.list)) {
       ## genes
-      DE_rna <- DE.list[[which(analyte_types == "genes")]]
+      DE_rna <- DE.list[["genes"]]
       sub_de_gene = DE_rna[which(as.character(DE_rna$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% dplyr::filter(!duplicated(rampId))
       ranks_gene_vector = scale(sub_de_gene$avg_log2FC, center = 0)
       names(ranks_gene_vector) = sub_de_gene$rampId
-      # Genes and 
+      # Genes and metabolites
       ranks <- c(ranks, ranks_gene_vector)
     }
     
@@ -639,7 +630,8 @@ FindRegionalPathways = function(SpaMTP,
       return(
         data.frame(
           adduct_info = paste0(temp_ref$adduct_info, collapse = ";"),
-          leadingEdge_ = paste0(temp_ref$IsomerNames, collapse = ";"),
+          leadingEdge_metabolites = paste0(sub(";.*", "", temp_ref$IsomerNames), collapse = ";"),
+          leadingEdge_metabolites_id = paste0(temp_ref$chem_source_id, collapse = ";"),
           leadingEdge_genes = paste0(temp_rna$commonName, collapse = ";"),
           met_regulation = paste0(ifelse(ranks[which((names(ranks) %in% temp) &
                                                        (grepl(names(ranks), pattern = "RAMP_C")))] >= 0, "↑", "↓"), collapse = ";"),
@@ -650,7 +642,7 @@ FindRegionalPathways = function(SpaMTP,
     }))
     gsea_result = cbind(gsea_result , addtional_entry)
     gsea_all_cluster = rbind(gsea_all_cluster, gsea_result)
-    setTxtProgressBar(pb3, as.numeric(i))
+    setTxtProgressBar(pb3, as.numeric(which(cluster == i)))
   }
   close(pb3)
   gsea_all_cluster <- na.omit(gsea_all_cluster)
@@ -661,6 +653,7 @@ FindRegionalPathways = function(SpaMTP,
   gsea_all_cluster_return = merge(gsea_all_cluster_return, pathway, by = "pathwayName")
   return(gsea_all_cluster_return)
 }
+
 
 
 #' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
