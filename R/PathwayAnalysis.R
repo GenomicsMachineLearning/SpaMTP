@@ -566,7 +566,7 @@ FindRegionalPathways = function(SpaMTP,
   chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
   
   pathway_db = split(chempathway$rampId, chempathway$pathwayName)
-  pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
+  pathway_db = pathway_db[which(!duplicated(tolower(names(pathway_db))))]
   pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
                             lapply(pathway_db, length) <= max_path_size]
   
