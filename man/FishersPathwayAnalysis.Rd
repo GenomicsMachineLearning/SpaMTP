@@ -6,28 +6,17 @@
 \usage{
 FishersPathwayAnalysis(
   Analyte,
-  analyte_type = c("mz"),
-  polarity = NULL,
-  ppm_error = 10,
   max_path_size = 500,
   min_path_size = 5,
   alternative = "greater",
   pathway_all_info = FALSE,
   pval_cutoff = 0.05,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
-\item{Analyte}{A list of analytes with 3 elements, namely "mz", "genes" and "", each is comprised of the corresponding labels, for ,
-Supported  format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X"
-Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-Supported mz format: any string or numeric vector contains the m/z}
-
-\item{analyte_type}{= "" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).}
-
-\item{polarity}{Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).}
-
-\item{ppm_error}{Integer defining the ppm threshold that matched analytes must be between (default = 10).}
+\item{Analyte}{A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.}
 
 \item{max_path_size}{The max number of  in a specific pathway (default = 500).}
 
@@ -40,6 +29,15 @@ Supported mz format: any string or numeric vector contains the m/z}
 \item{pval_cutoff}{The cut off of raw p value to retain the pathways (default = 0.05).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{...}{Additional parameters that can be passed through to \code{annotateTable()} when running \code{mz}-based analysis. Please see documentation for \code{annotateTable()} for more details.
+\subsection{Details}{
+\itemize{
+\item Supported \code{metabolite} format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
+\item Supported \code{gene} data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
+\item Supported \code{mz} format: any string or numeric vector contains the m/z. NOTE: If \code{mz} values are provided then \code{annotateTable()} will be run with
+}
+}}
 }
 \value{
 a dataframe with the relevant pathway information

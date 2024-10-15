@@ -1,27 +1,18 @@
 #' Calculates Significant Metabolic Pathways using a Fisher Exact Test
 #'
 #' @param Analyte A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.
-#'
-#'
-#'
-#'  each is comprised of the corresponding labels, for ,
-#'
-#'
-
-#' @param analyte_type = "" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).
-#' @param polarity Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).
-#' @param ppm_error Integer defining the ppm threshold that matched analytes must be between (default = 10).
 #' @param max_path_size The max number of  in a specific pathway (default = 500).
 #' @param min_path_size The min number of  in a specific pathway (default = 5).
 #' @param alternative The hypothesis of the fisher exact test (default = "greater").
 #' @param pathway_all_info Whether to included all genes/ screened in the return (default = FALSE).
 #' @param pval_cutoff The cut off of raw p value to retain the pathways (default = 0.05).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param ... Additional parameters that can be passed through to `annotateTable()` when running `mz`-based analysis. Please see documentation for `annotateTable()` for more details.
 #'
 #' ### Details
 #' * Supported `metabolite` format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
 #' * Supported `gene` data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-#' * Supported `mz` format: any string or numeric vector contains the m/z
+#' * Supported `mz` format: any string or numeric vector contains the m/z. NOTE: If `mz` values are provided then `annotateTable()` will be run with
 #'
 #'
 #' @return a dataframe with the relevant pathway information
@@ -33,88 +24,57 @@
 #' @examples
 #' # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
 FishersPathwayAnalysis <- function (Analyte,
-                                    analyte_type = c("mz"),
-                                    polarity = NULL,
-                                    ppm_error = 10,
                                     max_path_size = 500,
                                     min_path_size = 5,
                                     alternative = "greater",
                                     pathway_all_info = FALSE,
                                     pval_cutoff = 0.05,
-                                    verbose = TRUE)
+                                    verbose = TRUE,
+                                    ...)
 {
-
-  if((!"mz" %in% analyte_type) & (!"metabolite" %in% analyte_type) & (!"genes" %in% analyte_type)){
-
-    stop(
-      "analyte_type was not specified correctly.  Please specify one of the following options: , genes"
-    )
+  if (is.null(names(Analyte)) || all(input_names %in% c("mzs", "genes", "metabolites"))){
+    stop("Invalid key argument! Name of list was not one of the required values [c('mzs', 'genes', 'metabolites')].  Please specify the names correctly for example: list('mz' = c('mz-100.12','mz-428.32', 'mz-341.201')) ... ")
   }
-  now <- proc.time()
 
-  verbose_message(message_text = "Fisher Testing ......", verbose = verbose)
+  verbose_message(message_text = "Running Fisher Testing ......", verbose = verbose)
 
   pathwayRampId <- rampId <- c()
 
-
-  if ( "metabolite" %in% analyte_type) {
-    analytes_met = Analyte[["metabolite"]]
+  if ("metabolites" %in% names(Analyte)) {
+    analytes_met = Analyte[["metabolites"]]
     source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
     analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),]
   }
-  if ("genes" %in% analyte_type) {
-    if (!("genes" %in% names(Analyte))){
-      stop("Cannot find gene list not present in Analyte object .... Please provide SpaMTP assay containing gene names, or remove 'gene' from analyte_type input!")
-    }
+  if ("genes" %in% names(Analyte)) {
     analytes_rna = Analyte[["genes"]]
     source_rna = source_df[which(grepl(source_df$rampId, pattern = "RAMP_G") == T),]
     analytehaspathway_rna = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_G") == T),]
     analyte_rna = analyte[which(grepl(analyte$rampId, pattern = "RAMP_G") == T),]
   }
 
-  if ("mz" %in% analyte_type) {
-    analytes_mz = Analyte[["mz"]]
+  if ("mzs" %in% names(Analyte)) {
 
-    # Since this file was tested in positive ion mode
-    db = rbind(Chebi_db,
-               Lipidmaps_db,
-               HMDB_db)
+    warning("A list of mzs has been provided! annotateTable() will now be run using input specified via `...`! If no appropriate inputs have been provided default settings will be used including `db = rbind(Chebi_db, Lipidmaps_db, HMDB_db)`. Please see annotateTable() documentation for more ...")
 
-    gc()
-    if (polarity == "positive") {
-      test_add_pos <- adduct_file$adduct_name[which(adduct_file$charge > 0)]
+   analytes_mz = Analyte[["mzs"]]
 
-      # 1) Filter DB by adduct.
-      db_1 <- db_adduct_filter(db, test_add_pos, polarity = "pos", verbose = verbose)
-    } else if (polarity == "negative") {
-      test_add_neg <- adduct_file$adduct_name[which(adduct_file$charge < 0)]
+   input_mz = data.frame(cbind(
+     row_id = 1:length(analytes_mz),
+     mz = as.numeric(stringr::str_extract(analytes_mz, pattern = "\\d+\\.?\\d*"))
+   ))
 
-      # 1) Filter DB by adduct.
-      db_1 <- db_adduct_filter(db, test_add_neg, polarity = "neg", verbose = verbose)
-    } else if (polarity == "neutral") {
+   args <- list(...)
 
-      # 1) Filter DB by adduct.
-      db_1 <- db %>% mutate("M" = `M-H ` + 1.007276)
-    }else{
-      stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
-    }
+   # Set db to 2 if it's not passed in ..., otherwise use the value provided in ...
+   db <- if ("db" %in% names(args)) args$db else rbind(Chebi_db,
+                                                         Lipidmaps_db,
+                                                         HMDB_db)
 
-    # 2) only select natural elements
-    db_2 <- formula_filter(db_1)
+   remaining_args <- args[setdiff(names(args), "db")]
 
-    # 3) search db against mz df return results
-    verbose_message(message_text = "search db against mz df return results", verbose = verbose)
+   db_3 <- do.call(annotateTable, c(list(mz_df= input_mz, db = db), remaining_args))
 
-    input_mz = data.frame(cbind(
-      row_id = 1:length(analytes_mz),
-      mz = as.numeric(str_extract(analytes_mz, pattern = "\\d+\\.?\\d*"))
-    ))
-    ppm_error <- ppm_error
-    db_3 <- proc_db(data.frame(input_mz), db_2, ppm_error)
-    # Expand the isomer entries
-
-    verbose_message(message_text = "Expanding database to extract all potential ", verbose = verbose)
 
     db_3list = pbapply::pblapply(1:nrow(db_3), function(i){
       if (any(grepl(db_3[i, ], pattern = ";"))) {
@@ -188,6 +148,7 @@ FishersPathwayAnalysis <- function (Analyte,
     mz_array = c(mz_array,rep(NA, times = length(analytes_rna)))
     adducts_array = c(adducts_array,rep(NA, times = length(analytes_rna)))
   }
+
   # Merge as data.frame to minimise query time
   temp_mz_analyte = data.frame(cbind(mz_array = mz_array,
                                      sourceId = analytes_new,
@@ -198,7 +159,7 @@ FishersPathwayAnalysis <- function (Analyte,
   analytes_new = temp_mz_analyte$sourceId
   mzs_new = temp_mz_analyte$mz_array
   adducts_new = temp_mz_analyte$adduct
-  # Pathway enrichment
+
 
   ############  pathway analysis ##############
   verbose_message(message_text = "Begin metabolic pathway analysis ......" , verbose = verbose)
@@ -207,23 +168,20 @@ FishersPathwayAnalysis <- function (Analyte,
                               by = "sourceId")
 
   analytes_rampids = unique(analytes_rampids_df$rampId)
-  # for(k in 1:length(unique_analytes)){
-  #   pattern = unique_analytes[k]
-  #   analytes_rampids = c(analytes_rampids,
-  #                        unique(source$rampId[which(grepl(source$sourceId, pattern = pattern,
-  #                                                         ignore.case = T))]))
-  # }
-  # analytes_rampids = unique(na.omit(analytes_rampids))
+
   # (1) Get candidate pathways
   # Get all analytes and number of analytes within a specific pathway
 
   source_non_duplicated = analytes_rampids_df[!duplicated(analytes_rampids_df$rampId),]
+
   # rampid = the subset of the database with our query data
   pathway_rampids = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids),]
   pathway_rampids_count = pathway_rampids %>% dplyr::group_by(pathwayRampId) %>% dplyr::mutate(analytes_in_pathways  = n())
+
   # analytespathway_new. = the subset of the database with all pathways
   analytehaspathway_full = analytehaspathway_new %>%
     group_by(pathwayRampId) %>% dplyr::mutate(total_in_pathways = n())
+
   # Filter out too large/small pathways
   analytehaspathway_full =analytehaspathway_full[which(analytehaspathway_full$total_in_pathways>= min_path_size & analytehaspathway_full$total_in_pathways <= max_path_size),]
 
@@ -238,7 +196,7 @@ FishersPathwayAnalysis <- function (Analyte,
     src_mz = sub_src$mz_array
 
     enrichment_df = pbapply::pblapply(1:length(unipathids), function(x){
-      #ananlytes_id_df = analytehaspathway_new[which(analytehaspathway_new$pathwayRampId == unique(pathway_rampids$pathwayRampId)[x]),]
+
       pathway_id = unipathids[x]
       pathway_info = pathway[which(pathway$pathwayRampId == pathway_id),]
       # get rampids associated with the pathway
@@ -279,7 +237,7 @@ FishersPathwayAnalysis <- function (Analyte,
       return(return_df)
     })
     enrichment_df = do.call(rbind, enrichment_df)
-    #enrichment_df = enrichment_df %>% dplyr::filter(!duplicated(pathway_name))
+
   }else{
     unipathids = unique(pathway_rampids_count$pathwayRampId)
     verbose_message(message_text = "Merging datasets" , verbose = verbose)
@@ -287,17 +245,12 @@ FishersPathwayAnalysis <- function (Analyte,
 
     enrichment_df = base::merge(pathway_rampids_count[which(!duplicated(pathway_rampids_count$pathwayRampId)),], analytehaspathway_sub,
                                 by = "pathwayRampId")
-    #colnames(enrichment_df)[which(colnames(enrichment_df) == "count")] = "total_in_pathways"
+
     enrichment_df = base::merge(enrichment_df, pathway, by = "pathwayRampId")
-    #enrichment_df = enrichment_df %>% dplyr::filter(!duplicated(pathwayName))
+
   }
 
-  # abbb = analytehaspathway_new[which(analytehaspathway_new$rampId %in% analytes_rampids)[1:100],] %>% rowwise() %>%
-  # dplyr::mutate(ananlytes_id_list = list(analytehaspathway_new$rampId[which(analytehaspathway_new$pathwayRampId == pathwayRampId)])) %>%
-  # dplyr::count(pathwayRampId,
-  #              ananlytes_id_list,
-  #              sort = T,
-  #              name = "analytes_in_pathways")
+
 
   verbose_message(message_text = "Running test" , verbose = verbose)
 
@@ -330,22 +283,9 @@ FishersPathwayAnalysis <- function (Analyte,
 
   enrichment_df = enrichment_df%>% mutate(ratio = analytes_in_pathways/total_in_pathways)
 
-  verbose_message(message_text = "P value obtained" , verbose = verbose)
+  verbose_message(message_text = "Done!" , verbose = verbose)
 
-  # (5) Append pathway information to the original df
-  gc()
-  # (6) Append  information to the original df
-  # Paste back the original Ids
-  # (7) Reduce the dataframe with respected to the User input pathway size
 
-  verbose_message(message_text = "Done" , verbose = verbose)
-
-  gc()
-  #return(enrichment_df_with_both_info %>% select(-c(
-  #  pathwayRampId,
-  #  ananlytes_id_list,
-  #  screened_analytes
-  #)))
   if(pathway_all_info == F){
     return =enrichment_df %>% dplyr::select(-c(pathwayRampId,rampId.y, pathwaySource.y)) %>% dplyr::select(pathwayName,
                                                                                                            sourceId,

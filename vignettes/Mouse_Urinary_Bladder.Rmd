@@ -777,12 +777,14 @@ The below code is performing FishersExactTest Pathway analysis on metabolites si
 ```{r}
 ## Subsets to include only UP-regulated m/z values in cluster 6 (relative to cluster 2 and 5)
 cluster_6 <- UP[UP$cluster == "6",] 
+
+metabolite_ids <- ROI[["Spatial"]]@meta.data[ROI[["Spatial"]]@meta.data$all_IsomerNames %in% cluster_6$annotations,]$all_Isomers
 ```
 
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-cluster_6_pathways <- FishersPathwayAnalysis(list("metabolites" = unique(unlist(strsplit(cluster_6$annotations, "; ")))),
-                            analyte_type = c("metabolites"),
+cluster_6_pathways <- FishersPathwayAnalysis(list(paste0("LIPIDMAPS:",unique(unlist(strsplit(metabolite_ids, "; "))))),
+                            analyte_type = c(""),
                             polarity = "positive",
                             ppm_error = 10,
                             max_path_size = 500,
@@ -838,7 +840,7 @@ The second form of pathway analysis identifies differentially expressed pathways
 
 The code below uses the "ssc" clustering and the pseudpo-bulking DE results to identify significant pathways per cluster:
 ```{r, eval=FALSE}
-x <- FindRegionalPathways(SpaMTP = bladder_x,
+x <- FindRegionalPathways(SpaMTP = ROI,
                                 ident = "ssc",
                                 DE.list = list(cluster_DEPs$DEPs),
                                 analyte_types = c("metabolites"),
@@ -848,7 +850,7 @@ x <- FindRegionalPathways(SpaMTP = bladder_x,
 This function produces a data.frame of differentially expressed pathways. Lets now plot the results:
 
 ```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
-p <- PathwaysPerRegion(bladder_annotated,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
+p <- PathwaysPerRegion(ROI,ident = "ssc", polarity = "positive", assay = "Spatial",slot = "counts")
 ```
 
 ```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10}

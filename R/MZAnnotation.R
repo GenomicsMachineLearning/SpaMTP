@@ -58,15 +58,13 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
 #' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
 #' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
-#' @param filepath Character string of the directory to store the _annotated_mz_peaks.csv. Else, set to NULL as default.
+#' @param filepath Character string of the directory to store the _annotated_mz_peaks.csv. If set to NULL no dataframe will be saved (default = NULL).
 #' @param return.only.annotated Boolean value indicating if the annotated Seurat Object should only include m/z values that were successfully annotated (default = TRUE).
 #' @param save.intermediate Boolean indicating whether to save an intermediate file in the `@tools` slot of the SpaMTP object required for later analysis functions such as `FindRegionalPathways()` (default = TRUE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @returns A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj`[["Spatial"]][[]]`)
 #' @export
-#'
-#' @importFrom rlang %||%
 #'
 #' @examples
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
@@ -83,8 +81,96 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
   mz_df$row_id <- seq(1, length(mz_df[[raw.mz.column]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
-  db_name <- deparse(substitute(db))
+  db_3 <- annotateTable(mz_df= mz_df, db = db, assay = assay, raw.mz.column = raw.mz.column,
+                        ppm_error = ppm_error, adducts = adducts, polarity = polarity,
+                        tof_resolution = tof_resolution,
+                        verbose = verbose)
 
+
+  if (save.intermediate){
+    data@tools$db_3 <- db_3
+  }
+
+  if (!(is.null(filepath))){
+    path <- paste0(filepath,"_annotated_mz_peaks.csv")
+    message(paste0("Writing annotated m/z file to: '", path, "'"))
+    data.table::fwrite(db_3, path)
+  }
+
+  verbose_message(message_text = "Adding annotations to Seurat Object .... ", verbose = verbose)
+
+  result_df <- db_3 %>%
+    dplyr::group_by(observed_mz) %>%
+    dplyr::summarise(
+      all_IsomerNames = paste(IsomerNames, collapse = "; "),
+      all_Isomers = paste(Isomers, collapse = "; "),
+      all_Isomers_IDs = paste(Isomers_IDs, collapse = "; "),
+      all_Adducts = paste(unique(Adduct), collapse = "; "),
+      all_Formulas = paste(unique(Formula), collapse = "; "),
+      all_Errors = paste(round(Error,4), collapse = "; ")
+    )
+  rownames(result_df) <- paste0("mz-",result_df$observed_mz)
+
+  result_df$mz_names <- rownames(result_df)
+
+  data[[assay]][["mz_names"]] <- rownames(data[[assay]][[]])
+
+
+  result_df <- result_df %>% dplyr::mutate(present = TRUE)
+
+
+  # Perform left join and replace NAs with "No Annotation"
+  feature_metadata <- data[[assay]][[]] %>%
+    dplyr::left_join(result_df, by = "mz_names") %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ifelse(is.na(.), "No Annotation", .)))
+
+  # If you want to remove the "present" column, you can do:
+  feature_metadata <- dplyr::select(feature_metadata, -present)
+
+  data[[assay]][[]] <- feature_metadata
+  if (return.only.annotated == TRUE){
+
+    verbose_message(message_text = "Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features", verbose = verbose)
+
+    if(length(Assays(object = data)) != 1){
+      features = c()
+      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=assay)]){
+        features =  c(features, rownames(SpaMTP@assays[[non_met_assay]]@features))
+      }
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = c(result_df$mz_names, features))})
+    }else{
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = result_df$mz_names)})
+    }
+  }
+
+  return(data)
+}
+
+
+
+
+#' Helper function for AnnotatesSM() and FishersPathwayAnalysis()
+#'
+#' @param mz_df dataframe containing m/z values for annotation.
+#' @param db Reference metabolite dataset in the form of a Data.Frame.
+#' @param assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
+#' @param raw.mz.column Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
+#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
+#' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
+#' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
+#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#' @returns Generates an intermediate annotated m/z dataframe
+#'
+#' @importFrom rlang %||%
+#'
+#' @examples
+#'
+#' ### HelperFunction
+annotateTable <- function(mz_df, db, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, verbose = TRUE){
+
+  db_name <- deparse(substitute(db))
 
   # Uses:
   # db: db that you want to search against
@@ -161,65 +247,8 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
   db_3 <- db_3 %>%
     dplyr::mutate(Isomers_IDs = sapply(Isomers_IDs, function(x) stringr::str_c(x, collapse = "; ")))
 
-  if (save.intermediate){
-    data@tools$db_3 <- db_3
-  }
-
-  if (!(is.null(filepath))){
-    path <- paste0(filepath,db_name,"_annotated_mz_peaks.csv")
-    message(paste0("Writing annotated m/z file to: '", path, "'"))
-    data.table::fwrite(db_3, path)
-  }
-
-  verbose_message(message_text = "Adding annotations to Seurat Object .... ", verbose = verbose)
-
-  result_df <- db_3 %>%
-    dplyr::group_by(observed_mz) %>%
-    dplyr::summarise(
-      all_IsomerNames = paste(IsomerNames, collapse = "; "),
-      all_Isomers = paste(Isomers, collapse = "; "),
-      all_Isomers_IDs = paste(Isomers_IDs, collapse = "; "),
-      all_Adducts = paste(unique(Adduct), collapse = "; "),
-      all_Formulas = paste(unique(Formula), collapse = "; "),
-      all_Errors = paste(round(Error,4), collapse = "; ")
-    )
-  rownames(result_df) <- paste0("mz-",result_df$observed_mz)
-
-  result_df$mz_names <- rownames(result_df)
-
-  data[[assay]][["mz_names"]] <- rownames(data[[assay]][[]])
-
-
-  result_df <- result_df %>% dplyr::mutate(present = TRUE)
-
-
-  # Perform left join and replace NAs with "No Annotation"
-  feature_metadata <- data[[assay]][[]] %>%
-    dplyr::left_join(result_df, by = "mz_names") %>%
-    dplyr::mutate(dplyr::across(dplyr::everything(), ~ifelse(is.na(.), "No Annotation", .)))
-
-  # If you want to remove the "present" column, you can do:
-  feature_metadata <- dplyr::select(feature_metadata, -present)
-
-  data[[assay]][[]] <- feature_metadata
-  if (return.only.annotated == TRUE){
-
-    verbose_message(message_text = "Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features", verbose = verbose)
-
-    if(length(Assays(object = data)) != 1){
-      features = c()
-      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=assay)]){
-        features =  c(features, rownames(SpaMTP@assays[[non_met_assay]]@features))
-      }
-      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = c(result_df$mz_names, features))})
-    }else{
-      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = result_df$mz_names)})
-    }
-  }
-
-  return(data)
+  return(db_3)
 }
-
 
 
 
