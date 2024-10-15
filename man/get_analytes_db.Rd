@@ -2,12 +2,12 @@
 % Please edit documentation in R/PathwayAnalysis.R
 \name{get_analytes_db}
 \alias{get_analytes_db}
-\title{Helper function for building a pathway db based on detected metabolites}
+\title{Helper function for building a pathway db based on detected}
 \usage{
 get_analytes_db(input_id, analytehaspathway, chem_props, pathway)
 }
 \arguments{
-\item{input_id}{Vector of characters defining the detected metabolites.}
+\item{input_id}{Vector of characters defining the detected .}
 
 \item{analytehaspathway}{A dataframe containing RAMP_pathway ID's.}
 
@@ -19,7 +19,7 @@ get_analytes_db(input_id, analytehaspathway, chem_props, pathway)
 A analyte database containing corresponding pathways associated with each detected metabolite
 }
 \description{
-Helper function for building a pathway db based on detected metabolites
+Helper function for building a pathway db based on detected
 }
 \examples{
 #HELPER FUNCTION

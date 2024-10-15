@@ -18,24 +18,24 @@ FishersPathwayAnalysis(
 )
 }
 \arguments{
-\item{Analyte}{A list of analytes with 3 elements, namely "mz", "genes" and "metabolites", each is comprised of the corresponding labels, for metabolites,
-Supported metabolites format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X"
+\item{Analyte}{A list of analytes with 3 elements, namely "mz", "genes" and "", each is comprised of the corresponding labels, for ,
+Supported  format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X"
 Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 Supported mz format: any string or numeric vector contains the m/z}
 
-\item{analyte_type}{= "metabolites" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).}
+\item{analyte_type}{= "" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).}
 
 \item{polarity}{Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).}
 
 \item{ppm_error}{Integer defining the ppm threshold that matched analytes must be between (default = 10).}
 
-\item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
+\item{max_path_size}{The max number of  in a specific pathway (default = 500).}
 
-\item{min_path_size}{The min number of metabolites in a specific pathway (default = 5).}
+\item{min_path_size}{The min number of  in a specific pathway (default = 5).}
 
 \item{alternative}{The hypothesis of the fisher exact test (default = "greater").}
 
-\item{pathway_all_info}{Whether to included all genes/metabolites screened in the return (default = FALSE).}
+\item{pathway_all_info}{Whether to included all genes/ screened in the return (default = FALSE).}
 
 \item{pval_cutoff}{The cut off of raw p value to retain the pathways (default = 0.05).}
 
