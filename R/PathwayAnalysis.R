@@ -32,7 +32,7 @@ FishersPathwayAnalysis <- function (Analyte,
                                     verbose = TRUE,
                                     ...)
 {
-  if (is.null(names(Analyte)) || all(names(Analyte) %in% c("mzs", "genes", "metabolites"))){
+  if (is.null(names(Analyte)) || ! all(names(Analyte) %in% c("mzs", "genes", "metabolites"))){
     stop("Invalid key argument! Name of list was not one of the required values [c('mzs', 'genes', 'metabolites')].  Please specify the names correctly for example: list('mz' = c('mz-100.12','mz-428.32', 'mz-341.201')) ... ")
   }
 
