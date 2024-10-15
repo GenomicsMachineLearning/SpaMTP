@@ -646,13 +646,11 @@ FindRegionalPathways = function(SpaMTP,
     setTxtProgressBar(pb3, as.numeric(which(cluster == i)))
   }
   close(pb3)
-  gsea_all_cluster <- na.omit(gsea_all_cluster)
-  gsea_all_cluster_sig = gsea_all_cluster %>% dplyr::group_by(pathway) %>% dplyr::filter(any(as.numeric(pval) <= (pval_cutoff_pathway %||% 0.05))) %>% #dplyr::mutate(
+  gsea_all_cluster <- na.omit(gsea_all_cluster)%>% #dplyr::mutate(
     dplyr::mutate(group_importance = sum(abs(NES)))
-  gsea_all_cluster_return =   gsea_all_cluster
-  colnames(gsea_all_cluster_return)[1] = "pathwayName"
-  gsea_all_cluster_return = merge(gsea_all_cluster_return, pathway, by = "pathwayName")
-  return(gsea_all_cluster_return)
+  colnames(gsea_all_cluster)[1] = "pathwayName"
+  gsea_all_cluster = merge(gsea_all_cluster, pathway, by = "pathwayName")
+  return(gsea_all_cluster)
 }
 
 
