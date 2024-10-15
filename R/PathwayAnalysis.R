@@ -1,9 +1,13 @@
 #' Calculates Significant Metabolic Pathways using a Fisher Exact Test
 #'
-#' @param Analyte A list of analytes with 3 elements, namely "mz", "genes" and "", each is comprised of the corresponding labels, for ,
-#' Supported  format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X"
-#' Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-#' Supported mz format: any string or numeric vector contains the m/z
+#' @param Analyte A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.
+#'
+#'
+#'
+#'  each is comprised of the corresponding labels, for ,
+#'
+#'
+
 #' @param analyte_type = "" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).
 #' @param polarity Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).
 #' @param ppm_error Integer defining the ppm threshold that matched analytes must be between (default = 10).
@@ -13,6 +17,12 @@
 #' @param pathway_all_info Whether to included all genes/ screened in the return (default = FALSE).
 #' @param pval_cutoff The cut off of raw p value to retain the pathways (default = 0.05).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#' ### Details
+#' * Supported `metabolite` format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
+#' * Supported `gene` data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
+#' * Supported `mz` format: any string or numeric vector contains the m/z
+#'
 #'
 #' @return a dataframe with the relevant pathway information
 #' @export
@@ -34,7 +44,7 @@ FishersPathwayAnalysis <- function (Analyte,
                                     verbose = TRUE)
 {
 
-  if((!"mz" %in% analyte_type) & (!"" %in% analyte_type) & (!"genes" %in% analyte_type)){
+  if((!"mz" %in% analyte_type) & (!"metabolite" %in% analyte_type) & (!"genes" %in% analyte_type)){
 
     stop(
       "analyte_type was not specified correctly.  Please specify one of the following options: , genes"
@@ -45,27 +55,10 @@ FishersPathwayAnalysis <- function (Analyte,
   verbose_message(message_text = "Fisher Testing ......", verbose = verbose)
 
   pathwayRampId <- rampId <- c()
-  # Get the RaMP ids for /genes
-  convert_to_rows <- function(row,
-                              pattern) {
-    identifiers = data.frame()
-    for (i in which(grepl(row,
-                          pattern = pattern))) {
-      temp = unlist(strsplit(unlist(row[i]), pattern))
-      identifiers <- rbind(identifiers,
-                           temp)
-    }
-    identifiers = t(identifiers)
-    colnames(identifiers) = colnames(row)[which(grepl(row,
-                                                      pattern = pattern) ==
-                                                  T)]
-    return(cbind(row[which(grepl(row,
-                                 pattern = pattern) == F)][rep(1, times = nrow(identifiers)), ],
-                 identifiers))
-  }
 
-  if ( "" %in% analyte_type) {
-    analytes_met = Analyte[[""]]
+
+  if ( "metabolite" %in% analyte_type) {
+    analytes_met = Analyte[["metabolite"]]
     source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
     analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),]
@@ -169,7 +162,7 @@ FishersPathwayAnalysis <- function (Analyte,
     adducts_array = c(adducts_array, adducts_db3)
   }
 
-  if("" %in% analyte_type){
+  if("metabolite" %in% analyte_type){
     analyte_new = rbind(analyte_new,
                         analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
     analytehaspathway_new = rbind(analytehaspathway_new,
@@ -490,6 +483,7 @@ FindRegionalPathways = function(SpaMTP,
   db_3 <- SpaMTP@tools$db_3
   db_3 = db_3 %>%
     tidyr::separate_rows(Isomers, sep = ";")
+
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
   input_id = lapply(db_3$Isomers, function(x) {
     x = unlist(x)

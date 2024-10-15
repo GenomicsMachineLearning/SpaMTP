@@ -142,6 +142,25 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
   db_3 <- proc_db(mz_df, db_2, ppm_error)
 
+  ## Add in database labels
+  db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
+  input_id = lapply(db_3$entry, function(x) {
+    x = unlist(x)
+    index_hmdb = which(grepl(x, pattern = "HMDB"))
+    x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
+    index_chebi = which(grepl(x, pattern = "CHEBI"))
+    x[index_chebi] = tolower(x[index_chebi])
+    index_lipidm = which(grepl(x, pattern = "^LM"))
+    x[index_lipidm] = paste0("LIPIDMAPS:", x[index_lipidm])
+    return(x)
+  })
+  db_3$entry <- NULL
+
+  db_3$Isomers_IDs <- input_id
+
+  db_3 <- db_3 %>%
+    dplyr::mutate(Isomers_IDs = sapply(Isomers_IDs, function(x) stringr::str_c(x, collapse = "; ")))
+
   if (save.intermediate){
     data@tools$db_3 <- db_3
   }
@@ -159,6 +178,7 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
     dplyr::summarise(
       all_IsomerNames = paste(IsomerNames, collapse = "; "),
       all_Isomers = paste(Isomers, collapse = "; "),
+      all_Isomers_IDs = paste(Isomers_IDs, collapse = "; "),
       all_Adducts = paste(unique(Adduct), collapse = "; "),
       all_Formulas = paste(unique(Formula), collapse = "; "),
       all_Errors = paste(round(Error,4), collapse = "; ")
