@@ -186,7 +186,15 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
     verbose_message(message_text = "Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features", verbose = verbose)
 
-    data <- SubsetMZFeatures(data, features = result_df$mz_names)
+    if(length(Assays(object = data)) != 1){
+      features = c()
+      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=assay)]){
+        features =  c(features, rownames(SpaMTP@assays[[non_met_assay]]@features))
+      }
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = c(result_df$mz_names, features))})
+    }else{
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = result_df$mz_names)})
+    }
   }
 
   return(data)
@@ -356,7 +364,7 @@ db_adduct_filter <- function(db, adduct, polarity = "neg", verbose = TRUE) {
         "M-H",
         "M+Na-2H",
         "M+Cl",
-        "M+K-2",
+        "M+K-2H",
         "M+FA-H",
         "M+Hac-H",
         "M+Br",

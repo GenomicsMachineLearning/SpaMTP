@@ -1,5 +1,3 @@
-#### SpaMTP Spatial Analysis ##############################################################################################################################################################################
-
 #' Find top features and metabolites that are strongly correlated with a given feature
 #'
 #' @param data SpaMTP Seurat class object containing both Spatial Transcriptomic and Metabolic data assays.
@@ -225,4 +223,358 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 
 
 
+#' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
+#'
+#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param variance_explained_threshold Numeric value defining the explained variance threshold.
+#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix.
+#' @param p_val_threshold is the p value threshold for pathways to be significant.
+#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol.
+#' @param assay Character string defining the SpaMTP assay to extract intensity values from.
+#' @param slot Character string defining the assay slot containing the intensity values.
+#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis.
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed.
+#'
+#'
+#' @return PCA object contating embeddings and projections
+#'
+#' @import dplyr
+#'
+#' @examples
+#' # HELPER FUNCTION
+getPCA <- function(SpaMTP,
+                   num_retained_component,
+                   variance_explained_threshold,
+                   resampling_factor,
+                   byrow,
+                   assay,
+                   slot,
+                   show_variance_plot,
+                   verbose) {
+  # PCA analysis
+  verbose_message(message_text = "Scaling original matrix", verbose = verbose)
+
+  mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
+
+  coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
+
+  mass_matrix_with_coord = cbind(coords,
+                                 as.matrix(mass_matrix))
+  width = max(coords[c("y")]) #- min(coords[c("y")])
+  height = max(coords[c("x")]) # - min(coords[c("x")])
+
+  if (!is.null(resampling_factor) & resampling_factor!= 1) {
+    verbose_message(message_text = "Running matrix resampling...." , verbose = verbose)
+    pb = txtProgressBar(
+      min = 0,
+      max = ncol(mass_matrix),
+      initial = 0,
+      style = 3
+    )
+    if (!is.numeric(resampling_factor)) {
+      stop("Please enter correct resampling_factor")
+    }
+    new.width = as.integer(width / resampling_factor)
+    new.height = as.integer(height / resampling_factor)
+
+    resampled_mat = matrix(nrow =  new.height * new.width)
+    for (i in 1:ncol(mass_matrix)) {
+      temp_mz_matrix = matrix(mass_matrix[, i],
+                              ncol = width,
+                              nrow = height,
+                              byrow = byrow)
+      resampled_temp = ResizeMat(temp_mz_matrix, c(new.width,
+                                                   new.height))
+      resampled_mat = cbind(resampled_mat, as.vector(resampled_temp))
+      setTxtProgressBar(pb, i)
+    }
+    close(pb)
+    resampled_mat = resampled_mat[,-1]
+    colnames(resampled_mat) = colnames(mass_matrix)
+
+    verbose_message(message_text = "Resampling finished!" , verbose = verbose)
+
+    gc()
+  }else{
+    resampled_mat = mass_matrix
+    new.width = as.integer(width)
+    new.height = as.integer(height)
+  }
+
+  verbose_message(message_text = "Running the principal component analysis (can take some time)" , verbose = verbose)
+
+  # Runing PCA
+
+  resampled_mat_standardised = as.matrix(Matrix::t(
+    Matrix::t(resampled_mat) - Matrix::colSums(resampled_mat) / nrow(resampled_mat)
+  ))
+
+  verbose_message(message_text = "Computing the covariance" , verbose = verbose)
+  cov_mat <- cov(resampled_mat_standardised)
+
+  verbose_message(message_text = "Computing the eigenvalue/eigenvectors", verbose = verbose)
+  eigen_result <- eigen(cov_mat)
+  gc()
+  # Extract eigenvectors and eigenvalues
+  eigenvectors <- eigen_result$vectors
+  eigenvalues <- eigen_result$values
+
+  verbose_message(message_text = "Computing PCA", verbose = verbose)
+
+  pc = pbapply::pblapply(1:ncol(resampled_mat_standardised), function(i) {
+    temp = resampled_mat_standardised[, 1] * eigenvectors[1, i]
+    for (j in 2:ncol(resampled_mat_standardised)) {
+      temp = temp + resampled_mat_standardised[, j] * eigenvectors[j, i]
+    }
+    return(temp)
+  })
+  pc = do.call(cbind, pc)
+  colnames(pc) = paste0("PC", 1:ncol(eigenvectors))
+  # make pca object
+  colnames(eigenvectors) = paste0("PC", 1:ncol(eigenvectors))
+  rownames(eigenvectors) = colnames(resampled_mat)
+  pca = list(
+    sdev = sqrt(eigenvalues),
+    rotation = eigenvectors,
+    center = Matrix::colSums(resampled_mat) / nrow(resampled_mat),
+    scale = FALSE,
+    x = pc
+  )
+  pca = list_to_pprcomp(pca)
+
+  verbose_message(message_text = "PCA finished!", verbose = verbose)
+
+  rm(mass_matrix)
+  gc()
+  eigenvalues = pca$sdev ^ 2
+  # Step 5: Compute Principal Components
+  # Choose number of principal components, k
+  # if not input, use scree test to help find retained components
+
+  if (is.null(num_retained_component)) {
+    if (!is.null(variance_explained_threshold)) {
+      tryCatch({
+        cumulative_variance = cumsum(eigenvalues) / sum(eigenvalues)
+        threshold = variance_explained_threshold  # Example threshold
+
+        if (show_variance_plot){
+
+          par(mfrow = c(1, 1))
+          par(mar = c(2, 2, 1, 1))
+          # Plot cumulative proportion of variance explained
+          plot(
+            cumulative_variance,
+            type = 'b',
+            main = "Cumulative Variance Explained",
+            xlab = "Number of Principal Components",
+            ylab = "Cumulative Proportion of Variance Explained"
+          )
+
+          # Add a horizontal line at the desired threshold
+
+          abline(h = threshold,
+                 col = "red",
+                 lty = 2)
+        }
+
+        # Find the number of principal components to retain based on the threshold
+        retained =  which(cumulative_variance >= threshold)[1] - 1
+      },
+      error = function(cond) {
+        stop(
+          "Check if correct variance threshold for principle components are inputted, should be numeric value between 0 and 1"
+        )
+      },
+      warning = function(cond) {
+        stop(
+          "Check if correct variance threshold for principle components are inputted, should be numeric value between 0 and 1"
+        )
+      })
+
+    } else{
+      # if threshold not inputted, use Kaiser's criterion
+      verbose_message(message_text = "Both variance_explained_threshold and num_retained_component not inputted, use Kaiser's criterion for determination", verbose = verbose)
+
+
+      plot(
+        eigenvalues,
+        type = 'b',
+        main = "Scree Plot",
+        xlab = "Principal Component",
+        ylab = "Eigenvalue"
+      )
+
+      # Add a horizontal line at 1 (Kaiser's criterion)
+      abline(h = 1,
+             col = "red",
+             lty = 2)
+
+      # Add a vertical line at the elbow point
+      elbow_point <- which(diff(eigenvalues) < 0)[1]
+      abline(v = elbow_point,
+             col = "blue",
+             lty = 2)
+      retained = length(which(eigenvalues >= 1))
+    }
+  } else{
+    retained = as.integer(num_retained_component)
+    if (is.na(retained)) {
+      stop("Please enter correct number of principle components to retain")
+    }
+  }
+  return(pca)
+}
+
+
+
+#' Generates PCA analysis results for a SpaMTP Seurat Object
+#'
+#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
+#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
+#' @param p_val_threshold is the p value threshold for pathways to be significant (default = 0.05).
+#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
+#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
+#' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
+#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#'
+#' @return SpaMTP object with pca results stored in the
+#' @export
+#'
+#' @examples
+#' # HELPER FUNCTION
+RunMetabolicPCA <- function(SpaMTP,
+                            num_retained_component = NULL,
+                            variance_explained_threshold = 0.9,
+                            resampling_factor = 1,
+                            byrow = FALSE,
+                            assay = "SPM",
+                            slot = "counts",
+                            show_variance_plot= FALSE,
+                            verbose = TRUE)
+{
+  verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
+
+  pca <- getPCA(SpaMTP = SpaMTP,
+                num_retained_component = num_retained_component,
+                variance_explained_threshold = variance_explained_threshold,
+                resampling_factor = resampling_factor,
+                byrow = byrow,
+                assay = assay,
+                slot = slot,
+                show_variance_plot= show_variance_plot,
+                verbose = verbose)
+
+  SpaMTP_pca <- pca
+
+  rownames(SpaMTP_pca$rotation) <- rownames(SpaMTP[[assay]]@features)
+  rownames(SpaMTP_pca$x) <- rownames(SpaMTP@meta.data)
+
+  SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_")
+
+  SpaMTP[["pca"]] <- SpaMTP_pcas
+
+  return(SpaMTP)
+}
+
+
+#' Creates a pprcomp object based on an input list
+#'
+#' @param lst List containing PCA results
+#'
+#' @return A pprcomp object contating results from PCA analysis
+#'
+#' @examples
+#' #HELPER FUNCTION
+list_to_pprcomp <- function(lst) {
+  # Create an empty object with class pprcomp
+  obj <- structure(list(), class = "prcomp")
+  # Assign components from the list to the object
+  obj$sdev <- lst$sdev
+  obj$rotation <- lst$rotation
+  obj$center <- lst$center
+  obj$scale <- lst$scale
+  obj$x <- lst$x
+  # Add other components as needed
+
+  # Return the constructed pprcomp object
+  return(obj)
+}
+
+
+#' Finds the index values of the m/z values with their respective GSEA result
+#'
+#' @param lst List containing relative mz analytes and pathways
+#' @param value Value returned based on the GSEA results
+#'
+#' @return returns a vector of indices that match the relative GSEA results to the m/z list
+#'
+#' @examples
+#' #HELPER FUNCTION
+find_index <- function(lst, value) {
+  indices <- which(sapply(lst, function(x) value %in% x))
+  if (length(indices) == 0) {
+    return(NULL)  # If value not found, return NULL
+  } else {
+    return(indices)
+  }
+}
+
+
+#####################################################
+### Bellow helper functions are sourced from https://stackoverflow.com/questions/11123152/function-for-resizing-matrices-in-r by Vyga.
+
+
+#' Helper function to rescale a sampled matrix
+#'
+#' @param x Vector defining new matrix coordinates
+#' @param newrange Vector defining range of old coordinates
+#'
+#' @return Vector containing rescaled coordinates
+#'
+#' @examples
+#' #HELPER FUNCTION
+rescale <- function(x, newrange=range(x)){
+  xrange <- range(x)
+  mfac <- (newrange[2]-newrange[1])/(xrange[2]-xrange[1])
+  newrange[1]+(x-xrange[1])*mfac
+}
+
+#' Helper function to resize a matrix back to its original layout after sampling
+#'
+#' @param mat matrix defining the sampled object
+#' @param ndim number of dimentions to resize the sampled matrix to (default = dim(mat)).
+#'
+#' @return Returns a resized sampled matrix to match the dimentions of the original
+#'
+#' @examples
+#' #HELPER FUNCTION
+ResizeMat <- function(mat, ndim=dim(mat)){
+  #if(!require(fields)) stop("`fields` required.")
+
+  # input object
+  odim <- dim(mat)
+  obj <- list(x= 1:odim[1], y=1:odim[2], z= mat)
+
+  # output object
+  ans <- matrix(NA, nrow=ndim[1], ncol=ndim[2])
+  ndim <- dim(ans)
+
+  # rescaling
+  ncord <- as.matrix(expand.grid(seq_len(ndim[1]), seq_len(ndim[2])))
+  loc <- ncord
+  loc[,1] = rescale(ncord[,1], c(1,odim[1]))
+  loc[,2] = rescale(ncord[,2], c(1,odim[2]))
+
+  # interpolation
+  ans[ncord] <- fields::interp.surface(obj, loc)
+
+  ans
+}
+
+#######################################################################################################################
 

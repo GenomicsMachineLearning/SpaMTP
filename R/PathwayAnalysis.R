@@ -1,16 +1,16 @@
 #' Calculates Significant Metabolic Pathways using a Fisher Exact Test
 #'
-#' @param Analyte A list of analytes with 3 elements, namely "mz", "genes" and "metabolites", each is comprised of the corresponding labels, for metabolites,
-#' Supported metabolites format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X"
+#' @param Analyte A list of analytes with 3 elements, namely "mz", "genes" and "", each is comprised of the corresponding labels, for ,
+#' Supported  format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X"
 #' Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 #' Supported mz format: any string or numeric vector contains the m/z
-#' @param analyte_type = "metabolites" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).
+#' @param analyte_type = "" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).
 #' @param polarity Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).
 #' @param ppm_error Integer defining the ppm threshold that matched analytes must be between (default = 10).
-#' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
-#' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
+#' @param max_path_size The max number of  in a specific pathway (default = 500).
+#' @param min_path_size The min number of  in a specific pathway (default = 5).
 #' @param alternative The hypothesis of the fisher exact test (default = "greater").
-#' @param pathway_all_info Whether to included all genes/metabolites screened in the return (default = FALSE).
+#' @param pathway_all_info Whether to included all genes/ screened in the return (default = FALSE).
 #' @param pval_cutoff The cut off of raw p value to retain the pathways (default = 0.05).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
@@ -33,10 +33,15 @@ FishersPathwayAnalysis <- function (Analyte,
                                     pval_cutoff = 0.05,
                                     verbose = TRUE)
 {
-  data(pathway, package = "SpaMTP")
+<<<<<<< HEAD
+
   if((!"mz" %in% analyte_type) & (!"metabolites" %in% analyte_type) & (!"genes" %in% analyte_type)){
+=======
+  data(pathway, package = "SpaMTP")
+  if((!"mz" %in% analyte_type) & (!"" %in% analyte_type) & (!"genes" %in% analyte_type)){
+>>>>>>> db58f361c75d2b6354277eda83f640796d835ce1
     stop(
-      "analyte_type was not specified correctly.  Please specify one of the following options: metabolites, genes"
+      "analyte_type was not specified correctly.  Please specify one of the following options: , genes"
     )
   }
   now <- proc.time()
@@ -44,7 +49,7 @@ FishersPathwayAnalysis <- function (Analyte,
   verbose_message(message_text = "Fisher Testing ......", verbose = verbose)
 
   pathwayRampId <- rampId <- c()
-  # Get the RaMP ids for metabolites/genes
+  # Get the RaMP ids for /genes
   convert_to_rows <- function(row,
                               pattern) {
     identifiers = data.frame()
@@ -63,8 +68,8 @@ FishersPathwayAnalysis <- function (Analyte,
                  identifiers))
   }
 
-  if ( "metabolites" %in% analyte_type) {
-    analytes_met = Analyte[["metabolites"]]
+  if ( "" %in% analyte_type) {
+    analytes_met = Analyte[[""]]
     source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
     analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
     analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),]
@@ -120,7 +125,7 @@ FishersPathwayAnalysis <- function (Analyte,
     db_3 <- proc_db(data.frame(input_mz), db_2, ppm_error)
     # Expand the isomer entries
 
-    verbose_message(message_text = "Expanding database to extract all potential metabolites", verbose = verbose)
+    verbose_message(message_text = "Expanding database to extract all potential ", verbose = verbose)
 
     db_3list = pbapply::pblapply(1:nrow(db_3), function(i){
       if (any(grepl(db_3[i, ], pattern = ";"))) {
@@ -168,7 +173,7 @@ FishersPathwayAnalysis <- function (Analyte,
     adducts_array = c(adducts_array, adducts_db3)
   }
 
-  if("metabolites" %in% analyte_type){
+  if("" %in% analyte_type){
     analyte_new = rbind(analyte_new,
                         analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
     analytehaspathway_new = rbind(analytehaspathway_new,
@@ -206,7 +211,7 @@ FishersPathwayAnalysis <- function (Analyte,
   adducts_new = temp_mz_analyte$adduct
   # Pathway enrichment
 
-  ############ Metabolites pathway analysis ##############
+  ############  pathway analysis ##############
   verbose_message(message_text = "Begin metabolic pathway analysis ......" , verbose = verbose)
   analytes_rampids_df = merge(source_new %>% mutate(sourceId = tolower(sourceId)),
                               temp_mz_analyte%>% mutate(sourceId = tolower(sourceId)),
@@ -233,7 +238,7 @@ FishersPathwayAnalysis <- function (Analyte,
   # Filter out too large/small pathways
   analytehaspathway_full =analytehaspathway_full[which(analytehaspathway_full$total_in_pathways>= min_path_size & analytehaspathway_full$total_in_pathways <= max_path_size),]
 
-  # Generate a dataframe contains: the list of metabolites IDs, the list of metabolites names, the number of elements in pathway, the number of elements in our dataset, for each pathway
+  # Generate a dataframe contains: the list of  IDs, the list of  names, the number of elements in pathway, the number of elements in our dataset, for each pathway
   if(pathway_all_info == T){
     unipathids = unique(pathway_rampids_count$pathwayRampId)
     sub_src = source_non_duplicated[which(source_non_duplicated$rampId  %in% pathway_rampids_count$rampId),]
@@ -316,13 +321,13 @@ FishersPathwayAnalysis <- function (Analyte,
   enrichment_df = na.omit(enrichment_df)
   enrichment_df = enrichment_df %>% rowwise() %>% mutate(p_val = stats::fisher.test(matrix(
     c(
-      # Detected metabolites in pathway, in analytelist
+      # Detected  in pathway, in analytelist
       as.numeric(analytes_in_pathways),
-      # Detected metabolites in pathway, not in analytelist
+      # Detected  in pathway, not in analytelist
       max(0,as.numeric(total_in_pathways - analytes_in_pathways)),
-      # Detected metabolites not in pathway, in analyte list
+      # Detected  not in pathway, in analyte list
       max(0,as.numeric(total_inlist_analytes - total_in_pathways)),
-      # Detected metabolites not in pathway
+      # Detected  not in pathway
       # Pathway elements not detected
       as.numeric(total_in_background -
                    total_inlist_analytes - total_in_pathways + analytes_in_pathways)
@@ -340,7 +345,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
   # (5) Append pathway information to the original df
   gc()
-  # (6) Append metabolites information to the original df
+  # (6) Append  information to the original df
   # Paste back the original Ids
   # (7) Reduce the dataframe with respected to the User input pathway size
 
@@ -386,30 +391,24 @@ FishersPathwayAnalysis <- function (Analyte,
 }
 
 
-#' This the function used to compute the exact fisher test for over-representation based pathway analysis
+#' This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data
 #'
-#' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.
-#' @param polarity The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).
-#' @param adduct Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).
+#' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics(SM)/transcriptomics(ST) data or both, if contains SM data, it should be annotated via SpaMTP::AnnotateSM function.
+#' @param ident A name character to specific the cluster vector for regions in `SpaMTP@meta.data` slot.
+#' @param DE.list A list consist of differetial expression output from FindAllMarkers() function, with items in same order as analyte_types.
 #' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).
+#' @param adduct Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).
 #' @param SM_assay A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").
 #' @param ST_assay A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").
-#' @param algorithm Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python
 #' @param SM_slot The slot name containing the SM assay matrix data (default = "counts").
-#' @param npcs A numerical integer, representing the number of principle components that the PCA will reduce to.
-#' @param st_cluster_name A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done
-#' @param sm_cluster_name A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"
+#' @param ST_slot The slot name containing the ST assay matrix data (default = "counts").
 #' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
 #' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
 #' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
-#' @param ppm_threshold A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )
-#' @param cluster_vector A factor vector where each levels indicates the different clustered regions in tissue
-#' @param background_cluster A vector consist of 0 and 1, where 1 indicates the intended background region
 #' @param pval_cutoff_pathway A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways
 #' @param pval_cutoff_mets A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for metabolites
 #' @param pval_cutoff_genes A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs
 #' @param verbose A boolean value indicates whether verbose is shown
-#' @param ... The other parameters goes to Seurat methods
 #'
 #' @return A SpaMTP object with set enrichment on given analyte types.
 #' @export
@@ -426,36 +425,39 @@ FindRegionalPathways = function(SpaMTP,
                                 ST_assay = "SPT",
                                 SM_slot = "counts",
                                 ST_slot = "counts",
-                                test_use = "wilcox",
                                 tof_resolution = 30000,
                                 min_path_size = 5,
                                 max_path_size = 500,
-                                baseline_cluster = NULL,
                                 pval_cutoff_pathway = NULL,
                                 pval_cutoff_mets = NULL,
                                 pval_cutoff_genes = NULL,
-                                verbose = T
-                                ) {
-
+                                verbose = T) {
   ## Checks for ident in SpaMTP Object
   if (!(ident %in% colnames(SpaMTP@meta.data))) {
-    stop("Ident: ", ident, " not found in SpaMTP object's @meta.data slot ... Make sure the ident column is in your @metadata and is a factor!")
+    stop(
+      "Ident: ",
+      ident,
+      " not found in SpaMTP object's @meta.data slot ... Make sure the ident column is in your @metadata and is a factor!"
+    )
   }
-
   cluster_vector = as.factor(SpaMTP@meta.data[[ident]])
   assignment = cluster_vector
   cluster = levels(cluster_vector)
-
   ## Checks for data in SM and/or ST assay
   if ("genes" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[ST_assay]]@layers[[ST_slot]])) {
       stop(
-        paste0("No data exists in object[[",ST_assay,"]][",ST_slot,
-               "] .. If you are using transcriptomic data with 'genes' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'genes' from analyte_tpes")
+        paste0(
+          "No data exists in object[[",
+          ST_assay,
+          "]][",
+          ST_slot,
+          "] .. If you are using transcriptomic data with 'genes' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'genes' from analyte_tpes"
         )
+      )
     } else{
       gene_matrix = Matrix::t(SpaMTP[[ST_assay]]@layers[[ST_slot]])
-      if (length(cluster_vector)!= nrow(gene_matrix)){
+      if (length(cluster_vector) != nrow(gene_matrix)) {
         stop(
           "Please make sure the input ident is a vector the same length as the number of spots/cells in the gene assay!"
         )
@@ -465,131 +467,126 @@ FindRegionalPathways = function(SpaMTP,
   if ("metabolites" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[SM_assay]]@layers[[SM_slot]])) {
       stop(
-        paste0("No data exists in object[[",SM_assay,"]][",SM_slot,
-               "] .. If you are using metabolic data with 'metabolites' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'metabolites' from analyte_tpes")
+        paste0(
+          "No data exists in object[[",
+          SM_assay,
+          "]][",
+          SM_slot,
+          "] .. If you are using metabolic data with 'metabolites' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'metabolites' from analyte_tpes"
+        )
       )
-    }else{
+    } else{
       mass_matrix = Matrix::t(SpaMTP[[SM_assay]]@layers[[SM_slot]])
-      if (length(cluster_vector)!= nrow(mass_matrix)){
+      if (length(cluster_vector) != nrow(mass_matrix)) {
         stop(
           "Please make sure the input ident is a vector the same length as the number of spots/cells in the metabolite assay!"
         )
       }
     }
   }
-
-
   # (2) Annotation
   if (is.null(SpaMTP@tools$db_3)) {
-    stop("@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
-         "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ...")
+    stop(
+      "@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
+      "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ..."
+    )
   }
   db_3 <- SpaMTP@tools$db_3
-  input_mz <- as.numeric(gsub("mz-", "", rownames(SpaMTP[[SM_assay]])))
-
-  db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
+  db_3 = db_3 %>%
+    tidyr::separate_rows(Isomers, sep = ";")
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
-  input_id = lapply(db_3$entry, function(x) {
+  input_id = lapply(db_3$Isomers, function(x) {
     x = unlist(x)
     index_hmdb = which(grepl(x, pattern = "HMDB"))
     x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
     index_chebi = which(grepl(x, pattern = "CHEBI"))
     x[index_chebi] = tolower(x[index_chebi])
-    index_lipidm = which(grepl(x, pattern = "^LM"))
-    x[index_lipidm] = paste0("LIPIDMAPS:", x[index_lipidm])
+    index_lm = which(grepl(x, pattern = "LMPK"))
+    x[index_lm] = tolower(x[index_lm])
     return(x)
   })
-
   db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
-
-  db_3 <- db_3 %>%
-    tidyr::unnest(cols = c(chem_source_id))
-
+  rampid = c()
   verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
-
   db_3 = merge(chem_props, db_3, by = "chem_source_id")
-
-
   ### Adding DE Results
   db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
-
-  if (length(DE.list) != length(analyte_types)){
-    stop("Number of DE data.frames provided does not match the number of analyte types specified. Please make sure a DE dataframe is provided for each analyte type")
+  if (length(DE.list) != length(analyte_types)) {
+    stop(
+      "Number of DE data.frames provided does not match the number of analyte types specified. Please make sure a DE dataframe is provided for each analyte type"
+    )
   }
-
   verbose_message(message_text = "Constructing DE dataframes.... ", verbose = verbose)
-
-  for (i in 1:length(analyte_types)){
-    verbose_message(message_text = paste0("Assuming DE.list[",i,"] contains ", analyte_types[i] , " results .... "), verbose = verbose)
-
+  for (i in 1:length(analyte_types)) {
+    verbose_message(
+      message_text = paste0(
+        "Assuming DE.list[",
+        i,
+        "] contains ",
+        analyte_types[i] ,
+        " results .... "
+      ),
+      verbose = verbose
+    )
     DE <- DE.list[[i]]
-
     if (any(c("avg_log2FC", "logFC") %in% colnames(DE)) &&
         any(c("p_val_adj", "FDR") %in% colnames(DE)) &&
         "cluster" %in% colnames(DE) &&
-        "gene" %in% colnames(DE)){
-
+        "gene" %in% colnames(DE)) {
       if ("logFC" %in% colnames(DE)) {
         colnames(DE)[colnames(DE) == "logFC"] <- "avg_log2FC"
       }
-
       # Rename FDR to p_val_adj if FDR exists
       if ("FDR" %in% colnames(DE)) {
         colnames(DE)[colnames(DE) == "FDR"] <- "p_val_adj"
       }
-
-      if (analyte_types[i] == "metabolites"){
-          DE = DE %>% mutate(mz_name = gene)
-          db_3 = merge(db_3 , DE, by = "mz_name")
-          DE.list[[i]] <- db_3
+      if (analyte_types[i] == "metabolites") {
+        DE = DE %>% rename(mz_name = gene)
+        db_3 = merge(db_3 , DE, by = "mz_name")
+        DE.list[[analyte_types[i]]] <- db_3
       } else {
         DE = DE %>% mutate(commonName = toupper(gene))
-        source_gene = merge(DE, source_df[which(grepl(source_df$rampId,
-                                                          pattern = "RAMP_G")),], by = "commonName")
-        DE.list[[i]] <- source_gene
+        source_gene = merge(DE, source_df[which(grepl(source_df$rampId, pattern = "RAMP_G")), ], by = "commonName")
+        DE.list[[analyte_types[i]]] <- source_gene
       }
-      names(DE.list) <- analyte_types
-
     } else {
-      stop("DE dataframe [", i, "] provided does not have the correct column names ... column names MUST include 'cluster', 'gene', ('avg_log2FC' or 'logFC') and ('p_val_adj' or 'FDR'). Please adjust column names in all DE data.frames to match ...")
+      stop(
+        "DE dataframe [",
+        i,
+        "] provided does not have the correct column names ... column names MUST include 'cluster', 'gene', ('avg_log2FC' or 'logFC') and ('p_val_adj' or 'FDR'). Please adjust column names in all DE data.frames to match ..."
+      )
     }
   }
-
-
   # Get pathway db
   verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
   chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
-
+  
   pathway_db = split(chempathway$rampId, chempathway$pathwayName)
-  pathway_db = pathway_db[which(!duplicated(names(pathway_db)))]
+  pathway_db = pathway_db[which(!duplicated(tolower(names(pathway_db))))]
   pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
                             lapply(pathway_db, length) <= max_path_size]
-
+  
   gc()
-
   gsea_all_cluster = data.frame()
   all_ranks = list()
-
   pb3 = txtProgressBar(
     min = 0,
     max = length(cluster),
     initial = 0,
     style = 3
   )
-
-  for (i in cluster){
+  for (i in cluster) {
     i <- as.character(i)
     ranks <- c()
-    if ("metabolites" %in% names(DE.list)){
+    if ("metabolites" %in% analyte_types) {
       ## metabolites
       DE_met <- DE.list[["metabolites"]]
       sub_db3 = DE_met[which(as.character(DE_met$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_mets %||% 0.05) %>% dplyr::filter(!duplicated(ramp_id))
-      met_ranks = sub_db3$avg_log2FC
+      met_ranks = scale(sub_db3$avg_log2FC, center = 0)
       names(met_ranks) = sub_db3$ramp_id
       ranks <- c(ranks, met_ranks)
     }
-
-    if ("genes"%in% names(DE.list)){
+    if ("genes" %in% names(DE.list)) {
       ## genes
       DE_rna <- DE.list[["genes"]]
       sub_de_gene = DE_rna[which(as.character(DE_rna$cluster) == i), ] %>% dplyr::filter(p_val_adj <= pval_cutoff_genes %||% 0.05) %>% dplyr::filter(!duplicated(rampId))
@@ -598,21 +595,25 @@ FindRegionalPathways = function(SpaMTP,
       # Genes and metabolites
       ranks <- c(ranks, ranks_gene_vector)
     }
-
+    
     ranks = ranks[which(!duplicated(names(ranks)))]
     all_ranks[[i]] = ranks[is.finite(ranks)]
-
+    
     gsea_result <- c()
-    if (length(all_ranks[[i]]) > 0){
-
+    if (length(all_ranks[[i]]) > 0) {
       suppressWarnings({
-      gsea_result = fgsea::fgsea(
-        pathways =  pathway_db,
-        stats = all_ranks[[i]],
-        minSize = min_path_size,
-        maxSize = max_path_size
-      )  %>%  dplyr::mutate(Cluster_id = i)})
+        gsea_result = fgsea::fgsea(
+          pathways =  pathway_db,
+          stats = all_ranks[[i]],
+          minSize = min_path_size,
+          maxSize = max_path_size
+        )  %>%  dplyr::mutate(Cluster_id = i)
+      })
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> db58f361c75d2b6354277eda83f640796d835ce1
     } else {
       gsea_result <- data.table::data.table(
         pathway = character(0),
@@ -626,55 +627,45 @@ FindRegionalPathways = function(SpaMTP,
         Cluster_id = i
       )
     }
-
-    gsea_result = na.omit(gsea_result)
+    gsea_result = na.omit(gsea_result) %>% filter(!duplicated(pathway))
     short_source = source_df[which((source_df$rampId %in% names(all_ranks[[i]])) &
                                      !duplicated(source_df$rampId)), ]
-
+    
     addtional_entry = do.call(rbind, lapply(1:nrow(gsea_result), function(x) {
       temp = unique(unlist(gsea_result$leadingEdge[x]))
-      temp_ref = db_3[which(db_3$ramp_id %in% temp), ] %>% dplyr::mutate(adduct_info = paste0(observed_mz, "[", Adduct, "]")) %>% dplyr::filter(!duplicated(adduct_info))
+      temp_ref =   sub_db3[which(sub_db3$ramp_id %in% temp), ] %>% dplyr::mutate(adduct_info = paste0(observed_mz, "[", Adduct, "]")) %>% dplyr::filter(!duplicated(adduct_info))
       temp_rna = short_source[which((short_source$rampId %in% temp) &
                                       (grepl(short_source$rampId, pattern = "RAMP_G"))), ]
       return(
         data.frame(
           adduct_info = paste0(temp_ref$adduct_info, collapse = ";"),
-          leadingEdge_metabolites = paste0(temp_ref$IsomerNames, collapse = ";"),
+          leadingEdge_metabolites = paste0(sub(";.*", "", temp_ref$IsomerNames), collapse = ";"),
+          leadingEdge_metabolites_id = paste0(temp_ref$chem_source_id, collapse = ";"),
           leadingEdge_genes = paste0(temp_rna$commonName, collapse = ";"),
-          regulation = paste0(ifelse(ranks[which(names(ranks) %in% temp)] >= 0, "↑", "↓"), collapse = ";")
+          met_regulation = paste0(ifelse(ranks[which((names(ranks) %in% temp) &
+                                                       (grepl(names(ranks), pattern = "RAMP_C")))] >= 0, "↑", "↓"), collapse = ";"),
+          rna_regulation = paste0(ifelse(ranks[which((names(ranks) %in% temp) &
+                                                       (grepl(names(ranks), pattern = "RAMP_G")))] >= 0, "↑", "↓"), collapse = ";")
         )
       )
     }))
     gsea_result = cbind(gsea_result , addtional_entry)
     gsea_all_cluster = rbind(gsea_all_cluster, gsea_result)
-    setTxtProgressBar(pb3, i)
+    setTxtProgressBar(pb3, as.numeric(which(cluster == i)))
   }
-
   close(pb3)
   gsea_all_cluster <- na.omit(gsea_all_cluster)
   gsea_all_cluster_sig = gsea_all_cluster %>% dplyr::group_by(pathway) %>% dplyr::filter(any(as.numeric(pval) <= (pval_cutoff_pathway %||% 0.05))) %>% #dplyr::mutate(
-    #Significance = ifelse(
-    #  pval <= 0.05,
-    #  "Significant at 5% significance level",
-    #  "Not statistically significant"
-    #)
-  #) %>%
-  dplyr::mutate(group_importance = sum(abs(NES)))
-
-  gsea_all_cluster_return =   gsea_all_cluster #%>%  dplyr::mutate(
-   # Significance = ifelse(
-   #   pval <= 0.05,
-   #  "Significant at 5% significance level",
-   #   "Not statistically significant"
-   #  )
-  #)
+    dplyr::mutate(group_importance = sum(abs(NES)))
+  gsea_all_cluster_return =   gsea_all_cluster
   colnames(gsea_all_cluster_return)[1] = "pathwayName"
   gsea_all_cluster_return = merge(gsea_all_cluster_return, pathway, by = "pathwayName")
-  ########################################################
-
   return(gsea_all_cluster_return)
 }
 
+
+<<<<<<< HEAD
+=======
 
 #' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
 #'
@@ -885,72 +876,18 @@ getPCA <- function(SpaMTP,
   }
   return(pca)
 }
+>>>>>>> db58f361c75d2b6354277eda83f640796d835ce1
 
 
 
-#' Generates PCA analysis results for a SpaMTP Seurat Object
-#'
-#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
-#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
-#' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
-#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
-#' @param p_val_threshold is the p value threshold for pathways to be significant (default = 0.05).
-#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
-#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
-#' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
-#' @param flip_plot Boolean defining whether to rotate the plot 90 degrees (default = FALSE).
-#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#'
-#'
-#' @return SpaMTP object with pca results stored in the
-#' @export
-#'
-#' @examples
-#' # HELPER FUNCTION
-RunMetabolicPCA <- function(SpaMTP,
-                   num_retained_component = NULL,
-                   variance_explained_threshold = 0.9,
-                   resampling_factor = 1,
-                   byrow = FALSE,
-                   assay = "SPM",
-                   slot = "counts",
-                   flip_plot = FALSE,
-                   show_variance_plot= FALSE,
-                   verbose = TRUE)
-{
-  verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
-
-  pca <- getPCA(SpaMTP = SpaMTP,
-                num_retained_component = num_retained_component,
-                variance_explained_threshold = variance_explained_threshold,
-                resampling_factor = resampling_factor,
-                byrow = byrow,
-                assay = assay,
-                slot = slot,
-                flip_plot = flip_plot,
-                show_variance_plot= show_variance_plot,
-                verbose = verbose)
-
-  SpaMTP_pca <- pca
-
-  rownames(SpaMTP_pca$rotation) <- rownames(SpaMTP[[assay]]@features)
-  rownames(SpaMTP_pca$x) <- rownames(SpaMTP@meta.data)
-
-  SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_")
-
-  SpaMTP[["pca"]] <- SpaMTP_pcas
-
-  return(SpaMTP)
-}
 
 
 
 ############################# PATHWAY HELPER FUNCTIONS ########################################
 
-#' Helper function for building a pathway db based on detected metabolites
+#' Helper function for building a pathway db based on detected 
 #'
-#' @param input_id Vector of characters defining the detected metabolites.
+#' @param input_id Vector of characters defining the detected .
 #' @param analytehaspathway A dataframe containing RAMP_pathway ID's.
 #' @param chem_props A database containing the chemical properties and metadata of each RAMP_DB analyte.
 #' @param pathway A dataframe containing RAMP_DB pathways and their relative metadata
@@ -978,99 +915,4 @@ get_analytes_db <- function(input_id,analytehaspathway,chem_props,pathway) {
   return(analytes_db)
 }
 
-#' Creates a pprcomp object based on an input list
-#'
-#' @param lst List containing PCA results
-#'
-#' @return A pprcomp object contating results from PCA analysis
-#'
-#' @examples
-#' #HELPER FUNCTION
-list_to_pprcomp <- function(lst) {
-  # Create an empty object with class pprcomp
-  obj <- structure(list(), class = "prcomp")
-  # Assign components from the list to the object
-  obj$sdev <- lst$sdev
-  obj$rotation <- lst$rotation
-  obj$center <- lst$center
-  obj$scale <- lst$scale
-  obj$x <- lst$x
-  # Add other components as needed
-
-  # Return the constructed pprcomp object
-  return(obj)
-}
-
-
-#' Finds the index values of the m/z values with their respective GSEA result
-#'
-#' @param lst List containing relative mz analytes and pathways
-#' @param value Value returned based on the GSEA results
-#'
-#' @return returns a vector of indices that match the relative GSEA results to the m/z list
-#'
-#' @examples
-#' #HELPER FUNCTION
-find_index <- function(lst, value) {
-  indices <- which(sapply(lst, function(x) value %in% x))
-  if (length(indices) == 0) {
-    return(NULL)  # If value not found, return NULL
-  } else {
-    return(indices)
-  }
-}
-
-
-#####################################################
-### Bellow helper functions are sourced from https://stackoverflow.com/questions/11123152/function-for-resizing-matrices-in-r by Vyga.
-
-
-#' Helper function to rescale a sampled matrix
-#'
-#' @param x Vector defining new matrix coordinates
-#' @param newrange Vector defining range of old coordinates
-#'
-#' @return Vector containing rescaled coordinates
-#'
-#' @examples
-#' #HELPER FUNCTION
-rescale <- function(x, newrange=range(x)){
-  xrange <- range(x)
-  mfac <- (newrange[2]-newrange[1])/(xrange[2]-xrange[1])
-  newrange[1]+(x-xrange[1])*mfac
-}
-
-#' Helper function to resize a matrix back to its original layout after sampling
-#'
-#' @param mat matrix defining the sampled object
-#' @param ndim number of dimentions to resize the sampled matrix to (default = dim(mat)).
-#'
-#' @return Returns a resized sampled matrix to match the dimentions of the original
-#'
-#' @examples
-#' #HELPER FUNCTION
-ResizeMat <- function(mat, ndim=dim(mat)){
-  #if(!require(fields)) stop("`fields` required.")
-
-  # input object
-  odim <- dim(mat)
-  obj <- list(x= 1:odim[1], y=1:odim[2], z= mat)
-
-  # output object
-  ans <- matrix(NA, nrow=ndim[1], ncol=ndim[2])
-  ndim <- dim(ans)
-
-  # rescaling
-  ncord <- as.matrix(expand.grid(seq_len(ndim[1]), seq_len(ndim[2])))
-  loc <- ncord
-  loc[,1] = rescale(ncord[,1], c(1,odim[1]))
-  loc[,2] = rescale(ncord[,2], c(1,odim[2]))
-
-  # interpolation
-  ans[ncord] <- fields::interp.surface(obj, loc)
-
-  ans
-}
-
-#######################################################################################################################
 

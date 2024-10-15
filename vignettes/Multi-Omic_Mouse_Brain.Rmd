@@ -177,6 +177,7 @@ annotations <- cbind(lesion,region,region_loupe)
 
 ## Add data to metadata slot
 vis@meta.data[colnames(annotations)] <- annotations[colnames(annotations)]
+vis@meta.data <- vis@meta.data %>% mutate(annotations = ifelse(RegionLoupe %in% c("CP", "ACB"), paste0(RegionLoupe, "_", lesion), RegionLoupe))
 ```
 
 Now lets plot the results. We can use this information later for tissue alignment and removing poor quality spots sitting outside the tissue section
@@ -385,6 +386,57 @@ We can see now that we have removed spots that were associated with the outer bo
 
 Now that our spatial datasets are cleaned and fully aligned we can perform some downstream analyses to determine cell types, differentially expressed genes and metabolites, and also upregulated metabolic pathways. 
 
+Note: Hidden below are the colour palettes used to plot
+<details>
+  <summary>*Colour Palettes*</summary>
+```{r colour_palletes}
+
+intergrated_palette <- list("0" = "#9dce71", 
+                           "1" = "#8bc5de", 
+                           "2" = "#009648",
+                           "3" = "#0067a8", 
+                           "4" = "#faa957" ,
+                           "5" = "#fcf283",
+                           "6" = "#f37985",
+                           "7" = "#c29fcb",
+                           "8" = "#592e8b",
+                           "9" = "#e81d25",
+                           "10" = "#f15a22")
+
+SM_palette <- list("0" = "#9dce71", 
+                           "1" = "#0067a8", 
+                           "2" = "#c29fcb",
+                           "3" = "#009648", 
+                           "4" = "#8bc5de")
+
+ST_pallete <- list("0" = "#0067a8", 
+                           "1" = "#009648", 
+                           "2" = "#f37985",
+                           "3" = "#fcf283", 
+                           "4" = "#faa957" ,
+                           "5" = "#9dce71",
+                           "6" = "#c29fcb",
+                           "7" = "#592e8b",
+                           "8" = "#e81d25",
+                           "9" = "#ff59ee",
+                           "10" = "#ad9ea0")
+
+annotation_pallete <- list("ACB_intact" = "#faa957", 
+                           "ACB_lesioned" = "#d16d08", 
+                           "aco" = "#592e8b",
+                           "cc" = "#c29fcb", 
+                           "CP_intact" = "#8bc5de" ,
+                           "CP_lesioned" = "#0067a8",
+                           "CTX" = "#aedea0",
+                           "LSX" = "#f37985",
+                           "MSC" = "#e34045",
+                           "OT" = "#ad9ea0",
+                           "VL" = "#ff59ee")
+```
+
+</details> 
+<br>
+
 #### Cluster ST data
 
 First we will run clustering on the ST data. Based on the two different modalities, mRNA data will perform much better at defining different cell types/structures within the tissue sample. We expect the clustering to be able to detect such cell types as the striatum.
@@ -405,8 +457,8 @@ combined.data <- FindClusters(combined.data, resolution = 0.5, cluster.name = "S
 
 
 ```{r, fig.width=20, fig.height=8}
-DimPlot(combined.data, group.by = "ST_clusters", reduction = "spt.umap") | 
-  SpatialDimPlot(combined.data, group.by = "ST_clusters", pt.size.factor = 2.1)
+DimPlot(combined.data, group.by = "ST_clusters", reduction = "spt.umap", cols = ST_pallete) | 
+  SpatialDimPlot(combined.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_pallete)
 ```
 
 
@@ -416,8 +468,8 @@ The clustering results demonstrate clear groups of cells. Lets compare them to t
 ```{r, warning=FALSE, message=FALSE, fig.width=15, fig.height=5}
 striatum <- subset(combined.data, subset = region == "striatum")
 
-SpatialDimPlot(striatum, group.by = "ST_clusters", label = F, pt.size.factor = 2.4) | 
-  SpatialDimPlot(striatum, group.by = "RegionLoupe", label = F, pt.size.factor = 2.4) 
+SpatialDimPlot(striatum, group.by = "ST_clusters", label = F, pt.size.factor = 2.4, cols = ST_pallete) | 
+  SpatialDimPlot(striatum, group.by = "annotations", label = F, pt.size.factor = 2.4, cols = annotation_pallete) 
 ```
 
 
@@ -477,8 +529,8 @@ combined.data <- FindClusters(combined.data, resolution = 0.4,  cluster.name = "
 
 
 ```{r, fig.width=25, fig.height=8}
-DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap") |
-  SpatialDimPlot(combined.data, group.by = "SM_clusters", pt.size.factor = 2.1) | 
+DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = SM_pallete) |
+  SpatialDimPlot(combined.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_pallete) | 
   SpatialDimPlot(combined.data, group.by = "lesion", pt.size.factor = 2.1)
 ```
 
@@ -515,12 +567,22 @@ integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm 
 
 
 ```{r, fig.width=20, fig.height=8}
-DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F) | SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1) 
+DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F, cols = intergrated_palette, size = 4) | 
+  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1, cols = intergrated_palette) 
 ```
 
-
-
 Looking at the results above we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #E68613">cluster 1</span> and <span style="color: #7CAE00">cluster 3</span> respectively)
+
+
+We can also compare the difference between ST only, SM only and integrated clustering
+
+```{r fig.width=10, fig.height=10}
+(SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.1, cols = annotation_pallete)| 
+SpatialDimPlot(integrated.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_palette))/
+(SpatialDimPlot(integrated.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_pallete)| 
+  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1, cols = intergrated_palette))
+```
+
 
 
 #### Differential Metabolite and Gene Expression Analysis

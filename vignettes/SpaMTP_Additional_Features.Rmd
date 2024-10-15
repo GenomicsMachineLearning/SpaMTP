@@ -304,7 +304,7 @@ plotly::style(p, visible = FALSE, traces = 1)
 Data export can often be difficult when dealing with large datasets of different data object types such as *R's Seurat* compared to *Python's scanpy*. ***SpaMTP*** can easily export the data object in matrix.mtx, barcodes.csv and features.csv files which can be easily read in to all major spatial analysis packages. In addition cell/pixel and feature metadata is also exported as .csv files. Below we demonstrate how to export the files
 
 ```{r, eval=FALSE}
-saveSpaMTPData(bladder_annotated, outdir = "../Documents/SpaMTP_Output/", assay = "Spatial", slot = "counts", annotations = TRUE)
+saveSpaMTPData(bladder_HE, outdir = "../Documents/SpaMTP_Output/", assay = "Spatial", slot = "counts", annotations = TRUE)
 ```
 
 

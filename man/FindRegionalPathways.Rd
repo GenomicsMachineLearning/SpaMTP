@@ -2,7 +2,7 @@
 % Please edit documentation in R/PathwayAnalysis.R
 \name{FindRegionalPathways}
 \alias{FindRegionalPathways}
-\title{This the function used to compute the exact fisher test for over-representation based pathway analysis}
+\title{This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data}
 \usage{
 FindRegionalPathways(
   SpaMTP,
@@ -13,11 +13,9 @@ FindRegionalPathways(
   ST_assay = "SPT",
   SM_slot = "counts",
   ST_slot = "counts",
-  test_use = "wilcox",
   tof_resolution = 30000,
   min_path_size = 5,
   max_path_size = 500,
-  baseline_cluster = NULL,
   pval_cutoff_pathway = NULL,
   pval_cutoff_mets = NULL,
   pval_cutoff_genes = NULL,
@@ -25,7 +23,11 @@ FindRegionalPathways(
 )
 }
 \arguments{
-\item{SpaMTP}{A SpaMTP Seurat object contains spatial metabolomics/transcriptomics data or both.}
+\item{SpaMTP}{A SpaMTP Seurat object contains spatial metabolomics(SM)/transcriptomics(ST) data or both, if contains SM data, it should be annotated via SpaMTP::AnnotateSM function.}
+
+\item{ident}{A name character to specific the cluster vector for regions in \code{SpaMTP@meta.data} slot.}
+
+\item{DE.list}{A list consist of differetial expression output from FindAllMarkers() function, with items in same order as analyte_types.}
 
 \item{analyte_types}{Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).}
 
@@ -34,6 +36,8 @@ FindRegionalPathways(
 \item{ST_assay}{A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").}
 
 \item{SM_slot}{The slot name containing the SM assay matrix data (default = "counts").}
+
+\item{ST_slot}{The slot name containing the ST assay matrix data (default = "counts").}
 
 \item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]} (default = 30000).}
 
@@ -49,31 +53,13 @@ FindRegionalPathways(
 
 \item{verbose}{A boolean value indicates whether verbose is shown}
 
-\item{polarity}{The polarity of the spatial metabolomics experiment. Inputs must be either NULL, 'positive' or 'negative'. If NULL, pathway analysis will run in neutral mode (default = NULL).}
-
 \item{adduct}{Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).}
-
-\item{algorithm}{Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python}
-
-\item{npcs}{A numerical integer, representing the number of principle components that the PCA will reduce to.}
-
-\item{st_cluster_name}{A character to describe the clustered result for spatial transcriptomics if the cluster haven't been done}
-
-\item{sm_cluster_name}{A character to describe the clustered result for spatial metabolomics  if the cluster haven't been done"}
-
-\item{ppm_threshold}{A numerical value, standing for the parts-per-million error tolerance of matching m/z value with potential metabolites (default = NULL, calculated by )}
-
-\item{cluster_vector}{A factor vector where each levels indicates the different clustered regions in tissue}
-
-\item{background_cluster}{A vector consist of 0 and 1, where 1 indicates the intended background region}
-
-\item{...}{The other parameters goes to Seurat methods}
 }
 \value{
 A SpaMTP object with set enrichment on given analyte types.
 }
 \description{
-This the function used to compute the exact fisher test for over-representation based pathway analysis
+This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data
 }
 \examples{
 # SpaMTP = FindRegionalPathways(SpaMTP, polarity = "positive")

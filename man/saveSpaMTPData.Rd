@@ -13,6 +13,7 @@ saveSpaMTPData(
   outdir,
   assay = "Spatial",
   slot = "counts",
+  image = NULL,
   annotations = FALSE,
   verbose = TRUE
 )
@@ -38,5 +39,5 @@ Saves Seurat Spatial Metabolomic object to files.
 }
 }
 \examples{
-# saveSpaMTPData(SeuratObject, "~/Documents/seuratobj_files/", annotations = TRUE)
+# saveSpaMTPData(SeuratObject, "~/Documents/seuratobj_files", annotations = TRUE)
 }
