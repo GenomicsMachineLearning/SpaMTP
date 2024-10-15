@@ -33,13 +33,9 @@ FishersPathwayAnalysis <- function (Analyte,
                                     pval_cutoff = 0.05,
                                     verbose = TRUE)
 {
-<<<<<<< HEAD
 
-  if((!"mz" %in% analyte_type) & (!"metabolites" %in% analyte_type) & (!"genes" %in% analyte_type)){
-=======
-  data(pathway, package = "SpaMTP")
   if((!"mz" %in% analyte_type) & (!"" %in% analyte_type) & (!"genes" %in% analyte_type)){
->>>>>>> db58f361c75d2b6354277eda83f640796d835ce1
+
     stop(
       "analyte_type was not specified correctly.  Please specify one of the following options: , genes"
     )
@@ -560,12 +556,12 @@ FindRegionalPathways = function(SpaMTP,
   # Get pathway db
   verbose_message(message_text = "Constructing pathway database ..." , verbose = verbose)
   chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
-  
+
   pathway_db = split(chempathway$rampId, chempathway$pathwayName)
   pathway_db = pathway_db[which(!duplicated(tolower(names(pathway_db))))]
   pathway_db = pathway_db[lapply(pathway_db, length) >= min_path_size  &
                             lapply(pathway_db, length) <= max_path_size]
-  
+
   gc()
   gsea_all_cluster = data.frame()
   all_ranks = list()
@@ -595,10 +591,10 @@ FindRegionalPathways = function(SpaMTP,
       # Genes and metabolites
       ranks <- c(ranks, ranks_gene_vector)
     }
-    
+
     ranks = ranks[which(!duplicated(names(ranks)))]
     all_ranks[[i]] = ranks[is.finite(ranks)]
-    
+
     gsea_result <- c()
     if (length(all_ranks[[i]]) > 0) {
       suppressWarnings({
@@ -609,11 +605,7 @@ FindRegionalPathways = function(SpaMTP,
           maxSize = max_path_size
         )  %>%  dplyr::mutate(Cluster_id = i)
       })
-<<<<<<< HEAD
 
-=======
-      
->>>>>>> db58f361c75d2b6354277eda83f640796d835ce1
     } else {
       gsea_result <- data.table::data.table(
         pathway = character(0),
@@ -630,7 +622,7 @@ FindRegionalPathways = function(SpaMTP,
     gsea_result = na.omit(gsea_result) %>% filter(!duplicated(pathway))
     short_source = source_df[which((source_df$rampId %in% names(all_ranks[[i]])) &
                                      !duplicated(source_df$rampId)), ]
-    
+
     addtional_entry = do.call(rbind, lapply(1:nrow(gsea_result), function(x) {
       temp = unique(unlist(gsea_result$leadingEdge[x]))
       temp_ref =   sub_db3[which(sub_db3$ramp_id %in% temp), ] %>% dplyr::mutate(adduct_info = paste0(observed_mz, "[", Adduct, "]")) %>% dplyr::filter(!duplicated(adduct_info))
@@ -663,9 +655,6 @@ FindRegionalPathways = function(SpaMTP,
   return(gsea_all_cluster_return)
 }
 
-
-<<<<<<< HEAD
-=======
 
 #' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
 #'
@@ -876,16 +865,11 @@ getPCA <- function(SpaMTP,
   }
   return(pca)
 }
->>>>>>> db58f361c75d2b6354277eda83f640796d835ce1
-
-
-
-
 
 
 ############################# PATHWAY HELPER FUNCTIONS ########################################
 
-#' Helper function for building a pathway db based on detected 
+#' Helper function for building a pathway db based on detected
 #'
 #' @param input_id Vector of characters defining the detected .
 #' @param analytehaspathway A dataframe containing RAMP_pathway ID's.
