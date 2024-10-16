@@ -176,6 +176,7 @@ VisualisePathways = function(SpaMTP,
     # ggplot() + annotation_custom(rasterGrob(image_raster, width = unit(1, "npc"), height = unit(1, "npc"))) +
     #   theme_void()
     setTxtProgressBar(pb, z)
+    }
   }
   close(pb)
   for (k in 1:length(image_raster)) {
@@ -473,5 +474,3 @@ PlotRegionalPathways <- function(SpaMTP,
   dev.off()
   return(u)
 }
-
-
