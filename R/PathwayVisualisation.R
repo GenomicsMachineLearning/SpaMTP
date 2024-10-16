@@ -179,22 +179,23 @@ VisualisePathways = function(SpaMTP,
     }
   }
   close(pb)
-  for (k in 1:length(image_raster)) {
-    if (!is.null(image_raster[[k]])){
-      gg_bar1 =  gg_bar1 + ggplot2::annotation_custom(
-        grid::rasterGrob(
-          image_raster[[k]],
-          width = unit(1, "npc"),
-          height = unit(1, "npc")
-        ),
-        xmin = k - 0.5,
-        xmax = k + 0.5,
-        ymin = -3.5 ,
-        ymax = -0.3
-      )
+  if (length(image_raster)>0){
+    for (k in 1:length(image_raster)) {
+      if (!is.null(image_raster[[k]])){
+        gg_bar1 =  gg_bar1 + ggplot2::annotation_custom(
+          grid::rasterGrob(
+            image_raster[[k]],
+            width = unit(1, "npc"),
+            height = unit(1, "npc")
+          ),
+          xmin = k - 0.5,
+          xmax = k + 0.5,
+          ymin = -3.5 ,
+          ymax = -0.3
+        )
+      }
     }
   }
-
   gg_bar1 =  gg_bar1 + ylim(-2, max(merged_pathways$total_in_pathways) + 5)
   #gg_bar1
 
