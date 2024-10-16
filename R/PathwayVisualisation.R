@@ -79,15 +79,7 @@ VisualisePathways = function(SpaMTP,
   merged_pathways = merged_pathways %>% filter(p_val <= p_val_threshold) %>% mutate(signif_at_005level =   ifelse(p_val <= 0.05, "Significant", "Non-significant"))
 
   retain_ind = 1:nrow(merged_pathways)
-  for(z in 1:nrow(merged_pathways)){
-    mzs = paste0("mz-",
-                 stringr::str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
-    mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
-    if(length(mat_ind)<=2){
-      retain_ind =   retain_ind[-which(retain_ind == z)]
-    }
-  }
-  merged_pathways  =  merged_pathways[retain_ind,]
+
   gg_bar1 = with(
     merged_pathways,
     ggplot() +  geom_bar(
@@ -154,11 +146,12 @@ VisualisePathways = function(SpaMTP,
   )
   mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
 
-
-
-  for (i in 1:nrow(merged_pathways)) {
+  for(z in 1:nrow(merged_pathways)){
     mzs = paste0("mz-",
-                 stringr::str_extract_all(merged_pathways$adduct_info[i], "\\d+\\.\\d+")[[1]])
+                 stringr::str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
+    if (mzs == "mz-"){
+      image_raster[[z]] <- NULL
+    } else{
     mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
     pca_result <- prcomp(mass_matrix[, mat_ind])
     nc = 3
@@ -178,25 +171,27 @@ VisualisePathways = function(SpaMTP,
       rgb_m[, , j] = matrix(pca_df_normalized[, j], nrow = max(coords[, 1]))
     }
     # Convert the image matrix to a raster object
-    image_raster[[i]] <- as.raster(rgb_m)
+    image_raster[[z]] <- as.raster(rgb_m)
     # # Plot the RGB image using ggplot2
     # ggplot() + annotation_custom(rasterGrob(image_raster, width = unit(1, "npc"), height = unit(1, "npc"))) +
     #   theme_void()
-    setTxtProgressBar(pb, i)
+    setTxtProgressBar(pb, z)
   }
   close(pb)
   for (k in 1:length(image_raster)) {
-    gg_bar1 =  gg_bar1 + ggplot2::annotation_custom(
-      grid::rasterGrob(
-        image_raster[[k]],
-        width = unit(1, "npc"),
-        height = unit(1, "npc")
-      ),
-      xmin = k - 0.5,
-      xmax = k + 0.5,
-      ymin = -3.5 ,
-      ymax = -0.3
-    )
+    if (!is.null(image_raster[[k]])){
+      gg_bar1 =  gg_bar1 + ggplot2::annotation_custom(
+        grid::rasterGrob(
+          image_raster[[k]],
+          width = unit(1, "npc"),
+          height = unit(1, "npc")
+        ),
+        xmin = k - 0.5,
+        xmax = k + 0.5,
+        ymin = -3.5 ,
+        ymax = -0.3
+      )
+    }
   }
 
   gg_bar1 =  gg_bar1 + ylim(-2, max(merged_pathways$total_in_pathways) + 5)

@@ -774,27 +774,21 @@ The first pathway analysis method uses the *Fishers Exact Test* to identify sign
 
 The below code is performing FishersExactTest Pathway analysis on metabolites significantly over expressed in the urothelium (cluster 6):
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
+
 ## Subsets to include only UP-regulated m/z values in cluster 6 (relative to cluster 2 and 5)
 cluster_6 <- UP[UP$cluster == "6",] 
 
-metabolite_ids <- ROI[["Spatial"]]@meta.data[ROI[["Spatial"]]@meta.data$all_IsomerNames %in% cluster_6$annotations,]$all_Isomers
+## Based on these mz values we can get their corresponding annotations which are in the database ID format (stored in `$all_Isomer_IDs`)
+metabolite_ids <- ROI[["Spatial"]]@meta.data[ROI[["Spatial"]]@meta.data$all_IsomerNames %in% cluster_6$annotations,]$all_Isomers_IDs
 
-
-tester <- FishersPathwayAnalysis(list("mzs" = cluster_6$gene),
-                            max_path_size = 500,
-                            alternative = "greater",
-                            min_path_size = 5,
-                            pathway_all_info = T,
-                            pval_cutoff = 0.05,
-                            verbose = TRUE)
-
-
+## We can then unlist them to get all the unique possible annotations 
+metabolite_ids <- unique(unlist(lapply(metabolite_ids, function(x){strsplit(x, "; ")[[1]]})))
 ```
 
-
+Lets now run FishersPathwayTest
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-cluster_6_pathways <- FishersPathwayAnalysis(list("mzs" = cluster_6$gene),
+cluster_6_pathways <- FishersPathwayAnalysis(list("metabolites" = metabolite_ids),
                             max_path_size = 500,
                             alternative = "greater",
                             min_path_size = 5,
@@ -825,10 +819,34 @@ df <- df[c("pathway_name",	"pathway_id",	"type",	"pathwayCategory",	"p_val",	"fd
 knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 ```
 
+We can also run FisherPathwayTest using just m/z values. Lets try this below and see how the results differ. This time we will use `Chebi_db`, `Lipidmaps_db` and `HMDB_db` to annotate the m/z values, and we will use all possible positive adducts. (Note: the mz values are stored in the data.frame column called `gene`)
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+cluster_6_mz_pathways <- FishersPathwayAnalysis(list("mzs" = cluster_6$gene),
+                            max_path_size = 500,
+                            alternative = "greater",
+                            min_path_size = 5,
+                            pathway_all_info = T,
+                            pval_cutoff = 0.05,
+                            verbose = TRUE)
+```
+
+
+```{r, echo=TRUE, results='hide'}
+cluster_6_mz_pathways[1:4,]
+```
+
+```{r, echo=FALSE}
+df <- cluster_6_mz_pathways[1:4,]
+df <- df[c("pathway_name",	"pathway_id",	"type",	"pathwayCategory",	"p_val",	"fdr",	"ratio",	"analytes_in_pathways",	"total_in_pathways")]
+knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+```
 
 <br>
 
 Lets now visualise these results
+
+
 
 ```{r, eval=FALSE}
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")

@@ -7,8 +7,6 @@
 annotateTable(
   mz_df,
   db,
-  assay = "Spatial",
-  raw.mz.column = "raw_mz",
   ppm_error = NULL,
   adducts = NULL,
   polarity = "positive",
@@ -20,10 +18,6 @@ annotateTable(
 \item{mz_df}{dataframe containing m/z values for annotation.}
 
 \item{db}{Reference metabolite dataset in the form of a Data.Frame.}
-
-\item{assay}{Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").}
-
-\item{raw.mz.column}{Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").}
 
 \item{ppm_error}{Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).}
 

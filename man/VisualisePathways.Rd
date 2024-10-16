@@ -9,6 +9,7 @@ VisualisePathways(
   pathway_df,
   assay = "SPM",
   slot = "counts",
+  min_n = 3,
   p_val_threshold = 0.1,
   method = "ward.D2",
   verbose = TRUE,
@@ -22,9 +23,11 @@ VisualisePathways(
 
 \item{assay}{Character string defining the SpaMTP assay that contains m/z values (default = "SPM").}
 
-\item{slot}{Character string defining the assay slot contatin ght intesity values (default = "counts").}
+\item{slot}{Character string defining the assay slot contain the intensity values (default = "counts").}
 
-\item{p_val_threshold}{The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").}
+\item{min_n}{Integer value specifying the minimum number of analytes required to be present in a pathway (default = 3).}
+
+\item{p_val_threshold}{The p-val cutoff to keep the pathways generated from fisher exact test (default = "0.1").}
 
 \item{method}{Character string defining the statistical method used to calculate hclust (default = "ward.D2").}
 
