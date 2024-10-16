@@ -3,8 +3,9 @@
 #' @param SpaMTP SpaMTP Seurat object used to run FishersPathwayAnalysis function.
 #' @param pathway_df Dataframe containing the pathway enrichment results (output from SpaMTP::FishersPathwayAnalysis function).
 #' @param assay Character string defining the SpaMTP assay that contains m/z values (default = "SPM").
-#' @param slot Character string defining the assay slot contatin ght intesity values (default = "counts").
-#' @param p_val_threshold The p-val cuttoff to keep the pathways generated from fisher exact test (default = "0.1").
+#' @param slot Character string defining the assay slot contain the intensity values (default = "counts").
+#' @param min_n Integer value specifying the minimum number of analytes required to be present in a pathway (default = 3).
+#' @param p_val_threshold The p-val cutoff to keep the pathways generated from fisher exact test (default = "0.1").
 #' @param method Character string defining the statistical method used to calculate hclust (default = "ward.D2").
 #' @param ... The arguments pass to stats::hclust
 #'
@@ -19,11 +20,16 @@ VisualisePathways = function(SpaMTP,
                              pathway_df,
                              assay = "SPM",
                              slot = "counts",
+                             min_n = 3,
                              p_val_threshold = 0.1,
                              method = "ward.D2",
                              verbose = TRUE,
                              ...) {
-  pathway_df = pathway_df[which(pathway_df$analytes_in_pathways>=3),]
+  if (is.null(min_n)){
+    stop("Incorrect minimum analyte number! `min_n` must be set to a value > 1. Please adjust this value accordingly ...")
+  }
+  pathway_df = pathway_df[which(pathway_df$analytes_in_pathways>=min_n),]
+  pathway_df$duplicate_pathways <- NA
   verbose_message(message_text = "Reducing synonymous pathways", verbose = verbose)
   index = c(1:nrow(pathway_df))
   merged_pathways = data.frame()
@@ -36,19 +42,33 @@ VisualisePathways = function(SpaMTP,
   while (length(index) != 0) {
     pattern = stringr::str_extract(pathway_df$pathway_name[index[1]], pattern = "[A-Z][A-Z]\\([a-z0-9]")
     if (length(pattern) != 0 & !is.na(pattern)) {
+      pattern = sub("\\(", "\\\\(", pattern)
+      name = strsplit(pathway_df$pathway_name[index[1]], pattern)[[1]][1]
+      full_name = paste0(name, pattern)
       frst_ind = which(grepl(
         pathway_df$pathway_name,
-        pattern = sub("\\(", "\\\\(", pattern)
+        pattern = full_name
       ))
       all_pathways = pathway_df[frst_ind, ]
-      second_ind = which(duplicated(
-        paste0(
-          all_pathways$gene_name_list,
-          all_pathways$met_name_list
-        )
-      ))
+      second_ind = which(duplicated(all_pathways$p_val))
       index = index[-which(index %in% frst_ind)]
-      merged_pathways = rbind(merged_pathways, all_pathways[-second_ind, ])
+      if (length(second_ind)>0){
+        name = stringr::str_trim(name, side = "right")
+
+        unique_pathways <- all_pathways[-second_ind, ]
+        for (i in seq_along(unique_pathways$p_val)) {
+          # Get indices of duplicates for each unique p_val
+          duplicates <- which(all_pathways$p_val == unique_pathways$p_val[i])
+          duplicate_ids <- all_pathways$pathway_id[duplicates]
+          unique_pathways$duplicate_pathways[i] <- paste(duplicate_ids, collapse = ", ")
+          }
+
+        unique_pathways$pathway_name <- name
+        merged_pathways = rbind(merged_pathways, unique_pathways)
+      } else{
+        merged_pathways = rbind(merged_pathways, all_pathways[frst_ind, ])
+      }
+
     } else{
       merged_pathways = rbind(merged_pathways, pathway_df[index[1], ])
       index = index[-1]
@@ -125,7 +145,7 @@ VisualisePathways = function(SpaMTP,
 
   # Get the raster illustration for each pathway
   image_raster = list()
-  verbose_message(message_text = "\nRunning PCA for dimension reduction", verbose = verbose)
+  verbose_message(message_text = "Generating images for visualising pathway enrichment across the sample ... ", verbose = verbose)
   pb = txtProgressBar(
     min = 0,
     max = nrow(merged_pathways),

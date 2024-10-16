@@ -81,10 +81,7 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
   mz_df$row_id <- seq(1, length(mz_df[[raw.mz.column]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
-  db_3 <- annotateTable(mz_df= mz_df, db = db, assay = assay, raw.mz.column = raw.mz.column,
-                        ppm_error = ppm_error, adducts = adducts, polarity = polarity,
-                        tof_resolution = tof_resolution,
-                        verbose = verbose)
+  db_3 <- annotateTable(mz_df= mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose)
 
 
   if (save.intermediate){
@@ -153,8 +150,6 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 #'
 #' @param mz_df dataframe containing m/z values for annotation.
 #' @param db Reference metabolite dataset in the form of a Data.Frame.
-#' @param assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
-#' @param raw.mz.column Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
 #' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
 #' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
 #' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
@@ -168,9 +163,8 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 #' @examples
 #'
 #' ### HelperFunction
-annotateTable <- function(mz_df, db, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, verbose = TRUE){
+annotateTable <- function(mz_df, db, ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, verbose = TRUE){
 
-  db_name <- deparse(substitute(db))
 
   # Uses:
   # db: db that you want to search against
@@ -183,7 +177,7 @@ annotateTable <- function(mz_df, db, assay = "Spatial", raw.mz.column = "raw_mz"
   # Three main steps relates to the three main functions
   # Steps 1) & 2) are aimed at condensing the databases by applying 1) a filter to only consider the adducts that the user specifies. 2) Filtering the molecular formulas to contain only elements that the user specifies. # Step 3) This last function then does the database matching and searching.
   # 1) Filter DB by adduct.
-  verbose_message(message_text = paste0("Filtering '", db_name, "' database by ", paste0(adducts, collapse = ", "), " adduct/s"), verbose = verbose)
+  verbose_message(message_text = paste0("Filtering provided database by ", paste0(adducts, collapse = ", "), " adduct/s"), verbose = verbose)
 
   if (polarity == "positive") {
     test_add_pos = adduct_file$adduct_name[which(adduct_file$charge > 0)]

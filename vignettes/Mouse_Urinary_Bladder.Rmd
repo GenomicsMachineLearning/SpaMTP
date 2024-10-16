@@ -779,14 +779,22 @@ The below code is performing FishersExactTest Pathway analysis on metabolites si
 cluster_6 <- UP[UP$cluster == "6",] 
 
 metabolite_ids <- ROI[["Spatial"]]@meta.data[ROI[["Spatial"]]@meta.data$all_IsomerNames %in% cluster_6$annotations,]$all_Isomers
+
+
+tester <- FishersPathwayAnalysis(list("mzs" = cluster_6$gene),
+                            max_path_size = 500,
+                            alternative = "greater",
+                            min_path_size = 5,
+                            pathway_all_info = T,
+                            pval_cutoff = 0.05,
+                            verbose = TRUE)
+
+
 ```
 
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-cluster_6_pathways <- FishersPathwayAnalysis(list(paste0("LIPIDMAPS:",unique(unlist(strsplit(metabolite_ids, "; "))))),
-                            analyte_type = c(""),
-                            polarity = "positive",
-                            ppm_error = 10,
+cluster_6_pathways <- FishersPathwayAnalysis(list("mzs" = cluster_6$gene),
                             max_path_size = 500,
                             alternative = "greater",
                             min_path_size = 5,

@@ -64,6 +64,8 @@ FishersPathwayAnalysis <- function (Analyte,
      mz = as.numeric(stringr::str_extract(analytes_mz, pattern = "\\d+\\.?\\d*"))
    ))
 
+   rownames(input_mz) <- paste0("mz-", input_mz$mz)
+
    args <- list(...)
 
    # Set db to 2 if it's not passed in ..., otherwise use the value provided in ...
@@ -73,7 +75,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
    remaining_args <- args[setdiff(names(args), "db")]
 
-   db_3 <- do.call(annotateTable, c(list(mz_df= input_mz, db = db), remaining_args))
+   db_3 <- do.call(annotateTable, c(list(mz_df= input_mz, db = db, verbose = verbose), remaining_args))
 
 
     db_3list = pbapply::pblapply(1:nrow(db_3), function(i){
