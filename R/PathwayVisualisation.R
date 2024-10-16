@@ -149,7 +149,7 @@ VisualisePathways = function(SpaMTP,
   for(z in 1:nrow(merged_pathways)){
     mzs = paste0("mz-",
                  stringr::str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
-    if (mzs == "mz-"){
+    if ("mz-" %in% mzs){
       image_raster[[z]] <- NULL
     } else{
     mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
