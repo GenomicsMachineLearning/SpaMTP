@@ -424,20 +424,11 @@ FindRegionalPathways = function(SpaMTP,
   }
   db_3 <- SpaMTP@tools$db_3
   db_3 = db_3 %>%
-    tidyr::separate_rows(Isomers, sep = ";")
+    tidyr::separate_rows(Isomers_IDs, sep = "; ")
 
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
-  input_id = lapply(db_3$Isomers, function(x) {
-    x = unlist(x)
-    index_hmdb = which(grepl(x, pattern = "HMDB"))
-    x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
-    index_chebi = which(grepl(x, pattern = "CHEBI"))
-    x[index_chebi] = tolower(x[index_chebi])
-    index_lm = which(grepl(x, pattern = "LMPK"))
-    x[index_lm] = tolower(x[index_lm])
-    return(x)
-  })
-  db_3 = db_3 %>% dplyr::mutate(inputid = input_id) %>%  dplyr::mutate(chem_source_id = input_id)
+
+  db_3 = db_3 %>% dplyr::mutate(inputid = Isomers_IDs) %>%  dplyr::mutate(chem_source_id = inputid)
   rampid = c()
   verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
   db_3 = merge(chem_props, db_3, by = "chem_source_id")
@@ -582,6 +573,7 @@ FindRegionalPathways = function(SpaMTP,
     setTxtProgressBar(pb3, as.numeric(which(cluster == i)))
   }
   close(pb3)
+  return()
   gsea_all_cluster <- na.omit(gsea_all_cluster)%>% #dplyr::mutate(
     dplyr::mutate(group_importance = sum(abs(NES)))
   colnames(gsea_all_cluster)[1] = "pathwayName"
