@@ -109,7 +109,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
   analyte_new = analytehaspathway_new = source_new =  data.frame()
   analytes_new = mz_array = adducts_array = c()
-  if("mz" %in% names(Analyte)){
+  if("mzs" %in% names(Analyte)){
     analyte_new = rbind(analyte_new,
                         analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
     analytehaspathway_new = rbind(analytehaspathway_new,
@@ -122,7 +122,7 @@ FishersPathwayAnalysis <- function (Analyte,
     adducts_array = c(adducts_array, adducts_db3)
   }
 
-  if("metabolite" %in% names(Analyte)){
+  if("metabolites" %in% names(Analyte)){
     analyte_new = rbind(analyte_new,
                         analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
     analytehaspathway_new = rbind(analytehaspathway_new,
