@@ -413,9 +413,9 @@ PlotRegionalPathways <- function(regpathway,
                  aes(colour = Significance, size = as.numeric(size) * 2.1 +
                        0.1)) +
       scale_color_manual(
-        values = c(
-          "Significant at 5% significance level" = "green",
-          "Not statistically significant" = "black"
+        values <- setNames(
+          c("green", "black"),  # Colors
+          c(paste0("Significant at ", sig_cutoff, " significance level"), "Not statistically significant")  # Labels
         )
       ) +
       #labs(title = "Comparason of pathways expression between different cluster", y = "Pathways", x = "Clusters") +
