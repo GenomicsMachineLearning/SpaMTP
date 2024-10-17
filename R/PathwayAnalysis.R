@@ -573,7 +573,7 @@ FindRegionalPathways = function(SpaMTP,
     setTxtProgressBar(pb3, as.numeric(which(cluster == i)))
   }
   close(pb3)
-  return()
+
   gsea_all_cluster <- na.omit(gsea_all_cluster)%>% #dplyr::mutate(
     dplyr::mutate(group_importance = sum(abs(NES)))
   colnames(gsea_all_cluster)[1] = "pathwayName"
