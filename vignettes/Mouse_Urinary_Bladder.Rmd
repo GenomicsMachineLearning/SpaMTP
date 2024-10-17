@@ -1031,9 +1031,27 @@ ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "S
 
 We can also run pathway analysis on the new clustering results. Lets do that now, this time we will use *Seurat's* FindAllMarker() function to show ***SpaMTP's*** flexability.
 
+```{r}
 
+ROIx <- AnnotateSM(ROI, db = rbind(Chebi_db,HMDB_db), polarity = "positive")
 
+## Re-run DE analysis
+DE <- FindAllDEPs(data = ROIx, ident = "clusters", n = 3, logFC_threshold = 1.2, 
+                            DE_output_dir =NULL, return.individual = FALSE, 
+                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames")
 
+DE_pathways <- FindRegionalPathways(SpaMTP = ROIx,
+                                ident = "clusters",
+                                DE.list = list(DE$DEPs),
+                                analyte_types = c("metabolites"),
+                                SM_assay = "Spatial",
+                                ST_assay = NULL,pval_cutoff_pathway = 0.01)
+
+```
+
+```{r ,warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+PlotRegionalPathways(regpathway = DE_pathways)
+```
 
 
 There are a large range of additional applications SpaMTP can be used for such as multi-modality analysis using both spatial transcriptomics and spatial metabolomics. Check out the SpaMTP github or documentation site for more. 
