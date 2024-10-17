@@ -897,7 +897,7 @@ df <- DE_pathways
 knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 ```
 
-Based on this we can see that there is only one significantly differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include "M+H" and "M+K" analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis. This time we will use *Seurat's* FindAllMarker() function to calculating DE metabolites, highlighting ***SpaMTP's*** flexibility.
+Based on this we can see that there is only one significantly differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include "M+H" and "M+K" analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis.
 
 ```{r, warning=FALSE, message=FALSE}
 ## Get Data
@@ -1029,30 +1029,42 @@ ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "S
 ```
 
 
-We can also run pathway analysis on the new clustering results. Lets do that now, this time we will use *Seurat's* FindAllMarker() function to show ***SpaMTP's*** flexability.
+We can also run pathway analysis on the new clustering results. Lets do that now, this time we will use *Seurat's* `FindAllMarker()` function to calculating DE metabolites, highlighting ***SpaMTP's*** flexibility. You will see below that `FindAllMarker()` requires normalised data. ***SpaMTP*** has a `NormalizeSMData()` function that allows for *TIC* (Total Ion Current) Normalisation. For more info on this form of normalisation please read [Jauhiainen et.al (2014)](https://doi.org/10.1093/bioinformatics/btu175).
 
 ```{r}
+## Annotate ROI with additional datasets
+ROI <- AnnotateSM(ROI, db = rbind(Chebi_db,Lipidmaps_db, HMDB_db), polarity = "positive")
 
-ROIx <- AnnotateSM(ROI, db = rbind(Chebi_db,HMDB_db), polarity = "positive")
+## Performs TIC normalisation
+ROI <- NormalizeSMData(ROI)
 
-## Re-run DE analysis
-DE <- FindAllDEPs(data = ROIx, ident = "clusters", n = 3, logFC_threshold = 1.2, 
-                            DE_output_dir =NULL, return.individual = FALSE, 
-                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames")
+## Run FindAllMarkers() on clustering results
+Idents(ROI) <- "clusters"
+DE <- FindAllMarkers(ROI, assay = "Spatial")
 
-DE_pathways <- FindRegionalPathways(SpaMTP = ROIx,
+## Runs Pathway Analysis between clusters
+DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 ident = "clusters",
-                                DE.list = list(DE$DEPs),
+                                DE.list = list(DE),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
                                 ST_assay = NULL,pval_cutoff_pathway = 0.01)
-
 ```
-
+Below we will visualise the top 5 pathways differentially expressed between clusters
 ```{r ,warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
-PlotRegionalPathways(regpathway = DE_pathways)
+PlotRegionalPathways(regpathway = DE_pathways, num_display = 4)
 ```
 
+We can also plots some key pathways of interest that were also up regulated in our dataset.
+```{r}
+key_pathways <- c("Biochemical pathways: part I","G alpha (i) signalling events","Metabolism of carbohydrates","Sphingolipid metabolism: integrated pathway",
+                  "Sensory perception of sweet, bitter, and umami (glutamate) taste", "Sensory perception of taste",
+                  "G alpha (i) signaling events")
+
+PlotRegionalPathways(regpathway = DE_pathways, selected_pathways = key_pathways)
+```
+
+Based on these findings we observe that the lamina propria (cluster 5) has an up regulation of metabolites associated with sensory perception pathways. This matches the biology as this is the layer of the bladder that contains the sensory neurons.   
 
 There are a large range of additional applications SpaMTP can be used for such as multi-modality analysis using both spatial transcriptomics and spatial metabolomics. Check out the SpaMTP github or documentation site for more. 
 
