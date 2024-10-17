@@ -352,6 +352,7 @@ PlotRegionalPathways <- function(regpathway,
     }
   }
   diag(jaccard_matrix) = 1
+
   # Generate a dendrogram
   hc <- as.dendrogram(hclust(as.dist(jaccard_matrix)))
   # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
@@ -393,14 +394,17 @@ PlotRegionalPathways <- function(regpathway,
     ) +
     theme_bw() +
     theme(panel.grid.minor = element_blank(),
-          axis.text = element_text(size = ((text_size) %||% 12) - 3))
-  #### ggplot
+          axis.text = element_text(size = ((text_size) %||% 12) - 3),
+          axis.text.y = element_text(color= "black"))
+
+
+  #### generate dot plot
   suppressWarnings({
     gg_dot = ggplot(data = regpathway, aes(
       x = factor(!!sym(ident.column), levels = sort(unique(!!sym(ident.column)))),
       y = factor(pathnameid, levels = ggdendro::dendro_data(hc)$labels$label)
     )) +
-      geom_point(aes(colour = as.numeric(NES), size = as.numeric(sqrt(size)) * 5.1)) +
+      geom_point(aes(colour = as.numeric(NES), size = as.numeric(sqrt(size)) * 5.1), stroke= 0) +
       scale_colour_gradient2(
         name = "Normalised enrichment score",
         low = "blue",
@@ -412,11 +416,11 @@ PlotRegionalPathways <- function(regpathway,
       scale_size_continuous(name = "Number of altered metabolites \n in the pathway") +
       ggnewscale::new_scale_colour() +
       geom_point(shape = 1,
-                 aes(colour = Significance, size = as.numeric(size) * 2.1 +
-                       0.1)) +
+                 aes(colour = Significance, size = as.numeric(sqrt(size)) * 5.1 +
+                       0.5, stroke = 1)) +
       scale_color_manual(
         values = setNames(
-          c("green", "black"),  # Colors
+          c("black", "lightgrey"),  # Colors
           c(paste0("Significant at ", sig_pval, " significance level"), "Not statistically significant")  # Labels
         )
       ) +
@@ -436,11 +440,13 @@ PlotRegionalPathways <- function(regpathway,
         legend.text = element_text(size = ((text_size) %||% 12) - 3)
       ) +
       ggnewscale::new_scale_colour() + theme(
-        panel.background = element_rect(fill = "white"),
-        panel.grid = element_line(color = "grey")
+        panel.border = element_rect(color = "black", fill = NA, size = 1),
+        panel.background = element_rect(fill = NA),
+        panel.grid = element_line(color = "lightgrey", size = 0.4)
       ) +   theme(
         legend.position = "left",
         axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
         #axis.text.x = element_blank(),
         #axis.title.x = element_blank(),
         axis.title.y = element_blank(),

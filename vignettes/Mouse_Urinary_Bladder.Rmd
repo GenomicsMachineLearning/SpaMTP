@@ -897,14 +897,15 @@ df <- DE_pathways
 knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 ```
 
-Based on this we can see that there is only one significantly differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include all analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis. 
+Based on this we can see that there is only one significantly differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include "M+H" and "M+K" analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis. This time we will use *Seurat's* FindAllMarker() function to calculating DE metabolites, highlighting ***SpaMTP's*** flexibility.
 
 ```{r, warning=FALSE, message=FALSE}
 ## Get Data
 ROI_pathays <- subset(bladder, subset = ssc %in% c("2", "5", "6"))
 
 ## Re-annotate
-ROI_pathays <- AnnotateSM(ROI_pathays, db = rbind(Chebi_db,Lipidmaps_db,HMDB_db), ppm_error = 15, polarity = "positive")
+ROI_pathays <- AnnotateSM(ROI_pathays, db = rbind(Chebi_db,Lipidmaps_db,HMDB_db), ppm_error = 15, polarity = "positive", adducts = c("M+H","M+K"))
+
 
 ## Re-run DE analysis
 DE <- FindAllDEPs(data = ROI_pathays, ident = "ssc", n = 3, logFC_threshold = 1.2, 
@@ -930,21 +931,20 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 
 We can see that we now have many more differentially expressed pathways! Lets plot these results:
 
-```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
-p <- PlotRegionalPathways(ROI,ident = "ssc",regpathway = DE_pathways)
+
+```{r ,warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+PlotRegionalPathways(regpathway = DE_pathways)
 ```
 
-```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
-p[[1]]
-```
+This plot highlights that cluster 5 (bladder muscle) is enriched for `Biochemical pathways`. Alternatively, the Urothelium (cluster 6) is shown to down regulate numerous pathways including `Sphingolipid metabolism`. This matches with previous research suggesting that the metabolism of sphingolipids is maily associated with muscle cells of the badder. 
 
-
+These results may not tell the entire story however, as the 'ssc' clustering results do not capture every region of the tissue according to the original publication. There is a specific area between the bladder and urothelium called the 'lamina propria' which is currently unidentifiable based on the 'ssc' clustering result (this was also mentioned in the [original paper](https://doi.org/10.1038/s41592-023-02070-z)). 
 
 <br>
 
 ## Re-Clustering using PCA and Seurat
 
-Because SpaMTP is build on the foundations of a *Seurat* Object, it allows the user to still use many useful *Seurat* functions on their spatial metabolomic data using SpaMTP. Below we will demonstrate how to use the PCA results from pathway analysis along with *Seurat's* clustering functions to identify a rare cell type identified in the original paper ([lamina propria](https://doi.org/10.1002/anie.200905559)), that *Cardinal's* ssc segmentation [cannot detect](https://doi.org/10.1038/s41592-023-02070-z). 
+Because SpaMTP is build on the foundations of a *Seurat* Object, it allows the user to still use many useful *Seurat* functions on their spatial metabolomic data using SpaMTP. Below we will demonstrate how to use metabolite-based PCA results from **SpaMTP**, along with *Seurat's* clustering functions, to identify this rare cell type known as the ([lamina propria](https://doi.org/10.1002/anie.200905559)).
 
 First we will run clustering:
 
@@ -1022,12 +1022,19 @@ patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse
 
 In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is using Moran's I scores to determine the most spatially variable features.
 
-
 ```{r, fig.width=30, fig.height=10, warning=FALSE, message=FALSE}
 ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
 
 ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
 ```
+
+
+We can also run pathway analysis on the new clustering results. Lets do that now, this time we will use *Seurat's* FindAllMarker() function to show ***SpaMTP's*** flexability.
+
+
+
+
+
 
 There are a large range of additional applications SpaMTP can be used for such as multi-modality analysis using both spatial transcriptomics and spatial metabolomics. Check out the SpaMTP github or documentation site for more. 
 
