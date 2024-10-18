@@ -439,6 +439,7 @@ getPCA <- function(SpaMTP,
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
 #' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
 #' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
+#' @param reduction.name Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #'
@@ -455,6 +456,7 @@ RunMetabolicPCA <- function(SpaMTP,
                             assay = "SPM",
                             slot = "counts",
                             show_variance_plot= FALSE,
+                            reduction.name = "pca",
                             verbose = TRUE)
 {
   verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
@@ -476,7 +478,7 @@ RunMetabolicPCA <- function(SpaMTP,
 
   SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_")
 
-  SpaMTP[["pca"]] <- SpaMTP_pcas
+  SpaMTP[[reduction.name]] <- SpaMTP_pcas
 
   return(SpaMTP)
 }
