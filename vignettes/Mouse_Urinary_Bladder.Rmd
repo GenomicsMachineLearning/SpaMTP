@@ -920,11 +920,11 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI_pathays,
                                 ST_assay = NULL)
 ```
 
-```{r, echo=TRUE, results='hide'}
+```{r echo=TRUE, results='hide'}
 DE_pathways
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE}
 df <- DE_pathways
 knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 ```
@@ -932,7 +932,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 We can see that we now have many more differentially expressed pathways! Lets plot these results:
 
 
-```{r ,warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
 PlotRegionalPathways(regpathway = DE_pathways)
 ```
 
@@ -948,7 +948,7 @@ Because SpaMTP is build on the foundations of a *Seurat* Object, it allows the u
 
 First we will run clustering:
 
-```{r, warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 ROI <- RunMetabolicPCA(ROI, assay = "Spatial", slot = "counts")
 ROI <- FindNeighbors(ROI, dims = 1:30, verbose = FALSE) # use the SpaMTP object generated from PCA Pathway Analysis
 ROI <- RunUMAP(ROI, dims = 1:30, verbose = FALSE)
@@ -957,7 +957,7 @@ ROI <- FindClusters(ROI, resolution = 0.3, cluster.name = "clusters", verbose = 
 
 Lets now plot the results:
 
-```{r, warning=FALSE, message=FALSE, fig.width=30, fig.height=8}
+```{r warning=FALSE, message=FALSE, fig.width=30, fig.height=8}
 ## Custom palette for SpaMTP/Seurat Clustering
 SpaMTP_palette = list("0" = "#0074B0", 
                       "1" = "#008E87", 
@@ -983,7 +983,7 @@ In the original publication they defined an m/z = 743.5482 as the lamina propria
 Lets use SpaMTP's feature colocalisation function to check the top metabolites that spatially correlate to cluster 5! 
 
 
-```{r, warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 correlated_features <- FindCorrelatedFeatures(ROI, ident = "clusters", SM.assay = "Spatial", nfeatures = 6) #find the spatial correlation between each cluster and their relative metabolites
 ```
 
@@ -1005,7 +1005,7 @@ we can see that our top hit is m/z = 734.5467, which is defined in *Cardinal's* 
 We can check by looking at the spatial expression of this m/z
 
 
-```{r, warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
+```{r warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
 ## Formats Plots 
 plots <- list()
 for (i in c("0", "2", "3", "4", "5")){
@@ -1022,7 +1022,7 @@ patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse
 
 In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is using Moran's I scores to determine the most spatially variable features.
 
-```{r, fig.width=30, fig.height=10, warning=FALSE, message=FALSE}
+```{r fig.width=30, fig.height=10, warning=FALSE, message=FALSE}
 ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
 
 ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
@@ -1031,7 +1031,7 @@ ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "S
 
 We can also run pathway analysis on the new clustering results. Lets do that now, this time we will use *Seurat's* `FindAllMarker()` function to calculating DE metabolites, highlighting ***SpaMTP's*** flexibility. You will see below that `FindAllMarker()` requires normalised data. ***SpaMTP*** has a `NormalizeSMData()` function that allows for *TIC* (Total Ion Current) Normalisation. For more info on this form of normalisation please read [Jauhiainen et.al (2014)](https://doi.org/10.1093/bioinformatics/btu175).
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 ## Annotate ROI with additional datasets
 ROI <- AnnotateSM(ROI, db = rbind(Chebi_db,Lipidmaps_db, HMDB_db), polarity = "positive")
 
@@ -1051,12 +1051,12 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 ST_assay = NULL,pval_cutoff_pathway = 0.01)
 ```
 Below we will visualise the top 5 pathways differentially expressed between clusters
-```{r ,warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
 PlotRegionalPathways(regpathway = DE_pathways, num_display = 4)
 ```
 
 We can also plots some key pathways of interest that were also up regulated in our dataset.
-```{r}
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
 key_pathways <- c("Biochemical pathways: part I","G alpha (i) signalling events","Metabolism of carbohydrates","Sphingolipid metabolism: integrated pathway",
                   "Sensory perception of sweet, bitter, and umami (glutamate) taste", "Sensory perception of taste",
                   "G alpha (i) signaling events")
