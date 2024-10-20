@@ -311,7 +311,7 @@ In addition to storing the m/z annotations in the feature meta.data slot, if sav
 
 <details>
   <summary>*Storing an intermediate data.frame for downstream pathway analysis*</summary>
-```{r cardinal_preprossing}
+```{r}
 str(bladder_annotated@tools) #The stored dataframe is called db_3
 ```
 
