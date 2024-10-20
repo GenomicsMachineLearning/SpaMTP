@@ -71,45 +71,28 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FishersPathwayAnalysis</span><span class="op">(</span></span>
 <span>  <span class="va">Analyte</span>,</span>
-<span>  analyte_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mz"</span><span class="op">)</span>,</span>
-<span>  polarity <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ppm_error <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  max_path_size <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  min_path_size <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  alternative <span class="op">=</span> <span class="st">"greater"</span>,</span>
 <span>  pathway_all_info <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pval_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Analyte</dt>
-<dd><p>A list of analytes with 3 elements, namely "mz", "genes" and "metabolites", each is comprised of the corresponding labels, for metabolites,
-Supported metabolites format including, X stands for upper case of the cooresponding ID in each database: "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X"
-Supported gene data format including: "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-Supported mz format: any string or numeric vector contains the m/z</p></dd>
-
-
-<dt>analyte_type</dt>
-<dd><p>= "metabolites" or "gene" or "mz", or a vector contains any combinations of them (default = c("mz", "genes")).</p></dd>
-
-
-<dt>polarity</dt>
-<dd><p>Character string defining the polarity of the MALDI experiment. Inputs must be either 'positive', 'negative' or 'neutral' (default = NULL).</p></dd>
-
-
-<dt>ppm_error</dt>
-<dd><p>Integer defining the ppm threshold that matched analytes must be between (default = 10).</p></dd>
+<dd><p>A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.</p></dd>
 
 
 <dt>max_path_size</dt>
-<dd><p>The max number of metabolites in a specific pathway (default = 500).</p></dd>
+<dd><p>The max number of  in a specific pathway (default = 500).</p></dd>
 
 
 <dt>min_path_size</dt>
-<dd><p>The min number of metabolites in a specific pathway (default = 5).</p></dd>
+<dd><p>The min number of  in a specific pathway (default = 5).</p></dd>
 
 
 <dt>alternative</dt>
@@ -117,7 +100,7 @@ Supported mz format: any string or numeric vector contains the m/z</p></dd>
 
 
 <dt>pathway_all_info</dt>
-<dd><p>Whether to included all genes/metabolites screened in the return (default = FALSE).</p></dd>
+<dd><p>Whether to included all genes/ screened in the return (default = FALSE).</p></dd>
 
 
 <dt>pval_cutoff</dt>
@@ -126,6 +109,16 @@ Supported mz format: any string or numeric vector contains the m/z</p></dd>
 
 <dt>verbose</dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Additional parameters that can be passed through to <code><a href="annotateTable.html">annotateTable()</a></code> when running <code>mz</code>-based analysis. Please see documentation for <code><a href="annotateTable.html">annotateTable()</a></code> for more details.</p><div class="section">
+<h3 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h3>
+
+<ul><li><p>Supported <code>metabolite</code> format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)</p></li>
+<li><p>Supported <code>gene</code> data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"</p></li>
+<li><p>Supported <code>mz</code> format: any string or numeric vector contains the m/z. NOTE: If <code>mz</code> values are provided then <code><a href="annotateTable.html">annotateTable()</a></code> will be run with</p></li>
+</ul></div></dd>
 
 </dl></div>
     <div id="value">

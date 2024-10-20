@@ -60,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Generates PCA analysis results for a SpaMTP Seurat Object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/PathwayAnalysis.R" class="external-link"><code>R/PathwayAnalysis.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/SpatialAnalysis.R" class="external-link"><code>R/SpatialAnalysis.R</code></a></small>
     <div class="hidden name"><code>RunMetabolicPCA.Rd</code></div>
     </div>
 
@@ -77,8 +77,8 @@
 <span>  byrow <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"SPM"</span>,</span>
 <span>  slot <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  flip_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_variance_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  reduction.name <span class="op">=</span> <span class="st">"pca"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -113,12 +113,12 @@
 <dd><p>Character string defining the assay slot containing the intensity values (default = "counts").</p></dd>
 
 
-<dt>flip_plot</dt>
-<dd><p>Boolean defining whether to rotate the plot 90 degrees (default = FALSE).</p></dd>
-
-
 <dt>show_variance_plot</dt>
 <dd><p>Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).</p></dd>
+
+
+<dt>reduction.name</dt>
+<dd><p>Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").</p></dd>
 
 
 <dt>verbose</dt>

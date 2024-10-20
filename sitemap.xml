@@ -25,10 +25,10 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html</loc>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/vignette_data_files/Mouse_Urinary_Bladder/pca_analysis.html</loc>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/authors.html</loc>
@@ -82,6 +82,9 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindNearestMZ.html</loc>
   </url>
   <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindRegionalPathways.html</loc>
+  </url>
+  <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindSpatiallyVariableMetabolites.html</loc>
   </url>
   <url>
@@ -127,13 +130,25 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/NormalizeSMData.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PCAPathwayAnalysis.html</loc>
-  </url>
-  <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PathwaysPerRegion.html</loc>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PathwayNetworkPlots.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Plot3DFeature.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PlotRegionalPathways.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_Reactome.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_hmdb.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_kegg.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_wikipathway.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ReadSM_mtx.html</loc>
@@ -182,6 +197,9 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/analytehaspathway.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/annotateTable.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/bin.mz.html</loc>
@@ -266,6 +284,9 @@
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/proc_db.html</loc>
+  </url>
+  <url>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/reaction_type.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rescale.html</loc>

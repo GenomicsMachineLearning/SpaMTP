@@ -151,73 +151,21 @@
         </td>
         <td><p>Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="helper-functions-for-annotating-m-z-masses">Helper Functions for Annotating m/z Masses <a href="#helper-functions-for-annotating-m-z-masses" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>Helper functions required for running ‘AnnotateSM()’</p>
-        </th>
-      </tr></tbody><tbody><tr><td>
-          <p><code><a href="labels_to_show.html">labels_to_show()</a></code> </p>
-        </td>
-        <td><p>Filters the annotation list to only include the first n number of annotations per m/z</p></td>
-      </tr><tr><td>
-          <p><code><a href="add_backslashes_to_specialfeatures.html">add_backslashes_to_specialfeatures()</a></code> </p>
-        </td>
-        <td><p>Adds in backslashes required to take into account special using grepl such as brackets and +</p></td>
-      </tr><tr><td>
-          <p><code><a href="check_and_truncate_adduct_vector.html">check_and_truncate_adduct_vector()</a></code> </p>
-        </td>
-        <td><p>Checks if the complete adduct is in the data base, else returns a truncated adduct</p></td>
-      </tr><tr><td>
-          <p><code><a href="db_adduct_filter.html">db_adduct_filter()</a></code> </p>
-        </td>
-        <td><p>Filters the provided metabolomic database by polarity and adducts</p></td>
-      </tr><tr><td>
-          <p><code><a href="is_formula_valid.html">is_formula_valid()</a></code> </p>
-        </td>
-        <td><p>Checks if a formula contains only the allowed elements</p></td>
-      </tr><tr><td>
-          <p><code><a href="formula_filter.html">formula_filter()</a></code> </p>
-        </td>
-        <td><p>Filters reference Database to only select natural elements</p></td>
-      </tr><tr><td>
-          <p><code><a href="calculate_bounds.html">calculate_bounds()</a></code> </p>
-        </td>
-        <td><p>Calculates the mz range of the observed_df</p></td>
-      </tr><tr><td>
-          <p><code><a href="ppm_error.html">ppm_error()</a></code> </p>
-        </td>
-        <td><p>Calculates the ppm error as a valve</p></td>
-      </tr><tr><td>
-          <p><code><a href="ppm_range_match.html">ppm_range_match()</a></code> </p>
-        </td>
-        <td><p>Calculates the ppm range and check if mz values are within the range </p><ul><li><p>Returns TRUE if match is found and false if no match.</p></li> </ul></td>
-      </tr><tr><td>
-          <p><code><a href="proc_db.html">proc_db()</a></code> </p>
-        </td>
-        <td><p>Searches observed mz values against the data base list and returns matching annotations</p></td>
-      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="metabolic-and-transcriptomic-pathway-analysis">Metabolic and Transcriptomic Pathway Analysis <a href="#metabolic-and-transcriptomic-pathway-analysis" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions used to perform pathway analysis, both PCA and metabolite/gene set-based (GSEA)</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="PCAPathwayAnalysis.html">PCAPathwayAnalysis()</a></code> </p>
-        </td>
-        <td><p>PCA driven pathway analysis of a SpaMTP object</p></td>
-      </tr><tr><td>
           <p><code><a href="FishersPathwayAnalysis.html">FishersPathwayAnalysis()</a></code> </p>
         </td>
         <td><p>Calculates Significant Metabolic Pathways using a Fisher Exact Test</p></td>
       </tr><tr><td>
-          <p><code><a href="VisualisePathways.html">VisualisePathways()</a></code> </p>
+          <p><code><a href="FindRegionalPathways.html">FindRegionalPathways()</a></code> </p>
         </td>
-        <td><p>Displays the pathway analysis results form running the 'FishersPathwayAnalysis()' function</p></td>
-      </tr><tr><td>
-          <p><code><a href="PathwaysPerRegion.html">PathwaysPerRegion()</a></code> </p>
-        </td>
-        <td><p>Plotting of differentially expressed metabolic pathways per grouping identity</p></td>
+        <td><p>This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data</p></td>
       </tr><tr><td>
           <p><code><a href="get_analytes_db.html">get_analytes_db()</a></code> </p>
         </td>
-        <td><p>Helper function for building a pathway db based on detected metabolites</p></td>
+        <td><p>Helper function for building a pathway db based on detected</p></td>
       </tr><tr><td>
           <p><code><a href="list_to_pprcomp.html">list_to_pprcomp()</a></code> </p>
         </td>
@@ -234,6 +182,26 @@
           <p><code><a href="ResizeMat.html">ResizeMat()</a></code> </p>
         </td>
         <td><p>Helper function to resize a matrix back to its original layout after sampling</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="metabolic-and-transcriptomic-pathway-visualisation">Metabolic and Transcriptomic Pathway Visualisation <a href="#metabolic-and-transcriptomic-pathway-visualisation" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions used to visualise pathway analysis results</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="VisualisePathways.html">VisualisePathways()</a></code> </p>
+        </td>
+        <td><p>Displays the pathway analysis results form running the 'FishersPathwayAnalysis()' function</p></td>
+      </tr><tr><td>
+          <p><code><a href="PlotRegionalPathways.html">PlotRegionalPathways()</a></code> </p>
+        </td>
+        <td><p>Visualisation of Set Enrichment Analysis Results from <code><a href="../reference/FindRegionalPathways.html">SpaMTP::FindRegionalPathways()</a></code>.</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="pathway-network-plotting">Pathway Network Plotting <a href="#pathway-network-plotting" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions used to generate network plots for specified patheays</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="PathwayNetworkPlots.html">PathwayNetworkPlots()</a></code> </p>
+        </td>
+        <td><p>Constructs an interactive network for exploring spatial metabolomics and transcriptomics data.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="pca-metabolite-analysis">PCA Metabolite Analysis <a href="#pca-metabolite-analysis" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions that are used for calculating PCA embeddings and projections based on SM data</p>
@@ -499,6 +467,30 @@
         </td>
         <td><p>source_df: A dataframe containing source information about RAMP_ID analyte used for analysis</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="pathway-network-datasets">Pathway Network Datasets <a href="#pathway-network-datasets" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Various datasets required for generated pathway network plots</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="RAMP_hmdb.html">RAMP_hmdb</a></code> </p>
+        </td>
+        <td><p>RAMP_hmdb: A list containing network plot information about pathways from the HMDB database</p></td>
+      </tr><tr><td>
+          <p><code><a href="RAMP_Reactome.html">RAMP_Reactome</a></code> </p>
+        </td>
+        <td><p>RAMP_Reactome: A list containing network plot information about pathways from the Reactome database</p></td>
+      </tr><tr><td>
+          <p><code><a href="RAMP_kegg.html">RAMP_kegg</a></code> </p>
+        </td>
+        <td><p>RAMP_kegg: A list containing network plot information about pathways from the KEGG database</p></td>
+      </tr><tr><td>
+          <p><code><a href="RAMP_wikipathway.html">RAMP_wikipathway</a></code> </p>
+        </td>
+        <td><p>RAMP_wikipathway: A list containing network plot information about pathways from the Wiki database</p></td>
+      </tr><tr><td>
+          <p><code><a href="reaction_type.html">reaction_type</a></code> </p>
+        </td>
+        <td><p>reaction_type: data.frame containing reaction type mappings</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="cardinal-wrapper-functions">Cardinal Wrapper functions <a href="#cardinal-wrapper-functions" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions used to alter Cardinal Objects.</p>
         </th>
@@ -518,6 +510,54 @@
           <p><code><a href="subset_SPM.html">subset_SPM()</a></code> </p>
         </td>
         <td><p>Intermediate solution to <code><a href="https://rdrr.io/pkg/BiocGenerics/man/subset.html" class="external-link">subset()</a></code>: subset FOVs/centroids if selected cells are NOT found in each FOV NOTE: some code parts and args are taken from SeuratObject Function params/args:</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="helper-functions-for-annotating-m-z-masses">Helper Functions for Annotating m/z Masses <a href="#helper-functions-for-annotating-m-z-masses" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Helper functions required for running ‘AnnotateSM()’</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="annotateTable.html">annotateTable()</a></code> </p>
+        </td>
+        <td><p>Helper function for AnnotatesSM() and FishersPathwayAnalysis()</p></td>
+      </tr><tr><td>
+          <p><code><a href="labels_to_show.html">labels_to_show()</a></code> </p>
+        </td>
+        <td><p>Filters the annotation list to only include the first n number of annotations per m/z</p></td>
+      </tr><tr><td>
+          <p><code><a href="add_backslashes_to_specialfeatures.html">add_backslashes_to_specialfeatures()</a></code> </p>
+        </td>
+        <td><p>Adds in backslashes required to take into account special using grepl such as brackets and +</p></td>
+      </tr><tr><td>
+          <p><code><a href="check_and_truncate_adduct_vector.html">check_and_truncate_adduct_vector()</a></code> </p>
+        </td>
+        <td><p>Checks if the complete adduct is in the data base, else returns a truncated adduct</p></td>
+      </tr><tr><td>
+          <p><code><a href="db_adduct_filter.html">db_adduct_filter()</a></code> </p>
+        </td>
+        <td><p>Filters the provided metabolomic database by polarity and adducts</p></td>
+      </tr><tr><td>
+          <p><code><a href="is_formula_valid.html">is_formula_valid()</a></code> </p>
+        </td>
+        <td><p>Checks if a formula contains only the allowed elements</p></td>
+      </tr><tr><td>
+          <p><code><a href="formula_filter.html">formula_filter()</a></code> </p>
+        </td>
+        <td><p>Filters reference Database to only select natural elements</p></td>
+      </tr><tr><td>
+          <p><code><a href="calculate_bounds.html">calculate_bounds()</a></code> </p>
+        </td>
+        <td><p>Calculates the mz range of the observed_df</p></td>
+      </tr><tr><td>
+          <p><code><a href="ppm_error.html">ppm_error()</a></code> </p>
+        </td>
+        <td><p>Calculates the ppm error as a valve</p></td>
+      </tr><tr><td>
+          <p><code><a href="ppm_range_match.html">ppm_range_match()</a></code> </p>
+        </td>
+        <td><p>Calculates the ppm range and check if mz values are within the range </p><ul><li><p>Returns TRUE if match is found and false if no match.</p></li> </ul></td>
+      </tr><tr><td>
+          <p><code><a href="proc_db.html">proc_db()</a></code> </p>
+        </td>
+        <td><p>Searches observed mz values against the data base list and returns matching annotations</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
