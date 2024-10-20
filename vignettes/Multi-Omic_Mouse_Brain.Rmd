@@ -389,7 +389,7 @@ Now that our spatial datasets are cleaned and fully aligned we can perform some 
 Note: Hidden below are the colour palettes used to plot
 <details>
   <summary>*Colour Palettes*</summary>
-```{r colour_palletes}
+```{r}
 
 intergrated_palette <- list("0" = "#9dce71", 
                            "1" = "#8bc5de", 
@@ -705,7 +705,7 @@ Now that we have identified there are metabolic and transcriptional differences 
 
 <details>
   <summary>*DHB Data Processing*</summary>
-```{r colour_palletes}
+```{r}
 ### Data was generated and mapped following same steps used above.
 
 ### Raw files and metadata for DHB dataset and Visium can be downloaded here. The sample used was V11L12-038_B1: https://figshare.scilifelab.se/articles/dataset/Spatial_Multimodal_analysis_SMA_-_Mass_Spectrometry_Imaging_MSI_/22770161
