@@ -12,6 +12,7 @@
 #' @param ST_slot The slot name containing the spatial transcriptomics assay matrix (default: `"counts"`).
 #' @param colour_palette The color palette used to plot the spatial image in the output HTML file. Default: `grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(11, "Spectral")))(100)`.
 #' @param analyte_types A subset of `c("genes", "metabolites")`. Can be `c("genes")`, `c("metabolites")`, or both.
+#' @param image Character string specifying which image stored within the SpaMTP object to use for plotting (default = "slice1").
 #' @param verbose A logical value indicating whether to display detailed messages during execution (default: `FALSE`).
 #'
 #' @return An interactive HTML file visualizing the network structure of the specified pathways.
@@ -31,6 +32,7 @@ spa_network  = function(SpaMTP,
                         SM_assay = "SPM",
                         ST_assay = "SPT",
                         analyte_types = c("genes", "metabolites"),
+                        image = "slice1",
                         verbose = T) {
   if ("genes" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[ST_assay]])) {
@@ -89,50 +91,50 @@ spa_network  = function(SpaMTP,
         return(x[["id"]])
       }))
       index = which((tolower(names(
-        humanwiki_ramp
+        RAMP_wikipathway
       )) == tolower(pathway_of_interest)) |
         (wikiids == tolower(id_of_interest)))
       if (length(index) != 0) {
-        temp_db = humanwiki_ramp
+        temp_db = RAMP_wikipathway
       }
     } else if (type == "reactome") {
       reactomeids = unlist(lapply(RAMP_Reactome, function(x) {
         return(x[["id"]])
       }))
       index = which((tolower(names(
-        humanReactome_ramp
+        RAMP_Reactome
       )) == tolower(pathway_of_interest)) |
         (reactomeids == tolower(id_of_interest)))
       if (length(index) != 0) {
-        temp_db = humanReactome_ramp
+        temp_db = RAMP_Reactome
       }
     } else if (type == "kegg") {
       keggids = unlist(lapply(RAMP_kegg, function(x) {
         return(x[["id"]])
       }))
       index = which((tolower(names(
-        humankegg_ramp
+        RAMP_kegg
       )) == tolower(pathway_of_interest)) |
         (keggids == tolower(id_of_interest)))
       if (length(index) != 0) {
-        temp_db = humankegg_ramp
+        temp_db = RAMP_kegg
       }
     } else if (type == "hmdb") {
       hmdbids = unlist(lapply(RAMP_hmdb, function(x) {
         return(x[["id"]])
       }))
       index = which((tolower(names(
-        humansmp_ramp
+        RAMP_hmdb
       )) == tolower(pathway_of_interest)) |
         (tolower(hmdbids) == tolower(id_of_interest)))
       if (length(index) != 0) {
-        temp_db = humansmp_ramp
+        temp_db = RAMP_hmdb
       }
     } else{
-      all_list = c(humanwiki_ramp,
-                   humanReactome_ramp,
-                   humankegg_ramp,
-                   humansmp_ramp)
+      all_list = c(RAMP_wikipathway,
+                   RAMP_Reactome,
+                   RAMP_kegg,
+                   RAMP_hmdb)
       all_names = names(all_list)
       add_ids = unlist(lapply(all_list, function(x) {
         return(x[["id"]])
@@ -477,16 +479,7 @@ spa_network  = function(SpaMTP,
   scale_legend = as.integer(sqrt(max(abs(fc_vector))))
 
   # Get coordinates
-  coordnate = sapply(
-    SpaMTP@meta.data[, which(grepl(
-      colnames(SpaMTP@meta.data),
-      pattern = "coord",
-      ignore.case = T
-    ))],
-    FUN = function(x) {
-      as.numeric(gsub("\\,.*", "", x))
-    }
-  )
+  coordnate = Seurat::GetTissueCoordinates(SpaMTP, image = image)
   non_na_ind = which((!is.na(coordnate[, 1])) &
                        (!is.na(coordnate[, 2])))
   coordnate = cbind(coordnate, assign = as.character(assignment))

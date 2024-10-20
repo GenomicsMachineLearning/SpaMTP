@@ -307,3 +307,105 @@
 #' }
 #'
 "source_df"
+
+
+
+#' @title RAMP_hmdb: A list containing network plot information about pathways from the HMDB database
+#'
+#' @description This object contains a collection of information for each RAMP HMDB network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#'
+#' @format ## A list with 10 elements:
+#' \describe{
+#'   \item{id}{HMDB pathway identifier (character)}
+#'   \item{title}{Pathway title (character)}
+#'   \item{database}{Source database (character)}
+#'   \item{species}{Species (character)}
+#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{timestamp}{The date of data extraction (Date)}
+#' }
+#'
+"RAMP_hmdb"
+
+
+
+#' @title RAMP_kegg: A list containing network plot information about pathways from the KEGG database
+#'
+#' @description This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#'
+#' @format ## A list with 10 elements:
+#' \describe{
+#'   \item{id}{KEGG pathway identifier (character)}
+#'   \item{title}{Pathway title (character)}
+#'   \item{database}{Source database (character)}
+#'   \item{species}{Species (character)}
+#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{timestamp}{The date of data extraction (Date)}
+#' }
+#'
+"RAMP_kegg"
+
+
+#' @title RAMP_wikipathway: A list containing network plot information about pathways from the Wiki database
+#'
+#' @description This object contains a collection of information for each RAMP Wiki network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#'
+#' @format ## A list with 10 elements:
+#' \describe{
+#'   \item{id}{Wiki pathway identifier (character)}
+#'   \item{title}{Pathway title (character)}
+#'   \item{database}{Source database (character)}
+#'   \item{species}{Species (character)}
+#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{timestamp}{The date of data extraction (Date)}
+#' }
+#'
+"RAMP_wikipathway"
+
+#' @title RAMP_Reactome: A list containing network plot information about pathways from the Reactome database
+#'
+#' @description This object contains a collection of information for each RAMP Reactome network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#'
+#' @format ## A list with 10 elements:
+#' \describe{
+#'   \item{id}{Reactome pathway identifier (character)}
+#'   \item{title}{Pathway title (character)}
+#'   \item{database}{Source database (character)}
+#'   \item{species}{Species (character)}
+#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
+#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{timestamp}{The date of data extraction (Date)}
+#' }
+#'
+"RAMP_Reactome"
+
+
+
+#' @title reaction_type: data.frame containing reaction type mappings
+#'
+#' @description This data frame provides a mapping between reaction types and their associated attributes, such as the reaction name, linetype, arrowhead type, and colour used for network visualization.
+#'
+#' @format ## A data frame with 11 rows and 5 variables:
+#' \describe{
+#'   \item{reaction_type}{Numerical code representing the type of reaction (integer)}
+#'   \item{reaction_name}{Description of the reaction process (character)}
+#'   \item{linetype}{Line type used to represent the reaction in network plots (character)}
+#'   \item{arrowhead}{Arrowhead type indicating the direction of the reaction (character)}
+#'   \item{colour}{Colour used to represent the reaction in network plots (character)}
+#' }
+#'
+"reaction_type"
