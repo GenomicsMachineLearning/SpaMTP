@@ -880,7 +880,7 @@ The second form of pathway analysis identifies differentially expressed pathways
 
 
 The code below uses the "ssc" clustering and the pseudpo-bulking DE results to identify significant pathways per cluster:
-```{r, eval=FALSE}
+```{r, warning=FALSE, message=FALSE}
 DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 ident = "ssc",
                                 DE.list = list(cluster_DEPs$DEPs),
@@ -892,7 +892,7 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
 DE_pathways
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 df <- DE_pathways
 knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 ```
@@ -920,11 +920,11 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI_pathays,
                                 ST_assay = NULL)
 ```
 
-```{r echo=TRUE, results='hide'}
+```{r echo=TRUE, eval=FALSE}
 DE_pathways
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 df <- DE_pathways
 knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 ```
