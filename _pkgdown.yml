@@ -200,6 +200,14 @@ reference:
   - chem_props
   - pathway
   - source_df
+- title: Pathway Network Datasets
+  desc: Various datasets required for generated pathway network plots
+  contents:
+  - RAMP_hmdb
+  - RAMP_Reactome
+  - RAMP_kegg
+  - RAMP_wikipathway
+  - pareaction_type
 - title: Cardinal Wrapper functions
   desc: Functions used to alter Cardinal Objects.
   contents: add_ssc_annotation
