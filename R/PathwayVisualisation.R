@@ -453,9 +453,6 @@ PlotRegionalPathways <- function(regpathway,
         legend.direction = "horizontal"
       ) + xlab("Clusters")
   })
-  u = ggpubr::ggarrange(gg_dot,
-                plt_dendr,
-                ncol = 2,
-                widths = c(1, 0.6))
+  u = gg_dot|plt_dendr
   return(u)
 }

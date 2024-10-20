@@ -13,6 +13,7 @@ RunMetabolicPCA(
   assay = "SPM",
   slot = "counts",
   show_variance_plot = FALSE,
+  reduction.name = "pca",
   verbose = TRUE
 )
 }
@@ -32,6 +33,8 @@ RunMetabolicPCA(
 \item{slot}{Character string defining the assay slot containing the intensity values (default = "counts").}
 
 \item{show_variance_plot}{Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).}
+
+\item{reduction.name}{Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 

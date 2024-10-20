@@ -706,134 +706,261 @@ Now that we have identified there are metabolic and transcriptional differences 
 <details>
   <summary>*DHB Data Processing*</summary>
 ```{r colour_palletes}
-## Read in mapped data
-#combined.dhb.data <- readRDS("~/Downloads/aligned_DHB.RDS")
+### Data was generated and mapped following same steps used above.
+
+### Raw files and metadata for DHB dataset and Visium can be downloaded here. The sample used was V11L12-038_B1: https://figshare.scilifelab.se/articles/dataset/Spatial_Multimodal_analysis_SMA_-_Mass_Spectrometry_Imaging_MSI_/22770161
+
+### Dataset alignment was achieved using the following parameters
+###
+### Rotation Angle: -0.7
+### Move X Axis: 59
+### Move Y Axis: -102
+### Blue Axis Angle: -45
+### Blue Axis Stretch: 1.22
+### Red Axis Angle: -45
+### Red Axis Stretch: 1.12
+### Mirror Y Axis: TRUE
+
+
+## Using Aligned and Mapped data:
+# data(combined.dhb.data)
+
+## Annotate metabolites against databases
+#db = rbind(HMDB_db, Chebi_db)
+#combined.dhb.data = AnnotateSM(combined.dhb.data,assay = "SPM", db = db, polarity = "positive")
 
 ## Normalise ST and SM data 
-combined.dhb.data <- NormalizeData(combined.dhb.data, assay = "SPT")
-combined.dhb.data <- NormalizeSMData(combined.dhb.data, assay = "SPM")
+#combined.dhb.data <- NormalizeData(combined.dhb.data, assay = "SPT")
+#combined.dhb.data <- NormalizeSMData(combined.dhb.data, assay = "SPM")
 
-## Cluster ST data 
-DefaultAssay(combined.dhb.data) <- "SPT"
-combined.dhb.data <- FindVariableFeatures(combined.dhb.data, verbose = FALSE)
-combined.dhb.data <- ScaleData(combined.dhb.data, verbose = FALSE)
-combined.dhb.data <- RunPCA(combined.dhb.data, npcs = 30, reduction.name = "spt.pca", verbose = FALSE)
-combined.dhb.data <- FindNeighbors(combined.dhb.data, dims = 1:30, reduction = "spt.pca", verbose = FALSE)
-combined.dhb.data <- RunUMAP(combined.dhb.data, dims = 1:30, reduction = "spt.pca", reduction.name = "spt.umap", verbose = FALSE)
-combined.dhb.data <- FindClusters(combined.dhb.data, resolution = 0.5, cluster.name = "ST_clusters", verbose = FALSE)
 
 ## Cluster SM data 
-DefaultAssay(combined.dhb.data) <- "SPM"
-combined.dhb.data <- FindVariableFeatures(combined.dhb.data, verbose = FALSE)
-combined.dhb.data <- ScaleData(combined.dhb.data, verbose = FALSE)
-combined.dhb.data <- RunPCA(combined.dhb.data, npcs = 30, reduction.name = "spm.pca", verbose = FALSE)
-combined.dhb.data <- FindNeighbors(combined.dhb.data, dims = 1:30, reduction = "spm.pca", verbose = FALSE)
-combined.dhb.data <- RunUMAP(combined.dhb.data, dims = 1:30, reduction = "spm.pca", reduction.name = "spm.umap", verbose = FALSE)
-combined.dhb.data <- FindClusters(combined.dhb.data, resolution = 0.4,  cluster.name = "SM_clusters", verbose = FALSE)
+#DefaultAssay(combined.dhb.data) <- "SPM"
+#combined.dhb.data <- FindVariableFeatures(combined.dhb.data, verbose = FALSE)
+# combined.dhb.data <- ScaleData(combined.dhb.data, verbose = FALSE)
+# combined.dhb.data <- RunPCA(combined.dhb.data, npcs = 30, reduction.name = "spm.pca", verbose = FALSE)
+# combined.dhb.data <- FindNeighbors(combined.dhb.data, dims = 1:30, reduction = "spm.pca", verbose = FALSE)
+# combined.dhb.data <- RunUMAP(combined.dhb.data, dims = 1:30, reduction = "spm.pca", reduction.name = "spm.umap", verbose = FALSE)
+# combined.dhb.data <- FindClusters(combined.dhb.data, resolution = 0.5,  cluster.name = "SM_clusters", verbose = FALSE)
 
-## Plot clustering results
-SpatialDimPlot(combined.dhb.data, group.by = "SM_clusters", pt.size.factor = 2.1)|
-  SpatialDimPlot(combined.dhb.data, group.by = "ST_clusters", pt.size.factor = 2.1)
+## Isolate the Lesioned vs Intact Striatums
+#combined.dhb.data@meta.data <- combined.dhb.data@meta.data %>% 
+#                                  dplyr::mutate(striatum = 
+#                                                  ifelse((SM_clusters %in% c("0")), 
+#                                                         lesion, "Other"))
 
-
-
-
-assignment = gsub("\\,.*", "", combined.dhb.data@meta.data[which(names(combined.dhb.data@meta.data) == "SPM_ssc_5")][, 1])
-assignment[which(is.na(assignment))] = sample(unique(na.omit(assignment)), size =1)
-assignment[which(assignment!=9)] = 1
-cluster = unique(assignment)
-coordnate = sapply(
-combined.dhb.data@meta.data[, which(grepl(
-            colnames(combined.dhb.data@meta.data),
-            pattern = "coord",
-            ignore.case = T
-          ))],
-          FUN = function(x) {
-            as.numeric(gsub("\\,.*", "", x))
-          }
-        )
-        palette <- brewer.pal(length(cluster), "Set3")
-        if (length(cluster) > length(palette)) {
-          palette <- colorRampPalette(brewer.pal(9, "Set3"))(length(cluster))
-        }
-        names(palette) = cluster
-
-for(i in 1:length(assignment)){
-  if(assignment[i] == 9 &(coordnate[i, 2]>coordnate[i, 1])){
-    assignment[i] = 2
-  }
-}
-
-db = rbind(HMDB_db, Chebi_db, Lipidmaps_db)
-
-combined.dhb.data = AnnotateSM(combined.dhb.data,
-                    assay = "SPM",
-                    db = db,
-                    polarity = "positive")
-
-
-deg =  FindAllMarkers(
-        brain ,
-        assay = "SPT",
-        only.pos = F
-      )
-dem =  FindAllMarkers(
-       brain ,
-        assay = "SPM",
-        only.pos = F
-      )
-
-
-
+## Subset to only lesioned and intact striatum
+#striatum.dhb.data <- subset(combined.dhb.data, subset = striatum != "Other")
 ```
 
 </details> 
 <br>
 
-<br> 
 
-These are the integrated clustering results generated by the DHB matrix. 
+These are striatum regions we will be comparing for our multi-modal DHB matrix sample. 
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+striatum.dhb.data <- readRDS("vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS")
 
-```{r}
-combined.dhb.data <- readRDS("~/Downloads/aligned_DHB.RDS")
+SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
 ```
 
 Lets run DE and then find regional pathways `FindRegionalPathways()` on our combined data object. 
+```{r, results='hide', warning=FALSE, message=FALSE}
+## Run DE analysis for transcriptomics and metabolomics
+Idents(striatum.dhb.data) <- "striatum"
+deg =  FindAllMarkers(striatum.dhb.data , assay = "SPT",only.pos =F)
+dem =  FindAllMarkers(striatum.dhb.data ,assay = "SPM", only.pos =F)
 
-```{r}
+DE.list = list("genes" = deg,"metabolites" = dem)
+
+## Run multi-modal pathway analysis
 regpathway = FindRegionalPathways(
-  brain,
+  striatum.dhb.data,
   analyte_types = c("genes", "metabolites"),
-  ident = "Custom_ident",
+  SM_slot = "counts", ST_slot = "counts",
+  ident = "striatum",
   DE.list = list("genes" = deg, "metabolites" = dem)
 )
+```
+We will select some important pathways associated with Parkinson's disease to plot
+
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+selected_pathways = c(
+  "Dopamine beta-hydroxylase deficiency",
+  "Tryptophan metabolism",
+  "Dopamine metabolism",
+  "sphingolipid metabolism pathway",
+  "Sphingolipid metabolism: integrated pathway",
+  "Spermidine and Spermine Biosynthesis",
+  "Pyruvate metabolism",
+  "Fatty acid metabolism"
+)
+
+PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathways)
 ```
 
 
 
 
+```{r}
+regpathway <- x
+if (!is.null(regpathway)){
+    if (! "pathwayName" %in% colnames(regpathway)){
+      stop("`pathwayName` column not found in `regpathway`! Please provide a data.frame containing the column named 'pathwayName', which stores the name of each pathway. `regpathway` can be generated by running `FindRegionalPathways()` ...")
+    }
+    if (!ident.column %in% colnames(regpathway)) {
+      stop(
+        "Column '",ident, "' not found in the provided `regpathway` dataframe! Make sure the ident.column is present ...")
+    }
+  } else {
+    stop("Incorrect DE data.frame! A input for `regpathway` has not been provided. Please provide a data.frame containing significant pathways per ident. `regpathway` can be generated by running `FindRegionalPathways()` ...")
+  }
+
+  sig_pval <- sig_cutoff  %||% 0.05
+
+  regpathway = regpathway %>% dplyr::group_by(pathwayName) %>% dplyr::mutate(
+    Significance = ifelse(
+      pval <= sig_pval,
+      paste0("Significant at ",sig_pval," significance level"),
+      "Not statistically significant"
+    )
+  ) %>% dplyr::mutate(group_importance = sum(abs(NES)))
+
+  if (is.null(selected_pathways)) {
+    regpathway = regpathway %>%  dplyr::filter(group_importance %in% sort(unique(regpathway$group_importance), decreasing = T)[1:(num_display %||% min(10, length(unique(
+      regpathway$pathwayName
+    ))))])
+  } else{
+    regpathway = regpathway %>% dplyr::filter((pathwayName %in% selected_pathways) |
+                                                (sourceId %in% selected_pathways))
+    regpathway = regpathway %>%  dplyr::filter(group_importance %in% sort(unique(regpathway$group_importance), decreasing = T)[1:(num_display %||% min(10, length(unique(
+      regpathway$pathwayName
+    ))))])
+  }
+
+  regpathway = regpathway %>% dplyr::mutate(pathnameid = paste0(pathwayName, "(", sourceId, ")"))
+  pathwaynames = unique(regpathway$pathnameid)
+  n = length(unique(regpathway$pathnameid))
+  jaccard_matrix = matrix(nrow = n, ncol = n)
+  colnames(jaccard_matrix) = rownames(jaccard_matrix) = pathwaynames
+  verbose_message(message_text = "computing jaccard distance between pathways" , verbose = verbose)
+  for (i in 1:(n - 1)) {
+    pathway_id_i = sub(".*\\(([^)]+)\\).*", "\\1", pathwaynames[i])
+    pathway_content_i = unique(analytehaspathway$rampId[which(analytehaspathway$pathwayRampId == pathway$pathwayRampId[which(pathway$sourceId == pathway_id_i)])])
+    for (j in (i + 1):n) {
+      pathway_id_j = sub(".*\\(([^)]+)\\).*", "\\1", pathwaynames[j])
+      pathway_content_j = unique(analytehaspathway$rampId[which(analytehaspathway$pathwayRampId == pathway$pathwayRampId[which(pathway$sourceId == pathway_id_j)])])
+      jc_simi = length(intersect(pathway_content_i, pathway_content_j)) / length(union(pathway_content_i, pathway_content_j))
+      jaccard_matrix[i, j] = jaccard_matrix[j, i] = jc_simi
+    }
+  }
+  diag(jaccard_matrix) = 1
+
+  # Generate a dendrogram
+  hc <- as.dendrogram(hclust(as.dist(jaccard_matrix)))
+  # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
+  segment_hc <- with(ggdendro::segment(ggdendro::dendro_data(hc)),
+                     data.frame(
+                       x = y,
+                       y = x,
+                       xend = yend,
+                       yend = xend
+                     ))
+  pos_table <- with(ggdendro::dendro_data(hc)$labels,
+                    data.frame(
+                      y_center = x,
+                      path = as.character(label),
+                      height = 1
+                    ))
+
+  axis_limits <- with(pos_table, c(min(y_center - 0.5 * height), max(y_center + 0.5 * height))) + 0.1 * c(-1, 1)
+  plt_dendr <- ggplot(segment_hc) +
+    geom_segment(aes(
+      x = sqrt(x),
+      y = y,
+      xend = sqrt(xend),
+      yend = yend
+    )) +
+    scale_x_continuous(expand = c(0, 0.1), limits = c(0, sqrt(max(segment_hc$xend)))) +
+    scale_y_continuous(
+      expand = c(0, 0),
+      breaks = pos_table$y_center,
+      labels = stringr::str_wrap(pos_table$path, width = 40),
+      limits = axis_limits,
+      position = "right"
+    ) +
+    labs(
+      x = "Jacard distance",
+      y = "",
+      colour = "",
+      size = ""
+    ) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+          axis.text = element_text(size = ((text_size) %||% 12) - 3),
+          axis.text.y = element_text(color= "black"))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  #### generate dot plot
+  suppressWarnings({
+    gg_dot = ggplot(data = regpathway, aes(
+      x = factor(!!sym(ident.column), levels = sort(unique(!!sym(ident.column)))),
+      y = factor(pathnameid, levels = ggdendro::dendro_data(hc)$labels$label)
+    )) +
+      geom_point(aes(colour = as.numeric(NES), size = as.numeric(sqrt(size)) * 5.1), stroke= 0) +
+      scale_colour_gradient2(
+        name = "Normalised enrichment score",
+        low = "blue",
+        # Original low color
+        high = "red",
+        # Original high color
+        limits = c(min(regpathway$NES), max(regpathway$NES))
+      ) +
+      scale_size_continuous(name = "Number of altered metabolites \n in the pathway") +
+      ggnewscale::new_scale_colour() +
+      geom_point(shape = 1,
+                 aes(colour = Significance, size = as.numeric(sqrt(size)) * 5.1 +
+                       0.5, stroke = 1)) +
+      scale_color_manual(
+        values = setNames(
+          c("black", "lightgrey"),  # Colors
+          c(paste0("Significant at ", sig_pval, " significance level"), "Not statistically significant")  # Labels
+        )
+      ) +
+      #labs(title = "Comparason of pathways expression between different cluster", y = "Pathways", x = "Clusters") +
+      theme(
+        title = element_text(size = text_size %||% 12, face = 'bold'),
+        axis.text.x = element_text(
+          size = text_size %||% 12,
+          angle = 90,
+          vjust = 0.5,
+          hjust = 1,
+        ),
+        #20
+        axis.title = element_text(size = text_size %||% 12),
+        legend.key.size = unit(1, 'cm'),
+        legend.title = element_text(size = ((text_size) %||% 12) - 3),
+        legend.text = element_text(size = ((text_size) %||% 12) - 3)
+      ) +
+      ggnewscale::new_scale_colour() + theme(
+        panel.border = element_rect(color = "black", fill = NA, size = 1),
+        panel.background = element_rect(fill = NA),
+        panel.grid = element_line(color = "lightgrey", size = 0.4)
+      ) +   theme(
+        legend.position = "left",
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        #axis.text.x = element_blank(),
+        #axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        legend.direction = "horizontal"
+      ) + xlab("Clusters")
+  })
+  u = ggpubr::ggarrange(gg_dot,
+                plt_dendr,
+                ncol = 2,
+                widths = c(1, 0.6))
+```
 
 
 ```{r}

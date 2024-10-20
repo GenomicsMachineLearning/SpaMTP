@@ -42,7 +42,7 @@ NormalizeSMData <- function(data, normalisation.type = 'TIC', scale.factor = NUL
     normalisation.type <- "RC"
   }
 
-  normalised.data <- Seurat::NormalizeData(data, normalization.method = normalisation.type, scale.factor = scale.factor, verbose = verbose)
+  normalised.data <- Seurat::NormalizeData(data, normalization.method = normalisation.type, scale.factor = scale.factor, assay = assay, verbose = verbose)
 
   return(normalised.data)
 

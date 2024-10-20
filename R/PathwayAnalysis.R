@@ -574,7 +574,7 @@ FindRegionalPathways = function(SpaMTP,
   }
   close(pb3)
 
-  gsea_all_cluster <- na.omit(gsea_all_cluster)%>% #dplyr::mutate(
+  gsea_all_cluster <- na.omit(gsea_all_cluster)%>%
     dplyr::mutate(group_importance = sum(abs(NES)))
   colnames(gsea_all_cluster)[1] = "pathwayName"
   gsea_all_cluster = merge(gsea_all_cluster, pathway, by = "pathwayName")
