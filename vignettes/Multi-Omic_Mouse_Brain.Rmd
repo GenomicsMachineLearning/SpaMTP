@@ -390,7 +390,6 @@ Note: Hidden below are the colour palettes used to plot
 <details>
   <summary>*Colour Palettes*</summary>
 ```{r}
-
 intergrated_palette <- list("0" = "#9dce71", 
                            "1" = "#8bc5de", 
                            "2" = "#009648",
@@ -518,7 +517,7 @@ Clustering based on metabolic infomation will likely reveal different infomation
 DefaultAssay(combined.data) <- "SPM"
 
 ## Run SM clustering 
-combined.data <- NormalizeSMData(combined.data)
+combined.data <- NormalizeSMData(combined.data, assay = "SPM")
 combined.data <- FindVariableFeatures(combined.data, verbose = FALSE)
 combined.data <- ScaleData(combined.data, verbose = FALSE)
 combined.data <- RunPCA(combined.data, npcs = 30, reduction.name = "spm.pca", verbose = FALSE)
