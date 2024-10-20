@@ -19,8 +19,8 @@
 #' @export
 #'
 #' @examples
-#' #spa_network(SpaMTP, ident = "Custom_ident", regpathway = regpathway, DE.list = DE.list, selected_pathways = selected_pathways)
-spa_network  = function(SpaMTP,
+#' #PathwayNetworkPlots(SpaMTP, ident = "Custom_ident", regpathway = regpathway, DE.list = DE.list, selected_pathways = selected_pathways)
+PathwayNetworkPlots  = function(SpaMTP,
                         ident,
                         regpathway,
                         DE.list,

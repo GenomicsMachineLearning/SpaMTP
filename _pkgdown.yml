@@ -90,19 +90,6 @@ reference:
   - FindDuplicateAnnotations
   - SubsetMZFeatures
   - AddCustomMZAnnotations
-- title: Helper Functions for Annotating m/z Masses
-  desc: Helper functions required for running 'AnnotateSM()'
-  contents:
-  - labels_to_show
-  - add_backslashes_to_specialfeatures
-  - check_and_truncate_adduct_vector
-  - db_adduct_filter
-  - is_formula_valid
-  - formula_filter
-  - calculate_bounds
-  - ppm_error
-  - ppm_range_match
-  - proc_db
 - title: Metabolic and Transcriptomic Pathway Analysis
   desc: Functions used to perform pathway analysis, both PCA and metabolite/gene set-based
     (GSEA)
@@ -119,6 +106,10 @@ reference:
   contents:
   - VisualisePathways
   - PlotRegionalPathways
+- title: Pathway Network Plotting
+  desc: Functions used to generate network plots for specified patheays
+  contents:
+  - PathwayNetworkPlots
 - title: PCA Metabolite Analysis
   desc: Functions that are used for calculating PCA embeddings and projections based on SM data
   contents:
@@ -217,4 +208,17 @@ reference:
   contents:
   - verbose_message
   - subset_SPM
+- title: Helper Functions for Annotating m/z Masses
+  desc: Helper functions required for running 'AnnotateSM()'
+  contents:
+  - labels_to_show
+  - add_backslashes_to_specialfeatures
+  - check_and_truncate_adduct_vector
+  - db_adduct_filter
+  - is_formula_valid
+  - formula_filter
+  - calculate_bounds
+  - ppm_error
+  - ppm_range_match
+  - proc_db
 

@@ -801,7 +801,7 @@ PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathwa
 
 
 ```{r eval=FALSE}
-spa_network(
+PathwayNetworkPlots(
   striatum.dhb.data,
   ident = "striatum",
   regpathway =  regpathway,
