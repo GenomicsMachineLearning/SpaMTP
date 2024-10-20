@@ -219,6 +219,7 @@ reference:
 - title: Helper Functions for Annotating m/z Masses
   desc: Helper functions required for running 'AnnotateSM()'
   contents:
+  - annotateTable
   - labels_to_show
   - add_backslashes_to_specialfeatures
   - check_and_truncate_adduct_vector
