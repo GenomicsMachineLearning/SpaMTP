@@ -408,7 +408,7 @@ SM_palette <- list("0" = "#9dce71",
                            "3" = "#009648", 
                            "4" = "#8bc5de")
 
-ST_pallete <- list("0" = "#0067a8", 
+ST_palette <- list("0" = "#0067a8", 
                            "1" = "#009648", 
                            "2" = "#f37985",
                            "3" = "#fcf283", 
@@ -420,7 +420,7 @@ ST_pallete <- list("0" = "#0067a8",
                            "9" = "#ff59ee",
                            "10" = "#ad9ea0")
 
-annotation_pallete <- list("ACB_intact" = "#faa957", 
+annotation_palette <- list("ACB_intact" = "#faa957", 
                            "ACB_lesioned" = "#d16d08", 
                            "aco" = "#592e8b",
                            "cc" = "#c29fcb", 
@@ -456,8 +456,8 @@ combined.data <- FindClusters(combined.data, resolution = 0.5, cluster.name = "S
 
 
 ```{r, fig.width=20, fig.height=8}
-DimPlot(combined.data, group.by = "ST_clusters", reduction = "spt.umap", cols = ST_pallete) | 
-  SpatialDimPlot(combined.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_pallete)
+DimPlot(combined.data, group.by = "ST_clusters", reduction = "spt.umap", cols = ST_palette) | 
+  SpatialDimPlot(combined.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_palette)
 ```
 
 
@@ -467,8 +467,8 @@ The clustering results demonstrate clear groups of cells. Lets compare them to t
 ```{r, warning=FALSE, message=FALSE, fig.width=15, fig.height=5}
 striatum <- subset(combined.data, subset = region == "striatum")
 
-SpatialDimPlot(striatum, group.by = "ST_clusters", label = F, pt.size.factor = 2.4, cols = ST_pallete) | 
-  SpatialDimPlot(striatum, group.by = "annotations", label = F, pt.size.factor = 2.4, cols = annotation_pallete) 
+SpatialDimPlot(striatum, group.by = "ST_clusters", label = F, pt.size.factor = 2.4, cols = ST_palette) | 
+  SpatialDimPlot(striatum, group.by = "annotations", label = F, pt.size.factor = 2.4, cols = annotation_palette) 
 ```
 
 
@@ -528,8 +528,8 @@ combined.data <- FindClusters(combined.data, resolution = 0.4,  cluster.name = "
 
 
 ```{r, fig.width=25, fig.height=8}
-DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = SM_pallete) |
-  SpatialDimPlot(combined.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_pallete) | 
+DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = SM_palette) |
+  SpatialDimPlot(combined.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_palette) | 
   SpatialDimPlot(combined.data, group.by = "lesion", pt.size.factor = 2.1)
 ```
 
@@ -576,9 +576,9 @@ Looking at the results above we can see the integrative analysis identifies a di
 We can also compare the difference between ST only, SM only and integrated clustering
 
 ```{r fig.width=10, fig.height=10}
-(SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.1, cols = annotation_pallete)| 
+(SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.1, cols = annotation_palette)| 
 SpatialDimPlot(integrated.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_palette))/
-(SpatialDimPlot(integrated.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_pallete)| 
+(SpatialDimPlot(integrated.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_palette)| 
   SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1, cols = intergrated_palette))
 ```
 
