@@ -932,7 +932,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 We can see that we now have many more differentially expressed pathways! Lets plot these results:
 
 
-```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10}
 PlotRegionalPathways(regpathway = DE_pathways)
 ```
 

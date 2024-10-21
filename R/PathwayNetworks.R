@@ -480,12 +480,12 @@ PathwayNetworkPlots  = function(SpaMTP,
 
   # Get coordinates
   coordnate = Seurat::GetTissueCoordinates(SpaMTP, image = image)
-  non_na_ind = which((!is.na(coordnate[, 1])) &
-                       (!is.na(coordnate[, 2])))
+  non_na_ind = which((!is.na(coordnate[, "x"])) &
+                       (!is.na(coordnate[, "y"])))
   coordnate = cbind(coordnate, assign = as.character(assignment))
   coordnate = na.omit(coordnate)
-  max_x =  max(na.omit(as.numeric(coordnate[, 1])))
-  max_y =  max(na.omit(as.numeric(coordnate[, 2])))
+  max_x =  max(na.omit(as.numeric(coordnate[, "x"])))
+  max_y =  max(na.omit(as.numeric(coordnate[, "y"])))
 
 
   coordi = paste0("const coordinates = [")
@@ -542,7 +542,7 @@ PathwayNetworkPlots  = function(SpaMTP,
 
   # Cluster colour
   cluster_infor = paste0('const cluster_info = ["',
-                         paste0(coordnate[, 3], collapse = '","'),
+                         paste0(coordnate[, "assign"], collapse = '","'),
                          '"]')
 
   html = paste0(
