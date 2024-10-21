@@ -443,10 +443,13 @@ PathwayNetworkPlots  = function(SpaMTP,
   
   
   tab_div = c()
-  for (o in 1:length(pathway_names)) {
+  tab_div = paste0(tab_div,
+                   '<div class="tab" id = "default_tab">',
+                   pathway_names[1],
+                   "</div>")
+  for (o in 2:length(pathway_names)) {
     tab_div = paste0(tab_div, '<div class="tab">', pathway_names[o], "</div>")
   }
-  
   
   
   
@@ -473,12 +476,12 @@ PathwayNetworkPlots  = function(SpaMTP,
   
   # Get coordinates
   coordnate = Seurat::GetTissueCoordinates(SpaMTP, image = image)
-  non_na_ind = which((!is.na(coordnate[, 1])) &
-                       (!is.na(coordnate[, 2])))
+  non_na_ind = which((!is.na(coordnate[, "x"])) &
+                       (!is.na(coordnate[, "y"])))
   coordnate = cbind(coordnate, assign = as.character(assignment))
   coordnate = na.omit(coordnate)
-  max_x =  max(na.omit(as.numeric(coordnate[, 1])))
-  max_y =  max(na.omit(as.numeric(coordnate[, 2])))
+  max_x =  max(na.omit(as.numeric(coordnate[, "x"])))
+  max_y =  max(na.omit(as.numeric(coordnate[, "y"])))
   
   
   coordi = paste0("const coordinates = [")
@@ -535,7 +538,7 @@ PathwayNetworkPlots  = function(SpaMTP,
   
   # Cluster colour
   cluster_infor = paste0('const cluster_info = ["',
-                         paste0(coordnate[, 3], collapse = '","'),
+                         paste0(coordnate[, "assign"], collapse = '","'),
                          '"]')
   
   html = paste0(
@@ -757,15 +760,15 @@ PathwayNetworkPlots  = function(SpaMTP,
     .slider.active {
       background-color: #4CAF50;
     }
-
+    .parent {
+      display: flex; /* Align children horizontally */
+      gap: 10px; /* Add spacing between elements */  
+      width: 100%;
+    }
     .shape-text {
       font-size: 12px;
     }
-    .parent {
-  display: flex; /* Align children horizontally */
-  gap: 10px; /* Add spacing between elements */
-  width: 100%;
-}
+
     .scrollable-select {
       width: 200px;
       height: 50px;
@@ -776,10 +779,10 @@ PathwayNetworkPlots  = function(SpaMTP,
   </style>
   </head>
   <body>
-   <div id="main_all" class = "parent">
+  <div id="main_all" class = "parent">
   <div id="sidebar">',
-tab_div,
-'
+    tab_div,
+    '
   </div>
   <div id="network-container">
   <div id="network-frame">
@@ -799,17 +802,19 @@ tab_div,
   <div class="legend-rectangle" id="colorLegend">
   </div>
   <div class="legend-labels">
-  <span>',-scale_legend ,
-'</span>
-    <span>',-scale_legend / 2,
-'</span>
+  <span>',
+    -scale_legend ,
+    '</span>
+    <span>',
+    -scale_legend / 2,
+    '</span>
   <span>0</span>
     <span>',
-scale_legend / 2,
-'</span>
+    scale_legend / 2,
+    '</span>
     <span>',
-scale_legend ,
-'</span>
+    scale_legend ,
+    '</span>
   </div>
   </div>
   <hr>
@@ -903,8 +908,8 @@ scale_legend ,
   <label for="select1">Select cluster for network:</label>
   <select id="select1" class="scrollable-select" size="5">
 ',
-options,
-'
+    options,
+    '
     </select>
     <div class="rastercontainer">
       <canvas id="rc1" class="rasterCanvas" width="160" height="180"></canvas>
@@ -1056,9 +1061,9 @@ ctx14.strokeStyle = "black";
 ctx14.setLineDash([]);
 drawArrowLine(ctx14,0, 10,170-70, 10, 10,Math.PI/4);
 ',
-coordi,
-met_plot,
-'
+    coordi,
+    met_plot,
+    '
 ',
 rna_plot,
 '
@@ -1116,9 +1121,9 @@ let selectedNetwork1 = 0
     document.getElementById("clu_window").textContent = string_sel;
 
 document.getElementById("select1").addEventListener("change", function (event) {
-if(slider.textContent==="Simplified net"){
-  toggleState()
-};
+  if(slider.textContent==="Simplified net"){
+    toggleState()
+  };
   selectedNetwork1 = event.target.selectedIndex;
   switchNetwork(network_ind, selectedNetwork1, upper = 1, slider.textContent==="Simplified net"?false:true);
   console.log(selectedNetwork1);
@@ -1642,13 +1647,13 @@ function switchNetwork(index, partition, upper,full) {
   updateNetwork(index, partition, upper,full);
   network_ind = index
 }
-const slider = document.getElementById("slider
+const slider = document.getElementById("slider");
 default_tab.classList.add("active");
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", function () {
-  if(slider.textContent==="Simplified net"){
-  toggleState()
-};
+    if(slider.textContent==="Simplified net"){
+    toggleState()
+    };
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     this.classList.add("active");
     const index = Array.from(document.querySelectorAll(".tab")).indexOf(this);
@@ -1744,7 +1749,7 @@ document.getElementById("saveButton").addEventListener("click", function () {
 </body>
 </html>')
   
-  returnname = paste0(ident, "_", format(Sys.time(), "%Y_%m_%d_%H_%M_%S_%Z"))
+  returnname = paste0(ident, "_",format(Sys.time(), "%Y_%m_%d_%H_%M_%S_%Z"))
   full_path <- paste0(path, "/", returnname, ".html")
   if (file.access(path, mode = 2) != 0)
   {
@@ -1755,7 +1760,8 @@ document.getElementById("saveButton").addEventListener("click", function () {
     warning(paste(
       "Warning: File",
       full_path,
-      "already exists and will be overwritten."))
+      "already exists and will be overwritten."
+    ))
   }
   tryCatch({
     writeLines(html, full_path)
@@ -1764,4 +1770,3 @@ document.getElementById("saveButton").addEventListener("click", function () {
     stop(paste("Error: Failed to write the file. Details:", e$message))
   })
 }
-
