@@ -880,7 +880,7 @@ The second form of pathway analysis identifies differentially expressed pathways
 
 
 The code below uses the "ssc" clustering and the pseudpo-bulking DE results to identify significant pathways per cluster:
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, results='hide'}
 DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 ident = "ssc",
                                 DE.list = list(cluster_DEPs$DEPs),
@@ -899,7 +899,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 
 Based on this we can see that there is only one significantly differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include "M+H" and "M+K" analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis.
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, results='hide'}
 ## Get Data
 ROI_pathays <- subset(bladder, subset = ssc %in% c("2", "5", "6"))
 
@@ -1031,7 +1031,7 @@ ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "S
 
 We can also run pathway analysis on the new clustering results. Lets do that now, this time we will use *Seurat's* `FindAllMarker()` function to calculating DE metabolites, highlighting ***SpaMTP's*** flexibility. You will see below that `FindAllMarker()` requires normalised data. ***SpaMTP*** has a `NormalizeSMData()` function that allows for *TIC* (Total Ion Current) Normalisation. For more info on this form of normalisation please read [Jauhiainen et.al (2014)](https://doi.org/10.1093/bioinformatics/btu175).
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, results='hide'}
 ## Annotate ROI with additional datasets
 ROI <- AnnotateSM(ROI, db = rbind(Chebi_db,Lipidmaps_db, HMDB_db), polarity = "positive")
 
@@ -1051,12 +1051,12 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 ST_assay = NULL,pval_cutoff_pathway = 0.01)
 ```
 Below we will visualise the top 5 pathways differentially expressed between clusters
-```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10}
 PlotRegionalPathways(regpathway = DE_pathways, num_display = 4)
 ```
 
 We can also plots some key pathways of interest that were also up regulated in our dataset.
-```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r warning=FALSE, message=FALSE,  fig.width=15, fig.height=10}
 key_pathways <- c("Biochemical pathways: part I","G alpha (i) signalling events","Metabolism of carbohydrates","Sphingolipid metabolism: integrated pathway",
                   "Sensory perception of sweet, bitter, and umami (glutamate) taste", "Sensory perception of taste",
                   "G alpha (i) signaling events")

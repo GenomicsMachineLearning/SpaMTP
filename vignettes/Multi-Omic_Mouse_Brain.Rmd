@@ -783,7 +783,7 @@ regpathway = FindRegionalPathways(
 ```
 We will select some important pathways associated with Parkinson's disease to plot
 
-```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10}
 selected_pathways = c(
   "Dopamine beta-hydroxylase deficiency",
   "Tryptophan metabolism",
@@ -800,16 +800,10 @@ PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathwa
 
 
 ```{r eval=FALSE}
-PathwayNetworkPlots(
-  striatum.dhb.data,
-  ident = "striatum",
-  regpathway =  regpathway,
-  DE.list = list("genes" = deg, "metabolites" = dem),
-  selected_pathways = selected_pathways
-)
+PathwayNetworkPlots(striatum.dhb.data,ident = "striatum",regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem),selected_pathways = selected_pathways)
 ```
 
-```{r echo=FALSE, results='asis', warning=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, fig.width=50, fig.height=10}
 library(htmltools)
 
 file_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html"  # Path to the HTML file
