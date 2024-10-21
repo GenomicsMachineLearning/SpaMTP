@@ -32,6 +32,7 @@ PathwayNetworkPlots  = function(SpaMTP,
                         SM_assay = "SPM",
                         ST_assay = "SPT",
                         analyte_types = c("genes", "metabolites"),
+                        image = "slice1",
                         verbose = T) {
   if ("genes" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[ST_assay]])) {
@@ -66,13 +67,13 @@ PathwayNetworkPlots  = function(SpaMTP,
     }
   }
   assignment = SpaMTP@meta.data[[ident]]
-  
+
   # get enrichment dataframe
-  
+
   SpatialColors <- grDevices::colorRampPalette(colors = rev(x = RColorBrewer::brewer.pal(n = 11, name = "Spectral")))
   colour_palette = colour_palette %||% SpatialColors(100)
-  
-  
+
+
   importance = regpathway %>% dplyr::group_by(pathwayName) %>%
     dplyr::mutate(group_importance = sum(abs(NES))) %>%
     filter(!duplicated(pathwayName)) %>% arrange(desc(group_importance))
@@ -145,7 +146,7 @@ PathwayNetworkPlots  = function(SpaMTP,
       return(NULL)
     }
   }
-  
+
   topodb = apply(
     sub_enriched[!duplicated(sub_enriched$pathwayName), ],
     MARGIN = 1,
@@ -165,7 +166,7 @@ PathwayNetworkPlots  = function(SpaMTP,
     )
   }
   topodb = topodb[which(dblengths != 0)]
-  
+
   #Get DE list
   DE = list()
   for (i in 1:length(analyte_types)) {
@@ -181,11 +182,11 @@ PathwayNetworkPlots  = function(SpaMTP,
     )
     DE.list[[analyte_types[i]]] <- DE.list[[i]]
   }
-  
+
   if (is.null(SpaMTP@tools[["db_3"]])) {
     verbose_message(message_text = "Please use MZAnnotation " , verbose = verbose)
   }
-  
+
   db_3 <- SpaMTP@tools$db_3
   db_3 = db_3 %>%
     tidyr::separate_rows(Isomers, sep = ";")
@@ -206,7 +207,7 @@ PathwayNetworkPlots  = function(SpaMTP,
   db_3 = merge(chem_props, db_3, by = "chem_source_id")
   ### Adding DE Results
   db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
-  
+
   if (length(DE.list) != length(analyte_types)) {
     stop(
       "Number of DE data.frames provided does not match the number of analyte types specified. Please make sure a DE dataframe is provided for each analyte type"
@@ -243,14 +244,14 @@ PathwayNetworkPlots  = function(SpaMTP,
       )
     }
   }
-  
+
   sub_enriched = sub_enriched[which(tolower(sub_enriched$pathwayName) %in% tolower(names(topodb))), ]
   pathway_names = unique(sub_enriched$pathwayName)
-  
+
   network = paste0('const networks = [')
   matrix_ids = c()
   ucid = naturalsort::naturalsort(unique(sub_enriched$Cluster_id))
-  
+
   simplified_content = c()
   for (i in 1:length(ucid)) {
     sub_cluster = sub_enriched[which(sub_enriched$Cluster_id == ucid[i]), ]
@@ -278,12 +279,12 @@ PathwayNetworkPlots  = function(SpaMTP,
         )
         path_df = path_df %>%   add_count(src, name = "src_n") %>%   add_count(dest, name = "dest_n")
         pathway_analyte = unique(c(path_df$src, path_df$dest))
-        
+
         #simplified
         simplified_pathdf =  path_df %>% dplyr::filter((src %in% temp_analytes) |
                                                          (dest %in% temp_analytes))
         simplified_pathway_analyte = unique(c(simplified_pathdf$src, simplified_pathdf$dest))
-        
+
         # Add plottable candidtable analytes
         matrix_ids = c(matrix_ids, temp_analytes[which(temp_analytes %in% pathway_analyte)])
         # 1.1 Complete node sets
@@ -387,11 +388,11 @@ PathwayNetworkPlots  = function(SpaMTP,
           }
         }
         temp_nodes = paste0(temp_nodes, "],")
-        
-        
+
+
         # 2.1 Complete link sets
         temp_links = paste0("links: [")
-        
+
         for (z in 1:nrow(path_df)) {
           temp_path_df = path_df[z, ]
           temp_links = paste0(
@@ -415,8 +416,8 @@ PathwayNetworkPlots  = function(SpaMTP,
           )
         }
         temp_links  = paste0(temp_links, "]},")
-        
-        
+
+
         temp_this_path = paste0(temp_nodes, temp_links)
         cluster  = paste0(cluster, temp_this_path)
       } else{
@@ -431,8 +432,8 @@ PathwayNetworkPlots  = function(SpaMTP,
     network  = paste0(network, cluster)
   }
   network = paste0(network, "];")
-  
-  
+
+
   tab_div = c()
   tab_div = paste0(tab_div,
                    '<div class="tab" id = "default_tab">',
@@ -441,12 +442,12 @@ PathwayNetworkPlots  = function(SpaMTP,
   for (o in 2:length(pathway_names)) {
     tab_div = paste0(tab_div, '<div class="tab">', pathway_names[o], "</div>")
   }
-  
-  
-  
-  
+
+
+
+
   options = paste0('<option value="option1" selected>', ucid[1], "</option>")
-  
+
   for (k in 2:length(ucid)) {
     options = paste0(options,
                      '<option value="option',
@@ -455,7 +456,7 @@ PathwayNetworkPlots  = function(SpaMTP,
                      ucid[k],
                      "</option>")
   }
-  
+
   fc_vector = c()
   if ("genes" %in% analyte_types) {
     fc_vector = c(fc_vector, DE.list[["genes"]]$avg_log2FC)
@@ -463,44 +464,35 @@ PathwayNetworkPlots  = function(SpaMTP,
   if ("metabolites" %in% analyte_types) {
     fc_vector = c(fc_vector, DE.list[["metabolites"]]$avg_log2FC)
   }
-  
+
   scale_legend = as.integer(sqrt(max(abs(fc_vector))))
-  
+
   # Get coordinates
-  coordnate = sapply(
-    SpaMTP@meta.data[, which(grepl(
-      colnames(SpaMTP@meta.data),
-      pattern = "coord",
-      ignore.case = T
-    ))],
-    FUN = function(x) {
-      as.numeric(gsub("\\,.*", "", x))
-    }
-  )
-  non_na_ind = which((!is.na(coordnate[, 1])) &
-                       (!is.na(coordnate[, 2])))
+  coordnate = Seurat::GetTissueCoordinates(SpaMTP, image = image)
+  non_na_ind = which((!is.na(coordnate[, "x"])) &
+                       (!is.na(coordnate[, "y"])))
   coordnate = cbind(coordnate, assign = as.character(assignment))
   coordnate = na.omit(coordnate)
-  max_x =  max(na.omit(as.numeric(coordnate[, 1])))
-  max_y =  max(na.omit(as.numeric(coordnate[, 2])))
-  
-  
+  max_x =  max(na.omit(as.numeric(coordnate[, "x"])))
+  max_y =  max(na.omit(as.numeric(coordnate[, "y"])))
+
+
   coordi = paste0("const coordinates = [")
-  
+
   for (t in 1:nrow(coordnate)) {
     coordi = paste0(
       coordi,
       '[',
-      as.numeric(coordnate[t, 1]) * 180 / max_x ,
+      as.numeric(coordnate[t, "x"]) * 180 / max_x ,
       ',',
-      as.numeric(coordnate[t, 2]) * 200 / max_y,
+      as.numeric(coordnate[t, "y"]) * 200 / max_y,
       '],'
     )
   }
-  
+
   coordi = paste0(coordi, '];')
-  
-  
+
+
   # USE matrix_ids  to obtain the m/z matrix/ genetric matrix to be displayed
   met_plot = paste0("const metplot = {")
   rna_plot = paste0("const rnaplot = {")
@@ -535,13 +527,13 @@ PathwayNetworkPlots  = function(SpaMTP,
   }
   rna_plot = paste0(rna_plot, "};")
   met_plot = paste0(met_plot, "};")
-  
-  
+
+
   # Cluster colour
   cluster_infor = paste0('const cluster_info = ["',
-                         paste0(coordnate[, 3], collapse = '","'),
+                         paste0(coordnate[, "assign"], collapse = '","'),
                          '"]')
-  
+
   html = paste0(
     '
 <!DOCTYPE html>
@@ -1747,7 +1739,7 @@ document.getElementById("saveButton").addEventListener("click", function () {
 </script>
 </body>
 </html>')
-  
+
   returnname = paste0(ident, "_", format(Sys.time(), "%Y_%m_%d_%H_%M_%S_%Z"))
   full_path <- paste0(path, "/", returnname, ".html")
   if (file.access(path, mode = 2) != 0)
