@@ -757,7 +757,7 @@ Now that we have identified there are metabolic and transcriptional differences 
 
 
 These are striatum regions we will be comparing for our multi-modal DHB matrix sample. 
-```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=8}
 striatum.dhb.data <- readRDS("vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS")
 
 SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
@@ -800,7 +800,7 @@ PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathwa
 
 
 ```{r eval=FALSE}
-PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "vignette_data_files/Mouse_Brain/DHB_data/")
+PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "~/Downloads/")
 ```
 
 ```{r echo=FALSE, results='asis', warning=FALSE, fig.width=30, fig.height=10}

@@ -1077,10 +1077,10 @@ paste0(
 ),
 '
 ',
-paste0("const shrink_ratio_x =", 180 / max_x),
+paste0("const shrink_ratio_x =", 1),
 '
 ',
-paste0("const shrink_ratio_y =", 200 / max_y),
+paste0("const shrink_ratio_y =", 1),
 '
 ',
 paste0(
