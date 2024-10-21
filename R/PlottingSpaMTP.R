@@ -1,30 +1,21 @@
-#library(Seurat)
-#library(Cardinal)
-#library(SeuratObject)
-#library(ggplot2)
-#library(Matrix)
-#library(graphics)
-#library(stringr)
-#library(matter)
-#library(plotly)
-#library(dplyr)
-
-
 #### SpaMTP Seurat Plotting Functions #################################################################################################################################################################################
 
 #' Finds the nearest m/z peak to a given value in the specified Seurat Object
 #'
 #' @param data Seurat Spatial Metabolomic object containing mz values
 #' @param target_mz Numeric value defining the target m/z peak
+#' @param assay Character string indicating which Seurat object assay to pull data form. If set to NULL will use current default assay based on Seurat's `DefaultAssay()` function (default = NULL).
 #'
 #' @returns String of the closest m/z value within the given dataset
 #' @export
 #'
 #' @examples
 #' # FindNearestMZ(SeuratObj, target_mz = 400.01)
-FindNearestMZ <- function(data, target_mz){
-
-  numbers <- as.numeric(gsub("mz-", "", SeuratObject::Features(data)))
+FindNearestMZ <- function(data, target_mz, assay = NULL){
+  if (is.null(assay)){
+    assay <- DefaultAssay(data)
+  }
+  numbers <- as.numeric(gsub("mz-", "", SeuratObject::Features(data, assay = assay)))
   closest_number <- numbers[which.min(abs(numbers - target_mz))]
   return(paste0("mz-",closest_number))
 }

@@ -756,7 +756,7 @@ Now that we have identified there are metabolic and transcriptional differences 
 <br>
 
 
-These are striatum regions we will be comparing for our multi-modal DHB matrix sample. 
+This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=8}
 striatum.dhb.data <- readRDS("vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS")
 
@@ -798,7 +798,7 @@ selected_pathways = c(
 PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathways)
 ```
 
-
+One of the significant pathways associated with the lesioned region was 'Dopamine beta-hydroxylase deficiency'. We can use ***SpaMTP's*** network plotting function to visualuse the network of this pathway, along with the relative differentially expressed elements that make up the activity of this pathway. Lets have a look:
 ```{r eval=FALSE}
 PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "~/Downloads/")
 ```
@@ -812,6 +812,29 @@ file_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39
 # Include HTML content with a div wrapper for sizing
 includeHTML(file_path)
 
+```
+
+One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP*** we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:
+
+```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
+SpatialMZPlot(striatum.dhb.data, mz= 400.14659,plusminus = 0.05, assay = "SPM", pt.size.factor = 2.5, slot = "data") + theme(legend.position = "right")
+```
+
+We can see that there is much more expression of this metabolite within the lesioned hemisphere. 
+
+
+Finally, we can combine the expression of each of these metabolites to see the exact region where this pathway is active. 
+```{r, results='hide', warning=FALSE, message=FALSE}
+## Get key mz values from network plot
+mzs <- c(215.015, 321.08627, 400.14659) 
+mzs <- unlist(lapply(mzs, function(x){ FindNearestMZ(striatum.dhb.data, target_mz = x, assay = "SPM")}))
+
+striatum.dhb.data <- BinMetabolites(striatum.dhb.data, mzs, slot = "counts", bin_name = "Dopamine_pathway", assay = "SPM")
+```
+
+
+```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
+SpatialFeaturePlot(striatum.dhb.data, features = "Dopamine_pathway", pt.size.factor = 2.5) & theme(legend.position = "right") 
 ```
 
 

@@ -1,13 +1,3 @@
-#library(Seurat)
-#library(ggplot2)
-#library(ggridges)
-#library(Matrix)
-#library(edgeR)
-#library(stats)
-#library(dplyr)
-#library(tidyr)
-
-
 #' Normalizes m/z intensity data stored in a Seurat Object
 #'
 #' @param data Seurat Object to be normalized.
