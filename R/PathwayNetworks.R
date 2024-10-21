@@ -21,19 +21,19 @@
 #' @examples
 #' #PathwayNetworkPlots(SpaMTP, ident = "Custom_ident", regpathway = regpathway, DE.list = DE.list, selected_pathways = selected_pathways)
 PathwayNetworkPlots  = function(SpaMTP,
-                        ident,
-                        regpathway,
-                        DE.list,
-                        selected_pathways = NULL,
-                        path = getwd(),
-                        SM_slot = "counts",
-                        ST_slot = "counts",
-                        colour_palette = NULL,
-                        SM_assay = "SPM",
-                        ST_assay = "SPT",
-                        analyte_types = c("genes", "metabolites"),
-                        image = "slice1",
-                        verbose = T) {
+                                ident,
+                                regpathway,
+                                DE.list,
+                                selected_pathways = NULL,
+                                path = getwd(),
+                                SM_slot = "counts",
+                                ST_slot = "counts",
+                                colour_palette = NULL,
+                                SM_assay = "SPM",
+                                ST_assay = "SPT",
+                                analyte_types = c("genes", "metabolites"),
+                                image = "slice1",
+                                verbose = T) {
   if ("genes" %in% analyte_types) {
     if (is.null(SpaMTP@assays[[ST_assay]])) {
       stop(
@@ -112,8 +112,10 @@ PathwayNetworkPlots  = function(SpaMTP,
       keggids = unlist(lapply(RAMP_kegg, function(x) {
         return(x[["id"]])
       }))
-      index = which((tolower(names(RAMP_kegg)) == tolower(pathway_of_interest)) |
-                      (keggids == tolower(id_of_interest)))
+      index = which((tolower(names(
+        RAMP_kegg
+      )) == tolower(pathway_of_interest)) |
+        (keggids == tolower(id_of_interest)))
       if (length(index) != 0) {
         temp_db = RAMP_kegg
       }
@@ -121,13 +123,18 @@ PathwayNetworkPlots  = function(SpaMTP,
       hmdbids = unlist(lapply(RAMP_hmdb, function(x) {
         return(x[["id"]])
       }))
-      index = which((tolower(names(RAMP_hmdb)) == tolower(pathway_of_interest)) |
-                      (tolower(hmdbids) == tolower(id_of_interest)))
+      index = which((tolower(names(
+        RAMP_hmdb
+      )) == tolower(pathway_of_interest)) |
+        (tolower(hmdbids) == tolower(id_of_interest)))
       if (length(index) != 0) {
         temp_db = RAMP_hmdb
       }
     } else{
-      all_list = c(RAMP_wikipathway, RAMP_Reactome, RAMP_kegg, RAMP_hmdb)
+      all_list = c(RAMP_wikipathway,
+                   RAMP_Reactome,
+                   RAMP_kegg,
+                   RAMP_hmdb)
       all_names = names(all_list)
       add_ids = unlist(lapply(all_list, function(x) {
         return(x[["id"]])
@@ -256,7 +263,7 @@ PathwayNetworkPlots  = function(SpaMTP,
   for (i in 1:length(ucid)) {
     sub_cluster = sub_enriched[which(sub_enriched$Cluster_id == ucid[i]), ]
     if ("genes" %in% analyte_types) {
-      sub_expr_rna = DE.list[["genes"]][which(tolower(DE.list[["metabolites"]]$cluster) ==  tolower(ucid[i])), ]
+      sub_expr_rna = DE.list[["genes"]][which(tolower(DE.list[["genes"]]$cluster) ==  tolower(ucid[i])), ]
     }
     if ("metabolites" %in% analyte_types) {
       sub_expr_met = DE.list[["metabolites"]][which(tolower(DE.list[["metabolites"]]$cluster) ==  tolower(ucid[i])), ]
@@ -442,7 +449,6 @@ PathwayNetworkPlots  = function(SpaMTP,
   for (o in 2:length(pathway_names)) {
     tab_div = paste0(tab_div, '<div class="tab">', pathway_names[o], "</div>")
   }
-
 
 
 
@@ -753,15 +759,15 @@ PathwayNetworkPlots  = function(SpaMTP,
     .slider.active {
       background-color: #4CAF50;
     }
-
+    .parent {
+      display: flex; /* Align children horizontally */
+      gap: 10px; /* Add spacing between elements */
+      width: 100%;
+    }
     .shape-text {
       font-size: 12px;
     }
-    .parent {
-  display: flex; /* Align children horizontally */
-  gap: 10px; /* Add spacing between elements */
-  width: 100%;
-}
+
     .scrollable-select {
       width: 200px;
       height: 50px;
@@ -772,7 +778,7 @@ PathwayNetworkPlots  = function(SpaMTP,
   </style>
   </head>
   <body>
-   <div id="main_all" class = "parent">
+  <div id="main_all" class = "parent">
   <div id="sidebar">',
     tab_div,
     '
@@ -795,9 +801,11 @@ PathwayNetworkPlots  = function(SpaMTP,
   <div class="legend-rectangle" id="colorLegend">
   </div>
   <div class="legend-labels">
-  <span>',-scale_legend ,
+  <span>',
+    -scale_legend ,
     '</span>
-    <span>',-scale_legend / 2,
+    <span>',
+    -scale_legend / 2,
     '</span>
   <span>0</span>
     <span>',
@@ -1112,9 +1120,9 @@ let selectedNetwork1 = 0
     document.getElementById("clu_window").textContent = string_sel;
 
 document.getElementById("select1").addEventListener("change", function (event) {
-if(slider.textContent==="Simplified net"){
-  toggleState()
-};
+  if(slider.textContent==="Simplified net"){
+    toggleState()
+  };
   selectedNetwork1 = event.target.selectedIndex;
   switchNetwork(network_ind, selectedNetwork1, upper = 1, slider.textContent==="Simplified net"?false:true);
   console.log(selectedNetwork1);
@@ -1638,13 +1646,13 @@ function switchNetwork(index, partition, upper,full) {
   updateNetwork(index, partition, upper,full);
   network_ind = index
 }
-const slider = document.getElementById("slider
+const slider = document.getElementById("slider");
 default_tab.classList.add("active");
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", function () {
-  if(slider.textContent==="Simplified net"){
-  toggleState()
-};
+    if(slider.textContent==="Simplified net"){
+    toggleState()
+    };
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     this.classList.add("active");
     const index = Array.from(document.querySelectorAll(".tab")).indexOf(this);
@@ -1740,7 +1748,7 @@ document.getElementById("saveButton").addEventListener("click", function () {
 </body>
 </html>')
 
-  returnname = paste0(ident, "_", format(Sys.time(), "%Y_%m_%d_%H_%M_%S_%Z"))
+  returnname = paste0(ident, "_",format(Sys.time(), "%Y_%m_%d_%H_%M_%S_%Z"))
   full_path <- paste0(path, "/", returnname, ".html")
   if (file.access(path, mode = 2) != 0)
   {
@@ -1751,7 +1759,8 @@ document.getElementById("saveButton").addEventListener("click", function () {
     warning(paste(
       "Warning: File",
       full_path,
-      "already exists and will be overwritten."))
+      "already exists and will be overwritten."
+    ))
   }
   tryCatch({
     writeLines(html, full_path)
