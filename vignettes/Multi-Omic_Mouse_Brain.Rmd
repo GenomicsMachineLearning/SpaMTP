@@ -803,16 +803,9 @@ One of the significant pathways associated with the lesioned region was 'Dopamin
 PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "~/Downloads/")
 ```
 
-```{r echo=FALSE, results='asis', warning=FALSE, fig.width=30, fig.height=10}
-library(htmltools)
 
-file_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html"  # Path to the HTML file
+<iframe src="vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html" width="100%" height="600px"></iframe>
 
-
-# Include HTML content with a div wrapper for sizing
-includeHTML(file_path)
-
-```
 
 One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP*** we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:
 
@@ -829,7 +822,7 @@ Finally, we can combine the expression of each of these metabolites to see the e
 mzs <- c(215.015, 321.08627, 400.14659) 
 mzs <- unlist(lapply(mzs, function(x){ FindNearestMZ(striatum.dhb.data, target_mz = x, assay = "SPM")}))
 
-striatum.dhb.data <- BinMetabolites(striatum.dhb.data, mzs, slot = "counts", bin_name = "Dopamine_pathway", assay = "SPM")
+striatum.dhb.data <- BinMetabolites(striatum.dhb.data, mzs, slot = "data", bin_name = "Dopamine_pathway", assay = "SPM")
 ```
 
 
