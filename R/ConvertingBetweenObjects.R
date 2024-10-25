@@ -63,7 +63,7 @@ CardinalToSeurat <- function(data,run_name, seurat.coord = NULL, assay = "Spatia
 
   verbose_message(message_text = "Constructing Seurat Object ....", verbose = verbose)
 
-  mat <- Matrix::as.matrix(sparse_matrix)
+  mat <- matter::as.matrix(sparse_matrix)
 
 
   seuratobj <- Seurat::CreateSeuratObject(mat, assay = "Spatial")

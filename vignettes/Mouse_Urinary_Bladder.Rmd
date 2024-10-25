@@ -229,7 +229,12 @@ head(data.frame(pixelData(bladder_cardinal)), n = 3)
 
 ```{r, echo=FALSE}
 df <- head(data.frame(pixelData(bladder_cardinal)), n = 3)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "cccccccccc")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "cccccccccc") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
@@ -302,7 +307,12 @@ head(bladder_annotated[["Spatial"]]@meta.data, n = 3)
 
 ```{r, echo=FALSE}
 df <- head(bladder_annotated[["Spatial"]]@meta.data, n = 3)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "cccccccc")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 We can see that for each m/z value, along with all possible annotations, we also observe information including database ID, the adduct used to annotate this metabolite, the common chemical formula and also the plus-minus ppm error between the observed mass and the reference mass of these annotated molecules in our reference dataset.
@@ -357,7 +367,12 @@ refined_annotations[11,]
 ```{r, echo=FALSE, collapse=TRUE}
 
 df <- head(refined_annotations, 1)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 <br>
@@ -372,7 +387,12 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
 
 ```{r, echo=FALSE, collapse=TRUE}
 df <- refined_annotations[11,]
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
@@ -721,7 +741,12 @@ head(ROI, n = 3)
 
 ```{r, echo=FALSE}
 df <- head(ROI, n = 3)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
@@ -818,7 +843,13 @@ cluster_6_pathways[1:4,]
 ```{r, echo=FALSE}
 df <- cluster_6_pathways[1:4,]
 df <- df[c("pathway_name",	"pathway_id",	"type",	"pathwayCategory",	"p_val",	"fdr",	"ratio",	"analytes_in_pathways",	"total_in_pathways")]
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 We can also run FisherPathwayTest using just m/z values. Lets try this below and see how the results differ. This time we will use `Chebi_db`, `Lipidmaps_db` and `HMDB_db` to annotate the m/z values, and we will use all possible positive adducts. (Note: the mz values are stored in the data.frame column called `gene`)
@@ -841,7 +872,13 @@ cluster_6_mz_pathways[1:4,]
 ```{r, echo=FALSE}
 df <- cluster_6_mz_pathways[1:4,]
 df <- df[c("pathway_name",	"pathway_id",	"type",	"pathwayCategory",	"p_val",	"fdr",	"ratio",	"analytes_in_pathways",	"total_in_pathways")]
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 <br>
@@ -894,7 +931,13 @@ DE_pathways
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 df <- DE_pathways
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 Based on this we can see that there is only one significantly differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include "M+H" and "M+K" analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis.

@@ -64,17 +64,15 @@ library(EnhancedVolcano)
 
 As mentioned above, the format of the MSI data is in a mtx format. This is different to .ibd and .imzML files that were used in the [Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The layout of this dataset is demonstrated below:
 
-<div style="margin-left: auto;
-            margin-right: auto;
-            width: 100%">
+<div style="text-align: center;">
 
-|  x  | y  | mz_1| mz_2| mz_3| ... | mz_n|        
+|  x  | y  | mz_1| mz_2| mz_3| ... | mz_n|         
 | :--:| :---:|:---:|:---:|:---:|:---:|:---:|
- | 0 | 1 | 0|0|11|...|0|
-  | 0 | 2 |0|0|0|...|0|
- | 0 | 3 |15|0|0|...|32|
-  | 0 | 4 |20|0|0|...|32|
- | 0 | 5 |0|20|0|...|0|
+| 0 | 1 | 0|0|11|...|0|
+| 0 | 2 |0|0|0|...|0|
+| 0 | 3 |15|0|0|...|32|
+| 0 | 4 |20|0|0|...|32|
+| 0 | 5 |0|20|0|...|0|
 
 </div>
 
@@ -112,7 +110,14 @@ head(msi@meta.data)
 
 ```{r, echo=FALSE}
 df <- head(msi@meta.data)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
 ```
 
 
@@ -208,7 +213,12 @@ fmp10_metabolites
 
 ```{r, echo=FALSE}
 df <- fmp10_metabolites
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
@@ -226,7 +236,12 @@ msi_annotated[["Spatial"]]@meta.data[410:415,]
 
 ```{r, echo=FALSE}
 df <- msi_annotated[["Spatial"]]@meta.data[410:415,]
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
@@ -308,8 +323,15 @@ head(vis)
 ```
 
 ```{r, echo=FALSE}
-df <- head(vis)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df <- head(vis, n = 4)
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
 ```
 
 
@@ -489,7 +511,13 @@ head(DE[DE$cluster == 0,] , n =5 )
 
 ```{r, echo=FALSE}
 df <- head(DE[DE$cluster == 0,] , n =5 )
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
@@ -666,7 +694,13 @@ head(striatum_DEGs[striatum_DEGs$cluster == "1",], n = 5)
 
 ```{r, echo=FALSE}
 df <- head(striatum_DEGs[striatum_DEGs$cluster == "1",], n = 5)
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 
