@@ -56,7 +56,6 @@ library(dplyr)
 #For plotting + DE plots
 library(ggplot2)
 library(EnhancedVolcano)
-
 ```
 
 <br>
@@ -767,8 +766,8 @@ Lets run DE and then find regional pathways `FindRegionalPathways()` on our comb
 ```{r, results='hide', warning=FALSE, message=FALSE}
 ## Run DE analysis for transcriptomics and metabolomics
 Idents(striatum.dhb.data) <- "striatum"
-deg =  FindAllMarkers(striatum.dhb.data , assay = "SPT",only.pos =F)
-dem =  FindAllMarkers(striatum.dhb.data ,assay = "SPM", only.pos =F)
+deg =  FindAllMarkers(striatum.dhb.data , test.use = "wilcox_limma", assay = "SPT",only.pos =F)
+dem =  FindAllMarkers(striatum.dhb.data , assay = "SPM", only.pos =F)
 
 DE.list = list("genes" = deg,"metabolites" = dem)
 
@@ -778,7 +777,7 @@ regpathway = FindRegionalPathways(
   analyte_types = c("genes", "metabolites"),
   SM_slot = "counts", ST_slot = "counts",
   ident = "striatum",
-  DE.list = list("genes" = deg, "metabolites" = dem)
+  DE.list = DE.list
 )
 ```
 We will select some important pathways associated with Parkinson's disease to plot
@@ -800,11 +799,17 @@ PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathwa
 
 One of the significant pathways associated with the lesioned region was 'Dopamine beta-hydroxylase deficiency'. We can use ***SpaMTP's*** network plotting function to visualuse the network of this pathway, along with the relative differentially expressed elements that make up the activity of this pathway. Lets have a look:
 ```{r eval=FALSE}
-PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "~/Downloads/")
+PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "vignette_data_files/Mouse_Brain/DHB_data")
 ```
 
+    Assuming DE.list[1] contains genes results .... 
+    Assuming DE.list[2] contains metabolites results ....     
+    Query necessary data and establish pathway database
+    Query db for addtional matching
+    Constructing DE dataframes.... 
+    File successfully written to vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_22_12_23_05_AEST.html
 
-<iframe src="vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html" width="100%" height="600px"></iframe>
+<iframe src="vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html" width="100%" height="700px"></iframe>
 
 
 One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP*** we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:

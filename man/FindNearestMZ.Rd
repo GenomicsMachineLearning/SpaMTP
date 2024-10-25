@@ -4,12 +4,14 @@
 \alias{FindNearestMZ}
 \title{Finds the nearest m/z peak to a given value in the specified Seurat Object}
 \usage{
-FindNearestMZ(data, target_mz)
+FindNearestMZ(data, target_mz, assay = NULL)
 }
 \arguments{
 \item{data}{Seurat Spatial Metabolomic object containing mz values}
 
 \item{target_mz}{Numeric value defining the target m/z peak}
+
+\item{assay}{Character string indicating which Seurat object assay to pull data form. If set to NULL will use current default assay based on Seurat's \code{DefaultAssay()} function (default = NULL).}
 }
 \value{
 String of the closest m/z value within the given dataset

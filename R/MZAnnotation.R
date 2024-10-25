@@ -115,7 +115,6 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
     dplyr::left_join(result_df, by = "mz_names") %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ifelse(is.na(.), "No Annotation", .)))
 
-  # If you want to remove the "present" column, you can do:
   feature_metadata <- dplyr::select(feature_metadata, -present)
 
   data[[assay]][[]] <- feature_metadata
@@ -741,33 +740,46 @@ AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.
     true_mzs <- c(true_mzs,true_mz)
   }
 
-  annotations$true_mzs_name <- true_mzs
-  annotations$true_mzs <- gsub("mz-", "", annotations$true_mzs_name)
+  annotations$mz_names <- true_mzs
+  annotations$true_mzs <- gsub("mz-", "", annotations$mz_names)
   annotations$ppm_diff <- abs(annotations$mass - as.numeric(annotations$true_mzs))
 
   if (!is.null(mass.threshold)){
-    annotations <- annotations %>% filter(ppm_diff < mass.threshold)
+    annotations <- annotations %>% dplyr::filter(ppm_diff < mass.threshold)
   }
 
-  if (return.only.annotated) {
+  annotations <- annotations %>% dplyr::rename(!!annotation.column := annotation)
+  annotations <- annotations %>%
+    dplyr::group_by(mz_names) %>%
+    dplyr::summarise(
+      across(
+        everything(),  # Apply to all columns
+        ~ paste(unique(.), collapse = "; ")  # For each column, collapse unique values into a single string
+      )
+    )
 
-    data_sub <- subsetMZFeatures(data,features = annotations$true_mzs_name, assay = assay)
-    data_sub[[assay]]@meta.data["all_IsomerNames"] <- annotations$annotation
 
-  } else {
-    metabolites <- lapply(rownames(data), function(x) {
+  data[[assay]]@meta.data <- data[[assay]]@meta.data %>%
+    dplyr::left_join(annotations, by = "mz_names") %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~tidyr::replace_na(.x, "No Annotation")))
 
-      if (x %in% annotations$true_mzs_name) {
-        annotations[annotations$true_mzs_name == x,][["annotation"]]
-      } else {
-        x
+
+  if (return.only.annotated == TRUE){
+
+    annotated_mzs <- data[[assay]]@meta.data$mz_names[data[[assay]]@meta.data[[annotation.column]] != "No Annotation"]
+    #verbose_message(message_text = "Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features", verbose = verbose)
+
+    if(length(Assays(object = data)) != 1){
+      features = c()
+      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=assay)]){
+        features =  c(features, rownames(data@assays[[non_met_assay]]@features))
       }
-    })
-
-    data_sub <-  data
-    data_sub[[assay]]@meta.data["all_IsomerNames"] <- unlist(metabolites)
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = c(annotated_mzs, features))})
+    }else{
+      data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = annotated_mzs)})
+    }
   }
 
-  return(data_sub)
+  return(data)
 }
 
