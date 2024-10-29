@@ -104,9 +104,9 @@ ImageMZPlot(
 
 \item{slot}{Character string indicating the assay slot to use to pull expression values form (default = "counts").}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+\item{plot.pixel}{Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).}
 
-\item{plot.pixels}{Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).}
+\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
 \value{
 A ggplot showing the Spatial representation of expression data of specified m/z values

@@ -37,8 +37,6 @@ RunMetabolicPCA(
 \item{reduction.name}{Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
-
-\item{p_val_threshold}{is the p value threshold for pathways to be significant (default = 0.05).}
 }
 \value{
 SpaMTP object with pca results stored in the

@@ -27,7 +27,16 @@ loadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
 
 
 
-#' Read a Spatial Metabolomics image matrix file
+#' Read a Spatial Metabolomics image matrix file (.csv format)
+#'
+#' @param mtx.file Character string defining the path of the spatial metabolomic image matrix .csv file
+#' @param assay Character string of the Seurat object assay name to store the relative intensity data (default = "Spatial").
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param feature.start.column Numeric value defining the start index containing the x, y and m/z value columns within the table (default = 1).
+#' @param mz.prefix Character string matching the prefix string in front of each m/z name (deafult = NULL).
+#' @param project.name Character string defining the name of the sample to be assigned as orig.idents (default = "SpaMTP").
+#'
+#' ### Details
 #'   NOTE: This file must be in a format similar to the one below:
 #'
 #'          A data.frame: 5 × 5
@@ -43,19 +52,12 @@ loadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
 #'      - The first 2 columns are labeled x and y containing the respective x/y spatial coordinates
 #'      - The next columns are then the respective m/z values and their intensities for each spatial pixel
 #'
-#'
-#' @param mtx.file Character string defining the path of the spatial metabolomic image matrix .csv file
-#' @param assay Character string of the Seurat object assay name to store the relative intensity data (default = "Spatial").
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#' @param feature.start.column Numeric value defining the start index containing the x, y and m/z value columns within the table (default = 1).
-#' @param mz.prefix character string matching the prefix string in front of each m/z name (deafult = NULL).
-#'
 #' @return A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay
 #' @export
 #'
 #' @examples
 #' # msi_data <- ReadSM_mtx("~/Documents/msi_mtx.csv")
-ReadSM_mtx <- function(mtx.file, assay = "Spatial", verbose = TRUE, feature.start.column = 1, mz.prefix = NULL){
+ReadSM_mtx <- function(mtx.file, assay = "Spatial", verbose = TRUE, feature.start.column = 1, mz.prefix = NULL, project.name = "SpaMTP"){
 
   #verbose_message(message_text = "Convering mtx to SpaMTP Seurat object .... ", verbose = verbose)
 
@@ -93,7 +95,11 @@ ReadSM_mtx <- function(mtx.file, assay = "Spatial", verbose = TRUE, feature.star
     colnames(data) <- paste0("mz-", colnames(data))
   }
 
-  seuratobj <- Seurat::CreateSeuratObject(t(data), assay = assay)
+  if(is.null(project.name)){
+    project.name <- "SpaMTP"
+  }
+
+  seuratobj <- Seurat::CreateSeuratObject(t(data), assay = assay, project = project.name)
 
   verbose_message(message_text = "Adding Pixel Metadata ....", verbose = verbose)
 

@@ -7,6 +7,7 @@
 #' @param min_n Integer value specifying the minimum number of analytes required to be present in a pathway (default = 3).
 #' @param p_val_threshold The p-val cutoff to keep the pathways generated from fisher exact test (default = "0.1").
 #' @param method Character string defining the statistical method used to calculate hclust (default = "ward.D2").
+#' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #' @param ... The arguments pass to stats::hclust
 #'
 #' @return A combined gg, ggplot object with pathway and dendrogram
@@ -222,7 +223,6 @@ VisualisePathways = function(SpaMTP,
 
   # Generate a dendrogram
   hc <- as.dendrogram(hclust(as.dist(jaccard_matrix), method = method, ...))
-  # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
   segment_hc <- with(ggdendro::segment(ggdendro::dendro_data(hc)),
                      data.frame(
                        x = y,
@@ -355,7 +355,6 @@ PlotRegionalPathways <- function(regpathway,
 
   # Generate a dendrogram
   hc <- as.dendrogram(hclust(as.dist(jaccard_matrix)))
-  # dendro <- ggtree(as.phylo(hc), layout = "rectangular")+scale_x_reverse()
   segment_hc <- with(ggdendro::segment(ggdendro::dendro_data(hc)),
                      data.frame(
                        x = y,

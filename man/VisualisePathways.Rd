@@ -31,6 +31,8 @@ VisualisePathways(
 
 \item{method}{Character string defining the statistical method used to calculate hclust (default = "ward.D2").}
 
+\item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
+
 \item{...}{The arguments pass to stats::hclust}
 }
 \value{

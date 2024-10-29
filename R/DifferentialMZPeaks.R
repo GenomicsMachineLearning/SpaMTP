@@ -11,7 +11,7 @@
 #library(stats)
 #library(grDevices)
 
-#### SpaMTP Differential Peaks Analysis Functions ########################################################################################################################################################################################
+#### SpaMTP Differential Metabolite Analysis Functions ########################################################################################################################################################################################
 
 
 
@@ -77,7 +77,7 @@ run_pooling <- function(data.filt, idents, n, assay, slot, verbose = TRUE) {
 #' @param seurat_data A Seurat object containing the merged Xenium data being analysed (this is subset).
 #' @param ident A character string defining the ident column to perform differential expression analysis against.
 #' @param output_dir A character string defining the ident column to perform differential expression analysis against.
-#' @param run_name A character string defining the title of this DE analysis (will be used when saving DEPs to .csv file).
+#' @param run_name A character string defining the title of this DE analysis (will be used when saving DEMs to .csv file).
 #' @param n An integer that defines the number of pseudo-replicates per sample (default = 3).
 #' @param logFC_threshold A numeric value indicating the logFC threshold to use for defining significant genes (default = 1.2).
 #' @param annotation.column Character string defining the column where annotation information is stored in the assay metadata. This requires AnnotateSeuratMALDI() to be run where the default column to store annotations is "all_IsomerNames" (default = "None").
@@ -85,7 +85,7 @@ run_pooling <- function(data.filt, idents, n, assay, slot, verbose = TRUE) {
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #' @param return.individual Boolean value defining whether to return a list of individual edgeR objects for each designated ident. If FALSE, one merged edgeR object will be returned (default = FALSE).
 #'
-#' @returns A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEPs data.frame with a list of differential expressed m/z peaks
+#' @returns A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEMs data.frame with a list of differential expressed m/z metabolites
 #' @export
 #'
 #' @examples
@@ -151,7 +151,7 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
 
     de_group_edgeR$gene <- rownames(de_group_edgeR)
 
-    y$DEPs <- de_group_edgeR
+    y$DEMs <- de_group_edgeR
     annotation_result[[condition]] <- y
 
   }
@@ -170,23 +170,24 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
     edger$samples$group <- edger$samples$ident
     edger$samples$condition <- NULL
 
-    deps <- lapply(names(annotation_result), function(x){
-      annotation_result[[x]]$DEPs$cluster <- x
-      rownames(annotation_result[[x]]$DEPs) <- NULL
-      annotation_result[[x]]$DEPs
+    dems <- lapply(names(annotation_result), function(x){
+      annotation_result[[x]]$DEMs$cluster <- x
+      rownames(annotation_result[[x]]$DEMs) <- NULL
+      annotation_result[[x]]$DEMs
     })
 
-    combined_deps <- do.call(rbind, deps)
-    rownames(combined_deps) <- 1:length(combined_deps$cluster)
+    combined_dems <- do.call(rbind, dems)
+    rownames(combined_dems) <- 1:length(combined_dems$cluster)
 
-    edger$DEPs <- combined_deps
+    edger$DEMs <- combined_dems
     return(edger)
   }
 
 }
 
 
-#' Finds all differentially expressed m/z values between comparison groups specified
+#' Finds all differentially expressed m/z values/metabolites between comparison groups
+#'
 #'       - This function uses run_pooling() and run_DE() to pool and run EdgeR analysis
 #'
 #' @param data A Seurat object containing mz values for differential expression analysis.
@@ -194,19 +195,19 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
 #' @param n An integer that defines the number of pseudo-replicates (pools) per sample (default = 3).
 #' @param logFC_threshold A numeric value indicating the logFC threshold to use for defining significant genes (default = 1.2).
 #' @param DE_output_dir A character string defining the directory path for all output files to be stored. This path must a new directory. Else, set to NULL as default.
-#' @param run_name A character string defining the title of this DE analysis that will be used when saving DEPs to .csv file (default = 'FindAllDEPs').
+#' @param run_name A character string defining the title of this DE analysis that will be used when saving DEMs to .csv file (default = 'FindAllDEMs').
 #' @param annotation.column Character string defining the column where annotation information is stored in the assay metadata. This requires AnnotateSeuratMALDI() to be run where the default column to store annotations is "all_IsomerNames" (default = "None").
 #' @param assay A character string defining the assay where the mz count data and annotations are stored (default = "Spatial").
 #' @param slot Character string defining the assay storage slot to pull the relative mz intensity values from. Note: EdgeR requires raw counts, all values must be positive (default = "counts").
 #' @param return.individual Boolean value defining whether to return a list of individual edgeR objects for each designated ident. If FALSE, one merged edgeR object will be returned (default = FALSE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
-#' @returns Returns an list() contains the EdgeR DE results. Pseudo-bulk counts are stored in $counts and DEPs are in $DEPs.
+#' @returns Returns an list() contains the EdgeR DE results. Pseudo-bulk counts are stored in $counts and DEMs are in $DEMs.
 #' @export
 #'
 #' @examples
-#' # FindAllDEPs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)
-FindAllDEPs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir = NULL, run_name = "FindAllDEPs", annotation.column = NULL, assay = "Spatial", slot = "counts", return.individual = FALSE, verbose = TRUE){
+#' # FindAllDEMs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)
+FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir = NULL, run_name = "FindAllDEMs", annotation.column = NULL, assay = "Spatial", slot = "counts", return.individual = FALSE, verbose = TRUE){
 
   if (!(is.null(DE_output_dir))){
     if (dir.exists(DE_output_dir)){
@@ -221,20 +222,20 @@ FindAllDEPs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
   pooled_data <- run_pooling(data,ident, n = n, assay = assay, slot = slot, verbose = verbose)
 
   #Step 2: Run EdgeR to calculate differentially expressed m/z peaks
-  DEP_results <- run_DE(pooled_data, data, ident = ident, output_dir = DE_output_dir, run_name = run_name, n=n, logFC_threshold=logFC_threshold, annotation.column = annotation.column, assay = assay, verbose = verbose, return.individual = return.individual)
+  DEM_results <- run_DE(pooled_data, data, ident = ident, output_dir = DE_output_dir, run_name = run_name, n=n, logFC_threshold=logFC_threshold, annotation.column = annotation.column, assay = assay, verbose = verbose, return.individual = return.individual)
 
-  # Returns an EDGEr object which contains the pseudo-bulk counts in $counts and DEPs in $DEPs
-  return(DEP_results)
+  # Returns an EDGEr object which contains the pseudo-bulk counts in $counts and DEMs in $DEMs
+  return(DEM_results)
 
 }
 
 
 
 
-#' Generates a Heatmap of DEPs generated from edgeR analysis run using FindAllDEPs().
+#' Generates a Heatmap of DEMs generated from edgeR analysis run using FindAllDEMs().
 #'       - this function uses pheatmap() to plot data
 #'
-#' @param edgeR_output A list containing outputs from edgeR analysis (from FindAllDEPs()). This includes pseudo-bulked counts and DEPs.
+#' @param edgeR_output A list containing outputs from edgeR analysis (from FindAllDEMs()). This includes pseudo-bulked counts and DEMs.
 #' @param n A numeric integer that defines the number of UP and DOWN regulated peaks to plot (default = 25).
 #' @param only.pos Boolean indicating if only positive markers should be returned (default = FALSE).
 #' @param FDR.threshold Numeric value that defines the FDR threshold to use for defining most significant results (default = 0.05).
@@ -248,23 +249,23 @@ FindAllDEPs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
 #' @param fontsize_col A numeric value defining the fontsize of colnames (default = 15).
 #' @param cutree_cols A numeric value defining the number of clusters the columns are divided into, based on the hierarchical clustering(using cutree), if cols are not clustered, the argument is ignored (default = 9).
 #' @param silent Boolean value indicating if the plot should not be draw (default = TRUE).
-#' @param plot_annotations_column Character string indicating the column name that contains the metabolite annotations to plot. Annotations = TRUE must be used in FindAllDEPs() for edgeR output to include annotations. If plot_annotations_column = NULL, m/z vaues will be plotted (default = NULL).
+#' @param plot_annotations_column Character string indicating the column name that contains the metabolite annotations to plot. Annotations = TRUE must be used in FindAllDEMs() for edgeR output to include annotations. If plot_annotations_column = NULL, m/z vaues will be plotted (default = NULL).
 #' @param save_to_path Character string defining the full filepath and name of the plot to be saved as.
 #' @param plot.save.width Integer value representing the width of the saved pdf plot (default = 20).
 #' @param plot.save.height Integer value representing the height of the saved pdf plot (default = 20).
 #' @param nlabels.to.show Numeric value defining the number of annotations to show per m/z (default = NULL).
 #' @param annotation_colors List for specifying annotation_row and annotation_col track colors manually. Check pheatmap R-Package documentation for details. If set to 'NA', default coloring will be used (default = NA).
 #'
-#' @returns A heatmap plot of significantly differentially expressed peaks defined in the edgeR ouput object.
+#' @returns A heatmap plot of significantly differentially expressed metabolites defined in the edgeR ouput object.
 #' @export
 #'
 #' @import dplyr
 #'
 #' @examples
-#' # DEPs <- FindAllDEPs(SeuratObj, "sample")
+#' # DEMs <- FindAllDEMs(SeuratObj, "sample")
 #'
-#' # DEPsHeatmap(DEPs)
-DEPsHeatmap <- function(edgeR_output,
+#' # DEMsHeatmap(DEMs)
+DEMsHeatmap <- function(edgeR_output,
                          n = 5,
                          only.pos = FALSE,
                          FDR.threshold = 0.05,
@@ -286,7 +287,7 @@ DEPsHeatmap <- function(edgeR_output,
                          annotation_colors = NULL){
 
 
-  degs <- edgeR_output$DEPs
+  degs <- edgeR_output$DEMs
   degs <- subset(degs, FDR < FDR.threshold)
 
   if (order.by == "FDR"){
@@ -349,8 +350,8 @@ DEPsHeatmap <- function(edgeR_output,
 
   mtx <- as.matrix(as.data.frame(edgeR::cpm(edgeR_output,log=TRUE))[unique(df$gene),])
   if (!(is.null(plot_annotations_column))){
-    if (is.null(edgeR_output$DEPs[[plot_annotations_column]])){
-      warning("There are no annotations present in the edgeR_output object. Run 'annotate.SeuratMALDI()' prior to 'FindAllDEPs' and set annotations = TRUE .....\n Heatmap will plot default m/z values ... ")
+    if (is.null(edgeR_output$DEMs[[plot_annotations_column]])){
+      warning("There are no annotations present in the edgeR_output object. Run 'annotate.SeuratMALDI()' prior to 'FindAllDEMs' and set annotations = TRUE .....\n Heatmap will plot default m/z values ... ")
     } else{
       if (!is.null(nlabels.to.show)){
         df[[plot_annotations_column]] <- labels_to_show(df[[plot_annotations_column]], n = nlabels.to.show)
@@ -370,7 +371,7 @@ DEPsHeatmap <- function(edgeR_output,
 }
 
 
-#' Saves the DEPs generated pheatmap as a PDF
+#' Saves the DEMs generated pheatmap as a PDF
 #'
 #' @param pheatmap A pheatmap plot object that is being saved.
 #' @param filename Character string defining the full filepath and name of the plot to be saved as.

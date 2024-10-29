@@ -16,7 +16,7 @@ FishersPathwayAnalysis(
 )
 }
 \arguments{
-\item{Analyte}{A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.}
+\item{Analyte}{A list of analytes containing a combination of three possible elements, namely "mzs", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.}
 
 \item{max_path_size}{The max number of  in a specific pathway (default = 500).}
 
@@ -26,16 +26,16 @@ FishersPathwayAnalysis(
 
 \item{pathway_all_info}{Whether to included all genes/ screened in the return (default = FALSE).}
 
-\item{pval_cutoff}{The cut off of raw p value to retain the pathways (default = 0.05).}
+\item{pval_cutoff}{A numerical value defining the adjusted p value cutoff for keeing significant pathways (default = 0.05).}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+\item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
 
 \item{...}{Additional parameters that can be passed through to \code{annotateTable()} when running \code{mz}-based analysis. Please see documentation for \code{annotateTable()} for more details.
 \subsection{Details}{
 \itemize{
-\item Supported \code{metabolite} format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
-\item Supported \code{gene} data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-\item Supported \code{mz} format: any string or numeric vector contains the m/z. NOTE: If \code{mz} values are provided then \code{annotateTable()} will be run with
+\item Supported \code{metabolites} format: strings which contain the metabolite ID with database name. For example = "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
+\item Supported \code{genes} data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
+\item Supported \code{mzs} format: any string or numeric vector contains the m/z. NOTE: If \code{mzs} values are provided then \code{annotateTable()} will be run using default parameters and combining the Chebi_db, Lipidmaps_db and HMDB_db databases.
 }
 }}
 }
@@ -46,5 +46,12 @@ a dataframe with the relevant pathway information
 Calculates Significant Metabolic Pathways using a Fisher Exact Test
 }
 \examples{
-# FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
+## Running in 'mzs' mode:
+# FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)
+
+## Running in 'metabolites' mode
+# FishersPathwayAnalysis(Analyte = list("metabolites" = metabolite_ids))
+
+## Running 'metabolites' and 'genes' combined
+# FishersPathwayAnalysis(Analyte = list("metabolites" = metabolite_ids, "genes" = gene_names))
 }

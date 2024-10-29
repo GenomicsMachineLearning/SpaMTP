@@ -28,7 +28,7 @@ run_DE(
 
 \item{output_dir}{A character string defining the ident column to perform differential expression analysis against.}
 
-\item{run_name}{A character string defining the title of this DE analysis (will be used when saving DEPs to .csv file).}
+\item{run_name}{A character string defining the title of this DE analysis (will be used when saving DEMs to .csv file).}
 
 \item{n}{An integer that defines the number of pseudo-replicates per sample (default = 3).}
 
@@ -43,7 +43,7 @@ run_DE(
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
 \value{
-A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEPs data.frame with a list of differential expressed m/z peaks
+A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEMs data.frame with a list of differential expressed m/z metabolites
 }
 \description{
 Runs EdgeR analysis for pooled data

@@ -13,13 +13,11 @@ FindRegionalPathways(
   ST_assay = "SPT",
   SM_slot = "counts",
   ST_slot = "counts",
-  tof_resolution = 30000,
   min_path_size = 5,
   max_path_size = 500,
-  pval_cutoff_pathway = NULL,
-  pval_cutoff_mets = NULL,
-  pval_cutoff_genes = NULL,
-  verbose = T
+  pval_cutoff_mets = 0.05,
+  pval_cutoff_genes = 0.05,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -27,33 +25,27 @@ FindRegionalPathways(
 
 \item{ident}{A name character to specific the cluster vector for regions in \code{SpaMTP@meta.data} slot.}
 
-\item{DE.list}{A list consist of differetial expression output from FindAllMarkers() function, with items in same order as analyte_types.}
+\item{DE.list}{A list consisting of differential expression data.frames for each input modality. Within each data.frame column names MUST include 'cluster', 'gene', ('avg_log2FC' or 'logFC') and ('p_val_adj' or 'FDR').}
 
 \item{analyte_types}{Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).}
 
-\item{SM_assay}{A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").}
+\item{SM_assay}{A Character string defining describing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").}
 
-\item{ST_assay}{A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").}
+\item{ST_assay}{A Character string defining describing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").}
 
 \item{SM_slot}{The slot name containing the SM assay matrix data (default = "counts").}
 
 \item{ST_slot}{The slot name containing the ST assay matrix data (default = "counts").}
 
-\item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]} (default = 30000).}
-
 \item{min_path_size}{The min number of metabolites in a specific pathway (default = 5).}
 
 \item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
 
-\item{pval_cutoff_pathway}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways}
+\item{pval_cutoff_mets}{A numerical value defining the adjusted p value cutoff for significant differentially expressed metabolites. If \code{NULL} cutoff = \code{0.05} (default = 0.05).}
 
-\item{pval_cutoff_mets}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for metabolites}
+\item{pval_cutoff_genes}{A numerical value defining the adjusted p value cutoff for significant differentially expressed genes. If \code{NULL} cutoff = \code{0.05} (default = 0.05).}
 
-\item{pval_cutoff_genes}{A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs}
-
-\item{verbose}{A boolean value indicates whether verbose is shown}
-
-\item{adduct}{Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).}
+\item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
 }
 \value{
 A SpaMTP object with set enrichment on given analyte types.

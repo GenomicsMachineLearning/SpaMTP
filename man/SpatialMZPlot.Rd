@@ -66,8 +66,6 @@ SpatialMZPlot(
 \item{information}{An optional dataframe or matrix of extra information to be displayed on hover (default = NULL).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
-
-\item{plot.pixels}{Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).}
 }
 \value{
 A ggplot showing the Spatial representation of expression data of specified m/z values for Spatial data with H&E Image

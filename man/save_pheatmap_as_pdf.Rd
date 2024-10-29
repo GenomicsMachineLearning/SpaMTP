@@ -2,7 +2,7 @@
 % Please edit documentation in R/DifferentialMZPeaks.R
 \name{save_pheatmap_as_pdf}
 \alias{save_pheatmap_as_pdf}
-\title{Saves the DEPs generated pheatmap as a PDF}
+\title{Saves the DEMs generated pheatmap as a PDF}
 \usage{
 save_pheatmap_as_pdf(pheatmap, filename, width = 20, height = 20)
 }
@@ -16,7 +16,7 @@ save_pheatmap_as_pdf(pheatmap, filename, width = 20, height = 20)
 \item{height}{Integer value representing the height of the saved pdf plot (default = 20).}
 }
 \description{
-Saves the DEPs generated pheatmap as a PDF
+Saves the DEMs generated pheatmap as a PDF
 }
 \examples{
 # save_pheatmap_as_pdf(pheatmap, filename = "/Documents/plots/pheatmap1")

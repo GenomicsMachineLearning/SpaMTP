@@ -473,7 +473,7 @@ These regions are identified also in the following references: [1](https://doi.o
 
 
 
-Lets use SpaMTP's *FindAllDEPs()* function to identify differentially expressed m/z peaks (DEPs) between each of these three tissue regions. This function uses similar methods to those established for genetic data, whereby pixels are pseudo-bulked into random pools and assessed for differential expression ([EdgeR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/)). 
+Lets use SpaMTP's *FindAllDEMs()* function to identify differentially expressed m/z metabolites (DEMs) between each of these three tissue regions. This function uses similar methods to those established for genetic data, whereby pixels are pseudo-bulked into random pools and assessed for differential expression ([EdgeR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/)). 
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -484,14 +484,14 @@ Now our object has been subset to only include our clusters of interest, we can 
 
 ```{r, warning=FALSE, message=FALSE}
 # Performs pooling, pseudo-bulking and EdgeR Differential Expression Analysis
-cluster_DEPs <- FindAllDEPs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, 
-                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
+                            run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
 ```
 
     Pooling one sample into 3 replicates...
     
-    Running edgeR DE Analysis for  FindAllDEPs  -> with samples [ 5, 2, 6 ]
+    Running edgeR DE Analysis for  FindAllDEMs  -> with samples [ 5, 2, 6 ]
     
     Starting condition: 5
     
@@ -505,7 +505,7 @@ Lets observe the top 10 DE metabolites for each cluster in a heatmap
 
 
 ```{r, fig.width=15, fig.height=10}
-DEPsHeatmap(cluster_DEPs, only.pos = FALSE, order.by = "logFC",
+DMPsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
             n = 10, save_to_path = NULL
             ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("2","5","6")])
@@ -533,15 +533,15 @@ The code below performs differential expression analysis just between the the mu
 ROI_x <- subset(bladder_annotated, subset = ssc %in% c("5", "6"))
 
 ### Performs differential expression analysis between the two groups
-cluster_DEPs_x <- FindAllDEPs(data = ROI_x, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+cluster_DEMs_x <- FindAllDEMs(data = ROI_x, ident = "ssc", n = 3, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, 
-                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames" )
+                            run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" )
 
-### Runs lipid nomenclature simplification on the DEP results
-cluster_DEPs_x$DEPs <- RefineLipids(cluster_DEPs_x$DEPs, annotation.column = "annotations", lipid_info = "simple")
+### Runs lipid nomenclature simplification on the DEM results
+cluster_DEMs_x$DEMs <- RefineLipids(cluster_DEMs_x$DEMs, annotation.column = "annotations", lipid_info = "simple")
 
-### Subsets the DEP results to only get up regulated metabolites for cluster 5 and 6
-urothelium <- cluster_DEPs_x$DEPs[cluster_DEPs_x$DEPs$cluster == "6",]
+### Subsets the DEM results to only get up regulated metabolites for cluster 5 and 6
+urothelium <- cluster_DEMs_x$DEMs[cluster_DEMs_x$DEMs$cluster == "6",]
 
 ### Sets up colouring for significant spots in volcano plot
 keyvals <- ifelse(
@@ -565,7 +565,7 @@ keyvals.shape <- ifelse(
   names(keyvals.shape)[keyvals.shape == 15] <- metabolites[1]
   names(keyvals.shape)[keyvals.shape == 17] <- metabolites[2]
 
-### Plots volcano plot with DEP results
+### Plots volcano plot with DEM results
 volc_plot <- EnhancedVolcano::EnhancedVolcano( urothelium,
                                   selectLab = metabolites, 
                                   lab = urothelium$Species.Name.Simple,
@@ -598,14 +598,14 @@ Lipids are a key metabolite expressed within the urinary bladder. Lets take a de
 
 
 ```{r, message=FALSE, results='hide'}
-### Runs lipid nomenclature simplification on the DEP results generated between cluster 2, 5 and 6
-cluster_DEPs$DEPs <- RefineLipids(cluster_DEPs$DEPs, annotation.column = "annotations", lipid_info = "simple")
+### Runs lipid nomenclature simplification on the DEM results generated between cluster 2, 5 and 6
+cluster_DEMs$DEMs <- RefineLipids(cluster_DEMs$DEMs, annotation.column = "annotations", lipid_info = "simple")
 ```
 
 
 ```{r, fig.width=7, fig.height=5, warning=FALSE, message=FALSE}
 # lets look at the Differenitally expressed Lipids groups
-UP <- cluster_DEPs$DEPs[cluster_DEPs$DEPs$regulate == "Up",] # lets get the upregulated lipids for each cluster
+UP <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$regulate == "Up",] # lets get the upregulated lipids for each cluster
 
 # Compute counts of Lipid Maps Categories for 'Up' and 'Down' entries
 category_counts <- UP %>%
@@ -920,7 +920,7 @@ The code below uses the "ssc" clustering and the pseudpo-bulking DE results to i
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 ident = "ssc",
-                                DE.list = list(cluster_DEPs$DEPs),
+                                DE.list = list(cluster_DEMs$DEMs),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
                                 ST_assay = NULL)
@@ -951,13 +951,13 @@ ROI_pathays <- AnnotateSM(ROI_pathays, db = rbind(Chebi_db,Lipidmaps_db,HMDB_db)
 
 
 ## Re-run DE analysis
-DE <- FindAllDEPs(data = ROI_pathays, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+DE <- FindAllDEMs(data = ROI_pathays, ident = "ssc", n = 3, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, 
-                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames")
+                            run_name = "FindAllDEMs", annotation.column = "all_IsomerNames")
 
 DE_pathways <- FindRegionalPathways(SpaMTP = ROI_pathays,
                                 ident = "ssc",
-                                DE.list = list(DE$DEPs),
+                                DE.list = list(DE$DEMs),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
                                 ST_assay = NULL)

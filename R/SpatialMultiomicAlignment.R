@@ -485,6 +485,7 @@ AlignSpatialOmics <- function (
 
 
   reference.index = 1
+  align.index = 2
   scatters <- sc
   fixed.scatter <- scatters[[reference.index]]$scatter
   counter <- NULL
@@ -578,6 +579,18 @@ AlignSpatialOmics <- function (
                ))
              ),
              fluidRow(
+
+               column(4,  checkboxInput(inputId = "show_ST_img",
+                                        label = "show image",
+                                        value = TRUE)
+               ),column(4,  checkboxInput(inputId = "show_ST_spots",
+                                        label = "show ST spots",
+                                        value = FALSE)
+               ),
+               column(4,  checkboxInput(inputId = "show_SM_spots",
+                                        label = "show SM spots",
+                                        value = TRUE)
+               ),
                column(4,  checkboxInput(inputId = "flip_x",
                                         label = "mirror along x axis",
                                         value = FALSE)
@@ -585,24 +598,12 @@ AlignSpatialOmics <- function (
                column(4,  checkboxInput(inputId = "flip_y",
                                         label = "mirror along y axis",
                                         value = FALSE)
-               ),
-               column(4,  checkboxInput(inputId = "show_ST_spots",
-                                        label = "show ST spots",
-                                        value = FALSE)
-               ),
-               column(4,  checkboxInput(inputId = "show_ST_img",
-                                        label = "show image",
-                                        value = TRUE)
-               ),
-               column(4,  checkboxInput(inputId = "show_SM_spots",
-                                        label = "show SM spots",
-                                        value = TRUE)
                )
 
              ),
-             selectInput(inputId = "sample", choices = (1:length(scatters))[-reference.index],
+             #selectInput(inputId = "sample", choices = (1:length(scatters))[-reference.index],
 
-                         label = "Select sample", selected = reference.index),
+            #             label = "Select sample", selected = reference.index),
              actionButton("myBtn", "Return aligned data")
       ),
 
@@ -725,7 +726,7 @@ AlignSpatialOmics <- function (
       scatter.t <- t(tr%*%rbind(t(scatter.t), 1))[, 1:2]
       coords.t <- t(tr%*%rbind(t(coords.t), 1))[, 1:2]
 
-      return(list(scatter = scatter.t, coords = coords.t, tr = tr, xylimits = image.dims[[input$sample]]))
+      return(list(scatter = scatter.t, coords = coords.t, tr = tr, xylimits = image.dims[[align.index]]))
     })
 
     output$scatter <- renderPlot({
@@ -796,7 +797,7 @@ AlignSpatialOmics <- function (
 
     }, height = 800, width = 800)
 
-    scatter.coords <- eventReactive(input$sample, {
+    scatter.coords <- eventReactive(align.index, {
       reset("angle"); reset("shift_x"); reset("shift_y"); reset("flip_x"); reset("flip_y"); reset("stretch_factor1"); reset("stretch_factor2"); reset("stretch_angle1"); reset("stretch_angle2")
       if (!is.null(counter)) {
         scatters[[counter]] <<- coords.ls[c(1, 2)]
@@ -806,9 +807,9 @@ AlignSpatialOmics <- function (
           tr.matrices[[counter]] <<- coords.ls[[3]]
         }
       }
-      scatter <- scatters[[as.numeric(input$sample)]]$scatter
-      coords <- scatters[[as.numeric(input$sample)]]$coords
-      counter <<- as.numeric(input$sample)
+      scatter <- scatters[[as.numeric(align.index)]]$scatter
+      coords <- scatters[[as.numeric(align.index)]]$coords
+      counter <<- as.numeric(align.index)
       return(list(scatter, coords))
     })
 
@@ -830,13 +831,20 @@ AlignSpatialOmics <- function (
     observeEvent(input$info, {
       showModal(modalDialog(
         title = "Instructions",
-        HTML("The selected sample is highlighted by its coordinates under the tissue <br>",
-             "highlighted in red. only rigid transformations are allowed, meaning <br>",
-             "rotation, shifts along x/y-axes and reflections.<br><br>",
-             "1. Select sample that you want to align to a reference [default: 2]<br>",
-             "2. Adjust transformation parameters to fit the sample image to the reference<br>",
-             "3. Repeat 1-4 until all samples are aligned<br>",
-             "4. Press the 'return aligned data' button to return results"),
+        HTML(
+          "The alignment interface is modified from [STUtility](https://github.com/jbergenstrahle/STUtility/tree/master) to provide an interface for manually aligning SpaMTP (Seurat) Objects <br>",
+             "This interface can be used for: <br>",
+             "1. Aligning SM data to ST data coordinates.<br><br>",
+             "2. Aligning SM data to a H&E image <br>",
+             "<br>",
+             "How to use: <br>",
+             "- Adjust the coordinates of the SM data by changing the rotation, x-axis or y-axis position to match the provided reference dataset. <br>",
+             "- Stretch the SM coordinates in either the direction matching the blue and/or red arrow. The angle of the arrows can also be change to match the required stretching direction. <br>",
+             "- Once them SM data is aligned select the 'Return Aligned Data' button to generate a SpaMTP Seurat object with the adjusted coordinates. <br>",
+             "<br>",
+             "Note: If using in 'AlignSpatialOmics' mode then a SpaMTP object will be returned containing only the SM data with the ajusted coordinates. <br>",
+             "For mapping SM data to corresponding ST spots, please run 'MapSpatialOmics()' with the original ST object and now updated SM object. <br>"
+          ),
         easyClose = TRUE,
         footer = NULL
       ))

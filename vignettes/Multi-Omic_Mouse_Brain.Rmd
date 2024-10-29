@@ -618,13 +618,13 @@ Based on this we can look at which metabolites and genes are differentially expr
 
 ```{r, warning=FALSE, message=FALSE}
 # Performs pooling, pseudo-bulking and EdgeR Differential Expression Analysis
-cluster_DEPs <- FindAllDEPs(data = integrated.data, ident = "integrated_clusters", n = 3, logFC_threshold = 1.2, 
+cluster_DEMs <- FindAllDEMs(data = integrated.data, ident = "integrated_clusters", n = 3, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, assay = "SPM",
-                            run_name = "FindAllDEPs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
+                            run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
 ```
 
     Pooling one sample into 3 replicates...
-    Running edgeR DE Analysis for  FindAllDEPs  -> with samples [ 3, 1, 2, 4, 7, 5, 6, 9, 0, 8, 10 ]
+    Running edgeR DE Analysis for  FindAllDEMs  -> with samples [ 3, 1, 2, 4, 7, 5, 6, 9, 0, 8, 10 ]
     Starting condition: 3
     Starting condition: 1
     Starting condition: 2
@@ -638,7 +638,7 @@ cluster_DEPs <- FindAllDEPs(data = integrated.data, ident = "integrated_clusters
     Starting condition: 10
     
 ```{r, fig.width=6, fig.height=8}
-results <- cluster_DEPs$DEPs[cluster_DEPs$DEPs$cluster == "1",]
+results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "1",]
 
 metabolites <- c("Dopamine (double derivatized)", "Dopamine (single derivatized)")
 
@@ -654,7 +654,7 @@ keyvals <- ifelse(
   names(keyvals)[keyvals == 'orange'] <- 'Dopamine'
 
 
-### Plots volcano plot with DEP results
+### Plots volcano plot with DEM results
 volc_plot <- EnhancedVolcano::EnhancedVolcano( results,
                                   selectLab = c(""), 
                                   lab = results$annotations,

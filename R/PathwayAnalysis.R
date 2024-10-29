@@ -1,18 +1,18 @@
 #' Calculates Significant Metabolic Pathways using a Fisher Exact Test
 #'
-#' @param Analyte A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.
-#' @param max_path_size The max number of  in a specific pathway (default = 500).
+#' @param Analyte A list of analytes containing a combination of three possible elements, namely "mzs", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.
 #' @param min_path_size The min number of  in a specific pathway (default = 5).
+#' @param max_path_size The max number of  in a specific pathway (default = 500).
 #' @param alternative The hypothesis of the fisher exact test (default = "greater").
 #' @param pathway_all_info Whether to included all genes/ screened in the return (default = FALSE).
-#' @param pval_cutoff The cut off of raw p value to retain the pathways (default = 0.05).
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param pval_cutoff A numerical value defining the adjusted p value cutoff for keeing significant pathways (default = 0.05).
+#' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #' @param ... Additional parameters that can be passed through to `annotateTable()` when running `mz`-based analysis. Please see documentation for `annotateTable()` for more details.
 #'
 #' ### Details
-#' * Supported `metabolite` format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
-#' * Supported `gene` data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-#' * Supported `mz` format: any string or numeric vector contains the m/z. NOTE: If `mz` values are provided then `annotateTable()` will be run with
+#' * Supported `metabolites` format: strings which contain the metabolite ID with database name. For example = "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
+#' * Supported `genes` data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
+#' * Supported `mzs` format: any string or numeric vector contains the m/z. NOTE: If `mzs` values are provided then `annotateTable()` will be run using default parameters and combining the Chebi_db, Lipidmaps_db and HMDB_db databases.
 #'
 #'
 #' @return a dataframe with the relevant pathway information
@@ -22,7 +22,14 @@
 #' @import stringr
 #'
 #' @examples
-#' # FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)
+#' ## Running in 'mzs' mode:
+#' # FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)
+#'
+#' ## Running in 'metabolites' mode
+#' # FishersPathwayAnalysis(Analyte = list("metabolites" = metabolite_ids))
+#'
+#' ## Running 'metabolites' and 'genes' combined
+#' # FishersPathwayAnalysis(Analyte = list("metabolites" = metabolite_ids, "genes" = gene_names))
 FishersPathwayAnalysis <- function (Analyte,
                                     max_path_size = 500,
                                     min_path_size = 5,
@@ -318,6 +325,12 @@ FishersPathwayAnalysis <- function (Analyte,
                                                          gene_id_list)%>% arrange(p_val)
 
   }
+
+  if (!is.null(pval_cutoff)){
+    return = return %>% dplyr::filter(p_val <= pval_cutoff)
+  }
+
+
   return(return)
 }
 
@@ -326,20 +339,17 @@ FishersPathwayAnalysis <- function (Analyte,
 #'
 #' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics(SM)/transcriptomics(ST) data or both, if contains SM data, it should be annotated via SpaMTP::AnnotateSM function.
 #' @param ident A name character to specific the cluster vector for regions in `SpaMTP@meta.data` slot.
-#' @param DE.list A list consist of differetial expression output from FindAllMarkers() function, with items in same order as analyte_types.
+#' @param DE.list A list consisting of differential expression data.frames for each input modality. Within each data.frame column names MUST include 'cluster', 'gene', ('avg_log2FC' or 'logFC') and ('p_val_adj' or 'FDR').
 #' @param analyte_types Vector of character strings defining which analyte types to use. Options can be c("genes"), c("metabolites") or both (default = c("genes", "metabolites")).
-#' @param adduct Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).
-#' @param SM_assay A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").
-#' @param ST_assay A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").
+#' @param SM_assay A Character string defining describing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").
+#' @param ST_assay A Character string defining describing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").
 #' @param SM_slot The slot name containing the SM assay matrix data (default = "counts").
 #' @param ST_slot The slot name containing the ST assay matrix data (default = "counts").
-#' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
 #' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
-#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]` (default = 30000).
-#' @param pval_cutoff_pathway A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways
-#' @param pval_cutoff_mets A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for metabolites
-#' @param pval_cutoff_genes A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs
-#' @param verbose A boolean value indicates whether verbose is shown
+#' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
+#' @param pval_cutoff_mets A numerical value defining the adjusted p value cutoff for significant differentially expressed metabolites. If `NULL` cutoff = `0.05` (default = 0.05).
+#' @param pval_cutoff_genes A numerical value defining the adjusted p value cutoff for significant differentially expressed genes. If `NULL` cutoff = `0.05` (default = 0.05).
+#' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #'
 #' @return A SpaMTP object with set enrichment on given analyte types.
 #' @export
@@ -356,13 +366,11 @@ FindRegionalPathways = function(SpaMTP,
                                 ST_assay = "SPT",
                                 SM_slot = "counts",
                                 ST_slot = "counts",
-                                tof_resolution = 30000,
                                 min_path_size = 5,
                                 max_path_size = 500,
-                                pval_cutoff_pathway = NULL,
-                                pval_cutoff_mets = NULL,
-                                pval_cutoff_genes = NULL,
-                                verbose = T) {
+                                pval_cutoff_mets = 0.05,
+                                pval_cutoff_genes = 0.05,
+                                verbose = TRUE) {
   ## Checks for ident in SpaMTP Object
   if (!(ident %in% colnames(SpaMTP@meta.data))) {
     stop(

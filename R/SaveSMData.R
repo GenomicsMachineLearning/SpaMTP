@@ -5,15 +5,19 @@
 #### SpaMTP Saving Data Objects ########################################################################################################################################################################################
 
 #' Saves Seurat Spatial Metabolomic object to files.
-#'    - This can be used for saving data for transfer to python Anndata using scanpy.read_10x_mtx()
-#'    - For saving in R saveRDS() is recommended
+
 #'
 #' @param data A Seurat Spatial Metabolomic Object being saved.
 #' @param outdir Character string of the directory to save the mtx.mtx, barcode.tsv, features.tsv, barcode_metadata.csv and feature_metadata.csv in.
 #' @param assay Character string defining the Seurat assay that contains the m/z count data (default = "Spatial").
 #' @param slot Character string defining the Seurat assay slot that contains the m/z values directly (default = "counts").
+#' @param image Character string defining the image stored within the SpaMTP Seurat object to save. If `NULL` no image will be saved (default = NULL).
 #' @param annotations Boolean values defining if the Seurat Object contains annotations to be saved (default = FALSE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#' ### Details
+#' * This can be used for saving data for transfer to python. Can be read in as Anndata using scanpy.read_10x_mtx().
+#' * For saving in R saveRDS() is recommended.
 #'
 #' @export
 #'

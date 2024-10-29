@@ -34,8 +34,6 @@ getPCA(
 \item{show_variance_plot}{Boolean indicating weather to display the variance plot output by this analysis.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed.}
-
-\item{p_val_threshold}{is the p value threshold for pathways to be significant.}
 }
 \value{
 PCA object contating embeddings and projections

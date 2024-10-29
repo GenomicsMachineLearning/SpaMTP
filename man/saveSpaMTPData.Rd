@@ -2,11 +2,7 @@
 % Please edit documentation in R/SaveSMData.R
 \name{saveSpaMTPData}
 \alias{saveSpaMTPData}
-\title{Saves Seurat Spatial Metabolomic object to files.
-\itemize{
-\item This can be used for saving data for transfer to python Anndata using scanpy.read_10x_mtx()
-\item For saving in R saveRDS() is recommended
-}}
+\title{Saves Seurat Spatial Metabolomic object to files.}
 \usage{
 saveSpaMTPData(
   data,
@@ -27,16 +23,20 @@ saveSpaMTPData(
 
 \item{slot}{Character string defining the Seurat assay slot that contains the m/z values directly (default = "counts").}
 
+\item{image}{Character string defining the image stored within the SpaMTP Seurat object to save. If \code{NULL} no image will be saved (default = NULL).}
+
 \item{annotations}{Boolean values defining if the Seurat Object contains annotations to be saved (default = FALSE).}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+\subsection{Details}{
+\itemize{
+\item This can be used for saving data for transfer to python. Can be read in as Anndata using scanpy.read_10x_mtx().
+\item For saving in R saveRDS() is recommended.
+}
+}}
 }
 \description{
 Saves Seurat Spatial Metabolomic object to files.
-\itemize{
-\item This can be used for saving data for transfer to python Anndata using scanpy.read_10x_mtx()
-\item For saving in R saveRDS() is recommended
-}
 }
 \examples{
 # saveSpaMTPData(SeuratObject, "~/Documents/seuratobj_files", annotations = TRUE)

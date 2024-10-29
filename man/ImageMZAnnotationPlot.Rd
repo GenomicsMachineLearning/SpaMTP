@@ -110,9 +110,9 @@ ImageMZAnnotationPlot(
 
 \item{plot.exact}{Boolean value describing if to only plot exact matches to the metabolite search terms, else will plot all metabolites which contain serach word in name (default = TRUE).}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+\item{plot.pixel}{Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).}
 
-\item{plot.pixels}{Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).}
+\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
 \value{
 A ggplot showing the Spatial representation of expression data of specified metabolites.

@@ -229,7 +229,6 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
 #' @param variance_explained_threshold Numeric value defining the explained variance threshold.
 #' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix.
-#' @param p_val_threshold is the p value threshold for pathways to be significant.
 #' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol.
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from.
 #' @param slot Character string defining the assay slot containing the intensity values.
@@ -434,7 +433,6 @@ getPCA <- function(SpaMTP,
 #' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
 #' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
 #' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
-#' @param p_val_threshold is the p value threshold for pathways to be significant (default = 0.05).
 #' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
 #' @param slot Character string defining the assay slot containing the intensity values (default = "counts").

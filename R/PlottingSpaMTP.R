@@ -251,7 +251,7 @@ pixelPlot <- function(plot){
 #' @param coord.fixed Boolean value of it to plot cartesian coordinates with fixed aspect ratio (default = TURE).
 #' @param assay Character string indicating which Seurat object assay to pull data form (default = "Spatial").
 #' @param slot Character string indicating the assay slot to use to pull expression values form (default = "counts").
-#' @param plot.pixels Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).
+#' @param plot.pixel Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @returns A ggplot showing the Spatial representation of expression data of specified m/z values
@@ -446,7 +446,7 @@ ImageMZPlot <- function(object,
 #' @param slot Character string indicating the assay slot to use to pull expression values form (default = "counts").
 #' @param column.name Character string defining the column name where the annotations are stored in the slot meta.data (default = "all_IsomerNames").
 #' @param plot.exact Boolean value describing if to only plot exact matches to the metabolite search terms, else will plot all metabolites which contain serach word in name (default = TRUE).
-#' @param plot.pixels Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).
+#' @param plot.pixel Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @returns A ggplot showing the Spatial representation of expression data of specified metabolites.
@@ -696,7 +696,6 @@ ImageMZAnnotationPlot <- function(object,
 #' @param stroke Numeric value describing the width of the border around the spot (default = 0.25).
 #' @param interactive Boolean value of if to launch an interactive SpatialDimPlot or SpatialFeaturePlot session, see Seurat::ISpatialDimPlot() or Seurat::ISpatialFeaturePlot() for more details (default = FALSE).
 #' @param information An optional dataframe or matrix of extra information to be displayed on hover (default = NULL).
-#' @param plot.pixels Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @returns A ggplot showing the Spatial representation of expression data of specified m/z values for Spatial data with H&E Image
