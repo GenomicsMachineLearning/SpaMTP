@@ -74,7 +74,7 @@ reference:
 - title: Visualising DEPs Analysis
   desc: Functions used to generate a heatmap from DEP results
   contents:
-  - DEPsHeatmap
+  - DEMsHeatmap
   - save_pheatmap_as_pdf
 - title: Simplifying Lipid Nomenclature
   desc: Function used to simplify lipid names into general lipid categories, classes,
