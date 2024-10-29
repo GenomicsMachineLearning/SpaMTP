@@ -856,11 +856,11 @@ We can also run FisherPathwayTest using just m/z values. Lets try this below and
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 cluster_6_mz_pathways <- FishersPathwayAnalysis(list("mzs" = cluster_6$gene),
-                            max_path_size = 500,
-                            alternative = "greater",
                             min_path_size = 5,
+                            max_path_size = 500,    
+                            alternative = "greater",
                             pathway_all_info = T,
-                            pval_cutoff = 0.05,
+                            pval_cutoff = 1,
                             verbose = TRUE)
 ```
 
