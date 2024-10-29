@@ -68,7 +68,7 @@ reference:
 - title: Analysis of Differentially Expressed Peaks
   desc: Functions required for performing pseudo-bulking differential expression analysis
   contents:
-  - FindAllDEPs
+  - FindAllDEMs
   - run_pooling
   - run_DE
 - title: Visualising DEPs Analysis
