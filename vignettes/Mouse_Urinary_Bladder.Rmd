@@ -1091,7 +1091,7 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 DE.list = list(DE),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
-                                ST_assay = NULL,pval_cutoff_pathway = 0.01)
+                                ST_assay = NULL)
 ```
 Below we will visualise the top 5 pathways differentially expressed between clusters
 ```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10}
