@@ -505,7 +505,7 @@ Lets observe the top 10 DE metabolites for each cluster in a heatmap
 
 
 ```{r, fig.width=15, fig.height=10}
-DMPsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
+DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
             n = 10, save_to_path = NULL
             ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("2","5","6")])
