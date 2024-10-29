@@ -69,7 +69,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FindNearestMZ</span><span class="op">(</span><span class="va">data</span>, <span class="va">target_mz</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">FindNearestMZ</span><span class="op">(</span><span class="va">data</span>, <span class="va">target_mz</span>, assay <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -80,6 +80,10 @@
 
 <dt>target_mz</dt>
 <dd><p>Numeric value defining the target m/z peak</p></dd>
+
+
+<dt>assay</dt>
+<dd><p>Character string indicating which Seurat object assay to pull data form. If set to NULL will use current default assay based on Seurat's <code>DefaultAssay()</code> function (default = NULL).</p></dd>
 
 </dl></div>
     <div id="value">

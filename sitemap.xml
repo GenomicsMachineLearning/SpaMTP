@@ -64,13 +64,13 @@
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ConvertSeuratToCardinal.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DEPsHeatmap.html</loc>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DEMsHeatmap.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/DensityMap.html</loc>
   </url>
   <url>
-    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindAllDEPs.html</loc>
+    <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindAllDEMs.html</loc>
   </url>
   <url>
     <loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/FindCorrelatedFeatures.html</loc>

@@ -78,13 +78,11 @@
 <span>  ST_assay <span class="op">=</span> <span class="st">"SPT"</span>,</span>
 <span>  SM_slot <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  ST_slot <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  tof_resolution <span class="op">=</span> <span class="fl">30000</span>,</span>
 <span>  min_path_size <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  max_path_size <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  pval_cutoff_pathway <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pval_cutoff_mets <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pval_cutoff_genes <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">T</span></span>
+<span>  pval_cutoff_mets <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  pval_cutoff_genes <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,7 +97,7 @@
 
 
 <dt>DE.list</dt>
-<dd><p>A list consist of differetial expression output from FindAllMarkers() function, with items in same order as analyte_types.</p></dd>
+<dd><p>A list consisting of differential expression data.frames for each input modality. Within each data.frame column names MUST include 'cluster', 'gene', ('avg_log2FC' or 'logFC') and ('p_val_adj' or 'FDR').</p></dd>
 
 
 <dt>analyte_types</dt>
@@ -107,11 +105,11 @@
 
 
 <dt>SM_assay</dt>
-<dd><p>A Character string defining descrbing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").</p></dd>
+<dd><p>A Character string defining describing slot name for spatial metabolomics data in SpaMTP to extract intensity values from (default = "SPM").</p></dd>
 
 
 <dt>ST_assay</dt>
-<dd><p>A Character string defining descrbing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").</p></dd>
+<dd><p>A Character string defining describing slot name for spatial transcriptomics data in SpaMTP to extract RNA count values from (default = "SPT").</p></dd>
 
 
 <dt>SM_slot</dt>
@@ -122,10 +120,6 @@
 <dd><p>The slot name containing the ST assay matrix data (default = "counts").</p></dd>
 
 
-<dt>tof_resolution</dt>
-<dd><p>is the tof resolution of the instrument used for MALDI run, calculated by ion <code>[ion mass,m/z]</code>/<code>[Full width at half height]</code> (default = 30000).</p></dd>
-
-
 <dt>min_path_size</dt>
 <dd><p>The min number of metabolites in a specific pathway (default = 5).</p></dd>
 
@@ -134,24 +128,16 @@
 <dd><p>The max number of metabolites in a specific pathway (default = 500).</p></dd>
 
 
-<dt>pval_cutoff_pathway</dt>
-<dd><p>A numerical value between 0 and 1 describe the cutoff adjusted p value for the permutation test used to compute output pathways</p></dd>
-
-
 <dt>pval_cutoff_mets</dt>
-<dd><p>A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for metabolites</p></dd>
+<dd><p>A numerical value defining the adjusted p value cutoff for significant differentially expressed metabolites. If <code>NULL</code> cutoff = <code>0.05</code> (default = 0.05).</p></dd>
 
 
 <dt>pval_cutoff_genes</dt>
-<dd><p>A numerical value between 0 and 1 describe the cutoff adjusted p value for the differential expression analysis for RNAs</p></dd>
+<dd><p>A numerical value defining the adjusted p value cutoff for significant differentially expressed genes. If <code>NULL</code> cutoff = <code>0.05</code> (default = 0.05).</p></dd>
 
 
 <dt>verbose</dt>
-<dd><p>A boolean value indicates whether verbose is shown</p></dd>
-
-
-<dt>adduct</dt>
-<dd><p>Vector of character strings defining adducts to use for analysis (e.g. c("M+K","M+H ")). For all possible adducts please visit <a href="https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305" class="external-link">here</a>. If NULL will take the full list of SpaMTP::adduct_file$adduct_name (default = NULL).</p></dd>
+<dd><p>Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).</p></dd>
 
 </dl></div>
     <div id="value">

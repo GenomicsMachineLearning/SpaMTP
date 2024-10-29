@@ -84,7 +84,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Analyte</dt>
-<dd><p>A list of analytes containing a combination of three possible elements, namely "mz", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.</p></dd>
+<dd><p>A list of analytes containing a combination of three possible elements, namely "mzs", "genes" and/or "metabolites". The list must be named with these titles, corresponding to the relative input datasets. Read below for supported input formats.</p></dd>
 
 
 <dt>max_path_size</dt>
@@ -104,20 +104,20 @@
 
 
 <dt>pval_cutoff</dt>
-<dd><p>The cut off of raw p value to retain the pathways (default = 0.05).</p></dd>
+<dd><p>A numerical value defining the adjusted p value cutoff for keeing significant pathways (default = 0.05).</p></dd>
 
 
 <dt>verbose</dt>
-<dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
+<dd><p>Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).</p></dd>
 
 
 <dt>...</dt>
 <dd><p>Additional parameters that can be passed through to <code><a href="annotateTable.html">annotateTable()</a></code> when running <code>mz</code>-based analysis. Please see documentation for <code><a href="annotateTable.html">annotateTable()</a></code> for more details.</p><div class="section">
 <h3 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h3>
 
-<ul><li><p>Supported <code>metabolite</code> format: strings which contain the metabolite database name. For example  "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)</p></li>
-<li><p>Supported <code>gene</code> data format: strings which contain the "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"</p></li>
-<li><p>Supported <code>mz</code> format: any string or numeric vector contains the m/z. NOTE: If <code>mz</code> values are provided then <code><a href="annotateTable.html">annotateTable()</a></code> will be run with</p></li>
+<ul><li><p>Supported <code>metabolites</code> format: strings which contain the metabolite ID with database name. For example = "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)</p></li>
+<li><p>Supported <code>genes</code> data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"</p></li>
+<li><p>Supported <code>mzs</code> format: any string or numeric vector contains the m/z. NOTE: If <code>mzs</code> values are provided then <code><a href="annotateTable.html">annotateTable()</a></code> will be run using default parameters and combining the Chebi_db, Lipidmaps_db and HMDB_db databases.</p></li>
 </ul></div></dd>
 
 </dl></div>
@@ -130,7 +130,14 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># FishersPathwayAnalysis(Analyte = mzs, analyte_type = "mz", ppm_error = 3)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Running in 'mzs' mode:</span></span></span>
+<span class="r-in"><span><span class="co"># FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Running in 'metabolites' mode</span></span></span>
+<span class="r-in"><span><span class="co"># FishersPathwayAnalysis(Analyte = list("metabolites" = metabolite_ids))</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Running 'metabolites' and 'genes' combined</span></span></span>
+<span class="r-in"><span><span class="co"># FishersPathwayAnalysis(Analyte = list("metabolites" = metabolite_ids, "genes" = gene_names))</span></span></span>
 </code></pre></div>
     </div>
   </div>

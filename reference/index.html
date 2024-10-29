@@ -73,7 +73,7 @@
       </tr><tr><td>
           <p><code><a href="ReadSM_mtx.html">ReadSM_mtx()</a></code> </p>
         </td>
-        <td><p>Read a Spatial Metabolomics image matrix file NOTE: This file must be in a format similar to the one below:</p></td>
+        <td><p>Read a Spatial Metabolomics image matrix file (.csv format)</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="converting-between-data-objects">Converting Between Data Objects <a href="#converting-between-data-objects" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions that allow the user to convert between SpaMTP Seurat Objects and Cardinal Objects</p>
@@ -91,9 +91,9 @@
           <p class="section-desc"></p><p>Functions required for performing pseudo-bulking differential expression analysis</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="FindAllDEPs.html">FindAllDEPs()</a></code> </p>
+          <p><code><a href="FindAllDEMs.html">FindAllDEMs()</a></code> </p>
         </td>
-        <td><p>Finds all differentially expressed m/z values between comparison groups specified - This function uses run_pooling() and run_DE() to pool and run EdgeR analysis</p></td>
+        <td><p>Finds all differentially expressed m/z values/metabolites between comparison groups</p></td>
       </tr><tr><td>
           <p><code><a href="run_pooling.html">run_pooling()</a></code> </p>
         </td>
@@ -107,13 +107,13 @@
           <p class="section-desc"></p><p>Functions used to generate a heatmap from DEP results</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="DEPsHeatmap.html">DEPsHeatmap()</a></code> </p>
+          <p><code><a href="DEMsHeatmap.html">DEMsHeatmap()</a></code> </p>
         </td>
-        <td><p>Generates a Heatmap of DEPs generated from edgeR analysis run using FindAllDEPs(). - this function uses pheatmap() to plot data</p></td>
+        <td><p>Generates a Heatmap of DEMs generated from edgeR analysis run using FindAllDEMs(). - this function uses pheatmap() to plot data</p></td>
       </tr><tr><td>
           <p><code><a href="save_pheatmap_as_pdf.html">save_pheatmap_as_pdf()</a></code> </p>
         </td>
-        <td><p>Saves the DEPs generated pheatmap as a PDF</p></td>
+        <td><p>Saves the DEMs generated pheatmap as a PDF</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="simplifying-lipid-nomenclature">Simplifying Lipid Nomenclature <a href="#simplifying-lipid-nomenclature" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Function used to simplify lipid names into general lipid categories, classes, and more</p>
@@ -297,7 +297,7 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="saveSpaMTPData.html">saveSpaMTPData()</a></code> </p>
         </td>
-        <td><p>Saves Seurat Spatial Metabolomic object to files. </p><ul><li><p>This can be used for saving data for transfer to python Anndata using scanpy.read_10x_mtx()</p></li> <li><p>For saving in R saveRDS() is recommended</p></li> </ul></td>
+        <td><p>Saves Seurat Spatial Metabolomic object to files.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="spatial-analysis-of-metabolomic-data">Spatial Analysis of Metabolomic Data <a href="#spatial-analysis-of-metabolomic-data" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions used to identify spatially correlated features (metabolites/genes)</p>
