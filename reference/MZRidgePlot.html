@@ -72,6 +72,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MZRidgePlot</span><span class="op">(</span></span>
 <span>  <span class="va">seurat.obj</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mzs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
 <span>  slot <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"RidgePlot"</span>,</span>
@@ -94,6 +95,10 @@
 
 <dt>group.by</dt>
 <dd><p>Character string specifying the meta.data column to group by (default = NULL).</p></dd>
+
+
+<dt>mzs</dt>
+<dd><p>Vector of characters defining which features (m/z's) to label on the plot. If <code>NULL</code> no features will be labeled (default = NULL).</p></dd>
 
 
 <dt>assay</dt>
