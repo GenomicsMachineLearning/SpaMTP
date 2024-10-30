@@ -7,6 +7,7 @@
 MZVlnPlot(
   seurat.obj,
   group.by = NULL,
+  mzs = NULL,
   assay = "Spatial",
   slot = "counts",
   title = "VlnPlot",
@@ -24,6 +25,8 @@ MZVlnPlot(
 \item{seurat.obj}{Seurat object containing the metabolomic intensity data.}
 
 \item{group.by}{Character string specifying the meta.data column to group by (default = NULL).}
+
+\item{mzs}{Vector of characters defining which features (m/z's) to label on the plot. If \code{NULL} no features will be labeled (default = NULL).}
 
 \item{assay}{Character string defining the name of the Seurat Object assay to pull the corresponding intensity data from (default = "Spatial").}
 

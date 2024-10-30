@@ -132,20 +132,6 @@ After visualising the data we can see our tissue section, and that there are som
 ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1) & coord_flip() & scale_x_reverse()
 ```
 
-After importing the data we can run some quick QC plots to observe the distribution of the data. 
-
-
-```{r, fig.width=20, fig.height=5}
-options(repr.plot.width = 20, repr.plot.height = 5)
-
-MZRidgePlot(seurat.obj = bladder, bins = 10, log.data = TRUE, cols = c(RColorBrewer::brewer.pal(name = "Paired", n = 7)[c(1:2, 5:6)]))+ theme_minimal() +theme(panel.grid = element_blank()) |
-MZVlnPlot(seurat.obj = bladder, log.data = TRUE, show.points = F) |
-MZBoxPlot(seurat.obj = bladder, log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05) 
-```
-
-These plots display the intensity of each m/z summed across all pixels. Based on this there seems to be a majority of m/z values which display global expression across the tissue which is expected, suggesting that there are no outlying m/z values.
-
-<br>
 
 ## Switching between SpaMTP and Cardinal Objects
 
@@ -258,7 +244,7 @@ Below we will add the relative results from the ssc analysis to our SpaMTP objec
 
 
 ```{r}
-bladder$ssc <- pixelData(bladder_cardinal)$ssc
+bladder$ssc <- as.factor(pixelData(bladder_cardinal)$ssc)
 ```
 
 
@@ -269,6 +255,31 @@ ImageDimPlot(bladder, group.by = "ssc", size = 2, cols = col_palette) + coord_fl
 We can see that the pixel annotations have been added correctly, and we have a ggplot2 figure that can be easily manipulated using ggplot2 commands. Following the processing and annotation of pixels across our dataset we will next annotate the m/z values.
 
 <br>
+
+## Data QC
+
+After importing the data and adding in the ssc results we can generate some QC plots to observe the distribution of the data. 
+
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+options(repr.plot.width = 20, repr.plot.height = 5)
+
+MZRidgePlot(seurat.obj = bladder, group.by = "ssc", bins = 10, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
+MZVlnPlot(seurat.obj = bladder,group.by = "ssc", log.data = TRUE, show.points = F,cols = col_palette, verbose = F) |
+MZBoxPlot(seurat.obj = bladder,group.by = "ssc", log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05,cols = col_palette, verbose = F) 
+```
+
+These plots display the intensity of each m/z summed across all pixels per group. Based on this there seems to be a majority of m/z values which display global expression across the tissue which is expected, suggesting that there are no outlying m/z values.
+
+We can also look at the distribution of specific features across groups by providing a feature name. Lets try and visualise the total intensity of "mz-740.471557617188" across each cluster using the box.plot function:
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+options(repr.plot.width = 10, repr.plot.height = 5)
+
+MZBoxPlot(seurat.obj = bladder,group.by = "ssc", mzs = "mz-740.471557617188", log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05,cols = col_palette) 
+```
+Based on this we can see that the mz = 740.471557617188 is expressed in all clusters and is highest in cluster 6. 
+
+<br>
+
 
 ## Metabolite annotaiton of m/z masses
 

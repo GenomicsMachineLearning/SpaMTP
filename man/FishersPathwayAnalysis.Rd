@@ -10,7 +10,7 @@ FishersPathwayAnalysis(
   min_path_size = 5,
   alternative = "greater",
   pathway_all_info = FALSE,
-  pval_cutoff = 0.05,
+  pval_cutoff = NULL,
   verbose = TRUE,
   ...
 )
@@ -26,7 +26,7 @@ FishersPathwayAnalysis(
 
 \item{pathway_all_info}{Whether to included all genes/ screened in the return (default = FALSE).}
 
-\item{pval_cutoff}{A numerical value defining the adjusted p value cutoff for keeing significant pathways (default = 0.05).}
+\item{pval_cutoff}{A numerical value defining the adjusted p value cutoff for keeing significant pathways (default = NULL).}
 
 \item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
 

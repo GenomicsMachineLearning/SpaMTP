@@ -192,6 +192,7 @@ statPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "co
 #'
 #' @param seurat.obj Seurat object containing the metabolomic intensity data.
 #' @param group.by Character string specifying the meta.data column to group by (default = NULL).
+#' @param mzs Vector of characters defining which features (m/z's) to label on the plot. If `NULL` no features will be labeled (default = NULL).
 #' @param assay Character string defining the name of the Seurat Object assay to pull the corresponding intensity data from (default = "Spatial").
 #' @param slot  Character string defining the name of the slot within the Seurat Object assay to pull the corresponding intensity data from (default = "counts").
 #' @param title Character string of the plot title (default = "RidgePlot").
@@ -208,7 +209,7 @@ statPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "co
 #'
 #' @examples
 #' # MZRidgePlot(SeuratObj, group.by = "sample")
-MZRidgePlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "counts", title = "RidgePlot", x.lab = "var", y.lab = "intensity", bottom.cutoff = NULL, top.cutoff = NULL, bins = 1000,log.data = FALSE, cols = NULL, verbose = FALSE){
+MZRidgePlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "RidgePlot", x.lab = "var", y.lab = "intensity", bottom.cutoff = NULL, top.cutoff = NULL, bins = 1000,log.data = FALSE, cols = NULL, verbose = FALSE){
   data <- statPlot(seurat.obj = seurat.obj,
                    group.by = group.by,
                    assay = assay,
@@ -226,6 +227,19 @@ MZRidgePlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = 
     ridge_plot <- ridge_plot + ggplot2::scale_fill_manual(values = cols)
   }
 
+  if (!(is.null(mzs))){
+
+    #gets feature data
+    label_data <- data[data$mz %in% mzs, ]
+    label_data$Features <- factor(label_data$mz, levels = mzs)
+
+    # Plot feature points for both features
+    ridge_plot <- ridge_plot +
+      ggplot2::geom_point(data = label_data, aes(x = x, y = var, color = Features), size = 3, shape = 19) +
+      ggplot2::guides(fill = guide_legend(override.aes = list(shape = NA)), color = guide_legend(override.aes = list(size = 3)))
+
+  }
+
   return(ridge_plot)
 }
 
@@ -235,6 +249,7 @@ MZRidgePlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = 
 #'
 #' @param seurat.obj Seurat object containing the metabolomic intensity data.
 #' @param group.by Character string specifying the meta.data column to group by (default = NULL).
+#' @param mzs Vector of characters defining which features (m/z's) to label on the plot. If `NULL` no features will be labeled (default = NULL).
 #' @param assay Character string defining the name of the Seurat Object assay to pull the corresponding intensity data from (default = "Spatial").
 #' @param slot  Character string defining the name of the slot within the Seurat Object assay to pull the corresponding intensity data from (default = "counts").
 #' @param title Character string of the plot title (default = "VlnPlot").
@@ -251,7 +266,7 @@ MZRidgePlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = 
 #'
 #' @examples
 #' # MZVlnPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
-MZVlnPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "counts", title = "VlnPlot", x.lab = "var", y.lab = "intensity", show.points = TRUE, bottom.cutoff = NULL, top.cutoff = NULL,log.data = FALSE, cols = NULL, verbose = FALSE){
+MZVlnPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "VlnPlot", x.lab = "var", y.lab = "intensity", show.points = TRUE, bottom.cutoff = NULL, top.cutoff = NULL,log.data = FALSE, cols = NULL, verbose = FALSE){
 
   data <- statPlot(seurat.obj = seurat.obj,
                    group.by = group.by,
@@ -275,6 +290,20 @@ MZVlnPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "c
     violin_plot <- violin_plot + ggplot2::scale_fill_manual(values = cols)
   }
 
+  if (!(is.null(mzs))){
+
+    #gets feature data
+    label_data <- data[data$mz %in% mzs, ]
+    label_data$Features <- factor(label_data$mz, levels = mzs)
+
+    # Plot feature points for both features
+    violin_plot <- violin_plot +
+      ggplot2::geom_point(data = label_data, aes(x = var, y = x, color = Features), size = 3, shape = 19) +
+      ggplot2::guides(fill = guide_legend(override.aes = list(shape = NA)), color = guide_legend(override.aes = list(size = 3)))
+
+  }
+
+
   return(violin_plot)
 }
 
@@ -283,6 +312,7 @@ MZVlnPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "c
 #'
 #' @param seurat.obj Seurat object containing the metabolomic intensity data.
 #' @param group.by Character string specifying the meta.data column to group by (default = NULL).
+#' @param mzs Vector of characters defining which features (m/z's) to label on the plot. If `NULL` no features will be labeled (default = NULL).
 #' @param assay Character string defining the name of the Seurat Object assay to pull the corresponding intensity data from (default = "Spatial").
 #' @param slot  Character string defining the name of the slot within the Seurat Object assay to pull the corresponding intensity data from (default = "counts").
 #' @param title Character string of the plot title (default = "BoxPlot").
@@ -299,7 +329,7 @@ MZVlnPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "c
 #'
 #' @examples
 #' # MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
-MZBoxPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "counts", title = "BoxPlot", x.lab = "var", y.lab = "intensity", show.points = TRUE, bottom.cutoff = NULL, top.cutoff = NULL,log.data = FALSE, cols = NULL, verbose = FALSE){
+MZBoxPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "BoxPlot", x.lab = "var", y.lab = "intensity", show.points = TRUE, bottom.cutoff = NULL, top.cutoff = NULL,log.data = FALSE, cols = NULL, verbose = FALSE){
   data <- statPlot(seurat.obj = seurat.obj,
                    group.by = group.by,
                    assay = assay,
@@ -320,6 +350,19 @@ MZBoxPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "c
 
   if (!(is.null(cols))){
     box_plot <- box_plot + ggplot2::scale_fill_manual(values = cols)
+  }
+
+  if (!(is.null(mzs))){
+
+    #gets feature data
+    label_data <- data[data$mz %in% mzs, ]
+    label_data$Features <- factor(label_data$mz, levels = mzs)
+
+    # Plot feature points for both features
+    box_plot <- box_plot +
+      ggplot2::geom_point(data = label_data, aes(x = var, y = x, color = Features), size = 3, shape = 19) +
+      ggplot2::guides(fill = guide_legend(override.aes = list(shape = NA)), color = guide_legend(override.aes = list(size = 3)))
+
   }
 
   return(box_plot)
