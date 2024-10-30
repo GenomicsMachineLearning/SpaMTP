@@ -1,7 +1,7 @@
 Package: SpaMTP
 Type: Package
 Title: User Friendly Spatial Metabolomic Data Analysis Package
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: c(
     person("Andrew", "Causer",
             email = "a.causer@uq.edu.au", 
