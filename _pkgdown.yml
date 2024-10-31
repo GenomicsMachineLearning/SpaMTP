@@ -54,7 +54,7 @@ navbar:
       - text: Additional SpaMTP Features
         href: articles/SpaMTP_Additional_Features.html
 reference:
-- title: Loading Spatial Metabolic data into a SpaMTP Seurat Object
+- title: Loading Spatial Metabolic Data into a SpaMTP Seurat Object
   desc: Functions that allow the user to load in SM data in different formats
   contents:
   - loadSM
@@ -141,7 +141,7 @@ reference:
   - check_column_type
   - pixelPlot
   - get_optimal_layout
-- title: Exporting SpaMTP data
+- title: Exporting SpaMTP Data
   desc: Function to export SpaMTP data in .mtx, barcodes.csv, features.csv, metadata.csv,
     and feature.metadata.csv files
   contents: saveSpaMTPData
@@ -208,7 +208,7 @@ reference:
   - RAMP_kegg
   - RAMP_wikipathway
   - reaction_type
-- title: Cardinal Wrapper functions
+- title: Cardinal Wrapper Functions
   desc: Functions used to alter Cardinal Objects.
   contents: add_ssc_annotation
 - title: Additional Helper Functions

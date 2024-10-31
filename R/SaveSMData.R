@@ -50,7 +50,7 @@ saveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", ima
                           "spot_diameter_fullres" = data@images[[image]]@scale.factors[["spot"]]* 2)
 
       sfJSON <- jsonlite::toJSON(
-        rapply(scale.factors, function(x) if (length(x) == 1L) unbox(x) else x,
+        rapply(scale.factors, function(x) if (length(x) == 1L) jsonlite::unbox(x) else x,
                how = "replace"))
 
       verbose_message(message_text ="Writing scalefactors_json.json file ...", verbose = verbose)
