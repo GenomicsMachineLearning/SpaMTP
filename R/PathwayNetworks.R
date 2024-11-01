@@ -489,9 +489,9 @@ PathwayNetworkPlots  = function(SpaMTP,
     coordi = paste0(
       coordi,
       '[',
-      as.numeric(coordnate[t, "x"]) * 160 / max_x ,
+      as.numeric(coordnate[t, "y"]) * 160 / max_y ,
       ',',
-      as.numeric(coordnate[t, "y"]) * 180 / max_y,
+      as.numeric(coordnate[t, "x"]) * 180 / max_x,
       '],'
     )
   }
