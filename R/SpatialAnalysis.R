@@ -301,7 +301,7 @@ getPCA <- function(SpaMTP,
     new.height = as.integer(height)
   }
 
-  verbose_message(message_text = "Running the principal component analysis (can take some time)" , verbose = verbose)
+  verbose_message(message_text = "Running the principal component analysis ... " , verbose = verbose)
 
   # Runing PCA
 

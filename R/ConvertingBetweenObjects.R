@@ -51,7 +51,7 @@ CardinalToSeurat <- function(data,run_name, seurat.coord = NULL, assay = "Spatia
 
 
   colnames(sparse_matrix)<- spot_name
-  rownames(sparse_matrix)<- paste("mz-", Cardinal::featureData(run_data)@mz, sep = "")
+  rownames(sparse_matrix)<- paste("mz-", data.frame(Cardinal::featureData(run_data))[["mz"]], sep = "")
 
   verbose_message(message_text = "Constructing Seurat Object ....", verbose = verbose)
 
@@ -150,11 +150,16 @@ ConvertSeuratToCardinal <- function(data, assay = "Spatial", slot = "counts", ru
 
   verbose_message(message_text = "Converting intensity matrix and Generating Cardinal Object ...", verbose = verbose)
 
+  if (check_cardinal_version()){
+    cardinal.obj <- Cardinal::MSImagingExperiment(spectraData= matter::sparse_mat(Matrix::as.matrix(mat)),
+                                                  featureData=fdata,
+                                                  pixelData=pdata)
+  } else {
+    cardinal.obj <- Cardinal::MSImagingExperiment(imageData= matter::sparse_mat(Matrix::as.matrix(mat)),
+                                                  featureData=fdata,
+                                                  pixelData=pdata)
 
-  cardinal.obj <- Cardinal::MSImagingExperiment(imageData= matter::sparse_mat(Matrix::as.matrix(mat)),
-                                      featureData=fdata,
-                                      pixelData=pdata)
-
+  }
 
   return(cardinal.obj)
 }

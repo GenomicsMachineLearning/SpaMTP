@@ -20,8 +20,17 @@
 #' @examples
 #' # data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 loadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", ...){
-  data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, ...)
-  data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
+
+  if (check_cardinal_version()){
+    file_name <- paste0(path, name)
+    data <- Cardinal::readImzML(file = file_name, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, ...)
+    if (!is.null(mass.range)| !is.null(resolution)){
+      data <- Cardinal::bin(data, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, ...)
+    }
+  } else {
+    data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, ...)
+    data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
+  }
   return(data)
 }
 
