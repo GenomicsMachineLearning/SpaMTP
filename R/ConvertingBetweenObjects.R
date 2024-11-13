@@ -17,7 +17,8 @@
 CardinalToSeurat <- function(data,run_name, seurat.coord = NULL, assay = "Spatial", verbose = TRUE){
 
   verbose_message(message_text = "Convering Cardinal object to Seurat object .... ", verbose = verbose)
-  run_data <- Cardinal::subsetPixels(data, Cardinal::run(data) == paste0(run_name))
+  run_data <- data
+  #run_data <- Cardinal::subsetPixels(data, Cardinal::run(data) == paste0(run_name)) #subset broken under Cardinal >3.6
   sparse_matrix <- Cardinal::spectra(run_data)
   pixel_data <- Cardinal::pixelData(run_data)
 
