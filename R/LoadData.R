@@ -27,6 +27,7 @@ loadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
     if (!is.null(mass.range)| !is.null(resolution)){
       data <- Cardinal::bin(data, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, ...)
     }
+    data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
   } else {
     data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, ...)
     data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
