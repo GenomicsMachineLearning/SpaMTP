@@ -157,11 +157,13 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
   }
 
   if (return.individual){
-    annotation_result
+    annotation_result <- lapply(names(annotation_result), function(x){
+      annotation_result[[x]]$DEMs$cluster <- x
+      annotation_result[[x]]
+    })
+
     return(annotation_result)
   } else {
-
-
 
     edger <- edgeR::DGEList(
       counts = annotation_result[[1]]$counts,
