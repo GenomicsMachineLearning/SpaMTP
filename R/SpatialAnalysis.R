@@ -226,10 +226,9 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
 #'
 #' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
-#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param npcs is an integer value to indicated preferred number of PCs to retain.
 #' @param variance_explained_threshold Numeric value defining the explained variance threshold.
 #' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix.
-#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol.
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from.
 #' @param slot Character string defining the assay slot containing the intensity values.
 #' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis.
@@ -243,10 +242,8 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #' @examples
 #' # HELPER FUNCTION
 getPCA <- function(SpaMTP,
-                   num_retained_component,
+                   npcs,
                    variance_explained_threshold,
-                   resampling_factor,
-                   byrow,
                    assay,
                    slot,
                    show_variance_plot,
@@ -258,55 +255,12 @@ getPCA <- function(SpaMTP,
 
   coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
 
-  mass_matrix_with_coord = cbind(coords,
-                                 as.matrix(mass_matrix))
-  width = max(coords[c("y")]) #- min(coords[c("y")])
-  height = max(coords[c("x")]) # - min(coords[c("x")])
-
-  if (!is.null(resampling_factor) & resampling_factor!= 1) {
-    verbose_message(message_text = "Running matrix resampling...." , verbose = verbose)
-    pb = txtProgressBar(
-      min = 0,
-      max = ncol(mass_matrix),
-      initial = 0,
-      style = 3
-    )
-    if (!is.numeric(resampling_factor)) {
-      stop("Please enter correct resampling_factor")
-    }
-    new.width = as.integer(width / resampling_factor)
-    new.height = as.integer(height / resampling_factor)
-
-    resampled_mat = matrix(nrow =  new.height * new.width)
-    for (i in 1:ncol(mass_matrix)) {
-      temp_mz_matrix = matrix(mass_matrix[, i],
-                              ncol = width,
-                              nrow = height,
-                              byrow = byrow)
-      resampled_temp = ResizeMat(temp_mz_matrix, c(new.width,
-                                                   new.height))
-      resampled_mat = cbind(resampled_mat, as.vector(resampled_temp))
-      setTxtProgressBar(pb, i)
-    }
-    close(pb)
-    resampled_mat = resampled_mat[,-1]
-    colnames(resampled_mat) = colnames(mass_matrix)
-
-    verbose_message(message_text = "Resampling finished!" , verbose = verbose)
-
-    gc()
-  }else{
-    resampled_mat = mass_matrix
-    new.width = as.integer(width)
-    new.height = as.integer(height)
-  }
-
   verbose_message(message_text = "Running the principal component analysis ... " , verbose = verbose)
 
   # Runing PCA
 
   resampled_mat_standardised = as.matrix(Matrix::t(
-    Matrix::t(resampled_mat) - Matrix::colSums(resampled_mat) / nrow(resampled_mat)
+    Matrix::t(resampled_mat) - Matrix::colSums(mass_matrix) / nrow(mass_matrix)
   ))
 
   verbose_message(message_text = "Computing the covariance" , verbose = verbose)
@@ -321,7 +275,7 @@ getPCA <- function(SpaMTP,
 
   verbose_message(message_text = "Computing PCA", verbose = verbose)
 
-  pc = pbapply::pblapply(1:ncol(resampled_mat_standardised), function(i) {
+  pc = pbapply::pblapply(1:npcs, function(i) {
     temp = resampled_mat_standardised[, 1] * eigenvectors[1, i]
     for (j in 2:ncol(resampled_mat_standardised)) {
       temp = temp + resampled_mat_standardised[, j] * eigenvectors[j, i]
@@ -329,14 +283,14 @@ getPCA <- function(SpaMTP,
     return(temp)
   })
   pc = do.call(cbind, pc)
-  colnames(pc) = paste0("PC", 1:ncol(eigenvectors))
+  colnames(pc) = paste0("PC", 1:npcs)
   # make pca object
-  colnames(eigenvectors) = paste0("PC", 1:ncol(eigenvectors))
-  rownames(eigenvectors) = colnames(resampled_mat)
+  colnames(eigenvectors) = paste0("PC", 1:npcs)
+  rownames(eigenvectors) = colnames(mass_matrix)
   pca = list(
     sdev = sqrt(eigenvalues),
     rotation = eigenvectors,
-    center = Matrix::colSums(resampled_mat) / nrow(resampled_mat),
+    center = Matrix::colSums(mass_matrix) / nrow(mass_matrix),
     scale = FALSE,
     x = pc
   )
@@ -430,7 +384,7 @@ getPCA <- function(SpaMTP,
 #' Generates PCA analysis results for a SpaMTP Seurat Object
 #'
 #' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
-#' @param num_retained_component is an integer value to indicated preferred number of PCs to retain
+#' @param npcs is an integer value to indicated preferred number of PCs to retain (default = 30).
 #' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
 #' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
 #' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
@@ -447,7 +401,7 @@ getPCA <- function(SpaMTP,
 #' @examples
 #' # HELPER FUNCTION
 RunMetabolicPCA <- function(SpaMTP,
-                            num_retained_component = NULL,
+                            npcs = 30,
                             variance_explained_threshold = 0.9,
                             resampling_factor = 1,
                             byrow = FALSE,
@@ -459,11 +413,13 @@ RunMetabolicPCA <- function(SpaMTP,
 {
   verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
 
+  if (!is.integer(npcs)){
+    stop("npcs provided is not an integer! please provide an appropriate value for the number of prinicple components to be calculated")
+  }
+
   pca <- getPCA(SpaMTP = SpaMTP,
-                num_retained_component = num_retained_component,
+                npcs = npcs,
                 variance_explained_threshold = variance_explained_threshold,
-                resampling_factor = resampling_factor,
-                byrow = byrow,
                 assay = assay,
                 slot = slot,
                 show_variance_plot= show_variance_plot,
