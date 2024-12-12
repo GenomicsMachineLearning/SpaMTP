@@ -41,14 +41,10 @@ CardinalToSeurat <- function(data,run_name, seurat.coord = NULL, assay = "Spatia
 
   verbose_message(message_text = "Generating Seurat Barcode Labels from Pixel Coordinates .... ", verbose = verbose)
 
-  spot_name <- c()
+  x_coord <- Cardinal::pixelData(run_data)[["x_coord",]]
+  y_coord <- Cardinal::pixelData(run_data)[["y_coord",]]
+  spot_name <- paste0(x_coord,"_",y_coord)
 
-  for(idx in seq(1,length(Cardinal::pixelData(run_data)[[1]]))){
-    x_coord <- Cardinal::pixelData(run_data)[["x_coord",]][idx]
-    y_coord <- Cardinal::pixelData(run_data)[["y_coord",]][idx]
-    name <- paste0(x_coord,"_",y_coord)
-    spot_name <- c(spot_name, name)
-  }
 
 
   colnames(sparse_matrix)<- spot_name

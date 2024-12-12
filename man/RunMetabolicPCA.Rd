@@ -6,7 +6,7 @@
 \usage{
 RunMetabolicPCA(
   SpaMTP,
-  num_retained_component = NULL,
+  npcs = 30,
   variance_explained_threshold = 0.9,
   resampling_factor = 1,
   byrow = FALSE,
@@ -20,7 +20,7 @@ RunMetabolicPCA(
 \arguments{
 \item{SpaMTP}{SpaMTP Seurat class object that contains spatial metabolic information.}
 
-\item{num_retained_component}{is an integer value to indicated preferred number of PCs to retain}
+\item{npcs}{is an integer value to indicated preferred number of PCs to retain (default = 30).}
 
 \item{variance_explained_threshold}{Numeric value defining the explained variance threshold (default = 0.9).}
 

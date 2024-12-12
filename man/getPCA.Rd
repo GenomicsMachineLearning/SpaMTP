@@ -6,10 +6,8 @@
 \usage{
 getPCA(
   SpaMTP,
-  num_retained_component,
+  npcs,
   variance_explained_threshold,
-  resampling_factor,
-  byrow,
   assay,
   slot,
   show_variance_plot,
@@ -19,13 +17,9 @@ getPCA(
 \arguments{
 \item{SpaMTP}{SpaMTP Seurat class object that contains spatial metabolic information.}
 
-\item{num_retained_component}{is an integer value to indicated preferred number of PCs to retain}
+\item{npcs}{is an integer value to indicated preferred number of PCs to retain.}
 
 \item{variance_explained_threshold}{Numeric value defining the explained variance threshold.}
-
-\item{resampling_factor}{is a numerical value > 0, indicate how you want to resample the size of original matrix.}
-
-\item{byrow}{is a boolean to indicates whether each column of the matrix is built byrow or bycol.}
 
 \item{assay}{Character string defining the SpaMTP assay to extract intensity values from.}
 
@@ -34,6 +28,8 @@ getPCA(
 \item{show_variance_plot}{Boolean indicating weather to display the variance plot output by this analysis.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed.}
+
+\item{resampling_factor}{is a numerical value > 0, indicate how you want to resample the size of original matrix.}
 }
 \value{
 PCA object contating embeddings and projections
