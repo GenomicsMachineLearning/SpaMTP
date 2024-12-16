@@ -971,11 +971,6 @@ get_optimal_layout <- function(list_length) {
     }
   }
 }
-
-
-
-
-
 #' MassIntensityPlot
 #'
 #' @description
@@ -1021,6 +1016,404 @@ get_optimal_layout <- function(list_length) {
 #' ## Plot mean of each ssc segmentation of separate plot with metabolite annotations
 #' # MassIntensityPlot(SeuratObj, split.by= "ssc", mz.labels = c(329.166), label.annotations = TRUE)
 MassIntensityPlot <- function (data,
+                               group.by = group.by,
+                               split.by = split.by,
+                               cols = cols,
+                               assay = assay,
+                               slot = slot,
+                               label.annotations = label.annotations,
+                               annotation.column = annotation.column,
+                               main = main,
+                               mz.labels = mz.labels,
+                               metabolite.labels = metabolite.labels,
+                               xlab = xlab,
+                               ylab = ylab,
+                               mass.range = mass.range,
+                               ylim = ylim,
+                               labelCex = labelCex,
+                               labelFont = labelFont,
+                               labelAdj = labelAdj,
+                               labelPos = labelPos,
+                               labelOffset = labelOffset,
+                               labelCol = labelCol,
+                               plot.layout = plot.layout,
+                               nlabels.to.show = NULL){
+
+  if (check_cardinal_version()){
+      return(massIntensityPlot_v3_6(data,
+                                        group.by = NULL,
+                                        split.by = NULL,
+                                        cols = NULL,
+                                        assay = "Spatial",
+                                        slot = "counts",
+                                        label.annotations = FALSE,
+                                        annotation.column = "all_IsomerNames",
+                                        main = NULL,
+                                        mz.labels = NULL,
+                                        metabolite.labels = NULL,
+                                        xlab = "m/z",
+                                        ylab = "intensity",
+                                        mass.range = NULL,
+                                        ylim = NULL,
+                                        labelCex = 0.7,
+                                        labelFont = NULL,
+                                        labelAdj = NULL,
+                                        labelPos = 4,
+                                        labelOffset = 0,
+                                        labelCol = "#eb4034",
+                                        plot.layout = NULL,
+                                        nlabels.to.show = NULL))
+  } else {
+    return(massIntensityPlot_v3_6(data,
+                                  group.by = NULL,
+                                  split.by = NULL,
+                                  cols = NULL,
+                                  assay = "Spatial",
+                                  slot = "counts",
+                                  label.annotations = FALSE,
+                                  annotation.column = "all_IsomerNames",
+                                  main = NULL,
+                                  mz.labels = NULL,
+                                  metabolite.labels = NULL,
+                                  xlab = "m/z",
+                                  ylab = "intensity",
+                                  mass.range = NULL,
+                                  ylim = NULL,
+                                  labelCex = 0.7,
+                                  labelFont = NULL,
+                                  labelAdj = NULL,
+                                  labelPos = 4,
+                                  labelOffset = 0,
+                                  labelCol = "#eb4034",
+                                  plot.layout = NULL,
+                                  nlabels.to.show = NULL))
+  }
+}
+
+
+#' massIntensityPlot_v3_6
+#'
+#' @description
+#' A short Plots mean mass spectrometry intensity values for a given Seurat Object, and groups by categories if supplied.
+#'
+#' @param data Seurat object containing data to be plot.
+#' @param group.by Character string defining the name of the meta.data column to group the data by. Results from each group will be overlayed on the one plot (default = NULL).
+#' @param split.by Character string defining the name of the meta.data column to group and split the data by. Results from each group will be plotted individually (default = NULL).
+#' @param cols Vector of character strings defining the colours to be used to identify each group (default = NULL).
+#' @param assay Character string defining the relative Seurat Object assay to pull the required intensity data from (default = "Spatial").
+#' @param slot Character string defining the relative slot from the Seurat Object assay to pull the required intensity data from (default = "counts").
+#' @param label.annotations Boolean value defining whether to plot metabolite annotations of the supplied mz.labels or metabolite.labels on the plot (default = FALSE).
+#' @param annotation.column Character string defining the name of the feature meta.data column which contains the stored m/z annotations (default = "all_IsomerNames").
+#' @param main Character string describing the overall title of the plot (default = NULL).
+#' @param mz.labels Vector of character strings defining the m/z values to display on the plot (default = NULL).
+#' @param metabolite.labels Vector of character strings defining the metabolite names to display on the plot (default = NULL).
+#' @param xlab Character string describing the x-axis title (default = "m/z").
+#' @param ylab Character string describing the y-axis title (default = "intensity").
+#' @param mass.range Vector of numeric values defining the range of m/z values to include (default = NULL).
+#' @param ylim Vector of numeric values defining the range of intensity values to include (default = NULL).
+#' @param labelCex Numeric values for character expansion factor. Seen graphics::text() for more details (default = 0.7).
+#' @param labelFont Character string defining the current font family. Seen graphics::text() for more details (default = NULL).
+#' @param labelAdj One or two values in `[0,1]` which specify the x and y adjustments for the label. Seen graphics::text() for more details (default = NULL).
+#' @param labelPos Value of '1', '2', '3' or '4' which indicate the label position as: below, left, above or right of the specified `(x,y)` coordinates respectively (default = '4').
+#' @param labelOffset Value that controls the distance of the text label from the specified coordinates. Seen graphics::text() for more details (default = 0).
+#' @param labelCol Character string defining the colour of the annotation labels (default = "#eb4034").
+#' @param plot.layout Vector of two numeric values defining the plot layout. This is only used when split.by is specified, but is not required (default = NULL).
+#' @param nlabels.to.show Numeric value defining the number of annotations to show per m/z (default = NULL).
+#'
+#' @return A mass spectrometry plot displaying mean intensity values
+#' @export
+#'
+#' @examples
+#' #For plotting data with Cardinal Version > 3.6
+massIntensityPlot_v3_6 <- function (data,
+                               group.by = NULL,
+                               split.by = NULL,
+                               cols = NULL,
+                               assay = "Spatial",
+                               slot = "counts",
+                               label.annotations = FALSE,
+                               annotation.column = "all_IsomerNames",
+                               main = NULL,
+                               mz.labels = NULL,
+                               metabolite.labels = NULL,
+                               xlab = "m/z",
+                               ylab = "intensity",
+                               mass.range = NULL,
+                               ylim = NULL,
+                               labelCex = 0.7,
+                               labelFont = NULL,
+                               labelAdj = NULL,
+                               labelPos = 4,
+                               labelOffset = 0,
+                               labelCol = "#eb4034",
+                               plot.layout = NULL,
+                               nlabels.to.show = NULL){
+
+  if (!(is.null(group.by))&!(is.null(split.by))){
+    stop("'group.by' and 'split.by' cannot both be valid -> pick only one option to set = idents")
+  }
+  if (!(is.null(mz.labels))&!(is.null(metabolite.labels))){
+    stop("'mz.labels' and 'metabolite.labels' cannot both be valid -> pick only one option to set = c(labels)")
+  }
+
+  if (!(is.null(annotation.column))){
+    if (!(annotation.column %in% colnames(data[[assay]]@meta.data))){
+      warning(paste("'",annotation.column," column not in object metadata. If data object does not have annotations set annotation.column = NULL"))
+      stop("annotation.column does not exist")
+    } else {
+      if (!is.null(nlabels.to.show)){
+        data[[assay]]@meta.data[[annotation.column]] <- labels_to_show(data[[assay]]@meta.data[[annotation.column]], n = nlabels.to.show)
+      }
+    }
+  }
+
+  if (!(is.null(group.by))|!(is.null(split.by))){
+
+    metadata.column <- ifelse(!(is.null(group.by)), group.by, split.by)
+
+    if (!(metadata.column %in% colnames(data@meta.data))){
+      warning(paste("'",metadata.column," column not in object metadata. Pick and approprite group.by or split.by column"))
+      stop("metadata columne does not exist")
+    }
+
+
+    run <- unique(data@meta.data[[metadata.column]])
+
+    data_list <- list()
+    for (ident in unique(run)){
+      SeuratObject::Idents(data) <- metadata.column
+      suppressWarnings({
+        sub <- subset_SPM(data, ident = ident)
+      })
+
+      if (dim(sub@meta.data)[1] > 1){
+        mean_data <- Matrix::rowMeans(sub[[assay]]@layers[[slot]])
+      } else {
+        mean_data <- sub[[assay]]@layers[[slot]]
+      }
+
+      data_list[[ident]] <- mean_data
+    }
+
+    means <- Matrix::as.matrix(as.data.frame(data_list))
+    x_coord <- c(1:length(unique(run)))
+
+  } else {
+    means <- Matrix::as.matrix(Matrix::rowMeans(data[[assay]][slot]))
+    run <- factor("Sample_Mean")
+    x_coord <- c(1)
+  }
+
+  rownames(means) <- NULL
+  colnames(means) <- NULL
+
+  mzs <- unlist(lapply(rownames(data[[assay]]@features), function(x) as.numeric(stringr::str_split(x, "mz-")[[1]][2])))
+  fdata <- Cardinal::MassDataFrame(mz=mzs)
+
+  coord <- expand.grid(x= x_coord, y=1)
+  pdata <- Cardinal::PositionDataFrame(run = run, coord = coord)
+
+  cardinal.data <- Cardinal::MSImagingExperiment(spectraData = matter::sparse_mat(Matrix::as.matrix(means)),
+                                                 featureData = fdata, pixelData = pdata)
+
+  if (!(is.null(group.by))|!(is.null(split.by))){
+    pixel_group <- Cardinal::pixelData(cardinal.data)[["run"]]
+  } else {
+    pixel_group <- c(ifelse(!(is.null(main)), main, "mean intensity"))
+  }
+
+
+  if (is.null(cols)){
+    n <- dim(Cardinal::pixelData(cardinal.data))[1]
+    if ( n < 3){
+      cols <- c("blue","red","black")[1:n]
+
+    } else {
+      cols <- Cardinal::discrete.colors(n)
+    }
+
+  }
+
+
+  if (!(is.null(mz.labels))){
+
+    labels <- Cardinal::featureData(cardinal.data)[["mz"]]
+    mz_list <- c()
+    for (target_mz in mz.labels){
+      mz_string <- FindNearestMZ(data, target_mz)
+      mz_list <- c(mz_list, stringr::str_split(pattern = "mz-", string = mz_string)[[1]][2])
+    }
+
+    matching <- labels %in% as.numeric(mz_list)
+
+    labels[!matching] <- NA
+
+
+  } else if (!(is.null(metabolite.labels))){
+
+    labels <- Cardinal::featureData(cardinal.data)[["mz"]]
+    mzs <- c()
+    for (metabolite in metabolite.labels){
+      met.row <- SearchAnnotations(data, metabolite, assay = assay, column.name = annotation.column, search.exact = TRUE)
+
+      if (dim(met.row)[1] != 1){
+        warning(paste("There are either none or multiple entries for the metabolite: ", metabolite,
+                      "\n please check using SearchAnnotations() and FindDuplicateAnnotations"))
+        stop("n entries != 1")
+      }
+
+      all_annots <- unlist(strsplit(met.row[[annotation.column]], "; "))
+
+      if (length(all_annots) != 1){
+        warning(paste("There are another ", (length(all_annots)-1),
+                      "annotations assocated with this metabolite ( ",metabolite," )... These being: ",
+                      "\n", paste(list(all_annots)), "\n Use SearchAnnotations() to see ..."))
+      }
+
+      mz <- met.row$raw_mz
+      mzs <- c(mzs,mz)
+
+      matching <- labels %in% as.numeric(mzs)
+
+      labels[!matching] <- NA
+
+    }
+  } else {
+    labels <- NULL
+  }
+
+
+  if (label.annotations){
+    feature.metadata <- data[[assay]]@meta.data
+
+    #     # Assuming labels is your list
+    non_na_indices <- !is.na(labels)
+    labels[non_na_indices] <- feature.metadata[[annotation.column]][match(labels[non_na_indices], feature.metadata$raw_mz)]
+
+  }
+
+
+  if (is.null(ylim) & !is.null(mass.range)){
+    closest_index_min <- which.min(abs(Cardinal::featureData(cardinal.data)[["mz"]] - mass.range[1]))
+    closest_index_max <- which.min(abs(Cardinal::featureData(cardinal.data)[["mz"]] - mass.range[2]))
+    ylim_max <- ceiling(max(spectra(cardinal.data)[closest_index_min:closest_index_max,]))
+    ylim <- c(0,ylim_max)
+  }
+
+  Cardinal::pData(cardinal.data)[["run"]] <- factor(Cardinal::pData(cardinal.data)[["run"]], levels = Cardinal::pData(cardinal.data)[["run"]])
+  temp <- cardinal.data
+  assign("temp", cardinal.data, envir = .GlobalEnv)
+
+  if (!(is.null(split.by))){
+
+    plot_data <- Cardinal::plot(temp, pixel.groups = levels(Cardinal::pData(temp)[["run"]]), superpose = FALSE)
+
+    n_plots <- length(plot_data$facets)
+
+    if (!(is.null(plot.layout))){
+      layout_coords <- plot.layout
+    } else {
+      layout_coords <- c(get_optimal_layout(n_plots))
+    }
+
+    graphics::par(mfrow = layout_coords)
+
+    for (i in 1:n_plots){
+
+      Cardinal::plot(plot_data$facets[[i]][[1]], type = "l",
+           xlab = xlab,
+           ylab = ylab,
+           xlim = mass.range,
+           ylim = ylim,
+           col = cols[i],
+           hline = NULL)
+
+      graphics::text(x = plot_data$facets[[i]][[1]]$x,
+           y = plot_data$facets[[i]][[1]]$y,
+           labels = labels,
+           cex = labelCex,
+           pos = labelPos,
+           col = labelCol,
+           adj = labelAdj,
+           offset = labelOffset,
+           vfont = labelFont)
+
+    }
+
+    graphics::par(mfrow = c(1, 1))
+    test_plot <- recordPlot()
+    dev.control(displaylist = "enable")
+
+  } else {
+
+    plot_data <- Cardinal::plot(temp, pixel.groups = levels(Cardinal::pData(temp)[["run"]]), superpose = TRUE)
+    print(Cardinal::plot(temp, pixel.groups = levels(Cardinal::pData(temp)[["run"]]), superpose = TRUE,
+               xlab = xlab,
+               ylab = ylab,
+               xlim = mass.range,
+               ylim = ylim,
+               col = cols,
+               hline = NULL
+    ))
+
+    graphics::text(x = plot_data$facets[[1]][[1]]$x,
+         y = plot_data$facets[[1]][[1]]$y,
+         labels = labels,
+         cex = labelCex,
+         pos = labelPos,
+         col = labelCol,
+         adj = labelAdj,
+         offset = labelOffset,
+         vfont = labelFont)
+
+    test_plot <- recordPlot()
+    dev.control(displaylist = "enable")
+  }
+
+  remove("temp", envir = .GlobalEnv)
+
+  return(test_plot)
+
+}
+
+
+
+
+#' massIntensityPlot_v3_1
+#'
+#' @description
+#' A short Plots mean mass spectrometry intensity values for a given Seurat Object, and groups by categories if supplied.
+#'
+#' @param data Seurat object containing data to be plot.
+#' @param group.by Character string defining the name of the meta.data column to group the data by. Results from each group will be overlayed on the one plot (default = NULL).
+#' @param split.by Character string defining the name of the meta.data column to group and split the data by. Results from each group will be plotted individually (default = NULL).
+#' @param cols Vector of character strings defining the colours to be used to identify each group (default = NULL).
+#' @param assay Character string defining the relative Seurat Object assay to pull the required intensity data from (default = "Spatial").
+#' @param slot Character string defining the relative slot from the Seurat Object assay to pull the required intensity data from (default = "counts").
+#' @param label.annotations Boolean value defining whether to plot metabolite annotations of the supplied mz.labels or metabolite.labels on the plot (default = FALSE).
+#' @param annotation.column Character string defining the name of the feature meta.data column which contains the stored m/z annotations (default = "all_IsomerNames").
+#' @param main Character string describing the overall title of the plot (default = NULL).
+#' @param mz.labels Vector of character strings defining the m/z values to display on the plot (default = NULL).
+#' @param metabolite.labels Vector of character strings defining the metabolite names to display on the plot (default = NULL).
+#' @param xlab Character string describing the x-axis title (default = "m/z").
+#' @param ylab Character string describing the y-axis title (default = "intensity").
+#' @param mass.range Vector of numeric values defining the range of m/z values to include (default = NULL).
+#' @param ylim Vector of numeric values defining the range of intensity values to include (default = NULL).
+#' @param labelCex Numeric values for character expansion factor. Seen graphics::text() for more details (default = 0.7).
+#' @param labelFont Character string defining the current font family. Seen graphics::text() for more details (default = NULL).
+#' @param labelAdj One or two values in `[0,1]` which specify the x and y adjustments for the label. Seen graphics::text() for more details (default = NULL).
+#' @param labelPos Value of '1', '2', '3' or '4' which indicate the label position as: below, left, above or right of the specified `(x,y)` coordinates respectively (default = '4').
+#' @param labelOffset Value that controls the distance of the text label from the specified coordinates. Seen graphics::text() for more details (default = 0).
+#' @param labelCol Character string defining the colour of the annotation labels (default = "#eb4034").
+#' @param plot.layout Vector of two numeric values defining the plot layout. This is only used when split.by is specified, but is not required (default = NULL).
+#' @param nlabels.to.show Numeric value defining the number of annotations to show per m/z (default = NULL).
+#'
+#' @return A mass spectrometry plot displaying mean intensity values
+#' @export
+#'
+#' @examples
+#' #For plotting data with Cardinal Version < 3.6
+massIntensityPlot_v3_1 <- function (data,
                                group.by = NULL,
                                split.by = NULL,
                                cols = NULL,
@@ -1109,8 +1502,8 @@ MassIntensityPlot <- function (data,
   pdata <- Cardinal::PositionDataFrame(run = run, coord = coord)
 
   cardinal.data <- Cardinal::MSImagingExperiment(imageData= matter::sparse_mat(Matrix::as.matrix(means)),
-                                       featureData=fdata,
-                                       pixelData=pdata)
+                                                 featureData=fdata,
+                                                 pixelData=pdata)
 
   if (!(is.null(group.by))|!(is.null(split.by))){
     pixel_group <- Cardinal::pixelData(cardinal.data)@run
@@ -1217,22 +1610,22 @@ MassIntensityPlot <- function (data,
     for (i in 1:n_plots){
 
       Cardinal::plot(plot_data$facets[[i]][[1]], type = "l",
-           xlab = xlab,
-           ylab = ylab,
-           xlim = mass.range,
-           ylim = ylim,
-           col = cols[i],
-           hline = NULL)
+                     xlab = xlab,
+                     ylab = ylab,
+                     xlim = mass.range,
+                     ylim = ylim,
+                     col = cols[i],
+                     hline = NULL)
 
       graphics::text(x = plot_data$facets[[i]][[1]]$x,
-           y = plot_data$facets[[i]][[1]]$y,
-           labels = labels,
-           cex = labelCex,
-           pos = labelPos,
-           col = labelCol,
-           adj = labelAdj,
-           offset = labelOffset,
-           vfont = labelFont)
+                     y = plot_data$facets[[i]][[1]]$y,
+                     labels = labels,
+                     cex = labelCex,
+                     pos = labelPos,
+                     col = labelCol,
+                     adj = labelAdj,
+                     offset = labelOffset,
+                     vfont = labelFont)
 
     }
 
@@ -1244,23 +1637,23 @@ MassIntensityPlot <- function (data,
 
     plot_data <- Cardinal::plot(temp, pixel.groups = levels(Cardinal::pData(temp)@run), superpose = TRUE)
     print(Cardinal::plot(temp, pixel.groups = levels(Cardinal::pData(temp)@run), superpose = TRUE,
-               xlab = xlab,
-               ylab = ylab,
-               xlim = mass.range,
-               ylim = ylim,
-               col = cols,
-               hline = NULL
+                         xlab = xlab,
+                         ylab = ylab,
+                         xlim = mass.range,
+                         ylim = ylim,
+                         col = cols,
+                         hline = NULL
     ))
 
     graphics::text(x = plot_data$facets[[1]][[1]]$x,
-         y = plot_data$facets[[1]][[1]]$y,
-         labels = labels,
-         cex = labelCex,
-         pos = labelPos,
-         col = labelCol,
-         adj = labelAdj,
-         offset = labelOffset,
-         vfont = labelFont)
+                   y = plot_data$facets[[1]][[1]]$y,
+                   labels = labels,
+                   cex = labelCex,
+                   pos = labelPos,
+                   col = labelCol,
+                   adj = labelAdj,
+                   offset = labelOffset,
+                   vfont = labelFont)
 
     test_plot <- recordPlot()
     dev.control(displaylist = "enable")
@@ -1271,6 +1664,7 @@ MassIntensityPlot <- function (data,
   return(test_plot)
 
 }
+
 
 
 
