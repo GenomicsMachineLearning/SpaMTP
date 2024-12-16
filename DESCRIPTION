@@ -12,7 +12,7 @@ Authors@R: c(
             role = c("aut")),
     person("Christopher", "Fitzgerald",
             role = c("aut"),
-            comment = c(ORCID = "0000-0003-3935-4300"),
+            comment = c(ORCID = "0000-0003-3935-4300")),
     person("GML", "Lab",
             role = c("lbr")),
     person("Brain Cancer Research", "Lab",

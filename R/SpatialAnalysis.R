@@ -305,7 +305,7 @@ getPCA <- function(SpaMTP,
   # Choose number of principal components, k
   # if not input, use scree test to help find retained components
 
-  if (is.null(num_retained_component)) {
+  if (is.null(npcs)) {
     if (!is.null(variance_explained_threshold)) {
       tryCatch({
         cumulative_variance = cumsum(eigenvalues) / sum(eigenvalues)
@@ -347,7 +347,7 @@ getPCA <- function(SpaMTP,
 
     } else{
       # if threshold not inputted, use Kaiser's criterion
-      verbose_message(message_text = "Both variance_explained_threshold and num_retained_component not inputted, use Kaiser's criterion for determination", verbose = verbose)
+      verbose_message(message_text = "Both variance_explained_threshold and npcs not inputted, use Kaiser's criterion for determination", verbose = verbose)
 
 
       plot(
@@ -371,7 +371,7 @@ getPCA <- function(SpaMTP,
       retained = length(which(eigenvalues >= 1))
     }
   } else{
-    retained = as.integer(num_retained_component)
+    retained = as.integer(npcs)
     if (is.na(retained)) {
       stop("Please enter correct number of principle components to retain")
     }

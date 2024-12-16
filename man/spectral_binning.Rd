@@ -29,3 +29,6 @@ Matrix object containing the binned intensity values matching the provided refer
 \description{
 Spectral binning of intensity values stored in a Matrix object, converted from matter.
 }
+\examples{
+#Helper function for binning data in Matrix format
+}
