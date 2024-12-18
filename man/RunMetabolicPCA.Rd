@@ -8,11 +8,12 @@ RunMetabolicPCA(
   SpaMTP,
   npcs = 30,
   variance_explained_threshold = 0.9,
-  resampling_factor = 1,
-  byrow = FALSE,
   assay = "SPM",
   slot = "counts",
   show_variance_plot = FALSE,
+  bin_resolution = NULL,
+  resolution_units = "ppm",
+  bin_method = "sum",
   reduction.name = "pca",
   verbose = TRUE
 )
@@ -24,10 +25,6 @@ RunMetabolicPCA(
 
 \item{variance_explained_threshold}{Numeric value defining the explained variance threshold (default = 0.9).}
 
-\item{resampling_factor}{is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).}
-
-\item{byrow}{is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).}
-
 \item{assay}{Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").}
 
 \item{slot}{Character string defining the assay slot containing the intensity values (default = "counts").}
@@ -37,6 +34,10 @@ RunMetabolicPCA(
 \item{reduction.name}{Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{resampling_factor}{is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).}
+
+\item{byrow}{is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).}
 }
 \value{
 SpaMTP object with pca results stored in the

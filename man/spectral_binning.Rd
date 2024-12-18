@@ -19,7 +19,7 @@ spectral_binning(
 
 \item{index}{Character string specifying the column name for the m/z values (default = "mz").}
 
-\item{method}{A character vector specifying the binning method. Options include \code{"sum"}, \code{"mean"}, \code{"max"}, \code{"min"}, \code{"linear"}, \code{"cubic"}, \code{"gaussian"}, and \code{"lanczos"}. If not specified default method used is "sum".}
+\item{method}{A character vector specifying the binning method. Options include \code{"sum"}, \code{"mean"}, \code{"max"}, \code{"min"}. If not specified default method used is "sum".}
 
 \item{tolerance}{Numeric value specifying the tolerance for m/z matching (default = \code{NA}).}
 }

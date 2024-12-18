@@ -11,6 +11,9 @@ getPCA(
   assay,
   slot,
   show_variance_plot,
+  bin_resolution = NULL,
+  resolution_units = NULL,
+  bin_method = NULL,
   verbose
 )
 }

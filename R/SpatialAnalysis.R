@@ -42,7 +42,7 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
     }
   }
 
-  if (is.null(mz) & ! is.null(gene) & is.null(gene)){  # for gene mapping
+  if (is.null(mz) & ! is.null(gene) & is.null(ident)){  # for gene mapping
     idx <- which(gene_mappings$gene == gene)
     mz <- as.numeric(gene_mappings$raw_mz[idx])
 
@@ -247,20 +247,87 @@ getPCA <- function(SpaMTP,
                    assay,
                    slot,
                    show_variance_plot,
+                   bin_resolution = NULL,
+                   resolution_units = NULL,
+                   bin_method = NULL,
                    verbose) {
+
+}
+
+
+
+#' Generates PCA analysis results for a SpaMTP Seurat Object
+#'
+#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
+#' @param npcs is an integer value to indicated preferred number of PCs to retain (default = 30).
+#' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
+#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
+#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
+#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
+#' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
+#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
+#' @param reduction.name Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#'
+#' @return SpaMTP object with pca results stored in the
+#' @export
+#'
+#' @examples
+#' # HELPER FUNCTION
+RunMetabolicPCA <- function(SpaMTP,
+                            npcs = 30,
+                            variance_explained_threshold = 0.9,
+                            assay = "SPM",
+                            slot = "counts",
+                            show_variance_plot= FALSE,
+                            bin_resolution = NULL,
+                            resolution_units = "ppm",
+                            bin_method = "sum",
+                            reduction.name = "pca",
+                            verbose = TRUE)
+{
+  verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
+
+  npcs <- as.integer(npcs)
+
+  if(!is.null(bin_resolution)){
+    verbose_message(message_text = paste0("Binned SpaMTP object to a bin size of ", bin_resolution), verbose = verbose)
+    if (!resolution_units %in% c("ppm", "mz")){
+      stop("Incorrect value assigned to 'resolution_units'... value must be either 'ppm' or 'mz', please change accordingly")
+    }
+    if ( !bin_method %in% c("sum", "mean", "max", "min")){
+      stop("Incorrect value assigned to 'bin_method'... value must be either 'sum', 'mean', 'max' or 'min', please change accordingly")
+    }
+
+    data <- BinSpaMTP(data = SpaMTP,
+                      resolution = bin_resolution,
+                      units = resolution_units,
+                      assay = assay,
+                      slot = slot,
+                      method = bin_method, return.only.mtx = FALSE)
+
+    data_mtx <- data[["binned"]]["counts"]
+    temp_assay <- "binned"
+
+  } else {
+    data_mtx <- SpaMTP[[assay]][slot]
+    data <- SpaMTP
+    temp_assay <- assay
+  }
+
   # PCA analysis
   verbose_message(message_text = "Scaling original matrix", verbose = verbose)
 
-  mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
 
-  coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
+  mass_matrix = Matrix::t(data_mtx)
 
   verbose_message(message_text = "Running the principal component analysis ... " , verbose = verbose)
 
   # Runing PCA
 
   resampled_mat_standardised = as.matrix(Matrix::t(
-    Matrix::t(resampled_mat) - Matrix::colSums(mass_matrix) / nrow(mass_matrix)
+    Matrix::t(mass_matrix) - Matrix::colSums(mass_matrix) / nrow(mass_matrix)
   ))
 
   verbose_message(message_text = "Computing the covariance" , verbose = verbose)
@@ -285,8 +352,11 @@ getPCA <- function(SpaMTP,
   pc = do.call(cbind, pc)
   colnames(pc) = paste0("PC", 1:npcs)
   # make pca object
+  eigenvectors <- eigenvectors[,1:npcs]
   colnames(eigenvectors) = paste0("PC", 1:npcs)
-  rownames(eigenvectors) = colnames(mass_matrix)
+  #rownames(eigenvectors) = colnames(mass_matrix)
+  eigenvalues <- eigenvalues[1:npcs]
+
   pca = list(
     sdev = sqrt(eigenvalues),
     rotation = eigenvectors,
@@ -305,13 +375,13 @@ getPCA <- function(SpaMTP,
   # Choose number of principal components, k
   # if not input, use scree test to help find retained components
 
-  if (is.null(npcs)) {
+  if (show_variance_plot) {
     if (!is.null(variance_explained_threshold)) {
       tryCatch({
         cumulative_variance = cumsum(eigenvalues) / sum(eigenvalues)
         threshold = variance_explained_threshold  # Example threshold
 
-        if (show_variance_plot){
+
 
           par(mfrow = c(1, 1))
           par(mar = c(2, 2, 1, 1))
@@ -329,7 +399,7 @@ getPCA <- function(SpaMTP,
           abline(h = threshold,
                  col = "red",
                  lty = 2)
-        }
+
 
         # Find the number of principal components to retain based on the threshold
         retained =  which(cumulative_variance >= threshold)[1] - 1
@@ -370,71 +440,19 @@ getPCA <- function(SpaMTP,
              lty = 2)
       retained = length(which(eigenvalues >= 1))
     }
-  } else{
-    retained = as.integer(npcs)
-    if (is.na(retained)) {
-      stop("Please enter correct number of principle components to retain")
-    }
-  }
-  return(pca)
-}
-
-
-
-#' Generates PCA analysis results for a SpaMTP Seurat Object
-#'
-#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
-#' @param npcs is an integer value to indicated preferred number of PCs to retain (default = 30).
-#' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
-#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
-#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
-#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
-#' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
-#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
-#' @param reduction.name Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#'
-#'
-#' @return SpaMTP object with pca results stored in the
-#' @export
-#'
-#' @examples
-#' # HELPER FUNCTION
-RunMetabolicPCA <- function(SpaMTP,
-                            npcs = 30,
-                            variance_explained_threshold = 0.9,
-                            resampling_factor = 1,
-                            byrow = FALSE,
-                            assay = "SPM",
-                            slot = "counts",
-                            show_variance_plot= FALSE,
-                            reduction.name = "pca",
-                            verbose = TRUE)
-{
-  verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
-
-  if (!is.integer(npcs)){
-    stop("npcs provided is not an integer! please provide an appropriate value for the number of prinicple components to be calculated")
   }
 
-  pca <- getPCA(SpaMTP = SpaMTP,
-                npcs = npcs,
-                variance_explained_threshold = variance_explained_threshold,
-                assay = assay,
-                slot = slot,
-                show_variance_plot= show_variance_plot,
-                verbose = verbose)
 
   SpaMTP_pca <- pca
 
-  rownames(SpaMTP_pca$rotation) <- rownames(SpaMTP[[assay]]@features)
-  rownames(SpaMTP_pca$x) <- rownames(SpaMTP@meta.data)
+  rownames(SpaMTP_pca$rotation) <- SeuratObject::Features(data[[temp_assay]])
+  rownames(SpaMTP_pca$x) <- rownames(data@meta.data)
 
-  SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_")
+  SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_", stdev = SpaMTP_pca$sdev)
 
   SpaMTP[[reduction.name]] <- SpaMTP_pcas
 
-  return(SpaMTP)
+  return(data)
 }
 
 
