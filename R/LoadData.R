@@ -431,13 +431,14 @@ bin_SpectralImagingExperiment <- function(x, ref,
     tol <- setNames(tolerance, units)
   }
 
-  all_identical <- all(sapply(index, identical, index[[1]]))
+  all_identical <- all(sapply(index[1:length(index)], identical, index[[1]]))
 
   if (all_identical) {
     message("All m/z values are identical between pixels ... ")
     index <-  index[[1]]
   } else {
-    stop("Some m/z values are different between pixels ... SpaMTP will use the first list of indexes to bin data! If this is unwanted please set binning_function = 'Cardinal'")
+    warning("Some m/z values are different between pixels ... SpaMTP will use the first list of indexes to bin data! If this is unwanted please set binning_function = 'Cardinal'")
+    index <-  index[[1]]
   }
 
   verbose_message(message_text = "Converting matter matrix to Matrix ... ", verbose = verbose)
