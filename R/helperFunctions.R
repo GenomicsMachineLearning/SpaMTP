@@ -175,7 +175,7 @@ subset_SPM <- function(
 #'
 #' @return Boolean indicating if the version of Cardinal is >= 3.6.0
 check_cardinal_version <- function(){
-  if (utils::packageVersion("Cardinal") >= 3.6) {
+  if (numeric_version(utils::packageVersion("Cardinal")) >= numeric_version("3.6")) {
     return(TRUE)
   } else {
     return(FALSE)

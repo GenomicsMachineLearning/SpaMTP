@@ -122,9 +122,9 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
     verbose_message(message_text = "Returning Seurat object that include ONLY SUCCESSFULLY ANNOTATED m/z features", verbose = verbose)
 
-    if(length(Assays(object = data)) != 1){
+    if(length(Assays(data)) != 1){
       features = c()
-      for(non_met_assay in Assays(object = data)[which(Assays(object = data)!=assay)]){
+      for(non_met_assay in Assays(data)[which(Assays(data)!=assay)]){
         features =  c(features, rownames(data@assays[[non_met_assay]]@features))
       }
       data <- suppressWarnings({SubsetMZFeatures(data, assay = assay, features = c(result_df$mz_names, features))})
