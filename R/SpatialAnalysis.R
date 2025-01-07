@@ -452,7 +452,7 @@ RunMetabolicPCA <- function(SpaMTP,
 
   SpaMTP[[reduction.name]] <- SpaMTP_pcas
 
-  return(data)
+  return(SpaMTP)
 }
 
 
