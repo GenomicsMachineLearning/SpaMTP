@@ -331,7 +331,7 @@ RunMetabolicPCA <- function(SpaMTP,
   ))
 
   verbose_message(message_text = "Computing the covariance" , verbose = verbose)
-  cov_mat <- cov(resampled_mat_standardised)
+  cov_mat <- t(resampled_mat_standardised) %*% resampled_mat_standardised / (nrow(resampled_mat_standardised) - 1)
 
   verbose_message(message_text = "Computing the eigenvalue/eigenvectors", verbose = verbose)
   eigen_result <- eigen(cov_mat)
