@@ -222,40 +222,6 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 }
 
 
-
-#' Helper function that generated PCA analysis results for a SpaMTP Seurat Object
-#'
-#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
-#' @param npcs is an integer value to indicated preferred number of PCs to retain.
-#' @param variance_explained_threshold Numeric value defining the explained variance threshold.
-#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix.
-#' @param assay Character string defining the SpaMTP assay to extract intensity values from.
-#' @param slot Character string defining the assay slot containing the intensity values.
-#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis.
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed.
-#'
-#'
-#' @return PCA object contating embeddings and projections
-#'
-#' @import dplyr
-#'
-#' @examples
-#' # HELPER FUNCTION
-getPCA <- function(SpaMTP,
-                   npcs,
-                   variance_explained_threshold,
-                   assay,
-                   slot,
-                   show_variance_plot,
-                   bin_resolution = NULL,
-                   resolution_units = NULL,
-                   bin_method = NULL,
-                   verbose) {
-
-}
-
-
-
 #' Generates PCA analysis results for a SpaMTP Seurat Object
 #'
 #' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
