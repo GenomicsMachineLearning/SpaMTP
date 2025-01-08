@@ -555,6 +555,7 @@ spectral_binning <- function(matrix, ref, index, method = c("sum", "mean", "max"
 #' #BinSpaMTP(spamtp.obj, resolution = 10, units = "ppm", return.only.mtx = TRUE)
 BinSpaMTP <- function(data, resolution, units = "ppm", assay = "Spatial",slot = "counts", method = c("sum"), return.only.mtx = FALSE){
 
+   orignal_bin_size <- resolution
    min_ref <- min(data[[assay]]@meta.data$raw_mz)
    max_ref <- max(data[[assay]]@meta.data$raw_mz)
 
@@ -583,8 +584,15 @@ BinSpaMTP <- function(data, resolution, units = "ppm", assay = "Spatial",slot = 
    names(tol) <- bin_class
    index <- data[[assay]]@meta.data$raw_mz
 
-   mtx <- spectral_binning(matrix=as.matrix(data[[assay]][slot]), ref = ref, index = index, method = method, tolerance = tol)
-   colnames(mtx) <- rownames(data@meta.data)
+   if (length(ref) < length(index)){
+     mtx <- spectral_binning(matrix=as.matrix(data[[assay]][slot]), ref = ref, index = index, method = method, tolerance = tol)
+     colnames(mtx) <- rownames(data@meta.data)
+   } else {
+     warning("Bin size is too small to bin m/z values together. Currently, with a bin size of ",
+             orignal_bin_size, " ", units, " No m/z values will be binned together ... The original intensity matrix will be used!")
+     mtx <- data[[assay]][slot]
+   }
+
 
    if (return.only.mtx){
      return(mtx)
