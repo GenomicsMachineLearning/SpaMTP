@@ -1,15 +1,3 @@
-#library(Seurat)
-#library(ggplot2)
-#library(dplyr)
-#library(stringr)
-#library(SingleCellExperiment)
-#library(scater)
-#library(edgeR)
-#library(pheatmap)
-#library(limma)
-#library(utils)
-#library(stats)
-#library(grDevices)
 
 #### SpaMTP Differential Metabolite Analysis Functions ########################################################################################################################################################################################
 
