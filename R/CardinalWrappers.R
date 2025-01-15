@@ -16,17 +16,30 @@
 #' # new_CardinalObj <- add_ssc_annotation(CardinalObj, ssc_data, resolution =25)
 add_ssc_annotation <- function(data, data_ssc, resolution = 25){
 
-  message(paste0("Getting cluster segments for resolution (s) = ", resolution))
   data_bin <- data
-  cluster_idx <- which(Cardinal::modelData(data_ssc)[["s"]] == resolution)
 
-  classes <- Cardinal::resultData(data_ssc)[[cluster_idx]][[1]]
-  pixel_data <- Cardinal::pixelData(data_bin)
+  if (check_cardinal_version()){
+    res <- names(ssc)[grepl(names(data_ssc), pattern = paste0("s=", resolution))]
+    message(paste0("Getting cluster segments for resolution ", res))
+
+    Cardinal::pixelData(data_bin)[["ssc"]] <- data_ssc@listData[[res]]$class
 
 
-  pixel_data[["ssc"]] <- classes
+  } else {
+    message(paste0("Getting cluster segments for resolution (s) = ", resolution))
+    cluster_idx <- which(Cardinal::modelData(data_ssc)[["s"]] == resolution)
 
-  Cardinal::pixelData(data_bin) <- pixel_data
+    classes <- Cardinal::resultData(data_ssc)[[cluster_idx]][[1]]
+    pixel_data <- Cardinal::pixelData(data_bin)
+
+
+    pixel_data[["ssc"]] <- classes
+
+    Cardinal::pixelData(data_bin) <- pixel_data
+
+  }
+
+
   return(data_bin)
 
 }
