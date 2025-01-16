@@ -1138,7 +1138,7 @@ MassIntensityPlot <- function (data,
 
     }
   } else {
-    labels <- NULL
+    labels <- rep(NA, length(data[[assay]]@meta.data$raw_mz))
   }
 
 
