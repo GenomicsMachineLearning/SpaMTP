@@ -15,7 +15,7 @@ subset_SPM(
   features = NULL,
   Update.slots = TRUE,
   Update.object = TRUE,
-  verbose = TRUE,
+  verbose = FALSE,
   ...
 )
 }
@@ -34,7 +34,7 @@ subset_SPM(
 
 \item{Update.object}{If to update final object, default to TRUE.}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 
 \item{...}{Arguments passed to \code{subset()} and other methods}
 }
