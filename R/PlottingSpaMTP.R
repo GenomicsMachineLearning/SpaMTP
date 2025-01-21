@@ -1262,7 +1262,7 @@ CheckAlignment <- function(SM.data, ST.data, image.res = NULL, names = c("SM", "
   df <- GetTissueCoordinates(ST.data)[c("x", "y")] * scale.factor
   df$sample <- names[2]
 
-  df2 <- GetTissueCoordinates(SM.data)[c("x", "y")] * scale.factor
+  df2 <- GetTissueCoordinates(SM.data)[c("x", "y")] #* scale.factor
   df2$sample <- names[1]
 
   df1 <- rbind(df,df2)
@@ -1926,6 +1926,128 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 }
 
 
+
+
+
+
+#' Interactive Spatial Plot for visualising different m/z bin sizes
+#'
+#' @param obj SpaMTP object containing the intensity data to plot.
+#' @param assay Character defining the Seurat object assay to extract the intensity data from (default = "Spatial").
+#' @param slot Character defining the Seurat object assay slot to extract the intensity data from (default = "counts").
+#' @param image Character defining the the name of the image to use for tissue coordinates and spatial plotting (default = "slice1").
+#'
+#'@importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput checkboxInput selectInput actionButton plotOutput reactive
+#' renderPlot eventReactive observe stopApp h4 numericInput HTML showModal
+#' @importFrom shinyjs useShinyjs reset
+#'
+#' @export
+#'
+#' @examples
+#' #InteractiveSpatialPlot(spamtp)
+InteractiveSpatialPlot <- function(obj, assay = "Spatial", slot = "counts", image = "slice1"){
+
+  means <- Matrix::as.matrix(Matrix::rowMeans(obj[[assay]][slot]))
+  df <- data.frame(means)
+  df$x <- as.numeric(gsub("mz-", "", rownames(df)))
+  df$y <- df$means
+  rownames(df) <- NULL
+
+  # Shiny app UI
+  ui <- fluidPage(
+    titlePanel("Interactive Spatial Intensity Plot"),
+    sidebarLayout(
+      sidebarPanel(
+        numericInput("curve_center", "m/z Value:", value = 450, min = min(df$means), max = max(df$means), step = 1),
+        sliderInput("curve_width", "Bin Width (m/z):", min = 0, max = 100, value = 10, step = 0.1),
+        numericInput("spot_size", "Plot Spot Size:", value = 10, min = 0, max = 100),  # Added spot size input
+
+        fluidRow(
+          column(6, numericInput("x_min", "X-Axis Minimum:", value = min(df$means), min = min(df$means), max = max(df$means), step = 1)),
+          column(6, numericInput("x_max", "X-Axis Maximum:", value = max(df$means), min = min(df$means), max = max(df$means), step = 1))
+        )
+      ),
+      mainPanel(
+        plotlyOutput("plot"),
+        verbatimTextOutput("selected_indices"),
+        plotOutput("spatial_plot")
+      )
+    )
+  )
+
+  server <- function(input, output, session) {
+    output$plot <- renderPlotly({
+      curve_center <- input$curve_center
+      curve_width <- input$curve_width
+      x_min <- input$x_min
+      x_max <- input$x_max
+
+      # Calculate normal distribution values based on 'means'
+      curve_vals <- dnorm(df$means, mean = curve_center, sd = curve_width)
+
+      # Scale curve to match max y value at curve_center
+      max_y_at_center <- df$y[which.min(abs(df$means - curve_center))]
+
+      # Generate new x-values for the curve
+      new_x_vals <- seq(from = curve_center - curve_width, to = curve_center + curve_width, length.out = 100)
+      new_curve_vals <- dnorm(new_x_vals, mean = curve_center, sd = curve_width)
+      new_curve_vals <- (new_curve_vals - min(new_curve_vals)) / (max(new_curve_vals) - min(new_curve_vals))
+      new_curve_vals <- new_curve_vals * max_y_at_center
+
+      # Create histogram with curve overlay
+      plot_ly() %>%
+        add_bars(x = df$x, y = df$y, name = "Histogram") %>%
+        add_lines(x = new_x_vals, y = new_curve_vals, name = "Curve", line = list(color = 'blue')) %>%
+        layout(
+          xaxis = list(title = "Means (m/z values)", range = c(x_min, x_max)),
+          yaxis = list(title = "Frequency"),
+          showlegend = TRUE
+        )
+    })
+
+    selected_points <- reactive({
+      curve_center <- input$curve_center
+      curve_width <- input$curve_width
+
+      # Generate new x-values for the curve
+      new_x_vals <- seq(from = curve_center - curve_width, to = curve_center + curve_width, length.out = 100)
+
+      # Select y-values within the curve range
+      selected_point <- df$x[df$x >= min(new_x_vals) & df$x <= max(new_x_vals)]
+
+    })
+    output$selected_indices <- renderText({
+      indices <- selected_points()
+
+      if (length(indices) > 0) {
+        paste("Selected feature:", paste(paste0("mz-", indices), collapse = ", "))
+      } else {
+        "No rows under the curve."
+      }
+    })
+
+    output$spatial_plot <- renderPlot({
+      indices <- selected_points()
+      spot_size <- input$spot_size
+
+      if (length(indices) > 0) {
+        features_to_plot <- indices  # Example gene names based on index
+        features_to_plot <- paste0("mz-",features_to_plot)
+        feature_name <- sprintf("mz-%d \u00B1 %.1f", input$curve_center, input$curve_width)
+        binned_obj <- BinMetabolites(obj, mzs = features_to_plot, assay = "Spatial", slot = "counts", bin_name = feature_name)
+        SpatialFeaturePlot(binned_obj, images = image, features = feature_name,  pt.size.factor = spot_size) &theme_void()
+      } else {
+        plot(1, type = "n", xlab = "", ylab = "", main = "No selected features")
+        text(1, 1, "No data available")
+      }
+    })
+
+
+
+  }
+
+  shinyApp(ui, server)
+}
 
 
 ########################################################################################################################################################################################################################

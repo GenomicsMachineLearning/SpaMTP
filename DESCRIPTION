@@ -10,7 +10,8 @@ Authors@R: c(
     person("Tianyao", "Lu",
             email = "lu.t@wehi.edu.au", 
             role = c("aut")),
-    person("Christopher", "Fitzgerald",
+    person("Christopher C.J.", "Fitzgerald",
+            email = "cfitzgerald@marum.de",
             role = c("aut"),
             comment = c(ORCID = "0000-0003-3935-4300")),
     person("GML", "Lab",
@@ -82,8 +83,8 @@ Imports:
     tidyr,
     utils,
     zeallot
-URL: https://github.com/BiomedicalMachineLearning/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP/
-BugReports: https://github.com/BiomedicalMachineLearning/SpaMTP/issues
+URL: https://github.com/genomicsmachinelearning/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP/
+BugReports: https://github.com/genomicsmachinelearning/SpaMTP/issues
 Depends: 
     R (>= 2.10)
 LazyData: true

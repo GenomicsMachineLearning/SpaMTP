@@ -1,0 +1,109 @@
+---
+title: "Single_Cell_MultiOmics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Single_Cell_MultiOmics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+This vignette will use [***SpaMTP***](https://github.com/GenomicsMachineLearning/SpaMTP) to integrate single cell resolution spatial transcriptomics data with spatial metabolic data. This vignette will use simulated Xenium (ST) and simulated MALDI-TOF (SM) data.
+
+Author: Andrew Causer
+
+```{r load_packages, warning=FALSE, message=FALSE}
+#General Libraries
+library(SpaMTP)
+library(Cardinal)
+library(Seurat)
+library(dplyr)
+library(ggplot2)
+```
+
+
+##### Load Processed Data
+
+Here, we will be using the simulated data which has synthetic clustering and cell type names. The gene and metabolite names are also arbitrary, this data is only used to highlight ***SpaMTP's*** functionally with single cell spatial datasets. 
+
+```{r warning=FALSE, message=FALSE}
+xenium <- readRDS("vignette_data_files/Simulated_data/Sim_Xenium.RDS")
+MALDI <- readRDS("vignette_data_files/Simulated_data/Sim_MALDI.RDS")
+```  
+
+
+## Visualising Simulated Datasets
+
+We can visualise the simulated datasets and observe the difference in resolution between our single cell ST and lower resolution SM data.
+
+First, lets look at our Xenium data:
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+ImageDimPlot(xenium, group.by = "celltype", size = 1)
+```
+
+Now, lets look at our MALDI data:
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+ImageDimPlot(MALDI, group.by = "clusters", size = 1)
+```
+
+
+
+Based on these plots, we can see that our Xenium data is at a much higher resolution, compared to the MALDI data. We can zoom in and see this in more detail:
+
+<details>
+  <summary>*Setting Futures for FOV Creation*</summary>
+```{r}
+# Futures may be required to use Seurat's `Crop()` function
+
+library(future)
+plan("multicore", workers = 16) # Use all 20 cores
+
+# Each core can have up to 9 GB of memory (180 GB / 20 cores)
+options(future.globals.maxSize = 16000 * 1024^2) # 9 GB per core
+
+```
+
+</details> 
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+# Generate a smaller FOV to look at a zoomed in region of the ST data
+cropped.coords.xenium <- Crop(xenium[["fov"]], y = c(2000, 3000), x = c(8500, 9500), coords = "tissue")
+xenium[["zoom"]] <- cropped.coords.xenium
+
+# Generate a smaller FOV to look at a zoomed in region of the SM data
+cropped.coords.MALDI <- Crop(MALDI[["fov"]], y = c(2000, 3000), x = c(8500, 9500), coords = "tissue")
+MALDI[["zoom"]] <- cropped.coords.MALDI
+```
+
+Lets visualise this zoomed area now:
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+# Set the boundary as segmentation for our Xenium data
+DefaultBoundary(xenium[["zoom"]]) <- "segmentation"
+
+ImageDimPlot(xenium, group.by = "celltype", fov = "zoom", size = 1)| ImageDimPlot(MALDI, group.by = "clusters", fov = "zoom", size = 2)
+```
+Looking at our zoomed in FOV the single cell resolution ST provides much higher levels of detail compared to the SM data. 
+
+
+## Mapping Single Cell Resolution ST and SM
+
+We want to eventually map our SM data to our single cell resolution ST data, meaning that for each single cell we will have both transcriptomic and metabolic information. First, we can check the alignment of our datasets. 
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+# Set the boundary as segmentation for our Xenium data
+CheckAlignment(ST.data = xenium, SM.data = MALDI, image.slice = "fov") & coord_flip()
+```
+
+
+
+
+

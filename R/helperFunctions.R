@@ -162,8 +162,13 @@ subset_SPM <- function(
 
   if (Update.object && !class(obj_subset) == "FOV") {
     verbose_message(message_text = "Updating object..", verbose = verbose)
+    if (verbose){
+      obj_subset %<>% UpdateSeuratObject()
+    } else {
+      suppressMessages({obj_subset %<>% UpdateSeuratObject()})
+    }
 
-    obj_subset %<>% UpdateSeuratObject() }
+    }
 
   verbose_message(message_text = "Object is ready!", verbose = verbose)
   return(obj_subset)

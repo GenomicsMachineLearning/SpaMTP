@@ -20,16 +20,16 @@ knitr::opts_chunk$set(
 
 # SpaMTP: Multi-Omic Mouse Brain Vignette
 <br>
-This tutorial highlights the highlights the utility of *SpaMTP* on multi-omic data. This vignette will use mouse brain data, where both Spatial Transcriptomics (Visium) and Spatial Metabolomics (MALDI-MSI) were generated from the same tissue section. This data is publically avalible from [Vicari et al](https://doi.org/10.17632/w7nw4km7xd.1).
+This tutorial highlights the highlights the utility of *SpaMTP* on multi-omic data. This vignette will use mouse brain data, where both Spatial Transcriptomics (Visium), ST, and Spatial Metabolomics (MALDI-MSI), SM, were generated from the same tissue section. This data is publicly available from [Vicari et al](https://doi.org/10.17632/w7nw4km7xd.1).
 
 Using **SpaMTP** we will highlight:
 
-* Loading Spatial Metabolomic Data
-* Manually Aligning Spatial Metabolic and Transcriptomic datasets
+* Loading SM Data
+* Manually Aligning SM and ST datasets
 * Mapping Aligned SM data to ST Spot Level
 * Multi-Modal Data Integration of SM and ST Data
 * Multi-Omic Data Visualisation
-* Colocalisation of Metabolites and Genes
+* Co-localisation of Metabolites and Genes
 * Multi-Modality Pathway Analysis
 
 Author: Andrew Causer
@@ -39,12 +39,12 @@ Author: Andrew Causer
 
 ## Load Data
 
-Here we will load in both our Visium and SM data! The Visium data is contained in 10X Genomic's standard format. The MALDI data is in a matrix format, where one table contains both x and y coordinates, and also intensity values for each m/z value. 
+Here, we will load in both our Visium and MALDI-MSI data! The Visium data is contained in 10X Genomic's standard format. The MALDI-MSI data is in a matrix format, where one table contains both x and y coordinates, and also intensity values for each m/z value. 
 
 
 #### Install and Import *R* Libraries
 
-First we need to import the required libraries for this analysis 
+First, we need to import the required libraries for this analysis:
 
 ```{r warning=FALSE, message=FALSE}
 #General Libraries
@@ -62,7 +62,7 @@ library(EnhancedVolcano)
 
 #### Load *SM* Data
 
-As mentioned above, the format of the MSI data is in a mtx format. This is different to .ibd and .imzML files that were used in the [Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The layout of this dataset is demonstrated below:
+As mentioned above, the format of our SM data is in a mtx format. This is different to .ibd and .imzML files that were used in the [Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The layout of this dataset is demonstrated below:
 
 <div style="text-align: center;">
 
@@ -76,8 +76,7 @@ As mentioned above, the format of the MSI data is in a mtx format. This is diffe
 
 </div>
 
-Based on this we can read in the .csv file that contains our intensity and pixel coordinate values.
-
+Based on this, we can read in the `.csv` file that contains our intensity and pixel coordinate values.
 
 ```{r, warning=FALSE, message=FALSE}
 msi <- ReadSM_mtx("vignette_data_files/Mouse_Brain/SM_data/V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
@@ -90,7 +89,7 @@ msi <- ReadSM_mtx("vignette_data_files/Mouse_Brain/SM_data/V11L12-109_B1.Visium.
     Creating Centroids for Spatial Seurat Object ....
 
 
-Great! Now lets expore our sample abit. First we will see the layout of the *SpaMTP* Seurat Object
+Great! Now lets explore our sample. First, we will see the layout of the *SpaMTP* Seurat Object:
 
 
 ```{r}
@@ -98,11 +97,9 @@ msi
 ```
 
  
-
 We can see that we have about 1,538 different m/z masses across 4,914 pixels.
 
 Lets look at what we have in our metadata!
-
 
 ```{r, echo=TRUE, results='hide'}
 head(msi@meta.data)
@@ -121,9 +118,9 @@ df %>%
 ```
 
 
-We can see that our pixel names are a combination of x and y coordinates. Also we have 2 data columns nCount_Spatial and nFeature_Spatial were are generated when loading the data. Respectively, these represent the total intensity across all m/z per pixel, and the number of different m/z values which have an intensity > 0 per pixel. 
+We can see that our pixel names are a combination of x and y coordinates. We also have two data columns, nCount_Spatial and nFeature_Spatial, were were generated when loading the data. Respectively, these represent the total intensity across all m/z per pixel, and the number of different m/z values which have an intensity > 0 per pixel. 
 
-Lets have a look at the sample spatially -> we will just visualise the number of m/z per pixel
+Lets have a look at the sample spatially. We will just visualise the number of m/z's per pixel.
 
 
 ```{r fig.width=7, fig.height=5}
@@ -131,7 +128,7 @@ ImageFeaturePlot(msi, "nFeature_Spatial", size = 2, dark.background = FALSE)
 ```
 
 
-We have some pixels which dont contain any SM data, thus we will remove them first before starting any analysis.
+We have some pixels which do not contain any SM data, thus we will remove them first before starting any analysis.
 
 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=6}
@@ -144,7 +141,7 @@ ImageFeaturePlot(msi, "nCount_Spatial", size = 1.3, dark.background = FALSE) | I
 
 #### Load *ST* Data
 
-Now that we have successfully loaded our metabolomic data lets load in the ST Visium data. This data can be loaded using *Seurat's* Load10X_Spatial() function.
+Now that we have successfully loaded our SM data, lets load in the ST Visium data. This data can be loaded using *Seurat's* `Load10X_Spatial()` function.
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -157,7 +154,7 @@ vis
 ```
 
 
-The ST data has 32,285 genes and 3,120 spots. Next we will visualise the sample and compare to the MSI image above
+The ST data has 32,285 genes and 3,120 spots. Next, we will visualise the sample and compare to the MSI image above.
 
 
 ```{r fig.width=10, fig.height=6}
@@ -165,9 +162,9 @@ SpatialFeaturePlot(vis, features = c("nCount_Spatial", "nFeature_Spatial"), pt.s
 ```
 
 
-In addition we can load in some metadata associated with the tissue morphology generated by the orginal publication authors. As mentioned previously the data we are analysing is from a Parkinson's mouse model, where the Dopamine neurons of one hemisphere of the brain have been lesioned. The metadata loaded below contains infomation surround tissue structures and the lession site. 
+In addition, we can load in the metadata associated with the tissue morphology generated by the authors of the original publication. As mentioned previously, the data we are analysing is from a Parkinson's mouse model, where the dopamine neurons of one brain hemisphere has been lesioned. The metadata loaded below contains information of surrounding tissue structures and the lesion site. 
 
-Lets now load this metadata and add it to our Visium Seurat object
+Now, lets load this metadata and add it to our Visium Seurat object.
 
 
 ```{r}
@@ -184,7 +181,7 @@ vis@meta.data[colnames(annotations)] <- annotations[colnames(annotations)]
 vis@meta.data <- vis@meta.data %>% mutate(annotations = ifelse(RegionLoupe %in% c("CP", "ACB"), paste0(RegionLoupe, "_", lesion), RegionLoupe))
 ```
 
-Now lets plot the results. We can use this information later for tissue alignment and removing poor quality spots sitting outside the tissue section
+Now, we can plot the results. We can use this information later for tissue alignment and removing poor quality spots sitting outside the tissue section. 
 
 
 ```{r, fig.width=20, fig.height=6}
@@ -197,9 +194,9 @@ SpatialDimPlot(vis, group.by = c("lesion","region", "RegionLoupe"))
 
 #### Annotate m/z masses
 
-Now that we have succesffully loaded our ST and SM data we can now run some general preprocessing to remove any poor quality spots/pixel and genes/metabolites. 
+Now that we have successfully loaded our ST and SM data, we can now run some general pre-processing to remove any poor quality spots/pixel and genes/metabolites. 
 
-In this case, the matrix run was an FMP10 matrix, meaning the masses of our metabolites have been previously annotated. We will load this file in an add the results to our SpaMTP MSI object.
+In this case, the matrix run was an FMP10 matrix, meaning the masses of our metabolites have been previously annotated. We will load this file in and add the results to our SpaMTP SM object.
 
 
 ```{r}
@@ -227,7 +224,7 @@ df %>%
 msi_annotated <- AddCustomMZAnnotations(msi, fmp10_metabolites)
 ```
 
-The function above adds the annotations into the SpaMTP object's feature metadata slot. We can see this below:
+The function above adds these annotations into the SpaMTP object's feature meta.data slot. We can see this below:
 
 
 ```{r, echo=TRUE, results='hide'}
@@ -246,9 +243,9 @@ df %>%
 
 
 
-We can see based on the FMP10-tagged value we are able to annotated some of our m/z values with their respective metabolites
+We can see that based on the FMP10-tagged value, we are able to annotated some of our m/z values with their respective metabolites.
 
-Dopamine plays a critical part in Parkinson's disease, so lets visualise this annotations spatially!
+Dopamine plays a critical part in Parkinson's disease, so lets visualise this annotation spatially!
 
 
 ```{r, fig.width=7, fig.height=6}
@@ -262,7 +259,7 @@ There is a strong localisation of dopamine in the non-lesioned hemisphere.
 
 ## Align Multi-Omic Technologies 
 
-Although we have two omic datasets from the same sample, in their current state the coordinates are not alined. We can see this in the first plot below. 
+Although we have two -omic datasets from the same sample, the coordinates are not aligned in their current format. We can see this in the first plot below. 
 
 
 ```{r, fig.width=15, fig.height=8}
@@ -282,19 +279,19 @@ p1|p2
 <br>
 
 
-To achieve multi-omic alignment we must perform 2 steps:
+To achieve multi-omic alignment, we must perform 2 steps:
 
 **1. Align Coordinates:**
 
-   * Here we will manually adjust the cooridnates of the SM data to match the H&E image of the visium data using a *Shiny app* generated through *ManualAlignImages()*
-   * We can change whats data is plot/visualised to assist with correct alignment
-   * This will output a SM *SpaMTP Seurat Class Object* with transformed cooridnates (transformed via an affine transformation)
+   * Here, we will manually adjust the coordinates of the SM data to match the H&E image of the Visium data using a *Shiny app* generated through *ManualAlignImages()*
+   * We can change what data is plotted/visualised to assist with correct alignment
+   * This will output a SM *SpaMTP Seurat Class Object* with transformed coordinates (transformed via an affine transformation)
 
 **2. Map Omic Data to Common Spots:**
 
    * The final step is to map or bin the SM data to each ST spot using *MapSpatialOmics()*
-   * In step works by finding all SM data points within a radius of a ST spot and asigning their respective data
-   * Increasing the SM resolution in this function can imporve the mapping by reducing the distance between pixel and spot centroids.
+   * This step works by finding all SM data points within a radius of a ST spot and assigning their respective data
+   * Increasing the SM resolution in this function can improve the mapping by reducing the distance between pixel and spot centroids.
 
 <br>
 Lets run these functions on our sample:
@@ -341,7 +338,7 @@ CheckAlignment(msi_transformed, vis, image.res = "hires", size = 0.8)
 ```
 
 
-we can also check that our SM cooridnates havent been distorted by plotting a m/z value. Let's compare before vs after
+We can also check that our SM coordinates haven't been distorted by plotting a m/z value. Let's compare the before vs after.
 
 
 ```{r, fig.width=15, fig.height=8}
@@ -350,7 +347,7 @@ ImageMZPlot(msi_annotated, mzs = 674.28, size = 2, slot = "counts") |
 ```
 
 
-Great, now that we are confident that our SM and ST data are aligned to the same coordinates we can map each pixel and their relative m/z intensity values to their corresponding ST spot. 
+Great, now that we are confident that our SM and ST data are aligned to the same coordinates, we can map each pixel and their relative m/z intensity values to their corresponding ST spot. 
 
 NOTE: we have increased the resolution of the SM data by 4 so that each pixel is now split into 4 smaller pixels (this will help with matching pixel centroid to spot centroids).
 
@@ -373,7 +370,7 @@ combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, res_i
     Generating new MALDI Seurat Object ... 
  
 
-Lets visualise how the mapping went and compare it to our orginal SM data object
+Lets visualise how the mapping went and compare it to our original SM data object:
 
 
 ```{r, fig.width=15,fig.height=8}
@@ -382,9 +379,9 @@ ImageMZPlot(msi_transformed, mzs = 674.28, size = 2, slot = "counts") |
 ```
 
 
-We can see that the expression of Dopamine (mz-674.28) displays the same expression pattern spatially in our visium spot mapped object compared to the original MSI-only data object. 
+We can see that the expression of Dopamine (mz-674.28) displays the same pattern spatially in our Visium mapped object, compared to the original MSI-only data object. 
 
-Our data looks almost ready to perform some downstream analyses on. However, based on the provided annotations displayed above, we should remove all spots that are not annotated as an atomical region (meaning they are located outside of the tissue).
+Our data is almost ready for downstream analyses. However, based on the provided annotations displayed above, we should remove all spots that are not annotated as an anatomical region (meaning they are located outside of the tissue).
 
 
 
@@ -398,16 +395,16 @@ SpatialDimPlot(combined.data, group.by = c("lesion", "RegionLoupe"))
 ```
 
 
-We can see now that we have removed spots that were associated with the outer border of the tissue. For example the bottom portion of this section has a fold in the H&E and thus is technical noise, meaning these spots need to be removed. 
+We can now see that we have removed spots that were associated with the outer border of the tissue. For example, the bottom portion of this section has a fold in the H&E and thus is technical noise, meaning these spots need to be removed. 
 
 <br>
 
 
 ## Clustering/Downstream Analysis
 
-Now that our spatial datasets are cleaned and fully aligned we can perform some downstream analyses to determine cell types, differentially expressed genes and metabolites, and also upregulated metabolic pathways. 
+Now that our spatial datasets are cleaned and fully aligned, we can perform some downstream analyses to determine cell types, differentially expressed genes and metabolites, and also upregulated metabolic pathways. 
 
-Note: Hidden below are the colour palettes used to plot
+Note: Hidden below are the colour palettes used to plot.
 <details>
   <summary>*Colour Palettes*</summary>
 ```{r}
@@ -459,7 +456,7 @@ annotation_palette <- list("ACB_intact" = "#faa957",
 
 #### Cluster ST data
 
-First we will run clustering on the ST data. Based on the two different modalities, mRNA data will perform much better at defining different cell types/structures within the tissue sample. We expect the clustering to be able to detect such cell types as the striatum.
+First, we will run clustering on the ST data. Based on the two different modalities, mRNA data will perform much better at defining different cell types/structures within the tissue sample. We expect the clustering to be able to detect cell types, such as the striatum.
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -493,7 +490,7 @@ SpatialDimPlot(striatum, group.by = "ST_clusters", label = F, pt.size.factor = 2
 ```
 
 
-Looking at these results we can see that our clustering using only genetic information can determine clear morphological brain regions within the Striatum, including the caudoputamen (CP) and nucleus accumbens (ACB). However, clustering using genetic infomation cannot identify lesioned regions of the Striatum, where the striatum cells of left hemisphere produce significantly higher levels of Dopamine.
+Looking at these results, we can see that our clustering using only genetic information can determine clear morphological brain regions within the Striatum, including the caudoputamen (CP) and nucleus accumbens (ACB). However, clustering using genetic information cannot identify lesioned regions of the Striatum, where the Striatum cells of left hemisphere produce significantly higher levels of Dopamine.
 
 
 
@@ -522,7 +519,7 @@ df %>%
 
 
 
-Looking at the top 5 most over-expressed genes in cluster 0, we can see some key genes that define the striatum. These are plot below:
+Looking at the top 5 most over-expressed genes in cluster 0, we can see some key genes that define the Striatum. These are plot below:
 
 
 ```{r, fig.width=15, fig.height=5}
@@ -531,13 +528,13 @@ SpatialFeaturePlot(combined.data, features = c("Ppp1r1b", "Gpr88", "Rgs9"), pt.s
 
 
 
-Identified in the original publication, the gene 'Pcp4' was highlighted as differentially expressed between the in-tact vs lesioned Striatum. Because the gene expression alone cannot differentiate between the lesion vs non-lession cells this gene is not observed in the top most differentially expressed genes. We will need to look at the metabolic data to identify this gene
+Identified in the original publication, the gene, 'Pcp4', was highlighted as differentially expressed between the in-tact vs the lesioned Striatum. Because the gene expression alone cannot differentiate between the lesion vs non-lesioned cells this gene is not observed in the top most differentially expressed genes. We will need to look at the metabolic data to identify this gene.
 
 <br>
 
 #### Cluster SM data
 
-Clustering based on metabolic infomation will likely reveal different infomation compared to a transcriptomic approach. SM clustering will reveal more about the activity or functioning of different cell types. Lets see how the clustering differs:
+Clustering based on metabolic information will likely reveal different information compared to a transcriptomic approach. SM clustering will reveal more about the activity or functioning of different cell types. Lets see how the clustering differs:
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -561,7 +558,6 @@ DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = 
 ```
 
 
-
 Looking at the clustering results above we can clearly see <span style="color: purple">**(cluster 4)**</span> defines the cells of the intact Striatum which still produce dopamine. In addition, the spatial distribution of cluster 4 matches the expression pattern of dopamine displayed below:
 
 
@@ -576,7 +572,7 @@ SpatialFeaturePlot(combined.data, features = "Dopamine", pt.size.factor = 2.1) +
 
 ## Multi-Modal Integrative Analysis
 
-As explained above transcriptomic and metabolic data reveal and define different aspects of the tissue. Based on this multi-modal integration can be used to combine these features into the one analysis. Below we will integrate the spatail transcriptomic and metabolomic data together to get a more refined and detailed clustering result.
+As explained above, transcriptomic and metabolic data reveal and define different aspects of the tissue. Based on this, multi-modal integration can be used to combine these features into the one analysis. Below we will integrate the spatial transcriptomic and metabolomic data together to get a more refined and detailed clustering result.
 
 The SpaMTP *MultiOmicIntegration* function allows for automated or manual specification of weights for each modality when generating the integrated clusters. 
 
@@ -597,10 +593,10 @@ DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.uma
   SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1, cols = intergrated_palette) 
 ```
 
-Looking at the results above we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #E68613">cluster 1</span> and <span style="color: #7CAE00">cluster 3</span> respectively)
+Looking at the results above, we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #E68613">cluster 1</span> and <span style="color: #7CAE00">cluster 3</span> respectively)
 
 
-We can also compare the difference between ST only, SM only and integrated clustering
+We can also compare the difference between ST only, SM only and integrated clustering:
 
 ```{r fig.width=10, fig.height=10}
 (SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.1, cols = annotation_palette)| 
@@ -613,8 +609,7 @@ SpatialDimPlot(integrated.data, group.by = "SM_clusters", pt.size.factor = 2.1, 
 
 #### Differential Metabolite and Gene Expression Analysis
 
-Based on this we can look at which metabolites and genes are differentially expressed between these clusters. First we will identify which clusters display an up-regulate in dopamine:
-
+Based on this, we can look at which metabolites and genes are differentially expressed between these clusters. First, we will identify which clusters display an up-regulation of dopamine:
 
 ```{r, warning=FALSE, message=FALSE}
 # Performs pooling, pseudo-bulking and EdgeR Differential Expression Analysis
@@ -674,7 +669,7 @@ volc_plot
 
 
 
-Analysing the DE results we can see that Dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #E68613">cluster 1</span>. 
+Analysing the DE results, we can see that dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #E68613">cluster 1</span>. 
 
 Now we will look at the gene expression differences between cluster 1 and 3:
 
@@ -704,7 +699,7 @@ df %>%
 ```
 
 
-Supporting the findings from the orginal publication we can see that "Pcp4" is up-regulated in cluster 1 (in-tact striatum cells).
+Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 1 (in-tact striatum cells).
 
 
 ```{r, fig.width=6, fig.height=8}
@@ -715,7 +710,7 @@ SpatialFeaturePlot(integrated.data, features = "Pcp4", pt.size.factor = 2)
 
 ## Multi-Omic Data Visualisation
 
-Based on this analysis we can visualise this gene and metabolite of interest in the same 3D plot ("Pcp4" and "Dopamine")
+Based on this analysis, we can visualise this gene and metabolite of interest in the same 3D plot ("Pcp4" and "Dopamine").
 
 
 ```{r, fig.width=10, fig.height=10}
@@ -733,7 +728,7 @@ Plot3DFeature(combined.data,
 
 ## Multi-Modality Pathway Analysis
 
-Now that we have identified there are metabolic and transcriptional differences between the lesioned and intact striatum regions, we can now further assess the activity of each region by performing multi-modal pathway analysis using both genes and metabolites. Due to the nature of the FMP10 matrix, there are only a handful of metabolites annotated and all additional m/z values will **currently** not match the mass values found in any of the ***SpaMTP*** provided databases (due to the additional weight of the FMP10 adduct). Instead we will use paired Visium and MALDI DHB-matrix data. This data has already been processed with the code for doing show hidden below:
+Now that we have identified there are metabolic and transcriptional differences between the lesioned and intact striatum regions, we can now further assess the activity of each region by performing multi-modal pathway analysis using both genes and metabolites. Due to the nature of the FMP10 matrix, there are only a handful of metabolites annotated and all additional m/z values will **currently** not match the mass values found in any of the ***SpaMTP*** provided databases (due to the additional weight of the FMP10 adduct). Instead, we will use paired Visium and MALDI DHB-matrix data. This data has already been processed with the code hidden below:
 
 <details>
   <summary>*DHB Data Processing*</summary>
@@ -832,6 +827,7 @@ PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathwa
 ```
 
 One of the significant pathways associated with the lesioned region was 'Dopamine beta-hydroxylase deficiency'. We can use ***SpaMTP's*** network plotting function to visualuse the network of this pathway, along with the relative differentially expressed elements that make up the activity of this pathway. Lets have a look:
+
 ```{r eval=FALSE}
 PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "vignette_data_files/Mouse_Brain/DHB_data")
 ```
@@ -846,7 +842,7 @@ PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathw
 <iframe src="vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html" width="100%" height="700px"></iframe>
 
 
-One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP*** we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:
+One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP***, we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:
 
 ```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
 SpatialMZPlot(striatum.dhb.data, mz= 400.14659,plusminus = 0.05, assay = "SPM", pt.size.factor = 2.5, slot = "data") + theme(legend.position = "right")
@@ -856,6 +852,7 @@ We can see that there is much more expression of this metabolite within the lesi
 
 
 Finally, we can combine the expression of each of these metabolites to see the exact region where this pathway is active. 
+
 ```{r, results='hide', warning=FALSE, message=FALSE}
 ## Get key mz values from network plot
 mzs <- c(215.015, 321.08627, 400.14659) 

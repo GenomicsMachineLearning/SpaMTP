@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(SpaMTP)
+library(UpSetR)
+library(Seurat)
 ```
 
 ## Pathway Analysis Benchmarking
@@ -58,33 +60,69 @@ degs = deg[deg$cluster == "intact",][deg[deg$cluster == "intact",]$p_val_adj < 0
 
 
 
-library(UpSetR)
 upset_results <- c(
-  SpaMTP = 164,
-  MetaboAnalyst = 21,
-  #IPA = ,
-  Detected.Dopamine.Pathways = 2, 
-  "SpaMTP&MetaboAnalyst" = 6,
-  "SpaMTP&All.Detected.Dopamine.Pathways" = 2
- # "IPA" = 
-)
-  
-
-
-
-upset(fromExpression(upset_results), 
-      nintersects = 40, 
-      nsets = 6, 
-      order.by = "freq", 
-      decreasing = T, 
-      mb.ratio = c(0.6, 0.4),
-      number.angles = 0, 
-      text.scale = 1.1, 
-      point.size = 2.8, 
-      line.size = 1
+All.Pathways =   dim(regpathway[regpathway$Cluster_id == "intact",])[1] + 21 + 191,
+Sig.Pathways = length(regpathway[regpathway$padj < 0.05 & regpathway$Cluster_id == "intact",]$pathwayName) + 0 + 44,
+SpaMTP = dim(regpathway[regpathway$Cluster_id == "intact",])[1], 
+MetaboAnalyst = 21,
+IPA = 191, 
+Detected.Dopamine.Pathways = 4,
+"All.Pathways&SpaMTP" = dim(regpathway[regpathway$Cluster_id == "intact",])[1],
+"Sig.Pathways&SpaMTP" = length(regpathway[regpathway$padj < 0.05 & regpathway$Cluster_id == "intact",]$pathwayName),
+"All.Pathways&MetaboAnalyst" = 21,
+"Sig.Pathways&MetaboAnalyst" = 0,
+"All.Pathways&IPA" = 191,
+"Sig.Pathways&IPA" = 44,
+"Detected.Dopamine.Pathways&Sig.Pathways&SpaMTP" = 2,
+"All.Pathways&Sig.Pathways" = length(regpathway[regpathway$padj < 0.05 & regpathway$Cluster_id == "intact",]$pathwayName) + 0 + 44
 )
 
+upset(fromExpression(upset_results),
+nintersects = 40,
+nsets = 6,
+order.by = "freq",
+decreasing = T,
+mb.ratio = c(0.6, 0.4),
+number.angles = 0,
+text.scale = 1.1,
+point.size = 2.8,
+line.size = 1
+)
+
+
+#"Transport of bile salts and organic acids, metal ions and amine compounds"
+bile <- regpathway[regpathway$pathwayName == "Transport of bile salts and organic acids, metal ions and amine compounds",]$adduct_info[1]
+
+numbers <- str_extract_all(bile, "\\d+\\.\\d+")[[1]]
+
+# Convert to numeric if needed
+numbers <- as.numeric(numbers)
+mzs <- list(unlist(lapply(numbers, function(x){FindNearestMZ(striatum.dhb.data, x)})))
+
+striatum.dhb.data <- AddModuleScore(striatum.dhb.data, mzs, assay = "SPM", slot = "data", name = "bile_pathway", ctrl = 20)
+SpatialFeaturePlot(striatum.dhb.data, features = "bile_pathway1", pt.size.factor = 2.5, image.alpha = 0.7) & scale_fill_gradient2(low = "blue", high = "red") 
+
+
+PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = c("Transport of bile salts and organic acids, metal ions and amine compounds"), path = "~../")
+
+
+## benchmarking results provided in supplementary table in publication
+#hm_benchmarking <- read.csv("../heatmap_benchmarking.csv")
+
+df_long <- hm_benchmarking %>%
+    pivot_longer(cols = -Pathway, names_to = "Tool", values_to = "Value")
+df_long$Pathway <- factor(df_long$Pathway, hm_benchmarking$Pathway)
+
+# Plot the heatmap
+ggplot(df_long, aes(x = Tool, y = Pathway, fill = factor(Value))) +
+    geom_tile(color = "white") +
+    scale_fill_manual(values = c("-1" = "white", "0" = "grey", "1" = "red")) +
+    labs(title = "Pathway Analysis Heatmap",
+         x = "Analysis Tool",
+         y = "Pathway",
+         fill = "Value") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
 ```
-
