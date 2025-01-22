@@ -157,7 +157,7 @@ reference:
 - title: Exporting SpaMTP Data
   desc: Function to export SpaMTP data in .mtx, barcodes.csv, features.csv, metadata.csv,
     and feature.metadata.csv files
-  contents: saveSpaMTPData
+  contents: SaveSpaMTPData
 - title: Spatial Analysis of Metabolomic Data
   desc: Functions used to identify spatially correlated features (metabolites/genes)
   contents:
