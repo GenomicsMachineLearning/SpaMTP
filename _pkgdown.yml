@@ -53,11 +53,13 @@ navbar:
         href: articles/Multi-Omic_Mouse_Brain.html
       - text: Additional SpaMTP Features
         href: articles/SpaMTP_Additional_Features.html
+      - text: Single Cell Multi-Omic Analysis
+        href: articles/Single_Cell_MultiOmics.html
 reference:
 - title: Loading Spatial Metabolic Data into a SpaMTP Seurat Object
   desc: Functions that allow the user to load in SM data in different formats
   contents:
-  - loadSM
+  - LoadSM
   - ReadSM_mtx
 - title: Converting Between Data Objects
   desc: Functions that allow the user to convert between SpaMTP Seurat Objects and
@@ -65,6 +67,14 @@ reference:
   contents:
   - CardinalToSeurat
   - ConvertSeuratToCardinal
+  - BinnedCardinalToSeurat
+- title: Binning Spatial Metabolomic Data
+  desc: Functions that bin m/z values into a lower resolution/wider peak.
+  contents:
+  - BinSpaMTP
+  - spectral_binning
+  - bin_SpectralImagingExperiment
+  - bin_cardinal
 - title: Analysis of Differentially Expressed Peaks
   desc: Functions required for performing pseudo-bulking differential expression analysis
   contents:
@@ -113,7 +123,6 @@ reference:
 - title: PCA Metabolite Analysis
   desc: Functions that are used for calculating PCA embeddings and projections based on SM data
   contents:
-  - getPCA
   - RunMetabolicPCA
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
@@ -126,6 +135,10 @@ reference:
   - MassIntensityPlot
   - CheckAlignment
   - DensityMap
+- title: Interactive Spatial Binning Visualisation
+  desc: Interactive plot that displays spatial changes to m/z intensity values based on changes to bin size.
+  contents:
+  - InteractiveSpatialPlot
 - title: Additional SpaMTP Functions
   desc: Functions that can be used to find the closest metabolite and bin the expression
     of multiple metabolites into one
@@ -160,21 +173,6 @@ reference:
   - AlignSpatialOmics
   - MultiOmicIntegration
   - AddSMImage
-- title: Helper Functions for Multi-Omic Analysis
-  desc: Helper functions used in multi-omic analysis functions
-  contents:
-  - split_pixel
-  - increase_SM_res
-  - generate_new_SM_counts
-  - translate
-  - mirror
-  - stretch
-  - rigid.rot
-  - rigid.transf
-  - rigid.transl
-  - rigid.refl
-  - rigid.stretch
-  - combine.tr
 - title: Pre-Processing SpaMTP Metabolic Data
   desc: Functions for normalising and visualising the pre-processing of SpaMTP datasets
   contents:
@@ -230,4 +228,18 @@ reference:
   - ppm_error
   - ppm_range_match
   - proc_db
-
+- title: Helper Functions for Multi-Omic Analysis
+  desc: Helper functions used in multi-omic analysis functions
+  contents:
+  - get_square_coordinates
+  - lowresMapping
+  - hiresMapping
+  - translate
+  - mirror
+  - stretch
+  - rigid.rot
+  - rigid.transf
+  - rigid.transl
+  - rigid.refl
+  - rigid.stretch
+  - combine.tr

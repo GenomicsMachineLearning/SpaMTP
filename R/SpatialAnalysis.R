@@ -227,11 +227,12 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
 #' @param npcs is an integer value to indicated preferred number of PCs to retain (default = 30).
 #' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
-#' @param resampling_factor is a numerical value > 0, indicate how you want to resample the size of original matrix (default = 1).
-#' @param byrow is a boolean to indicates whether each column of the matrix is built byrow or bycol (default = FALSE).
 #' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
 #' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
 #' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
+#' @param bin_resolution Numeric value defining the resolution to use for binning m/z peaks. If set to `NULL`, no binning will be performed (default = NULL).
+#' @param resolution_units Character string specifying the units of the `bin_resolution`. Either 'ppm' or 'mz' can be provided. `bin_resolution` must be provided for this parameter to be implemented (default = "ppm").
+#' @param bin_method Character string defining the method to use for binning respective m/z peaks that fall within a bin. Options for this parameter can be one of "sum", "mean", "max" or "min". `bin_resolution` must be provided for this parameter to be implemented (default = "sum").
 #' @param reduction.name Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'

@@ -98,11 +98,97 @@ CardinalToSeurat <- function(data,run_name, seurat.coord = NULL, assay = "Spatia
 
   return(seuratobj)
 }
-########################################################################################################################################################################################################################
+
+#' Converts a Cardinal Object into a Seurat Object
+#'
+#' @param data A Cardinal Object that is being converted into a Seurat Object.
+#' @param mtx Matrix object containing
+#' @param run_name A character string defining the run name of the Cardinal data to be converted to a Seurat Object
+#' @param seurat.coord A Data.Frame containing two columns titled 'X_new' and 'Y_new' specifying the pixel coordinates of each data point. This is only required if mapping Spatial Metabolic data with a H&E image was done externally, and the SM coordinates need to change to align correctly to the ST data. Else, set to `NULL` (default = NULL).
+#' @param assay Character string containing the name of the assay (default = "Spatial").
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#' @returns A Seurat Object containing the mz count data of the supplied Cardinal Object
+#' @export
+#'
+#' @examples
+#' # CardinalToSeurat(CardinalObj, run_name = "run_1")
+BinnedCardinalToSeurat <- function(data, mtx, run_name,  assay = "Spatial", verbose = TRUE ){
+
+  verbose_message(message_text = "Convering Cardinal object to Seurat object .... ", verbose = verbose)
+  run_data <- data
+  #run_data <- Cardinal::subsetPixels(data, Cardinal::run(data) == paste0(run_name)) #subset broken under Cardinal >3.6
+  sparse_matrix <- mtx
+  pixel_data <- Cardinal::pixelData(run_data)
+
+  if ("x" %in% colnames(data.frame(pixel_data)) & "y" %in% colnames(data.frame(pixel_data))){
+    pixel_data_df <- data.frame(pixel_data)
+    pixel_data[["x_coord",]] <- pixel_data_df$x
+    pixel_data[["y_coord",]] <- pixel_data_df$y
+    Cardinal::pixelData(run_data) <- pixel_data
+  } else {
+    warning("There is no column called 'x' and 'y' in pixelData(CardinalObject)")
+    stop("x and y pixel columns do not exist")
+  }
+
+  verbose_message(message_text = "Generating Seurat Barcode Labels from Pixel Coordinates .... ", verbose = verbose)
+
+  x_coord <- Cardinal::pixelData(run_data)[["x_coord",]]
+  y_coord <- Cardinal::pixelData(run_data)[["y_coord",]]
+  spot_name <- paste0(x_coord,"_",y_coord)
 
 
+  colnames(sparse_matrix)<- spot_name
+  rownames(sparse_matrix)<- paste0("mz-", rownames(sparse_matrix))
 
-#### SpaMTP Seurat to Cardinal Functions ###############################################################################################################################################################################
+  verbose_message(message_text = "Constructing Seurat Object ....", verbose = verbose)
+
+
+  seuratobj <- Seurat::CreateSeuratObject(sparse_matrix, assay = "Spatial")
+
+  verbose_message(message_text = "Adding Pixel Metadata ....", verbose = verbose)
+
+  seuratobj <- Seurat::AddMetaData(seuratobj,col.name = "sample", metadata = Cardinal::run(run_data))
+
+  for (name in names(Cardinal::pixelData(run_data))){
+    seuratobj <- Seurat::AddMetaData(seuratobj,col.name = name, metadata = Cardinal::pixelData(run_data)[[name,]])
+  }
+
+  verbose_message(message_text = "Creating Centroids for Spatial Seurat Object ....", verbose = verbose)
+
+  ## Add spatial data
+  cents <- SeuratObject::CreateCentroids(data.frame(x = c(Cardinal::pixelData(run_data)[["x_coord",]]), y = c(Cardinal::pixelData(run_data)[["y_coord",]]), cell = c(spot_name)))
+
+
+  segmentations.data <- list(
+    "centroids" = cents
+  )
+
+  coords <- SeuratObject::CreateFOV(
+    coords = segmentations.data,
+    type = c("centroids"),
+    molecules = NULL,
+    assay = "Spatial"
+  )
+
+  seuratobj[["fov"]] <- coords
+
+
+  metadata <- data.frame("raw_mz" = sapply(strsplit(rownames(seuratobj), "-"), function(x) as.numeric(x[[2]])))
+  rownames(metadata) <- rownames(seuratobj)
+
+
+  seuratobj[["Spatial"]] <- Seurat::AddMetaData(object = seuratobj[["Spatial"]],
+                                                metadata = metadata,
+                                                col.name = 'raw_mz')
+
+
+  seuratobj[["Spatial"]]@meta.data$mz_names <- rownames(seuratobj)
+
+  return(seuratobj)
+}
+
+
 
 #' Converts a Seurat object to a Cardinal object, including annotations and metadata
 #'

@@ -302,6 +302,12 @@ saveSpaMTPData(bladder_HE, outdir = "../Documents/SpaMTP_Output/", assay = "Spat
 
 
 
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
 
 
 

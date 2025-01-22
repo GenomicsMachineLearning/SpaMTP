@@ -13,7 +13,6 @@ MassIntensityPlot(
   slot = "counts",
   label.annotations = FALSE,
   annotation.column = "all_IsomerNames",
-  main = NULL,
   mz.labels = NULL,
   metabolite.labels = NULL,
   xlab = "m/z",

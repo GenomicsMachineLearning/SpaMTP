@@ -971,6 +971,8 @@ get_optimal_layout <- function(list_length) {
     }
   }
 }
+
+
 #' MassIntensityPlot
 #'
 #' @description
@@ -1023,7 +1025,6 @@ MassIntensityPlot <- function (data,
                                      slot = "counts",
                                      label.annotations = FALSE,
                                      annotation.column = "all_IsomerNames",
-                                     main = NULL,
                                      mz.labels = NULL,
                                      metabolite.labels = NULL,
                                      xlab = "m/z",
@@ -1937,7 +1938,7 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 #' @param slot Character defining the Seurat object assay slot to extract the intensity data from (default = "counts").
 #' @param image Character defining the the name of the image to use for tissue coordinates and spatial plotting (default = "slice1").
 #'
-#'@importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput checkboxInput selectInput actionButton plotOutput reactive
+#' @importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput checkboxInput selectInput actionButton plotOutput reactive
 #' renderPlot eventReactive observe stopApp h4 numericInput HTML showModal
 #' @importFrom shinyjs useShinyjs reset
 #'

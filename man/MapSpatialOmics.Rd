@@ -2,67 +2,74 @@
 % Please edit documentation in R/SpatialMultiomicAlignment.R
 \name{MapSpatialOmics}
 \alias{MapSpatialOmics}
-\title{Converts and aggregates Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics (Visium) spots.
-\itemize{
-\item This function uses generate_new_SM_counts() and increase_SM_res()
-}}
+\title{Maps Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics data and coordinates.}
 \usage{
 MapSpatialOmics(
   SM.data,
   ST.data,
-  res_increase = NULL,
-  annotations = FALSE,
-  assay = "Spatial",
-  slots = c("counts"),
-  img_res = "hires",
-  slice = "slice1",
-  new_SpM.assay = "SPM",
-  add.ST = TRUE,
+  ST.hires = FALSE,
+  SM.assay = "Spatial",
   ST.assay = "Spatial",
-  ST.layers = c("counts"),
-  new_SpT.assay = "SPT",
-  verbose = TRUE
+  SM.fov = "fov",
+  ST.image = "slice1",
+  ST.scale.factor = "hires",
+  SM.pixel.width = NULL,
+  overlap.threshold = 0.2,
+  annotations = TRUE,
+  add.metadata = TRUE,
+  merge.unique.metadata = TRUE,
+  map.data = FALSE,
+  new_SPT.assay = "SPT",
+  new_SPM.assay = "SPM",
+  verbose = FALSE
 )
 }
 \arguments{
-\item{SM.data}{A Seurat object representing the Spatial Metabolomics data.}
+\item{SM.data}{A SpaMTP Seurat object representing the Spatial Metabolomics data.}
 
-\item{ST.data}{A Seurat object representing the Visium Spatial Transcriptomics data.}
+\item{ST.data}{A Seurat object representing the Spatial Transcriptomics data.}
 
-\item{res_increase}{Integer value defining the factor by which the resolution of MALDI spots should be increased before assignment. It should be either 4 or 9, see increase_SM_res() documentation for specifics (Default = NULL).}
+\item{ST.hires}{Boolean string defining if the ST data is at a higher resolution compared to the SM pixel data. For example, generally Visium data will be lower res whereas Xenium/single-cell resolution spatial data will be a higher resolution (default = FALSE).}
 
-\item{annotations}{Boolean value indicating if the Spatial Metabolomics (MALDI) Seurat object contains annotations assigned to m/z values (default = FALSE).}
-
-\item{assay}{Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values (default = "Spatial").}
-
-\item{slots}{Vector of character strings describing which slots from the Spatial Metabolomic Seurat object to adjust for the new overlayed object (default = c("counts", "data")).}
-
-\item{img_res}{Character string defining the image resolution associated with the Visium image pixel data (default = "hires").}
-
-\item{slice}{Character string of the image slice name in the Visium object (default = "slice1").}
-
-\item{new_SpM.assay}{Character string defining the assay name of the new overlayed Seurat object containing all updated metabolomic data (default = "SPM").}
-
-\item{add.ST}{Boolean indicating whether to add the Spatial Metabolomic data from the Seurat Visium Object to the new updated Seruat Object (default = TRUE).}
+\item{SM.assay}{Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values (default = "Spatial").}
 
 \item{ST.assay}{Character string specifying the current assay to use to extract transcriptional data from (default = "Spatial").}
 
-\item{ST.layers}{Vector of character strings defining the relative slots to extract from the initial Visium object, to add to the new Seurat Object if ST.assay == TRUE (default = c("counts", "data")).}
+\item{SM.fov}{Character string of the image fov associated with the spatial metabolomic data (default = "fov").}
 
-\item{new_SpT.assay}{Character string defining the assay name of the new overlayed Seurat object containing all updated transcriptomics data (default = "SPT").}
+\item{ST.image}{Character string matching the image name associated with the ST data such as 'fov' or 'slice1' object (default = "slice1").}
 
-\item{verbose}{Boolean value indicating whether to print pregression update messages and progress bar (default = TRUE).}
+\item{ST.scale.factor}{Character string defining the image resolution associated with the Visium image pixel data. If \code{NULL} the full-res coordinates will be used and no scaling will be performed. Note: This parameter is only required for aligning lowres ST data (default = "hires").}
+
+\item{SM.pixel.width}{Numeric value defining the width of each SM pixel. If set to \code{NULL}, the median pixel width will be calculated based on the distance between each pixel (default = NULL).}
+
+\item{overlap.threshold}{Numeric value defining the overlap proportion threshold for a SM pixel to be associated with a ST spot. For example, if res_increase = 0.2 then pixels that have at least 20\% area overlap with the respective visium spot will be assigned a match. Note: This parameter is only required for aligning lowres ST data (default = 0.2).}
+
+\item{annotations}{Boolean value indicating if the Spatial Metabolomics (MALDI) Seurat object contains annotations assigned to m/z values (default = TRUE).}
+
+\item{add.metadata}{Boolean defining whether to add the current metadata stored in the SM object to the new mapped multi-omic SpaMTP object (default = TRUE)}
+
+\item{merge.unique.metadata}{Boolean indicating whether to summaries duplicated metadata terms to only store unique values in the metadata. Note: This parameter is only required for aligning lowres ST data, and \code{add.metadata} must be set to \code{TRUE} for this functionality to be implemented (default = TRUE).}
+
+\item{map.data}{Boolean indicating whether to map normalised/additional data stored in the \code{data} slot of the SpaMTP assay. Note: this process is computationally expensive with large datasets (default = FALSE).}
+
+\item{new_SPT.assay}{Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated transcriptomics data (default = "SPT").}
+
+\item{new_SPM.assay}{Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated metabolomic data (default = "SPM").}
+
+\item{verbose}{Boolean value indicating whether to print informative progression update messages and progress bars (default = TRUE).}
 }
 \value{
-A Seurat object with the Spatial Metabolomic data assigned to equivalent Spatial Transcripomics (Visium) spots.
+A SpaMTP Seurat object with Spatial Metabolomic data mapped to equivalent Spatial Transcripomics coordinates (Visium spots/Xenium cells).
 }
 \description{
-Converts and aggregates Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics (Visium) spots.
-\itemize{
-\item This function uses generate_new_SM_counts() and increase_SM_res()
-}
+Maps Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics data and coordinates.
 }
 \examples{
-## Convert MALDI data to equivalent Visium spots
-# MapSpatialOmics(VisiumObj, SeuratObj, img_res = "hires", new_library_id = "MALDI", res_increase = NULL)
+
+## Mapping MALDI data to equivalent Visium spots
+# MapSpatialOmics(VisiumObj, SeuratObj, ST.scale.factor = "hires", SM.assay = "Spatial", ST.assay = "Spatial")
+
+#' ## Mapping MALDI data to equivalent Xenium cells
+# MapSpatialOmics(VisiumObj, SeuratObj, SM.assay = "Spatial", ST.assay = "Xenium")
 }

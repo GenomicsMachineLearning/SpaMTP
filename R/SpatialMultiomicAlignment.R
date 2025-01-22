@@ -1,397 +1,535 @@
-library(Seurat)
-library(RANN)
-library(stats)
-library(utils)
-library(graphics)
-library(imager)
-library(shiny)
-library(shinyjs)
-library(magrittr)
-library(zeallot)
-library(RColorBrewer)
-
-
-
 #### SpaMTP MALDI to Visium Spot Merging Functions  ####################################################################################################################################################################
 
 
-#' Splits a pixel into multiple spots
-#'     - This function takes a central point and a pixel radius and splits the pixel into multiple smaller spots based on the specified configuration.
+
+#' This function computes the coordinates of a square's four corners based on a given center point and width.
 #'
-#' @param center_point A numeric vector of length 2 representing the (x, y) coordinates of the center point of the pixel.
-#' @param pixel_radius The radius of the original pixel.
-#' @param pseudo_n The number of smaller spots to split the pixel into. Must be either 4 or 9 for square pixels and 4 for a circular pixel.
-#' @param pixel_shape A character string indicating the shape of the original pixel. Options are "square" (default) or "circle".
-#' @param show_split_diagram A logical indicating whether to plot a diagram showing the original pixel and the split spots (default = FALSE).
+#' @param center_x Numeric value defining the x-coordinate of the square's center.
+#' @param center_y Numeric value defining the y-coordinate of the square's center.
+#' @param width Numeric value indicating the width of the square.
+#' @param name Character string specifying the label assigned to the square for identification.
 #'
-#' @returns A matrix with two columns representing the (x, y) coordinates of the centers of the smaller spots after splitting the pixel.
+#' @return A data frame with columns `Selection`, `X`, and `Y` representing the square's name and corner coordinates.
 #' @export
 #'
 #' @examples
-#' # Split a square pixel into 4 spots
-#' split_pixel(center_point = c(0, 0), pixel_radius = 1, pseudo_n = 4, pixel_shape = "circle", show_split_diagram = TRUE)
-#'
-#' # Split a circular pixel into 9 spots and display the split diagram
-#' split_pixel(center_point = c(0, 0), pixel_radius = 1, pseudo_n = 9, pixel_shape = "square", show_split_diagram = TRUE)
-#'
-#' # Split a square pixel into 16 spots and display the split diagram
-#' split_pixel(center_point = c(0, 0), pixel_radius = 1, pseudo_n = 16, pixel_shape = "square", show_split_diagram = TRUE)
-split_pixel <- function(center_point, pixel_radius, pseudo_n = 4, pixel_shape = "square", show_split_diagram = FALSE) {
+#' get_square_coordinates(center_x = 5, center_y = 5, width = 4, name = "MySquare")
+get_square_coordinates <- function(center_x, center_y, width, name) {
+  # Calculate half width
+  half_width <- width / 2
 
-  if (pseudo_n == 4 || ((pseudo_n == 9 || pseudo_n == 16) && pixel_shape == "square")) {
+  # Calculate coordinates of the four corners
+  x_coords <- c(center_x - half_width, center_x + half_width, center_x + half_width, center_x - half_width, center_x - half_width)
+  y_coords <- c(center_y - half_width, center_y - half_width, center_y + half_width, center_y + half_width, center_y - half_width)
 
-    x <- center_point[1]
-    y <- center_point[2]
+  # Return the coordinates as a matrix
+  square_df <- data.frame(
+    Selection = rep(name, n = 4),
+    X = x_coords,
+    Y = y_coords
 
-    if (pixel_shape == "circle") {
-
-      R <- pixel_radius
-      # Radius of each smaller circle
-      r <- R * (sqrt(pseudo_n) - 1)
-      dis <- r * sqrt(pseudo_n)
-      # Coordinates of the centers of the smaller circles
-      centers <- matrix(c(R - dis + x, R - dis + y, R - dis + x, -(R - dis) + y,
-                          -(R - dis) + x, R - dis + y, -(R - dis) + x, -(R - dis) + y), ncol = 2, byrow = TRUE)
-
-    } else {
-
-      r <- (pixel_radius * 2) / (sqrt(pseudo_n) * 2)
-
-      if (pseudo_n == 4) {
-        centers <- matrix(c(x - r, y - r, x + r, y - r, x + r, y + r, x - r, y + r), ncol = 2, byrow = TRUE)
-      } else if (pseudo_n == 9) {
-        centers <- matrix(c(x - r * 0, y + r * 0, x - r * 0, y - r * 2, x - r * 2, y + r * 0,
-                            x - r * 2, y + r * 2, x - r * 2, y - r * 2,
-                            x + r * 2, y + r * 0, x + r * 0, y + r * 2,
-                            x + r * 2, y - r * 2, x + r * 2, y + r * 2), ncol = 2, byrow = TRUE)
-      } else {
-        centers <- matrix(c(x - r * 1, y + r * 1, x + r * 1, y - r * 1, x + r * 1, y + r * 1,
-                            x - r * 1, y - r * 1, x - r * 1, y - r * 3,
-                            x - r * 1, y + r * 3, x - r * 3, y + r * 1,
-                            x - r * 3, y - r * 1, x - r * 3, y - r * 3,
-                            x - r * 3, y + r * 3, x + r * 1, y + r * 3,
-                            x + r * 1, y - r * 3, x + r * 3, y + r * 1,
-                            x + r * 3, y - r * 1, x + r * 3, y - r * 3,
-                            x + r * 3, y + r * 3), ncol = 2, byrow = TRUE)
-      }
-    }
-
-
-
-    if (show_split_diagram) {
-      if (pixel_shape == "circle") {
-        plot(c(x - pixel_radius * 2, x + pixel_radius * 2), c(y - pixel_radius * 2, y + pixel_radius * 2), type = "n", xlab = "X-axis", ylab = "Y-axis")
-        graphics::symbols(centers[, 1], centers[, 2], circles = rep(r, pseudo_n), add = TRUE, inches = 1, col = "red", bg = "white")
-        graphics::points(x, y, pch = 19, col = "blue")
-        graphics::title(main = "Four Circles Inside a Larger Circle")
-
-      } else {
-        graphics::plot(c(x - pixel_radius * 2, x + pixel_radius * 2), c(y - pixel_radius * 2, y + pixel_radius * 2), type = "n", xlab = "X-axis", ylab = "Y-axis")
-        graphics::rect(x - pixel_radius, y - pixel_radius, x + pixel_radius, y + pixel_radius, border = "blue", lty = 1, col = NA)
-        graphics::symbols(centers[, 1], centers[, 2], circles = rep(r, pseudo_n), add = TRUE, inches = 1, col = "red", bg = "white")
-        graphics::title(main = "Four Circles Inside a Square")
-      }
-    }
-
-    return(centers)
-
-  } else {
-    warning("ERROR: pseudo_n must be either 4 or 9 for square pixels and 4 for circle")
-    stop("n invalid integer")
-  }
+  )
+  return(square_df)
 }
 
 
-
-#' Increase the resolution of Spatial Metabolomics data for merging with Spatial Transcriptomic (Visium) data
-#'    - This function takes a Spatial Metabolomics dataset and increases its resolution by generating pseudo-high-resolution spots. This is useful for merging the data with Spatial Transcriptomic (Visium) data that has a different resolution.
-#'    - This function uses the split_pixel() function
+#' Maps Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics data and coordinates.
 #'
-#' @param SM.data A Seurat Spatial Metabolomics object containing spatial metabolomic information. It should have 'x_coord' and 'y_coord' columns representing spot coordinates.
-#' @param res_increase An integer specifying the factor by which the resolution should be increased. res_increase = 4, will generates 4 times as many spots in each dimension (default = 4).
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#'
-#' @returns A data frame with increased resolution metadata, containing additional columns 'new_x_coord', 'new_y_coord', 'new_barcode', and 'old_barcode'. The 'new_x_coord' and 'new_y_coord' columns represent the coordinates of the pseudo-high-resolution spots. The 'new_barcode' column is a unique identifier for each pseudo-high-resolution spot, and 'old_barcode' retains the original spot identifier.
-#'
-#' @examples
-#' ## Increase resolution of MALDI dataset by a factor of 4
-#' # increased_data <- increase_SM_res(SeuratObj, res_increase = 4)
-increase_SM_res <- function(SM.data, res_increase = 4, verbose = TRUE) {
-
-  verbose_message(message_text = "Increasing the resolution of MALDI Pixel Data ...\n", verbose = verbose)
-
-  # Assuming SM.data@meta.data has columns 'x_coord' and 'y_coord'
-
-  # Randomly sample 1000 indices
-  sampled_indices <- sample(1:(nrow(SM.data@meta.data) - 1), size = 1000, replace = TRUE)
-
-  # Initialize a list to store the distances
-  distances <- c()
-
-  # Calculate distances for each pair
-  for (i in sampled_indices) {
-    point1 <- c(SM.data@meta.data$x_coord[i], SM.data@meta.data$y_coord[i])
-    point2 <- c(SM.data@meta.data$x_coord[i + 1], SM.data@meta.data$y_coord[i + 1])
-    distances <- c(distances, sqrt(sum((point1 - point2)^2)) / 2)
-  }
-
-  # Find the median distance
-  median_distance <- stats::median(distances)
-
-  verbose_message(message_text = paste0("Median Distance Between MALDI Spots: ", median_distance, "\n"), verbose = verbose)
-
-  # Generates new obs matrix with higher resolution
-  new_meta_data <- data.frame(matrix(NA, nrow = nrow(SM.data@meta.data) * 4, ncol = ncol(SM.data@meta.data)))
-  colnames(new_meta_data) <- colnames(SM.data@meta.data)
-
-  total_spots = nrow(SM.data@meta.data)
-
-  verbose_message(message_text = "Generating psuedo-highres MALDI data: ", verbose = verbose)
-
-
-  pb <- utils::txtProgressBar(min = 0,      # Minimum value of the progress bar
-                       max = total_spots, # Maximum value of the progress bar
-                       style = 3,    # Progress bar style (also available style = 1 and style = 2)
-                       width = 50,   # Progress bar width. Defaults to getOption("width")
-                       char = "=")
-
-
-  for (spot_idx in 1:total_spots) {
-
-    sub_spot_idx <- (spot_idx * 4)-3
-    pseudo_centers <- split_pixel(c(SM.data@meta.data$x_coord[spot_idx], SM.data@meta.data$y_coord[spot_idx]), median_distance, pseudo_n = 4, pixel_shape = "square", show_split_diagram = FALSE)
-
-    for (idx in seq(0, (dim(pseudo_centers)[1])-1)) {
-      new_meta_data[sub_spot_idx + idx, ] <- SM.data@meta.data[spot_idx, ]
-      new_meta_data[sub_spot_idx + idx, "old_barcode"] <- rownames(SM.data@meta.data[spot_idx,])
-      new_meta_data[sub_spot_idx + idx, c("new_x_coord", "new_y_coord")] <- pseudo_centers[idx+1, ]
-      new_meta_data[sub_spot_idx + idx, "new_barcode"] <- paste0(pseudo_centers[idx+1, 1], "_", pseudo_centers[idx+1, 2])
-    }
-    utils::setTxtProgressBar(pb, spot_idx)
-  }
-  close(pb)
-  return(new_meta_data)
-}
-
-
-
-#' Generate new MALDI counts matrix for equivalent Visium spots
-#'    - This function takes an original Spatial Metabolomics counts matrix, along with a metadata table (`obs_x`) containing information about the correspondence between MALDI and Visium spots. It generates a new counts matrix where each MALDI spot has an associated aggregated count based on its corresponding Visium spots.
-#'
-#' @param original_SM A Seurat Spatial Metabolomics object containing the original counts matrix
-#' @param obs_x A metadata table with information about the correspondence between MALDI and Visium spots. It should have columns 'Visium_spot' and 'MALDI_barcodes'.
-#' @param assay Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values.
-#' @param slots Vector of character strings describing which slots to pull the relative intensity values from (default = c("counts", "data")).
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#'
-#' @return A data frame representing the new counts matrix for equivalent Visium spots,where each row corresponds to a Visium spot and columns correspond to m/z features.
-#' @export
-#'
-#' @examples
-#' ## Generate new MALDI counts matrix for equivalent Visium spots
-#' # new_counts <- generate_new_SM_counts(SeuratObj, obs_x, assay = "Spatial")
-generate_new_SM_counts <- function(original_SM, obs_x, assay, slots, verbose = TRUE) {
-
-  verbose_message(message_text = "Merging MALDI counts ... ", verbose = verbose)
-
-  data_list <- list()
-  new_data_list <- list()
-
-  for (slot in slots) {
-    data_list[[slot]] <- t(as.data.frame(original_SM[[assay]][slot]))
-    new_data_list[[slot]] <- data.frame(matrix(NA, nrow = 0, ncol = ncol(data_list[[slot]])))
-    colnames(new_data_list[[slot]]) <- colnames(data_list[[slot]])
-  }
-
-
-  total_spots = nrow(obs_x)
-  pb <- utils::txtProgressBar(min = 0,      # Minimum value of the progress bar
-                              max = total_spots, # Maximum value of the progress bar
-                              style = 3,    # Progress bar style (also available style = 1 and style = 2)
-                              width = 50,   # Progress bar width. Defaults to getOption("width")
-                              char = "=")
-
-  for (spot_idx in 1:total_spots) {
-    spot_barcode <- obs_x$Visium_spot[spot_idx]
-    barcode_list <- unlist(strsplit(obs_x$MALDI_barcodes[spot_idx], ", "))
-
-    if (all(barcode_list[1] == barcode_list)) {
-      for (data_slot in names(data_list)){
-        new_data_list[[data_slot]][spot_barcode, ] <- data_list[[data_slot]][barcode_list[1], ]
-      }
-    } else {
-      for (data_slot in names(data_list)){
-        mini_raw_count_dfs <- lapply(barcode_list, function(MALDI_barcodes) data_list[[data_slot]][MALDI_barcodes, ])
-        combined_df <- do.call(rbind, mini_raw_count_dfs)
-        new_data_list[[data_slot]][spot_barcode, ] <- colMeans(combined_df)
-      }
-    }
-    utils::setTxtProgressBar(pb, spot_idx)
-  }
-  close(pb)
-
-  return(new_data_list)
-}
-
-
-
-#' Converts and aggregates Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics (Visium) spots.
-#'    - This function uses generate_new_SM_counts() and increase_SM_res()
-#'
-#' @param SM.data A Seurat object representing the Spatial Metabolomics data.
-#' @param ST.data A Seurat object representing the Visium Spatial Transcriptomics data.
-#' @param img_res Character string defining the image resolution associated with the Visium image pixel data (default = "hires").
-#' @param res_increase Integer value defining the factor by which the resolution of MALDI spots should be increased before assignment. It should be either 4 or 9, see increase_SM_res() documentation for specifics (Default = NULL).
-#' @param annotations Boolean value indicating if the Spatial Metabolomics (MALDI) Seurat object contains annotations assigned to m/z values (default = FALSE).
-#' @param assay Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values (default = "Spatial").
-#' @param slice Character string of the image slice name in the Visium object (default = "slice1").
-#' @param slots Vector of character strings describing which slots from the Spatial Metabolomic Seurat object to adjust for the new overlayed object (default = c("counts", "data")).
-#' @param new_SpM.assay Character string defining the assay name of the new overlayed Seurat object containing all updated metabolomic data (default = "SPM").
-#' @param add.ST Boolean indicating whether to add the Spatial Metabolomic data from the Seurat Visium Object to the new updated Seruat Object (default = TRUE).
+#' @param SM.data A SpaMTP Seurat object representing the Spatial Metabolomics data.
+#' @param ST.data A Seurat object representing the Spatial Transcriptomics data.
+#' @param ST.hires Boolean string defining if the ST data is at a higher resolution compared to the SM pixel data. For example, generally Visium data will be lower res whereas Xenium/single-cell resolution spatial data will be a higher resolution (default = FALSE).
+#' @param SM.assay Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values (default = "Spatial").
 #' @param ST.assay Character string specifying the current assay to use to extract transcriptional data from (default = "Spatial").
-#' @param ST.layers Vector of character strings defining the relative slots to extract from the initial Visium object, to add to the new Seurat Object if ST.assay == TRUE (default = c("counts", "data")).
-#' @param new_SpT.assay Character string defining the assay name of the new overlayed Seurat object containing all updated transcriptomics data (default = "SPT").
-#' @param verbose Boolean value indicating whether to print pregression update messages and progress bar (default = TRUE).
+#' @param SM.fov Character string of the image fov associated with the spatial metabolomic data (default = "fov").
+#' @param ST.image Character string matching the image name associated with the ST data such as 'fov' or 'slice1' object (default = "slice1").
+#' @param ST.scale.factor Character string defining the image resolution associated with the Visium image pixel data. If `NULL` the full-res coordinates will be used and no scaling will be performed. Note: This parameter is only required for aligning lowres ST data (default = "hires").
+#' @param SM.pixel.width Numeric value defining the width of each SM pixel. If set to `NULL`, the median pixel width will be calculated based on the distance between each pixel (default = NULL).
+#' @param overlap.threshold Numeric value defining the overlap proportion threshold for a SM pixel to be associated with a ST spot. For example, if res_increase = 0.2 then pixels that have at least 20% area overlap with the respective visium spot will be assigned a match. Note: This parameter is only required for aligning lowres ST data (default = 0.2).
+#' @param annotations Boolean value indicating if the Spatial Metabolomics (MALDI) Seurat object contains annotations assigned to m/z values (default = TRUE).
+#' @param add.metadata Boolean defining whether to add the current metadata stored in the SM object to the new mapped multi-omic SpaMTP object (default = TRUE)
+#' @param merge.unique.metadata Boolean indicating whether to summaries duplicated metadata terms to only store unique values in the metadata. Note: This parameter is only required for aligning lowres ST data, and `add.metadata` must be set to `TRUE` for this functionality to be implemented (default = TRUE).
+#' @param map.data Boolean indicating whether to map normalised/additional data stored in the `data` slot of the SpaMTP assay. Note: this process is computationally expensive with large datasets (default = FALSE).
+#' @param new_SPT.assay Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated transcriptomics data (default = "SPT").
+#' @param new_SPM.assay Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated metabolomic data (default = "SPM").
+#' @param verbose Boolean value indicating whether to print informative progression update messages and progress bars (default = TRUE).
 #'
-#' @return A Seurat object with the Spatial Metabolomic data assigned to equivalent Spatial Transcripomics (Visium) spots.
+#' @return A SpaMTP Seurat object with Spatial Metabolomic data mapped to equivalent Spatial Transcripomics coordinates (Visium spots/Xenium cells).
 #' @export
 #'
 #' @examples
-#' ## Convert MALDI data to equivalent Visium spots
-#' # MapSpatialOmics(VisiumObj, SeuratObj, img_res = "hires", new_library_id = "MALDI", res_increase = NULL)
-MapSpatialOmics <- function(SM.data, ST.data, res_increase = NULL, annotations = FALSE, assay = "Spatial", slots = c("counts"), img_res = "hires", slice = "slice1", new_SpM.assay = "SPM", add.ST = TRUE, ST.assay = "Spatial", ST.layers = c("counts"), new_SpT.assay = "SPT", verbose = TRUE) {
+#'
+#' ## Mapping MALDI data to equivalent Visium spots
+#' # MapSpatialOmics(VisiumObj, SeuratObj, ST.scale.factor = "hires", SM.assay = "Spatial", ST.assay = "Spatial")
+#'
+#' #' ## Mapping MALDI data to equivalent Xenium cells
+#' # MapSpatialOmics(VisiumObj, SeuratObj, SM.assay = "Spatial", ST.assay = "Xenium")
+MapSpatialOmics <- function(SM.data, ST.data, ST.hires = FALSE,
+                            SM.assay = "Spatial", ST.assay = "Spatial",
+                            SM.fov = "fov", ST.image = "slice1",
+                            ST.scale.factor = "hires",
+                            SM.pixel.width = NULL,
+                            overlap.threshold = 0.2,
+                            annotations = TRUE,
+                            add.metadata = TRUE,
+                            merge.unique.metadata = TRUE,
+                            map.data = FALSE,
+                            new_SPT.assay = "SPT",
+                            new_SPM.assay = "SPM",
+                            verbose = FALSE) {
 
-  SM.coords <- GetTissueCoordinates(SM.data)
 
-  scale.factor <- ST.data@images[[slice]]@scale.factors[[img_res]]
+  if (ST.hires){
+    verbose_message(message_text = "Running `MapSpatialOmics` in hires mode! This is normally used for single-cell spatial data (Xenium)... \n", verbose = verbose)
+    verbose_message(message_text = "Inputs of `ST.scale.factor`, `overlap.threshold` and `merge.unique.metadata` are not used for hires mode, and will be ignored ... \n", verbose = verbose)
 
-  SM.metadata <- SM.data@meta.data
-  SM.metadata$x_coord <- SM.coords[,"x"] * scale.factor
-  SM.metadata$y_coord <- SM.coords[,"y"] * scale.factor
+    mapped.data <- hiresMapping(SM.data = SM.data,
+                                ST.data = ST.data,
+                                SM.assay = SM.assay,
+                                ST.assay = ST.assay,
+                                SM.fov = SM.fov,
+                                ST.image = ST.image,
+                                SM.pixel.width = SM.pixel.width,
+                                annotations = annotations,
+                                add.metadata = add.metadata,
+                                map.data = map.data,
+                                new_SPT.assay = new_SPT.assay,
+                                new_SPM.assay = new_SPM.assay,
+                                verbose = verbose)
 
-  SM.data@meta.data[c("x_coord", "y_coord")] <- SM.metadata[c("x_coord", "y_coord")]
-
-  new_SM_metadata <- SM.metadata
-
-  ## Increases resolution of the SM data (This will shift the centroid position close to each Visium spot)
-  if (!is.null(res_increase)) {
-    if (res_increase == 4 || res_increase == 9) {
-      new_SM_metadata <- increase_SM_res(SM.data, res_increase = 4, verbose = verbose)
-    } else {
-      stop("Error: res_increase must be either 4 or 9\n")
-    }
   } else {
-    new_SM_metadata$new_x_coord <- new_SM_metadata$x_coord
-    new_SM_metadata$new_y_coord <- new_SM_metadata$y_coord
-    new_SM_metadata$old_barcode <- rownames(new_SM_metadata)
+    verbose_message(message_text = "Running `MapSpatialOmics` in lowres mode! This is normally used for bin/spot-based spatial data (Visium)... \n", verbose = verbose)
+    verbose_message(message_text = "Inputs of `ST.scale.factor`, `overlap.threshold` and `merge.unique.metadata` are required for lowres mode, please ensure they are included ... \n", verbose = verbose)
+
+    mapped.data <- lowresMapping(SM.data = SM.data,
+                                  ST.data = ST.data,
+                                  SM.assay = SM.assay,
+                                  ST.assay = ST.assay,
+                                  SM.fov = SM.fov,
+                                  ST.image = ST.image,
+                                  ST.scale.factor = ST.scale.factor,
+                                  SM.pixel.width = SM.pixel.width,
+                                  overlap.threshold = overlap.threshold,
+                                  annotations = annotations,
+                                  add.metadata = add.metadata,
+                                  merge.unique.metadata = merge.unique.metadata,
+                                  map.data = map.data,
+                                  new_SPT.assay = new_SPT.assay,
+                                  new_SPM.assay = new_SPM.assay,
+                                  verbose = verbose)
+
   }
 
-  verbose_message(message_text = "Assigning MALDI to Visium Spots ... \n", verbose = verbose)
+  return(mapped.data)
 
-  ## Get coordinates of ST data
-  image_data <- data.frame(ST.data@images[[slice]]$centroids@coords) * scale.factor
-
-  ## gets radius of visium spot in pixels size
-  radius <- ST.data@images[[slice]]$centroids@radius * scale.factor
-
-  ## find which pixels fall into each spot radius
-  new_coords <- as.matrix(new_SM_metadata[, c("new_x_coord", "new_y_coord")])
-  query_coords <- as.matrix(image_data[, c("x", "y")])
-  v_points <- RANN::nn2(new_coords,query_coords, treetype = "kd",searchtype = "radius", radius = radius)$nn.idx
+}
 
 
-  ## Constructing a df to store new metadata based on binned pixels
-  obs_ <- data.frame(
-    index = rownames(new_SM_metadata),
-    nFeature_Spatial = new_SM_metadata[[paste0("nFeature_",assay)]] ,
-    old_barcode = new_SM_metadata$old_barcode,
-    Visium_spot = "Not_assigned")
 
+#' Function used by MapSpatialOmics to align SM data to ST spots with lower resolution (i.e. Visium Spots)
+#'
+#' @param SM.data A SpaMTP Seurat object representing the Spatial Metabolomics data.
+#' @param ST.data A Seurat object representing the Visium Spatial Transcriptomics data.
+#' @param SM.assay Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values (default = "Spatial").
+#' @param ST.assay Character string specifying the current assay to use to extract transcriptional data from (default = "Spatial").
+#' @param SM.fov Character string of the image fov associated with the spatial metabolomic data (default = "fov").
+#' @param ST.image Character string matching the image name associated with the ST data stored in the Visium object (default = "slice1").
+#' @param ST.scale.factor Character string defining the image resolution associated with the Visium image pixel data. If `NULL` the full-res coordinates will be used and no scaling will be performed (default = "hires").
+#' @param SM.pixel.width Numeric value defining the width of each SM pixel. If set to `NULL`, the median pixel width will be calculated based on the distance between each pixel (default = NULL).
+#' @param overlap.threshold Numeric value defining the overlap proportion threshold for a SM pixel to be associated with a ST spot. For example, if res_increase = 0.2 then pixels that have at least 20% area overlap with the respective visium spot will be assigned a match (default = 0.2).
+#' @param annotations Boolean value indicating if the Spatial Metabolomics (MALDI) Seurat object contains annotations assigned to m/z values (default = TRUE).
+#' @param add.metadata Boolean defining whether to add the current metadata stored in the SM object to the new mapped multi-omic SpaMTP object (default = TRUE)
+#' @param merge.unique.metadata Boolean indicating whether to summaries duplicated metadata terms to only store unique values in the metadata. Note: `add.metadata` must be set to `TRUE` for this functionality to be implmented (default = TRUE).
+#' @param map.data Boolean indicating whether to map normalised/additional data stored in the `data` slot of the SpaMTP assay. Note: this process is computationally expensive with large datasets (default = FALSE).
+#' @param new_SPT.assay Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated transcriptomics data (default = "SPT").
+#' @param new_SPM.assay Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated metabolomic data (default = "SPM").
+#' @param verbose Boolean value indicating whether to print informative progression update messages and progress bars (default = TRUE).
+#'
+#' @import Seurat
+#' @import SeuratObject
+#'
+#' @return A SpaMTP Seurat object with the Spatial Metabolomic data mapped to equivalent Spatial Transcripomics (Visium) spots.
+#'
+#' @examples
+#' # Helper function for MapSpatialOmics
+lowresMapping <- function(SM.data, ST.data,
+                      SM.assay = "Spatial", ST.assay = "Spatial",
+                      SM.fov = "fov", ST.image = "slice1",
+                      ST.scale.factor = "hires",
+                      SM.pixel.width = NULL,
+                      overlap.threshold = 0.2,
+                      annotations = TRUE,
+                      add.metadata = TRUE,
+                      merge.unique.metadata = TRUE,
+                      map.data = FALSE,
+                      new_SPT.assay = "SPT",
+                      new_SPM.assay = "SPM",
+                      verbose = FALSE){
 
-  ## Generating a new df which contains the corresponding visium spot for each SM pixel
-  new_df <- lapply(1:nrow(v_points), function(i){
-    lapply(v_points[i,], function(x){
-      if (as.numeric(x) != 0){
-        if (obs_[x,"Visium_spot"] == "Not_assigned"){
-          obs_[x,"Visium_spot"] <- rownames(ST.data@meta.data)[i]
-          obs_[x,]
-        } else {
-          obs_[length(obs_$Visium_spot)+1,] <- obs_[x,]
-          obs_[length(obs_$Visium_spot)+1,] <- rownames(ST.data@meta.data)[i]
-          obs_[length(obs_$Visium_spot)+1,]
-        }
-      }
-    })
+  sample_data <- ST.data
+
+  ## make polygons from coordinates
+  df <- SeuratObject::GetTissueCoordinates(SM.data, image = SM.fov)
+
+  if (is.null(SM.pixel.width)) {
+
+    verbose_message(message_text = "No pixel width was provided, calculating meadian SM pixel width ... \n", verbose = verbose)
+
+    diff_x <- diff(df$x)
+    diff_y <- diff(df$y)
+
+    # Combine the x and y differences into a data frame
+    differences <- data.frame(diff_x, diff_y)
+
+    # Filter out cases where the difference is zero
+    non_zero_differences <- differences[differences$diff_x != 0 | differences$diff_y != 0,]
+
+    # Choose the non-zero difference (maximum absolute value)
+    new_widths <- apply(non_zero_differences, 1, function(row) max(abs(row)))
+    SM.pixel.width <- stats::median(new_widths)
+  }
+
+  verbose_message(message_text = paste0("SM pixel width used for mapping = ", SM.pixel.width, "... \n"), verbose = verbose)
+
+  polygon_list <- lapply(1:nrow(df), function(idx) {
+    row <- df[idx,]
+    get_square_coordinates(center_x = row$x, center_y = row$y, width = SM.pixel.width, name = row$cell)
   })
 
-  obs_ <- dplyr::bind_rows(
-    new_df
-  )
+  # Combine the list of data frames into a single data frame
+  verbose_message(message_text = "Generating polygon from SM pixel coordinates ... \n", verbose = verbose)
 
-  ## Tidying up df to create Seurat object
-  obs_x <- obs_[, c("Visium_spot", paste0("nFeature_",assay), "old_barcode")]
+  polygons_df <- do.call(rbind, polygon_list)
+  polygons <- SeuratObject::CreateSegmentation(polygons_df)
 
-  obs_x <- obs_x %>%
-    dplyr::group_by(Visium_spot) %>%
-    dplyr::summarize(MALDI_barcodes = toString(unique(old_barcode)))
 
-  obs_x <- data.frame(obs_x)
-  counts_x <- generate_new_SM_counts(SM.data, obs_x, assay = assay, slots = slots, verbose = verbose)
+  SM.data[[SM.fov]][["annotation"]] <- polygons
+  pol <- SeuratObject::GetTissueCoordinates(SM.data[[SM.fov]][["annotation"]])
 
-  verbose_message(message_text = "Generating new MALDI Seurat Object ... ", verbose = verbose)
+  verbose_message(message_text = "Generating polygon from ST spot coordinates ... \n", verbose = verbose)
 
-  seuratobj <- Seurat::CreateSeuratObject(counts = t(counts_x[[names(counts_x)[1]]]), assay = new_SpM.assay) #creates a new assay with the spatial metabolomics
+  ###Make list of polygons from annotations
+  active_polygons <- SpatialPolygons(lapply(unique(pol$cell), function(cell_name) {
+    cell_data <- pol[pol$cell == cell_name, ]
+    Polygons(list(Polygon(cbind(cell_data$x, cell_data$y))), cell_name)}),
+    1:length(unique(pol$cell)))
 
-  if (names(counts_x)[1] != "counts"){
-    seuratobj[[new_SpM.assay]][names(counts_x)[1]] <- seuratobj[[new_SpM.assay]]
-    seuratobj[[new_SpM.assay]]$counts <- NULL
-  }
+  empty_poly_df = data.frame(cell = unique(pol$cell))
+  rownames(empty_poly_df) <- empty_poly_df$cell
 
-  if (length(names(counts_x)) > 1){
-    for (slot_name in names(counts_x)[2:length(names(counts_x))]){
-      seuratobj[[new_SpM.assay]][slot_name] <- t(counts_x[[slot_name]])
+
+  df_cells_spdf <- SpatialPolygonsDataFrame(active_polygons, empty_poly_df)
+
+  polygon_df <- sf::st_as_sf(df_cells_spdf)
+
+  verbose_message(message_text = "Assigning SM polygons to overlapping ST polygons ... \n", verbose = verbose)
+
+  ## Find Cells within each polygon
+  st_coordinates <- SeuratObject::GetTissueCoordinates(sample_data[[ST.image]][["centroids"]])
+  st_coordinates$radius = sample_data[[ST.image]][["centroids"]]@radius * 0.5 #### 10X scalefactors_json.json file states @radius is actually = spot diameter
+
+  if(!is.null(ST.scale.factor)){
+    if(!ST.scale.factor %in% c("hires", "lowres")){
+      stop("Invalid asignment of `ST.scale.factor`! values must be either 'hires' or 'lowres'. If fullres is required set `ST.scale.factor` = `NULL`.")
+    } else {
+      st_coordinates[c("x","y", "radius")] <- st_coordinates[c("x","y", "radius")] * sample_data[[ST.image]]@scale.factors[[ST.scale.factor]]
     }
   }
 
 
-  rownames(obs_x) <- rownames(seuratobj[[new_SpM.assay]]@cells)
-  seuratobj@meta.data[colnames(obs_x)] <- obs_x
+  points_sf <- sf::st_as_sf(st_coordinates, coords = c("x", "y"))
+  points_sf <- sf::st_buffer(points_sf, dist = st_coordinates$radius)
 
-  ## add additional visium meta.data
-  seuratobj@meta.data[colnames(ST.data@meta.data)] <- ST.data@meta.data[colnames(ST.data@meta.data)][rownames(ST.data@meta.data) %in% rownames(seuratobj@meta.data),]
+  # Find intersecting polygons
+  buffer_areas <- sf::st_area(points_sf)
 
-  vis_subset <- subset(ST.data, cells = rownames(seuratobj@meta.data))
-  seuratobj <- subset(seuratobj, cells = rownames(vis_subset@meta.data))
-  seuratobj@images[["slice1"]] <- vis_subset@images[[slice]]
+  # Find intersecting polygons
+  intersections <- sf::st_intersects(points_sf, polygon_df, sparse = FALSE)
+
+  # Create a data frame with results
+  result <- do.call(rbind, lapply(seq_len(nrow(points_sf)), function(i) {
+    # Get the geometry of the buffered point
+    point_geom <- points_sf$geometry[i]
+    point_area <- buffer_areas[i]
+
+    # Find polygons intersecting with the point
+    intersecting_polygons <- polygon_df[intersections[i, ], ]
+
+    # Calculate intersection areas
+    intersection_areas <- sf::st_area(sf::st_intersection(point_geom, intersecting_polygons$geometry))
+
+    # Calculate percentage of coverage
+    coverage_percentage <- as.numeric(intersection_areas / point_area)
+
+    # Filter polygons by coverage percentage
+    valid_polygons <- intersecting_polygons$cell[coverage_percentage >= overlap.threshold]
+
+    data.frame(
+      point = st_coordinates$cell[i],
+      polygons = paste(valid_polygons, collapse = ", ")
+    )
+  }))
 
 
+  SpaMTP.obj <- AddMetaData(ST.data, result$polygons,"SPM_pixels")
 
-  if (annotations){
-    seuratobj[[new_SpM.assay]]@meta.data <- SM.data[[assay]]@meta.data
+  # remove cells with no SM data
+  cells_with_na <- rownames(SpaMTP.obj@meta.data)[is.na(SpaMTP.obj@meta.data$SPM_pixels)]
+
+  verbose_message(message_text = "Generating new Spatial Multi-Omic SpaMTP Seurat Object ... \n", verbose = verbose)
+
+
+  # Subset the Seurat object based on cells with NA values
+  SpaMTP.obj <- subset(SpaMTP.obj, cells = cells_with_na, invert = TRUE)
+
+  mean_counts <- function(spm_pixels, count_matrix) {
+    # Split SPM_pixels into individual pixel strings
+    pixels <- strsplit(spm_pixels, ",\\s*")[[1]]
+
+    if (length(pixels) > 1){
+      row_means <- rowMeans(count_matrix[,pixels]) # Compute mean for each feature
+    } else if (length(pixels) == 1){
+      row_means <- count_matrix[,pixels]
+    } else {
+      row_means <- rep(0, length(rownames(count_matrix)))
+    }
+    return(row_means)
   }
 
-  if (add.ST){
-    visium_sub <- subset(ST.data, cells = intersect(colnames(seuratobj), colnames(ST.data)))
+  verbose_message(message_text = "Averaging SM intensity values per ST spot ... \n", verbose = verbose)
 
-    # add Transcriptomic assay to combined object
-    counts_layer <- NULL
-    data_layer <- NULL
+  if (map.data) {
 
-    for (layer in ST.layers) {
-      if ( layer == "counts" ) {
-        counts_layer <- visium_sub[[ST.assay]]$counts
-      }  else if (layer == "data") {
-        data_layer <- visium_sub[[ST.assay]]$data
+    if ("data" %in% Layers(SM.data, assay = SM.assay)){
+
+      mean_count_list <- lapply(SpaMTP.obj$SPM_pixels, mean_counts, count_matrix = SM.data[[SM.assay]]["counts"])
+      mean_counts_df <- do.call(rbind, mean_count_list)
+
+      verbose_message(message_text = "Averaging normalised SM intensity values stored in the `data` slot per ST spot ... \n", verbose = verbose)
+
+      mean_data_list <- lapply(SpaMTP.obj$SPM_pixels, mean_counts, count_matrix = SM.data[[SM.assay]]["data"])
+      mean_data_df <- do.call(rbind, mean_count_list)
+      SpaMTP.obj[["SPM"]] <- CreateAssay5Object(counts = Matrix::t(mean_counts_df), data = Matrix::t(mean_data_df))
+
+    } else {
+      stop("data slot not present in SPM seurat object provided! Please run NormaliseSMData() or set map.data = FALSE")
+    }
+  } else {
+    # Apply the function to each row in the reference data frame
+    mean_count_list <- lapply(SpaMTP.obj$SPM_pixels, mean_counts, count_matrix = SM.data[[SM.assay]]["counts"])
+    mean_counts_df <- do.call(rbind, mean_count_list)
+    colnames(mean_counts_df) <- rownames(SM.data)
+    SpaMTP.obj[[new_SPM.assay]] <- CreateAssay5Object(counts = Matrix::t(mean_counts_df))
+  }
+
+
+  #add metadata from SM
+
+  add_metadata <- function(spm_pixels, SM_metadata) {
+    # Split SPM_pixels into individual pixel strings
+    pixels <- strsplit(spm_pixels, ",\\s*")[[1]]
+
+    if (length(pixels) == 0){
+
+      col_names <- colnames(SM_metadata)
+      combined_df <- as.data.frame(matrix(NA, nrow = 1, ncol = length(col_names)))
+      colnames(combined_df) <- paste0(new_SPM.assay,"_",col_names)
+
+    } else {
+      sub.metadata <- SM_metadata[pixels,]
+      # Apply the function to each column
+      if (merge.unique.metadata){
+
+        combined_row <- sapply(sub.metadata, function(x){
+          paste(unique(x), collapse = ", ")
+        })
       } else {
-        stop("ST.layers given does not match requirments. Must be 'counts' and/or 'data'")
+        combined_row <- sapply(sub.metadata, function(x){
+          paste(unique(x), collapse = ", ")
+        })
       }
+
+      # Convert to data frame
+      combined_df <- as.data.frame(t(combined_row), stringsAsFactors = FALSE)
+      colnames(combined_df) <- paste0(new_SPM.assay,"_",colnames(sub.metadata))
+
     }
-    st_assay <- CreateAssay5Object(counts = counts_layer, data = data_layer)
-    seuratobj[[new_SpT.assay]] <- st_assay
-
-
+    return(combined_df)
   }
-  return(seuratobj)
+
+
+  if (add.metadata) {
+
+    verbose_message(message_text = "Adding SM metadata to the new SpaMTP Seurat Object ... \n", verbose = verbose)
+
+    metadata_list <- lapply(SpaMTP.obj$SPM_pixels, add_metadata, SM_metadata = SM.data@meta.data)
+    metadata_df <- do.call(rbind, metadata_list)
+
+    SpaMTP.obj@meta.data[colnames(metadata_df)] <- metadata_df[colnames(metadata_df)]
+  }
+
+
+
+  if (annotations) {
+
+    verbose_message(message_text = "Adding metabolite annotation metadata to the new SpaMTP Seurat Object ... \n", verbose = verbose)
+
+    ## adds m/z annotations to new object
+    SpaMTP.obj[[new_SPM.assay]]@meta.data <- SM.data[[SM.assay]]@meta.data
+  }
+
+  SpaMTP.obj <- RenameAssays(SpaMTP.obj, assay.name = ST.assay, new.assay.name = new_SPT.assay)
+
+
+  return(SpaMTP.obj)
+
+}
+
+
+
+#' Function used by MapSpatialOmics to align SM data to ST spots with higher resolution (i.e. Xenium cells)
+#'
+#' @param SM.data A SpaMTP Seurat object representing the Spatial Metabolomics data.
+#' @param ST.data A Seurat object representing the Xenium Spatial Transcriptomics data.
+#' @param SM.assay Character string defining the Seurat assay that contains the annotated counts and metadata corresponding to the m/z values (default = "Spatial").
+#' @param ST.assay Character string specifying the current assay to use to extract transcriptional data from (default = "Spatial").
+#' @param SM.fov Character string of the image fov associated with the spatial metabolomic data (default = "fov").
+#' @param ST.image Character string matching the image name associated with the ST data stored in the Xenium object (default = "slice1").
+#' @param SM.pixel.width Numeric value defining the width of each SM pixel. If set to `NULL`, the median pixel width will be calculated based on the distance between each pixel (default = NULL).
+#' @param annotations Boolean value indicating if the Spatial Metabolomics (MALDI) Seurat object contains annotations assigned to m/z values (default = TRUE).
+#' @param add.metadata Boolean defining whether to add the current metadata stored in the SM object to the new mapped multi-omic SpaMTP object (default = TRUE)
+#' @param map.data Boolean indicating whether to map normalised/additional data stored in the `data` slot of the SpaMTP assay. Note: this process is computationally expensive with large datasets (default = FALSE).
+#' @param new_SPT.assay Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated transcriptomics data (default = "SPT").
+#' @param new_SPM.assay Character string defining the assay name of the new overlaid SpaMTP Seurat object containing all updated metabolomic data (default = "SPM").
+#' @param verbose Boolean value indicating whether to print informative progression update messages and progress bars (default = TRUE).
+#'
+#' @import Seurat
+#' @import SeuratObject
+#'
+#' @return A SpaMTP Seurat object with the Spatial Metabolomic data mapped to equivalent Spatial Transcripomics (Xenium) cells.
+#'
+#' @examples
+#' # Helper function for MapSpatialOmics
+hiresMapping <- function(SM.data, ST.data,
+                          SM.assay = "Spatial", ST.assay = "Xenium",
+                          SM.fov = "fov", ST.image = "fov",
+                          SM.pixel.width = NULL,
+                          annotations = TRUE,
+                          add.metadata = TRUE,
+                          map.data = FALSE,
+                          new_SPT.assay = "SPT",
+                          new_SPM.assay = "SPM",
+                          verbose = FALSE){
+
+    sample_data <- ST.data
+
+    ## make polygons from coordinates
+    df <- GetTissueCoordinates(SM.data, image = SM.fov)
+
+    if (is.null(SM.pixel.width)) {
+
+      verbose_message(message_text = "No pixel width was provided, calculating meadian SM pixel width ... \n", verbose = verbose)
+      diff_x <- diff(df$x)
+      diff_y <- diff(df$y)
+
+      # Combine the x and y differences into a data frame
+      differences <- data.frame(diff_x, diff_y)
+
+      # Filter out cases where the difference is zero
+      non_zero_differences <- differences[differences$diff_x != 0 | differences$diff_y != 0,]
+
+      # Choose the non-zero difference (maximum absolute value)
+      new_widths <- apply(non_zero_differences, 1, function(row) max(abs(row)))
+      SM.pixel.width <- median(new_widths)
+    }
+
+    verbose_message(message_text = paste0("SM pixel width used for mapping = ", SM.pixel.width, "... \n"), verbose = verbose)
+
+    polygon_list <- lapply(1:nrow(df), function(idx) {
+      row <- df[idx,]
+      get_square_coordinates(center_x = row$x, center_y = row$y, width = SM.pixel.width, name = row$cell)
+    })
+
+    verbose_message(message_text = "Generating polygon from SM pixel coordinates ... \n", verbose = verbose)
+
+    # Combine the list of data frames into a single data frame
+    polygons_df <- do.call(rbind, polygon_list)
+    polygons <- CreateSegmentation(polygons_df)
+
+    sample_data[[ST.image]][["annotation"]] <- polygons
+    pol <- GetTissueCoordinates(sample_data[[ST.image]][["annotation"]])
+
+
+    ###Make list of polygons from annotations
+    active_polygons <- SpatialPolygons(lapply(unique(pol$cell), function(cell_name) {
+      cell_data <- pol[pol$cell == cell_name, ]
+      Polygons(list(Polygon(cbind(cell_data$x, cell_data$y))), cell_name)}),
+      1:length(unique(pol$cell)))
+
+    empty_poly_df = data.frame(cell = unique(pol$cell))
+    rownames(empty_poly_df) <- empty_poly_df$cell
+
+
+    df_cells_spdf <- SpatialPolygonsDataFrame(active_polygons, empty_poly_df)
+
+    verbose_message(message_text = "Assigning SM polygons to overlapping ST polygons ... \n", verbose = verbose)
+
+    ## Find Cells within each polygon
+    xenium_coordinates <- GetTissueCoordinates(sample_data[[ST.image]][["centroids"]])
+
+    df_points_spdf <- SpatialPointsDataFrame(xenium_coordinates[, c("x", "y")], data = xenium_coordinates)
+    result <- over(df_points_spdf, df_cells_spdf)
+
+    xenium.data <- AddMetaData(ST.data, result$cell,"SPM_pixels")
+
+    verbose_message(message_text = "Generating new Spatial Multi-Omic SpaMTP Seurat Object ... \n", verbose = verbose)
+
+
+    # remove cells with no SM data
+    cells_with_na <- rownames(xenium.data@meta.data)[is.na(xenium.data@meta.data$SPM_pixels)]
+
+    # Subset the Seurat object based on cells with NA values
+    xenium.data <- subset(xenium.data, cells = cells_with_na, invert = TRUE)
+
+    # generate new SM counts matrix
+    MALDI_df <- SM.data[[SM.assay]]["counts"][, xenium.data@meta.data$SPM_pixels]
+
+    colnames(MALDI_df) <- rownames(xenium.data@meta.data)
+
+    if (map.data) {
+
+      verbose_message(message_text = "Mapping normalised SM data stored in `data` slot to new SpaMTP Seurat Object ... \n", verbose = verbose)
+
+      MALDI_data_df <-  SM.data[[SM.assay]]["data"][, xenium.data@meta.data$SPM_pixels]
+      colnames(MALDI_data_df) <- rownames(xenium.data@meta.data)
+      xenium.data[[new_SPM.assay]] <- CreateAssay5Object(counts = MALDI_df, data = MALDI_data_df)
+    } else {
+      xenium.data[[new_SPM.assay]] <- CreateAssay5Object(counts = MALDI_df)
+    }
+
+
+    #add metadata from SM
+    MALDI_metadata <- SM.data@meta.data[xenium.data@meta.data$SPM_pixels,]
+    rownames(MALDI_metadata) <- rownames(xenium.data@meta.data)
+
+    if (add.metadata) {
+      verbose_message(message_text = "Adding SM metadata to the new SpaMTP Seurat Object ... \n", verbose = verbose)
+
+      meta_data_colnames <- paste0(colnames(MALDI_metadata), "_", new_SPM.assay)
+      xenium.data@meta.data[meta_data_colnames] <- MALDI_metadata
+    }
+
+
+    xenium.data <- SeuratObject::RenameAssays(object = xenium.data, assay.name = ST.assay, new.assay.name = new_SPT.assay, verbose = verbose)
+
+    if (annotations) {
+      verbose_message(message_text = "Adding metabolite annotation metadata to the new SpaMTP Seurat Object ... \n", verbose = verbose)
+
+      ## adds m/z annotations to new object
+      xenium.data[[new_SPM.assay]]@meta.data <- SM.data[[SM.assay]]@meta.data
+    }
+
+
+    return(xenium.data)
 
 }
 

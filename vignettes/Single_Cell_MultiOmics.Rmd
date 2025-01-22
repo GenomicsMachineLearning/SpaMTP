@@ -65,10 +65,10 @@ Based on these plots, we can see that our Xenium data is at a much higher resolu
 # Futures may be required to use Seurat's `Crop()` function
 
 library(future)
-plan("multicore", workers = 16) # Use all 20 cores
+plan("multicore", workers = 16) # Use all 16 cores
 
-# Each core can have up to 9 GB of memory (180 GB / 20 cores)
-options(future.globals.maxSize = 16000 * 1024^2) # 9 GB per core
+# Each core can have up to 16 GB of memory (16 GB / 16 cores)
+options(future.globals.maxSize = 16000 * 1024^2) # 16 GB per core
 
 ```
 
@@ -103,7 +103,63 @@ We want to eventually map our SM data to our single cell resolution ST data, mea
 CheckAlignment(ST.data = xenium, SM.data = MALDI, image.slice = "fov") & coord_flip()
 ```
 
+Based on this, we can see our datasets are aligned correctly. Next, we will map our SM and Xenium ST data to generate a *SpaMTP* *Seurat* object containing metabolite and transcriptomic information per individual cell. 
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+# Set the boundary as segmentation for our Xenium data
+MO_data <- MapSpatialOmics(SM.data = MALDI, ST.data = xenium, ST.hires = TRUE, SM.assay = "Spatial",ST.assay = "Xenium", SM.fov = "fov", ST.image = "fov")
+```
+
+Our two datasets have been aligned to each individual cell. Lets visualise the results:
+
+```{r}
+MO_data
+```
+The multi-omic *SpaMTP* *Seurat* object now contains two assays, 'SPT' and 'SPM' which stores the transcriptomic and metabolomic data respectively. 
+
+```{r, echo=TRUE, results='hide'}
+head(MO_data, n = 3)
+```
+
+This object also has the combined metadata from both original objects. The metadata associated with our original SM object is marked by "_SPM".
+
+```{r, echo=FALSE}
+df <- head(MO_data, n = 3)
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
 
 
+Next, we can compare the data spatially:
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+# Set the boundary as segmentation for our Xenium data
+DefaultBoundary(MO_data[["zoom"]]) <- "segmentation"
+
+p1 <- ImageDimPlot(MALDI, group.by = "clusters", fov = "zoom", size = 1.5, dark.background = F)/ ImageDimPlot(MO_data, group.by = "clusters_SPM", fov = "zoom", dark.background = F)
+p2 <- ImageFeaturePlot(MALDI, features = "mz-100", fov = "zoom", size = 1.5, dark.background = F)/ ImageFeaturePlot(MO_data, features = "mz-100", fov = "zoom", dark.background = F)
+
+p1|p2
+```
+
+Comparing the mapped data to the original SM data we can see that the spatial pattern of both clusters and metabolite ('mz-100') match. Now that our data is mapped to single cell resolution we have a much more detailed visualisation of SM based clustering across our simulated tissue sample. 
+
+An additional features of having multi-omic data mapped to the same coordinates is that we can visualise the expression of both metabolites and gene expression on a single plot. 
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+ImageFeaturePlot(MO_data, features = "mz-100", molecules = "gene1", fov = "zoom", mols.cols = "blue")
+```
+Analysing this spatial plot, there is a clear correlation between 'mz-100' and 'gene1' suggesting there interaction or similar functionality. 
+
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
 
 
