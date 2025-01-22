@@ -214,6 +214,7 @@ reference:
   contents:
   - verbose_message
   - subset_SPM
+  - check_cardinal_version
 - title: Helper Functions for Annotating m/z Masses
   desc: Helper functions required for running 'AnnotateSM()'
   contents:
