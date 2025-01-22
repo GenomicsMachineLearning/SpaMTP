@@ -303,7 +303,7 @@ ImageMZPlot <- function(object,
 
     mz_list <- c()
     for (target_mz in mzs){
-      mz_string <- FindNearestMZ(object, target_mz)
+      mz_string <- FindNearestMZ(object, target_mz, assay = assay)
       mz_list <- c(mz_list, mz_string)
     }
   }
@@ -731,7 +731,7 @@ SpatialMZPlot <- function(object,
 
     mz_list <- c()
     for (target_mz in mzs){
-      mz_string <- FindNearestMZ(object, target_mz)
+      mz_string <- FindNearestMZ(object, target_mz, assay = assay)
       mz_list <- c(mz_list, mz_string)
     }
   }
@@ -1100,7 +1100,7 @@ MassIntensityPlot <- function (data,
     labels <- data[[assay]]@meta.data$raw_mz
     mz_list <- c()
     for (target_mz in mz.labels){
-      mz_string <- FindNearestMZ(data, target_mz)
+      mz_string <- FindNearestMZ(data, target_mz, assay = assay)
       mz_list <- c(mz_list, stringr::str_split(pattern = "mz-", string = mz_string)[[1]][2])
     }
 

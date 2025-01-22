@@ -334,7 +334,7 @@ df %>%
 
 
 ```{r, fig.width=10, fig.height=8}
-CheckAlignment(msi_transformed, vis, image.res = "hires", size = 0.8)
+CheckAlignment(msi_transformed, vis, image.res = NULL, size = 0.8)
 ```
 
 
@@ -349,11 +349,11 @@ ImageMZPlot(msi_annotated, mzs = 674.28, size = 2, slot = "counts") |
 
 Great, now that we are confident that our SM and ST data are aligned to the same coordinates, we can map each pixel and their relative m/z intensity values to their corresponding ST spot. 
 
-NOTE: we have increased the resolution of the SM data by 4 so that each pixel is now split into 4 smaller pixels (this will help with matching pixel centroid to spot centroids).
+NOTE: we have selected an overlap threshold of 20%, meaning that for a pixel to be mapped to a spot atleast 20% of its total area must be overlapping with the corresponding visium spot. 
 
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, res_increase = 4, annotations = TRUE)
+combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, overlap.threshold = 0.2, annotations = TRUE, ST.scale.factor = NULL)
 ```
 
     Increasing the resolution of MALDI Pixel Data ...

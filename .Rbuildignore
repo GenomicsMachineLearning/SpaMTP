@@ -8,3 +8,4 @@ inst/figures/$
 ^docs$
 ^pkgdown$
 ^\.gitattributes
+^\.github$

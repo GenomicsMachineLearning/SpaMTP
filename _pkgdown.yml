@@ -10,35 +10,44 @@ authors:
     href: https://github.com/ChemCharles
   GML Lab:
     href: https://github.com/GenomicsMachineLearning
-    html: "<img src='man/figures/GML_invert.png' height='50' alt=''/>"
+    html: <img src='man/figures/GML_invert.png' height='50' alt=''/>
   Brain Cancer Research Lab:
     href: https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/
-    html: "<img src='https://thebraincancercentre.org.au/wp-content/uploads/2022/09/BCC-WEHI-logo-horiz-RGB3.svg' height='30' alt='WEHI Logo'/>"
+    html: <img src='https://thebraincancercentre.org.au/wp-content/uploads/2022/09/BCC-WEHI-logo-horiz-RGB3.svg'
+      height='30' alt='WEHI Logo'/>
   WEHI Institute:
     href: https://www.wehi.edu.au/laboratory/brain-cancer-research-lab/
-    html: "<img src='https://upload.wikimedia.org/wikipedia/en/7/7d/Wehi-logo-2020.png' height='30' alt='WEHI Logo'/>"
+    html: <img src='https://upload.wikimedia.org/wikipedia/en/7/7d/Wehi-logo-2020.png'
+      height='30' alt='WEHI Logo'/>
   UQ Institute:
     href: https://imb.uq.edu.au/research-groups/nguyen
-    html: "<img src='https://upload.wikimedia.org/wikipedia/en/8/8c/Logo_of_the_University_of_Queensland.svg' height='30' alt='University of Queensland Logo'/>"
+    html: <img src='https://upload.wikimedia.org/wikipedia/en/8/8c/Logo_of_the_University_of_Queensland.svg'
+      height='30' alt='University of Queensland Logo'/>
   QIMR Institute:
     href: https://www.qimrberghofer.edu.au/our-research/infection-and-inflammation/genomics-and-machine-learning-lab-2/
-    html: "<img src='https://upload.wikimedia.org/wikipedia/commons/5/5a/Logo_of_the_QIMR.png' height='30' alt='QIMR Logo'/>"
+    html: <img src='https://upload.wikimedia.org/wikipedia/commons/5/5a/Logo_of_the_QIMR.png'
+      height='30' alt='QIMR Logo'/>
   footer:
-    roles: [aut, cre]
+    roles:
+    - aut
+    - cre
   sidebar:
-    roles: [aut, cre, lbr, fnd]
+    roles:
+    - aut
+    - cre
+    - lbr
+    - fnd
 template:
   params:
-      bootswatch: flatly
+    bootswatch: flatly
 navbar:
   bg: primary
   structure:
     left:
-      - intro
-      - reference
-      - articles
-    right:
-      - github
+    - intro
+    - reference
+    - articles
+    right: github
   components:
     github:
       icon: fa-github
@@ -118,12 +127,11 @@ reference:
   - PlotRegionalPathways
 - title: Pathway Network Plotting
   desc: Functions used to generate network plots for specified patheays
-  contents:
-  - PathwayNetworkPlots
+  contents: PathwayNetworkPlots
 - title: PCA Metabolite Analysis
-  desc: Functions that are used for calculating PCA embeddings and projections based on SM data
-  contents:
-  - RunMetabolicPCA
+  desc: Functions that are used for calculating PCA embeddings and projections based
+    on SM data
+  contents: RunMetabolicPCA
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
   contents:
@@ -136,9 +144,9 @@ reference:
   - CheckAlignment
   - DensityMap
 - title: Interactive Spatial Binning Visualisation
-  desc: Interactive plot that displays spatial changes to m/z intensity values based on changes to bin size.
-  contents:
-  - InteractiveSpatialPlot
+  desc: Interactive plot that displays spatial changes to m/z intensity values based
+    on changes to bin size.
+  contents: InteractiveSpatialPlot
 - title: Additional SpaMTP Functions
   desc: Functions that can be used to find the closest metabolite and bin the expression
     of multiple metabolites into one
@@ -244,3 +252,4 @@ reference:
   - rigid.refl
   - rigid.stretch
   - combine.tr
+
