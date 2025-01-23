@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -31,7 +31,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -43,24 +43,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Constructs an interactive network for exploring spatial metabolomics and transcriptomics data.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/PathwayNetworks.R" class="external-link"><code>R/PathwayNetworks.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/PathwayNetworks.R" class="external-link"><code>R/PathwayNetworks.R</code></a></small>
     <div class="hidden name"><code>PathwayNetworkPlots.Rd</code></div>
     </div>
 
@@ -89,67 +92,67 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>SpaMTP</dt>
+
+
+<dl><dt id="arg-spamtp">SpaMTP<a class="anchor" aria-label="anchor" href="#arg-spamtp"></a></dt>
 <dd><p>A <code>SpaMTP</code> Seurat object containing spatial metabolomics (SM) and/or spatial transcriptomics (ST) data. If SM data is included, it must be annotated using the <code><a href="AnnotateSM.html">SpaMTP::AnnotateSM()</a></code> function.</p></dd>
 
 
-<dt>ident</dt>
+<dt id="arg-ident">ident<a class="anchor" aria-label="anchor" href="#arg-ident"></a></dt>
 <dd><p>A character string specifying the cluster identifier used to group regions, corresponding to a column name in the <code>SpaMTP@meta.data</code> slot.</p></dd>
 
 
-<dt>regpathway</dt>
+<dt id="arg-regpathway">regpathway<a class="anchor" aria-label="anchor" href="#arg-regpathway"></a></dt>
 <dd><p>A dataframe output from the <code><a href="FindRegionalPathways.html">SpaMTP::FindRegionalPathways()</a></code> function, containing identified regional pathways.</p></dd>
 
 
-<dt>DE.list</dt>
-<dd><p>A list containing differential expression results from the <code>FindAllMarkers()</code> function, with items matching the order of the <code>analyte_types</code> argument.</p></dd>
+<dt id="arg-de-list">DE.list<a class="anchor" aria-label="anchor" href="#arg-de-list"></a></dt>
+<dd><p>A list containing differential expression results from the <code><a href="https://rdrr.io/pkg/Seurat/man/FindAllMarkers.html" class="external-link">FindAllMarkers()</a></code> function, with items matching the order of the <code>analyte_types</code> argument.</p></dd>
 
 
-<dt>selected_pathways</dt>
+<dt id="arg-selected-pathways">selected_pathways<a class="anchor" aria-label="anchor" href="#arg-selected-pathways"></a></dt>
 <dd><p>A character vector specifying the names or IDs of pathways used to construct the network (e.g., <code>c("Amino acid metabolism", "WP1902", "Aspartate and asparagine metabolism")</code>). This argument is not case-sensitive.</p></dd>
 
 
-<dt>path</dt>
+<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
 <dd><p>The directory to save the output. If not provided, the default is the current working directory.</p></dd>
 
 
-<dt>SM_slot</dt>
+<dt id="arg-sm-slot">SM_slot<a class="anchor" aria-label="anchor" href="#arg-sm-slot"></a></dt>
 <dd><p>The slot name containing the spatial metabolomics assay matrix (default: <code>"counts"</code>).</p></dd>
 
 
-<dt>ST_slot</dt>
+<dt id="arg-st-slot">ST_slot<a class="anchor" aria-label="anchor" href="#arg-st-slot"></a></dt>
 <dd><p>The slot name containing the spatial transcriptomics assay matrix (default: <code>"counts"</code>).</p></dd>
 
 
-<dt>colour_palette</dt>
+<dt id="arg-colour-palette">colour_palette<a class="anchor" aria-label="anchor" href="#arg-colour-palette"></a></dt>
 <dd><p>The color palette used to plot the spatial image in the output HTML file. Default: <code>grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(11, "Spectral")))(100)</code>.</p></dd>
 
 
-<dt>SM_assay</dt>
+<dt id="arg-sm-assay">SM_assay<a class="anchor" aria-label="anchor" href="#arg-sm-assay"></a></dt>
 <dd><p>A character string specifying the assay name for spatial metabolomics data in <code>SpaMTP</code> to extract intensity values (default: <code>"SPM"</code>).</p></dd>
 
 
-<dt>ST_assay</dt>
+<dt id="arg-st-assay">ST_assay<a class="anchor" aria-label="anchor" href="#arg-st-assay"></a></dt>
 <dd><p>A character string specifying the assay name for spatial transcriptomics data in <code>SpaMTP</code> to extract RNA count values (default: <code>"SPT"</code>).</p></dd>
 
 
-<dt>analyte_types</dt>
+<dt id="arg-analyte-types">analyte_types<a class="anchor" aria-label="anchor" href="#arg-analyte-types"></a></dt>
 <dd><p>A subset of <code>c("genes", "metabolites")</code>. Can be <code>c("genes")</code>, <code>c("metabolites")</code>, or both.</p></dd>
 
 
-<dt>image</dt>
+<dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
 <dd><p>Character string specifying which image stored within the SpaMTP object to use for plotting (default = "slice1").</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>A logical value indicating whether to display detailed messages during execution (default: <code>FALSE</code>).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>An interactive HTML file visualizing the network structure of the specified pathways.</p>
+    <p>An interactive HTML file visualizing the network structure of the specified pathways.</p>
     </div>
 
     <div id="ref-examples">
@@ -165,19 +168,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

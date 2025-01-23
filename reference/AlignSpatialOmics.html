@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -31,7 +31,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -43,24 +43,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Shiny app allowing for manual alignment of SM and ST data coordinates</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/SpatialMultiomicAlignment.R" class="external-link"><code>R/SpatialMultiomicAlignment.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/SpatialMultiomicAlignment.R" class="external-link"><code>R/SpatialMultiomicAlignment.R</code></a></small>
     <div class="hidden name"><code>AlignSpatialOmics.Rd</code></div>
     </div>
 
@@ -86,55 +89,55 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>sm.data</dt>
+
+
+<dl><dt id="arg-sm-data">sm.data<a class="anchor" aria-label="anchor" href="#arg-sm-data"></a></dt>
 <dd><p>SpaMTP Seurat Object containing SM data</p></dd>
 
 
-<dt>st.data</dt>
+<dt id="arg-st-data">st.data<a class="anchor" aria-label="anchor" href="#arg-st-data"></a></dt>
 <dd><p>SpaMTP Seurat Object containing ST data</p></dd>
 
 
-<dt>msi.pixel.multiplier</dt>
+<dt id="arg-msi-pixel-multiplier">msi.pixel.multiplier<a class="anchor" aria-label="anchor" href="#arg-msi-pixel-multiplier"></a></dt>
 <dd><p>Numeric value defining a scale.factor to multiple each SM pixel coordinates by (default = 20).</p></dd>
 
 
-<dt>image.res</dt>
+<dt id="arg-image-res">image.res<a class="anchor" aria-label="anchor" href="#arg-image-res"></a></dt>
 <dd><p>Character string of the corresponding ST image scale factor to use (default = "lowres").</p></dd>
 
 
-<dt>continous_cols</dt>
+<dt id="arg-continous-cols">continous_cols<a class="anchor" aria-label="anchor" href="#arg-continous-cols"></a></dt>
 <dd><p>Vector of colours to use for plotting continuous data. If NULL, the colour map "Reds" will be used (default = NULL).</p></dd>
 
 
-<dt>catagorical_cols</dt>
+<dt id="arg-catagorical-cols">catagorical_cols<a class="anchor" aria-label="anchor" href="#arg-catagorical-cols"></a></dt>
 <dd><p>Vector of colours to use for plotting categorical data (default = NULL).</p></dd>
 
 
-<dt>fov</dt>
+<dt id="arg-fov">fov<a class="anchor" aria-label="anchor" href="#arg-fov"></a></dt>
 <dd><p>Character string matching the name of the SM FOV to use for plotting (default = "fov").</p></dd>
 
 
-<dt>image.slice</dt>
+<dt id="arg-image-slice">image.slice<a class="anchor" aria-label="anchor" href="#arg-image-slice"></a></dt>
 <dd><p>Character string matching the ST image slice name to use for plotting (default = "slice1").</p></dd>
 
 
-<dt>shiny.host</dt>
+<dt id="arg-shiny-host">shiny.host<a class="anchor" aria-label="anchor" href="#arg-shiny-host"></a></dt>
 <dd><p>Character string of the shiny host network interface that the Shiny application will listen on when run (default = "0.0.0.0").</p></dd>
 
 
-<dt>shiny.port</dt>
+<dt id="arg-shiny-port">shiny.port<a class="anchor" aria-label="anchor" href="#arg-shiny-port"></a></dt>
 <dd><p>Numeric 4 digit number defining the port that the Shiny application will listen to when run (default = 4698).</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A SpaMTP Seurat Object containing SM data with transformed coordinated to match the aligned ST data</p>
+    <p>A SpaMTP Seurat Object containing SM data with transformed coordinated to match the aligned ST data</p>
     </div>
 
     <div id="ref-examples">
@@ -150,19 +153,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

@@ -18,15 +18,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Getting Started">
-<meta property="og:description" content="SpaMTP">
-<meta property="og:image" content="https://genomicsmachinelearning.github.io/SpaMTP/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -55,7 +53,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -68,6 +66,9 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -75,7 +76,7 @@
 <li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -86,7 +87,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -94,7 +95,7 @@
       <h1 data-toc-skip>Getting Started</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/vignettes/SpaMTP.Rmd" class="external-link"><code>vignettes/SpaMTP.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/vignettes/SpaMTP.Rmd" class="external-link"><code>vignettes/SpaMTP.Rmd</code></a></small>
       <div class="hidden name"><code>SpaMTP.Rmd</code></div>
 
     </div>
@@ -112,17 +113,17 @@
 </style>
 <p>Listed below are a number of useful tutorials demonstrating how to
 use SpaMTP when analysing your spatial metabolomic datasets. For more
-documentation of each function used in these tutorials please visit our
+documentation of each function used in these tutorials, please visit our
 <a href="../reference/index.html">Reference page</a>.</p>
 <div class="section level2">
 <h2 id="useful-spamtp-vignettes">Useful SpaMTP Vignettes<a class="anchor" aria-label="anchor" href="#useful-spamtp-vignettes"></a>
 </h2>
 <p>For a general introduction in importing data, annotating metabolites
-and running key analysis pipelines on your spatial metabolomic data we
+and running key analysis pipelines on your spatial metabolomic data, we
 suggest starting with the Spatial Metabolomic Analysis Tutorial. This
 vignette uses mouse bladder data and demonstrates how to perform general
 tasks such as plotting, subsetting, and manipulating <em>SpaMTP</em>
-Seurat objects. For those with paired multi-modal datasets we suggest
+Seurat objects. For those with paired multi-modal datasets, we suggest
 working through the Multi-Modal Integration Tutorial. Here, we provide
 methods to align your two datasets to the same coordinates, map spatial
 metabolomic pixels to spatial transcriptomic spots and then run various
@@ -150,13 +151,13 @@ Functionality</a>
 </tr>
 <tr>
 <td style="padding-left: .75em; width: 30%; border-left: 1px solid black; border-right: 1px solid black; text-align: left;">
-<img src="assets/SM_Analysis.png" width="3000">
+<img src="assets%2FSM_Analysis.png" width="3000">
 </td>
 <td style="padding-left: .75em; width: 30%; border-right: 1px solid black; text-align: left;">
-<img src="assets/mm_integration.png" width="3000">
+<img src="assets%2Fmm_integration.png" width="3000">
 </td>
 <td style="padding-left: .75em; width: 30%; border-right: 1px solid black; text-align: left;">
-<img src="assets/AdditionalFeatures.png" width="3000">
+<img src="assets%2FAdditionalFeatures.png" width="3000">
 </td>
 </tr>
 <tr>
@@ -199,33 +200,42 @@ are useful for SM analysis pipelines.
 <h3 id="installing-with-conda-environment">Installing with <em>conda</em> environment<a class="anchor" aria-label="anchor" href="#installing-with-conda-environment"></a>
 </h3>
 <p>Below is an example of how to set up SpaMTP using a conda
-environment</p>
-<pre class="console"><code>conda create -n SpaMTP -c conda-forge r-base=4.3.3 r-essentials r-devtools
+environment:</p>
+<pre class="console"><code>conda create -n SpaMTP -c conda-forge r-base=4.3.3 r-essentials r-devtools r-cairo python=3.9 r-reticulate r-leiden r-imager r-magick r-hdf5r r-sf bioconda::bioconductor-ebimage bioconda::bioconductor-scater bioconda::bioconductor-dropletutils bioconda::bioconductor-fgsea bioconda::bioconductor-rgoslin bioconda::bioconductor-glmgampoi
 conda activate SpaMTP</code></pre>
 <p>Within the SpaMTP environment open <em>R</em> and install
-<strong><em>SpaMTP</em></strong></p>
+<strong><em>SpaMTP</em></strong>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#Install Seurat version 5.1.0</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"satijalab/seurat"</span>, <span class="st">"seurat5"</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Install Cardinal</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"Cardinal"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Install SpaMTP</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span></code></pre></div>
 <p><br></p>
 </div>
 <div class="section level3">
 <h3 id="possible-installiation-errors">Possible Installiation Errors<a class="anchor" aria-label="anchor" href="#possible-installiation-errors"></a>
 </h3>
 <div class="section level4">
-<h4 id="cairo-failed-to-install">Cairo failed to install<a class="anchor" aria-label="anchor" href="#cairo-failed-to-install"></a>
+<h4 id="cairo-failed-to-install">Cairo Failed to Install<a class="anchor" aria-label="anchor" href="#cairo-failed-to-install"></a>
 </h4>
 <pre class="console"><code>checking if R was compiled with the RConn patch... no
 checking for cairo.h... no
 configure: error: Cannot find cairo.h! Please install cairo (http://www.cairographics.org/) and/or set CAIRO_CFLAGS/LIBS correspondingly.
 ERROR: configuration failed for package ‘Cairo’</code></pre>
-<p>check these libraries exist:</p>
+<p>Check these libraries exist:</p>
 <pre class="console"><code>conda install conda-forge::r-cairo</code></pre>
 <p>This should resolve any issues. Rerun:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"scater"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"scater"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="cardinal-failed-to-install">Cardinal Failed to install<a class="anchor" aria-label="anchor" href="#cardinal-failed-to-install"></a>
+<h4 id="cardinal-failed-to-install">Cardinal Failed to Install<a class="anchor" aria-label="anchor" href="#cardinal-failed-to-install"></a>
 </h4>
 <pre class="console"><code>ERROR: dependency ‘EBImage’ is not available for package ‘Cardinal’
 
@@ -234,8 +244,8 @@ BiocManager::install("EBImage")
 fftwtools.c:28:9: fatal error: fftw3.h: No such file or directory
    28 | #include&lt;fftw3.h&gt;
       |         ^~~~~~~~~</code></pre>
-<p>If EBImage failed to installed it ist most likely due to an issue
-with the installation of <em>fftwtools</em></p>
+<p>If EBImage failed to installed, it is most likely due to an issue
+with the installation of <em>fftwtools</em>.</p>
 <p>Try:</p>
 <pre class="console"><code>conda config --add channels conda-forge
 conda config --set channel_priority strict
@@ -250,22 +260,36 @@ conda install conda-forge::fftw</code></pre>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="co">#Check if BiocManager is installed</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"fftwtools"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"fftwtools"</span><span class="op">)</span></span></code></pre></div>
 <p>If none of the above methods resolve instiallation issues, install
 <em>Cardinal</em> directly through <em>conda</em>:</p>
 <pre class="console"><code>conda install bioconda::bioconductor-cardinal  </code></pre>
 </div>
 <div class="section level4">
 <h4 id="rgoslin-failed-to-install">
-<em>rgoslin</em> Failed to install<a class="anchor" aria-label="anchor" href="#rgoslin-failed-to-install"></a>
+<em>rgoslin</em> Failed to Install<a class="anchor" aria-label="anchor" href="#rgoslin-failed-to-install"></a>
 </h4>
 <p>If rgoslin fails to install please head to their <a href="https://github.com/lifs-tools/rgoslin" class="external-link">github</a>. Alternative,
 you can try installing through BiocManager or mamba shown below:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"rgoslin"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"rgoslin"</span><span class="op">)</span></span></code></pre></div>
 <p>or</p>
 <pre class="console"><code>mamba install bioconductor-rgoslin</code></pre>
-<p>For other issue please flag on github under <em>Issues</em></p>
+</div>
+<div class="section level4">
+<h4 id="matrix-version-incompatible-with-seurat">
+<em>Matrix</em> version incompatible with <em>Seurat</em><a class="anchor" aria-label="anchor" href="#matrix-version-incompatible-with-seurat"></a>
+</h4>
+<p>If the <em>Matrix</em> package version installed is not compatible
+with <em>Seurat</em> then try installing a different version and
+re-installing <em>Seurat</em></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Install Correct version of Matrix package</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_version.html" class="external-link">install_version</a></span><span class="op">(</span><span class="st">"Matrix"</span>, version <span class="op">=</span> <span class="st">"1.6-4"</span>, repos <span class="op">=</span> <span class="st">"https://cran.r-project.org"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Install Seurat version 5.1.0</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"Seruat"</span><span class="op">)</span></span></code></pre></div>
+<p>For other issue please flag on github under <em>Issues</em>.</p>
 </div>
 </div>
 </div>
@@ -273,9 +297,7 @@ you can try installing through BiocManager or mamba shown below:</p>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -283,21 +305,21 @@ you can try installing through BiocManager or mamba shown below:</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+<p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

@@ -5,7 +5,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +33,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -45,24 +45,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Visualise expression of metabolites in a spatial context for Spatial Seurat Objects with H&amp;E images. - This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&amp;E image) - This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/PlottingSpaMTP.R" class="external-link"><code>R/PlottingSpaMTP.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/PlottingSpaMTP.R" class="external-link"><code>R/PlottingSpaMTP.R</code></a></small>
     <div class="hidden name"><code>SpatialMZAnnotationPlot.Rd</code></div>
     </div>
 
@@ -100,95 +103,95 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>object</dt>
+
+
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>Seurat Spatial Metabolomic Object to Visualise.</p></dd>
 
 
-<dt>metabolites</dt>
+<dt id="arg-metabolites">metabolites<a class="anchor" aria-label="anchor" href="#arg-metabolites"></a></dt>
 <dd><p>Vector of metabolite names to plot (e.g. c("Glucose", "Glutamine")). The Seurat Object provided must contain annotations in the respective assay metadata.</p></dd>
 
 
-<dt>plusminus</dt>
+<dt id="arg-plusminus">plusminus<a class="anchor" aria-label="anchor" href="#arg-plusminus"></a></dt>
 <dd><p>Numeric value defining the range/threshold either side of the target peak/peaks to be binned together for plotting (default = NULL).</p></dd>
 
 
-<dt>images</dt>
+<dt id="arg-images">images<a class="anchor" aria-label="anchor" href="#arg-images"></a></dt>
 <dd><p>Character string of the name of the image to plot (default = NULL).</p></dd>
 
 
-<dt>crop</dt>
+<dt id="arg-crop">crop<a class="anchor" aria-label="anchor" href="#arg-crop"></a></dt>
 <dd><p>Boolean value indicating if to crop the plot to focus on only points being plotted (default = TRUE).</p></dd>
 
 
-<dt>assay</dt>
+<dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Character string indicating which Seurat object assay to pull data form (default = "Spatial").</p></dd>
 
 
-<dt>slot</dt>
+<dt id="arg-slot">slot<a class="anchor" aria-label="anchor" href="#arg-slot"></a></dt>
 <dd><p>Character string indicating the assay slot to use to pull expression values form (default = "counts").</p></dd>
 
 
-<dt>keep.scale</dt>
+<dt id="arg-keep-scale">keep.scale<a class="anchor" aria-label="anchor" href="#arg-keep-scale"></a></dt>
 <dd><p>Character string describing how to handle the color scale across multiple plots. Check Seurat::SpatialFeaturePlot() for all options (default = "feature").</p></dd>
 
 
-<dt>min.cutoff</dt>
+<dt id="arg-min-cutoff">min.cutoff<a class="anchor" aria-label="anchor" href="#arg-min-cutoff"></a></dt>
 <dd><p>Vector of numeric value describing the minimum cutoff values for each m/z feature (default = NA).</p></dd>
 
 
-<dt>max.cutoff</dt>
+<dt id="arg-max-cutoff">max.cutoff<a class="anchor" aria-label="anchor" href="#arg-max-cutoff"></a></dt>
 <dd><p>Vector of numeric value describing the maximum cutoff values for each m/z feature (default = NA).</p></dd>
 
 
-<dt>ncol</dt>
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
 <dd><p>Integer defining the number of columns if plotting multiple plots (default = NULL).</p></dd>
 
 
-<dt>combine</dt>
+<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
 <dd><p>Boolean value stating if to combine plots into a single patchworked ggplot object (default = TRUE).</p></dd>
 
 
-<dt>pt.size.factor</dt>
+<dt id="arg-pt-size-factor">pt.size.factor<a class="anchor" aria-label="anchor" href="#arg-pt-size-factor"></a></dt>
 <dd><p>Numeric value defining the point size for spots when plotting (default = 1.6).</p></dd>
 
 
-<dt>alpha</dt>
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>Numeric value between 0 and 1 defining the spot alpha (default = 1).</p></dd>
 
 
-<dt>image.alpha</dt>
+<dt id="arg-image-alpha">image.alpha<a class="anchor" aria-label="anchor" href="#arg-image-alpha"></a></dt>
 <dd><p>Numeric value between 0 and 1 defining the image alpha (default = 1).</p></dd>
 
 
-<dt>stroke</dt>
+<dt id="arg-stroke">stroke<a class="anchor" aria-label="anchor" href="#arg-stroke"></a></dt>
 <dd><p>Numeric value describing the width of the border around the spot (default. =0.25).</p></dd>
 
 
-<dt>interactive</dt>
+<dt id="arg-interactive">interactive<a class="anchor" aria-label="anchor" href="#arg-interactive"></a></dt>
 <dd><p>Boolean value of if to launch an interactive SpatialDimPlot or SpatialFeaturePlot session, see Seurat::ISpatialDimPlot() or Seurat::ISpatialFeaturePlot() for more details (default = FALSE).</p></dd>
 
 
-<dt>information</dt>
+<dt id="arg-information">information<a class="anchor" aria-label="anchor" href="#arg-information"></a></dt>
 <dd><p>An optional dataframe or matrix of extra infomation to be displayed on hover (default = NULL).</p></dd>
 
 
-<dt>column.name</dt>
+<dt id="arg-column-name">column.name<a class="anchor" aria-label="anchor" href="#arg-column-name"></a></dt>
 <dd><p>Character string defining the column name where the annotations are stored in the slot meta.data (default = "all_IsomerNames").</p></dd>
 
 
-<dt>plot.exact</dt>
+<dt id="arg-plot-exact">plot.exact<a class="anchor" aria-label="anchor" href="#arg-plot-exact"></a></dt>
 <dd><p>Boolean value describing if to only plot exact matches to the metabolite search terms, else will plot all metabolites which contain serach word in name (default = TRUE).</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A ggplot showing the Spatial representation of expression data of specified m/z values for Spatial data with H&amp;E Image</p>
+    <p>A ggplot showing the Spatial representation of expression data of specified m/z values for Spatial data with H&amp;E Image</p>
     </div>
 
     <div id="ref-examples">
@@ -205,19 +208,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -31,7 +31,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -43,24 +43,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Normalizes m/z intensity data stored in a Seurat Object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/SMPreprocessing.R" class="external-link"><code>R/SMPreprocessing.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/SMPreprocessing.R" class="external-link"><code>R/SMPreprocessing.R</code></a></small>
     <div class="hidden name"><code>NormalizeSMData.Rd</code></div>
     </div>
 
@@ -81,35 +84,35 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>data</dt>
+
+
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>Seurat Object to be normalized.</p></dd>
 
 
-<dt>normalisation.type</dt>
+<dt id="arg-normalisation-type">normalisation.type<a class="anchor" aria-label="anchor" href="#arg-normalisation-type"></a></dt>
 <dd><p>Character string defining the normalization method to run. Options are either c("TIC", "LogNormalize", "RC") which represent Total Ion Current (TIC) normalization, Log Normalization or counts per million (RC), respectively (default = "TIC").</p></dd>
 
 
-<dt>scale.factor</dt>
+<dt id="arg-scale-factor">scale.factor<a class="anchor" aria-label="anchor" href="#arg-scale-factor"></a></dt>
 <dd><p>Numeric value that sets the scale factor for pixel/spot level normalization. Following normalization the total intensity value across each pixel will equal this value. If scale.factor = NULL, TIC normalization will use a scale factor = number of m/z and Log Normalisation will use a scale factor = 10000 (default = NULL).</p></dd>
 
 
-<dt>assay</dt>
+<dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Character string defining the name of the Seurat Object assay to pull the corresponding intensity data from (default = "Spatial").</p></dd>
 
 
-<dt>slot</dt>
+<dt id="arg-slot">slot<a class="anchor" aria-label="anchor" href="#arg-slot"></a></dt>
 <dd><p>Character string defining the name of the slot within the Seurat Object assay to pull the corresponding intensity data from (default = "counts").</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A Seurat Object with intensity values normalized. Normalized data is stored in the $data slot of the specified assay</p>
+    <p>A Seurat Object with intensity values normalized. Normalized data is stored in the $data slot of the specified assay</p>
     </div>
 
     <div id="ref-examples">
@@ -125,19 +128,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

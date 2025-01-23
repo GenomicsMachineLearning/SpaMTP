@@ -5,7 +5,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +33,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -45,24 +45,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Visualise expression of m/z values in a spatial context - This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&amp;E image) - This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/PlottingSpaMTP.R" class="external-link"><code>R/PlottingSpaMTP.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/PlottingSpaMTP.R" class="external-link"><code>R/PlottingSpaMTP.R</code></a></small>
     <div class="hidden name"><code>ImageMZPlot.Rd</code></div>
     </div>
 
@@ -115,135 +118,135 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>object</dt>
+
+
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>Seurat Spatial Metabolomic Object to Visualise.</p></dd>
 
 
-<dt>mzs</dt>
+<dt id="arg-mzs">mzs<a class="anchor" aria-label="anchor" href="#arg-mzs"></a></dt>
 <dd><p>Vector of numeric m/z values to plot (e.g. c(400.1578, 300.1)). The function FindNearestMZ() is used to automatically find the nearest m/z value to the ones given.</p></dd>
 
 
-<dt>plusminus</dt>
+<dt id="arg-plusminus">plusminus<a class="anchor" aria-label="anchor" href="#arg-plusminus"></a></dt>
 <dd><p>Numeric value defining the range/threshold either side of the target peak/peaks to be binned together for plotting (default = NULL).</p></dd>
 
 
-<dt>fov</dt>
+<dt id="arg-fov">fov<a class="anchor" aria-label="anchor" href="#arg-fov"></a></dt>
 <dd><p>Character string of name of FOV to plot (default = NULL).</p></dd>
 
 
-<dt>boundaries</dt>
+<dt id="arg-boundaries">boundaries<a class="anchor" aria-label="anchor" href="#arg-boundaries"></a></dt>
 <dd><p>A vector of segmentation boundaries per image to plot (default = NULL).</p></dd>
 
 
-<dt>cols</dt>
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
 <dd><p>Vector of character strings defining colours used for plotting (default = c("lightgrey", "firebrick1")).</p></dd>
 
 
-<dt>size</dt>
+<dt id="arg-size">size<a class="anchor" aria-label="anchor" href="#arg-size"></a></dt>
 <dd><p>Numeric value defining the point size for cells/spots when plotting (default = 0.5).</p></dd>
 
 
-<dt>min.cutoff</dt>
+<dt id="arg-min-cutoff">min.cutoff<a class="anchor" aria-label="anchor" href="#arg-min-cutoff"></a></dt>
 <dd><p>Vector of numeric value describing the minimum cutoff values for each m/z feature (default = NA).</p></dd>
 
 
-<dt>max.cutoff</dt>
+<dt id="arg-max-cutoff">max.cutoff<a class="anchor" aria-label="anchor" href="#arg-max-cutoff"></a></dt>
 <dd><p>Vector of numeric value describing the maximum cutoff values for each m/z feature (default = NA).</p></dd>
 
 
-<dt>split.by</dt>
+<dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
 <dd><p>Character string defining a factor in the Seurat Object metadata to split the feature plot by (default = NULL).</p></dd>
 
 
-<dt>molecules</dt>
+<dt id="arg-molecules">molecules<a class="anchor" aria-label="anchor" href="#arg-molecules"></a></dt>
 <dd><p>Vector of character strings describing molecules to plot (default = NULL).</p></dd>
 
 
-<dt>mols.size</dt>
+<dt id="arg-mols-size">mols.size<a class="anchor" aria-label="anchor" href="#arg-mols-size"></a></dt>
 <dd><p>Numeric value for the point size of molecules to plot (default = 0.1).</p></dd>
 
 
-<dt>mols.cols</dt>
+<dt id="arg-mols-cols">mols.cols<a class="anchor" aria-label="anchor" href="#arg-mols-cols"></a></dt>
 <dd><p>A vector of colours for the molecules to plot (default = NULL).</p></dd>
 
 
-<dt>nmols</dt>
+<dt id="arg-nmols">nmols<a class="anchor" aria-label="anchor" href="#arg-nmols"></a></dt>
 <dd><p>Integer of the max number of each molecule specified in 'molecules' to be plot (default = 1000).</p></dd>
 
 
-<dt>alpha</dt>
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>Numeric value between 0 and 1 defining the image alpha (default = 1).</p></dd>
 
 
-<dt>border.color</dt>
+<dt id="arg-border-color">border.color<a class="anchor" aria-label="anchor" href="#arg-border-color"></a></dt>
 <dd><p>Character string specifying the colour of each spot/cell border (default = white).</p></dd>
 
 
-<dt>border.size</dt>
+<dt id="arg-border-size">border.size<a class="anchor" aria-label="anchor" href="#arg-border-size"></a></dt>
 <dd><p>Numeric value for the thickness of the cell segmentation border (default = NULL).</p></dd>
 
 
-<dt>dark.background</dt>
+<dt id="arg-dark-background">dark.background<a class="anchor" aria-label="anchor" href="#arg-dark-background"></a></dt>
 <dd><p>Boolean value indicating if the plot background is coloured black (default = FALSE).</p></dd>
 
 
-<dt>blend</dt>
+<dt id="arg-blend">blend<a class="anchor" aria-label="anchor" href="#arg-blend"></a></dt>
 <dd><p>Boolean value indicating whether to scale and blend expression values to visualize coexpression of two features (default = FALSE).</p></dd>
 
 
-<dt>blend.threshold</dt>
+<dt id="arg-blend-threshold">blend.threshold<a class="anchor" aria-label="anchor" href="#arg-blend-threshold"></a></dt>
 <dd><p>Numeric value defining the color cutoff from weak signal to strong signal; ranges from 0 to 1 (default = 0.5).</p></dd>
 
 
-<dt>crop</dt>
+<dt id="arg-crop">crop<a class="anchor" aria-label="anchor" href="#arg-crop"></a></dt>
 <dd><p>Boolean value of whether to crop the plots to area with cells only (default = FALSE).</p></dd>
 
 
-<dt>cells</dt>
+<dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
 <dd><p>Vector of character strings defining a group of cells to plot (default = NUll; plots all cells).</p></dd>
 
 
-<dt>scale</dt>
+<dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
 <dd><p>Set color scaling across multiple plots; c("features", "all", "none").</p></dd>
 
 
-<dt>overlap</dt>
+<dt id="arg-overlap">overlap<a class="anchor" aria-label="anchor" href="#arg-overlap"></a></dt>
 <dd><p>Overlay boundaries from a single image to create a single plot (default = FALSE).</p></dd>
 
 
-<dt>axes</dt>
+<dt id="arg-axes">axes<a class="anchor" aria-label="anchor" href="#arg-axes"></a></dt>
 <dd><p>Boolean defining if to keep axes and panel background (default = FALSE).</p></dd>
 
 
-<dt>combine</dt>
+<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
 <dd><p>Boolean value stating if to combine plots into a single patchworked ggplot object (default = TRUE).</p></dd>
 
 
-<dt>coord.fixed</dt>
+<dt id="arg-coord-fixed">coord.fixed<a class="anchor" aria-label="anchor" href="#arg-coord-fixed"></a></dt>
 <dd><p>Boolean value of it to plot cartesian coordinates with fixed aspect ratio (default = TURE).</p></dd>
 
 
-<dt>assay</dt>
+<dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Character string indicating which Seurat object assay to pull data form (default = "Spatial").</p></dd>
 
 
-<dt>slot</dt>
+<dt id="arg-slot">slot<a class="anchor" aria-label="anchor" href="#arg-slot"></a></dt>
 <dd><p>Character string indicating the assay slot to use to pull expression values form (default = "counts").</p></dd>
 
 
-<dt>plot.pixel</dt>
+<dt id="arg-plot-pixel">plot.pixel<a class="anchor" aria-label="anchor" href="#arg-plot-pixel"></a></dt>
 <dd><p>Boolean indicating if the plot should display pixel square shapes, if false will plot with spots (deafult = FALSE).</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A ggplot showing the Spatial representation of expression data of specified m/z values</p>
+    <p>A ggplot showing the Spatial representation of expression data of specified m/z values</p>
     </div>
 
     <div id="ref-examples">
@@ -260,19 +263,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

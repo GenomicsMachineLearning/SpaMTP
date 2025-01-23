@@ -6,7 +6,7 @@ When ssc is run an object is returned which cannot plot raw m/z values
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -34,7 +34,7 @@ When ssc is run an object is returned which cannot plot raw m/z values
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -46,24 +46,27 @@ When ssc is run an object is returned which cannot plot raw m/z values
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Adds Cardinal ssc segmentation annotation to m/z count data object <ul><li><p>When ssc is run an object is returned which cannot plot raw m/z values</p></li> </ul></h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/CardinalWrappers.R" class="external-link"><code>R/CardinalWrappers.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/CardinalWrappers.R" class="external-link"><code>R/CardinalWrappers.R</code></a></small>
     <div class="hidden name"><code>add_ssc_annotation.Rd</code></div>
     </div>
 
@@ -77,23 +80,23 @@ When ssc is run an object is returned which cannot plot raw m/z values
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>data</dt>
+
+
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A Cardinal Object containing the raw/binned m/z count data.</p></dd>
 
 
-<dt>data_ssc</dt>
+<dt id="arg-data-ssc">data_ssc<a class="anchor" aria-label="anchor" href="#arg-data-ssc"></a></dt>
 <dd><p>A Cardinal Object containing the ssc segmentation results. Note: Cardinal's spatialShrunkenCentroids() must be run to generate this object.</p></dd>
 
 
-<dt>resolution</dt>
+<dt id="arg-resolution">resolution<a class="anchor" aria-label="anchor" href="#arg-resolution"></a></dt>
 <dd><p>An integer defining the ssc segmentation resolution to add to the raw Cardinal object (default = 25).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A Cardinal Object containing the raw m/z counts and the relative ssc segmentation annotations per pixel.</p>
+    <p>A Cardinal Object containing the raw m/z counts and the relative ssc segmentation annotations per pixel.</p>
     </div>
 
     <div id="ref-examples">
@@ -110,19 +113,19 @@ When ssc is run an object is returned which cannot plot raw m/z values
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -31,7 +31,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -43,24 +43,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Checks the alignment of two spatial datasets by plotting their relative coordinates on the same graph</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/PlottingSpaMTP.R" class="external-link"><code>R/PlottingSpaMTP.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/PlottingSpaMTP.R" class="external-link"><code>R/PlottingSpaMTP.R</code></a></small>
     <div class="hidden name"><code>CheckAlignment.Rd</code></div>
     </div>
 
@@ -82,39 +85,39 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>SM.data</dt>
+
+
+<dl><dt id="arg-sm-data">SM.data<a class="anchor" aria-label="anchor" href="#arg-sm-data"></a></dt>
 <dd><p>SpaMTP Seurat object containing SM data</p></dd>
 
 
-<dt>ST.data</dt>
+<dt id="arg-st-data">ST.data<a class="anchor" aria-label="anchor" href="#arg-st-data"></a></dt>
 <dd><p>SpaMTP Seurat object containing ST data</p></dd>
 
 
-<dt>image.res</dt>
+<dt id="arg-image-res">image.res<a class="anchor" aria-label="anchor" href="#arg-image-res"></a></dt>
 <dd><p>Character string defining the Visium image resolution to use. This is required for the correct scale.factor to be applied (default = NULL).</p></dd>
 
 
-<dt>names</dt>
+<dt id="arg-names">names<a class="anchor" aria-label="anchor" href="#arg-names"></a></dt>
 <dd><p>Vector of 2 character strings used to define each dataset being plotted (default = c("SM", "ST")).</p></dd>
 
 
-<dt>cols</dt>
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
 <dd><p>Vector of 2 colors used for plotting (default = NULL).</p></dd>
 
 
-<dt>image.slice</dt>
+<dt id="arg-image-slice">image.slice<a class="anchor" aria-label="anchor" href="#arg-image-slice"></a></dt>
 <dd><p>Character string matching the image slice name within the ST SpaMTP Seurat object (default = "slice1").</p></dd>
 
 
-<dt>size</dt>
+<dt id="arg-size">size<a class="anchor" aria-label="anchor" href="#arg-size"></a></dt>
 <dd><p>Numeric value indicating the point size to plot (default = 0.5).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A 2D scatter plot showing the relative spatial locations of the ST and SM data points</p>
+    <p>A 2D scatter plot showing the relative spatial locations of the ST and SM data points</p>
     </div>
 
     <div id="ref-examples">
@@ -130,19 +133,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

@@ -6,7 +6,7 @@ Function params/args:"><meta property="og:image" content="https://genomicsmachin
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -34,7 +34,7 @@ Function params/args:"><meta property="og:image" content="https://genomicsmachin
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -46,29 +46,32 @@ Function params/args:"><meta property="og:image" content="https://genomicsmachin
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Intermediate solution to <code>subset()</code>: subset FOVs/centroids if selected cells are NOT found in each FOV NOTE: some code parts and args are taken from SeuratObject Function params/args:</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/helperFunctions.R" class="external-link"><code>R/helperFunctions.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/helperFunctions.R" class="external-link"><code>R/helperFunctions.R</code></a></small>
     <div class="hidden name"><code>subset_SPM.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Intermediate solution to <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset()</a></code>:
+    <p>Intermediate solution to <code><a href="https://rdrr.io/pkg/BiocGenerics/man/subset.html" class="external-link">subset()</a></code>:
 subset FOVs/centroids if selected cells are NOT found in each FOV
 NOTE: some code parts and args are taken from SeuratObject
 Function params/args:</p>
@@ -83,54 +86,54 @@ Function params/args:</p>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  Update.slots <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  Update.object <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>object</dt>
+
+
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>An S4 object or A <code>FOV</code> object</p></dd>
 
 
-<dt>subset</dt>
+<dt id="arg-subset">subset<a class="anchor" aria-label="anchor" href="#arg-subset"></a></dt>
 <dd><p>Logical expression indicating features/variables to keep</p></dd>
 
 
-<dt>cells</dt>
+<dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
 <dd><p>A vector of cells to keep; if <code>NULL</code>, defaults to all cells</p></dd>
 
 
-<dt>idents</dt>
+<dt id="arg-idents">idents<a class="anchor" aria-label="anchor" href="#arg-idents"></a></dt>
 <dd><p>A vector of identity classes to keep</p></dd>
 
 
-<dt>features</dt>
+<dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
 <dd><p>A vector of feature names or indices to keep</p></dd>
 
 
-<dt>Update.slots</dt>
+<dt id="arg-update-slots">Update.slots<a class="anchor" aria-label="anchor" href="#arg-update-slots"></a></dt>
 <dd><p>If to update slots of an object</p></dd>
 
 
-<dt>Update.object</dt>
+<dt id="arg-update-object">Update.object<a class="anchor" aria-label="anchor" href="#arg-update-object"></a></dt>
 <dd><p>If to update final object, default to TRUE.</p></dd>
 
 
-<dt>verbose</dt>
-<dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).</p></dd>
 
 
-<dt>...</dt>
-<dd><p>Arguments passed to <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset()</a></code> and other methods</p></dd>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/BiocGenerics/man/subset.html" class="external-link">subset()</a></code> and other methods</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A subset Seurat object</p>
+    <p>A subset Seurat object</p>
     </div>
 
     <div id="ref-examples">
@@ -146,19 +149,19 @@ Function params/args:</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -31,7 +31,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -43,24 +43,27 @@
     <li>
       <a href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a>
     </li>
+    <li>
+      <a href="../articles/Single_Cell_MultiOmics.html">Single Cell Multi-Omic Analysis</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/GenomicsMachineLearning/SpaMTP" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Read a Spatial Metabolomics image matrix file (.csv format)</h1>
-    <small class="dont-index">Source: <a href="https://github.com/BiomedicalMachineLearning/SpaMTP/blob/HEAD/R/LoadData.R" class="external-link"><code>R/LoadData.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/R/LoadData.R" class="external-link"><code>R/LoadData.R</code></a></small>
     <div class="hidden name"><code>ReadSM_mtx.Rd</code></div>
     </div>
 
@@ -81,27 +84,29 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>mtx.file</dt>
+
+
+<dl><dt id="arg-mtx-file">mtx.file<a class="anchor" aria-label="anchor" href="#arg-mtx-file"></a></dt>
 <dd><p>Character string defining the path of the spatial metabolomic image matrix .csv file</p></dd>
 
 
-<dt>assay</dt>
+<dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Character string of the Seurat object assay name to store the relative intensity data (default = "Spatial").</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
 
 
-<dt>feature.start.column</dt>
+<dt id="arg-feature-start-column">feature.start.column<a class="anchor" aria-label="anchor" href="#arg-feature-start-column"></a></dt>
 <dd><p>Numeric value defining the start index containing the x, y and m/z value columns within the table (default = 1).</p></dd>
 
 
-<dt>mz.prefix</dt>
+<dt id="arg-mz-prefix">mz.prefix<a class="anchor" aria-label="anchor" href="#arg-mz-prefix"></a></dt>
 <dd><p>Character string matching the prefix string in front of each m/z name (deafult = NULL).</p></dd>
 
 
-<dt>project.name</dt>
+<dt id="arg-project-name">project.name<a class="anchor" aria-label="anchor" href="#arg-project-name"></a></dt>
 <dd><p>Character string defining the name of the sample to be assigned as orig.idents (default = "SpaMTP").</p><div class="section">
 <h3 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h3>
 
@@ -123,9 +128,7 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay</p>
+    <p>A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay</p>
     </div>
 
     <div id="ref-examples">
@@ -141,19 +144,19 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher Fitzgerald</a>.</p>
+  <p></p><p>Developed by <a href="https://github.com/agc888" class="external-link">Andrew Causer</a>, <a href="https://github.com/BCRL-tylu" class="external-link">Tianyao Lu</a>, <a href="https://github.com/ChemCharles" class="external-link">Christopher C.J. Fitzgerald</a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
