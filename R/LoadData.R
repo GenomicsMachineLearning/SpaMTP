@@ -8,6 +8,7 @@
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE)
 #' @param assay Character string describing the name of the new assay which stores the imported data (default = "Spatial").
 #' @param bin_package Character string defining the package used to bin the imported data. Options are either "SpaMTP" or "Cardinal" (default = "SpaMTP").
+#' @param multi.run Boolean indicating if there are multiple runs within the imported data. If `TRUE`, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).
 #' @param ... Additional arguments passed to the \code{readMSIData} function.
 #'
 #' @return A new SpaMTP Seurat object contain the imported spatial metabolic intensity values
@@ -15,7 +16,7 @@
 #'
 #' @examples
 #' # data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
-LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", bin_package = "SpaMTP", ...){
+LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", bin_package = "SpaMTP", multi.run = FALSE, ...){
 
   if (check_cardinal_version()){
     file_name <- paste0(path, name)
@@ -25,28 +26,28 @@ LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
         verbose_message(message_text = "Binning data using Cardinal's m/z bin method .... ", verbose = verbose)
         warning("If data loading/conversion is taking a long time try chaning bin_method = 'SpaMTP'... This function speads up matrix conversion for data with identical m/z values for each pixel!")
         data <- Cardinal::bin(data, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, ...)
-        data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
+        data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay )
       } else if (bin_package == "SpaMTP"){
         verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
         mtx <- bin_cardinal(data, mass.range = mass.range, resolution = resolution, units = units, ...)
-        data <- BinnedCardinalToSeurat(data, mtx, verbose = verbose, assay = assay)
+        data <- BinnedCardinalToSeurat(data, mtx, multi.run = multi.run, verbose = verbose, assay = assay)
       } else {
         stop("bin_package value is incorrect! bin_package must be either 'SpaMTP' or 'Cardinal'")
       }
     } else {
-      data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
+      data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
     }
   } else {
     if (bin_package == "Cardinal"){
       verbose_message(message_text = "Binning data using Cardinal's m/z bin method .... ", verbose = verbose)
       warning("If data loading/conversion is taking a long time try chaning bin_method = 'SpaMTP'... This function speads up matrix conversion for data with identical m/z values for each pixel!")
       data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, ...)
-      data <- CardinalToSeurat(data, name, verbose = verbose, assay = assay)
+      data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
     } else if (bin_package == "SpaMTP"){
       verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
       data <- Cardinal::readImzML(name,folder = path, mass.range =  NULL, resolution = NULL, ...)
       mtx <- bin_cardinal(data, units = units, mass.range = mass.range, resolution = resolution, ...)
-      data <- BinnedCardinalToSeurat(data, mtx, verbose = verbose, assay = assay)
+      data <- BinnedCardinalToSeurat(data, mtx, multi.run = multi.run, verbose = verbose, assay = assay)
 
     } else {
       stop("bin_package value is incorrect! bin_package must be either 'SpaMTP' or 'Cardinal'")

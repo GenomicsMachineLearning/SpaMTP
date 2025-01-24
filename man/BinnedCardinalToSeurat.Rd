@@ -4,14 +4,20 @@
 \alias{BinnedCardinalToSeurat}
 \title{Converts a Cardinal Object into a Seurat Object}
 \usage{
-BinnedCardinalToSeurat(data, mtx, run_name, assay = "Spatial", verbose = TRUE)
+BinnedCardinalToSeurat(
+  data,
+  mtx,
+  multi.run = FALSE,
+  assay = "Spatial",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{data}{A Cardinal Object that is being converted into a Seurat Object.}
 
 \item{mtx}{Matrix object containing}
 
-\item{run_name}{A character string defining the run name of the Cardinal data to be converted to a Seurat Object}
+\item{multi.run}{Boolean indicating if there are multiple runs within the imported data. If \code{TRUE}, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).}
 
 \item{assay}{Character string containing the name of the assay (default = "Spatial").}
 

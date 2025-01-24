@@ -13,6 +13,7 @@ LoadSM(
   verbose = TRUE,
   assay = "Spatial",
   bin_package = "SpaMTP",
+  multi.run = FALSE,
   ...
 )
 }
@@ -32,6 +33,8 @@ LoadSM(
 \item{assay}{Character string describing the name of the new assay which stores the imported data (default = "Spatial").}
 
 \item{bin_package}{Character string defining the package used to bin the imported data. Options are either "SpaMTP" or "Cardinal" (default = "SpaMTP").}
+
+\item{multi.run}{Boolean indicating if there are multiple runs within the imported data. If \code{TRUE}, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).}
 
 \item{...}{Additional arguments passed to the \code{readMSIData} function.}
 }
