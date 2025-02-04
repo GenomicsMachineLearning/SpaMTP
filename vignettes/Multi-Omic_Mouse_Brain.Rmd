@@ -56,6 +56,9 @@ library(dplyr)
 #For plotting + DE plots
 library(ggplot2)
 library(EnhancedVolcano)
+
+## For reproducability
+set.seed(888)
 ```
 
 <br>
@@ -306,6 +309,11 @@ df %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
+```{r, echo=FALSE}
+rm(msi_custom_annotated)
+rm(msi)
+```
+
 We can see that based on the FMP10-tagged value, we are able to annotated some of our m/z values with their respective metabolites.
 
 Dopamine plays a critical part in Parkinson's disease, so lets visualise this annotation spatially!
@@ -395,6 +403,7 @@ df %>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 
+rm(msi_annotated)
 ```
 
 
@@ -492,17 +501,16 @@ Note: Hidden below are the colour palettes used to plot.
 ```{r}
 intergrated_palette <- list("0" = "#9dce71", 
                             "1" = "#fcb992",
-                            "2" = "#0067a8", 
-                            "3" = "#faa957" ,
-                            "4" = "#8bc5de", 
-                            "5" = "#fcf283",
+                            "2" = "#348bc2", 
+                            "3" = "#fcf283" ,
+                            "4" = "#0067a8", 
+                            "5" = "#8bc5de",
                             "6" = "#c29fcb",
-                            "7" = "#348bc2",
-                            "8" = "#009648",
-                            "9" = "#f37985",
-                            "10" = "#592e8b")
+                            "7" = "#009648",
+                            "8" = "#f37985",
+                            "9" = "#592e8b",
+                            "10" = "#5ca6bd")
                         
-                          
 
 SM_palette <- list("0" = "#9dce71", 
                    "1" = "#009648",
@@ -675,7 +683,7 @@ integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm 
 
 ```{r, fig.width=20, fig.height=8}
 DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F, cols = intergrated_palette, size = 4) | 
-  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.2, cols = intergrated_palette, image.alpha =  0.8) 
+  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.2, cols = intergrated_palette, image.alpha =  1) 
 ```
 
 Looking at the results above, we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #E68613">cluster 1</span> and <span style="color: #7CAE00">cluster 3</span> respectively)
