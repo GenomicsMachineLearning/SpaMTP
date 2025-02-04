@@ -932,40 +932,16 @@ SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
 
 Lets run DE and then find regional pathways `FindRegionalPathways()` on our combined data object. 
 ```{r, results='hide', warning=FALSE, message=FALSE}
+## Run DE analysis for transcriptomics and metabolomics
+Idents(striatum.dhb.data) <- "striatum"
+deg =  FindAllMarkers(striatum.dhb.data , test.use = "wilcox_limma", assay = "SPT",only.pos =F)
+dem =  FindAllMarkers(striatum.dhb.data , assay = "SPM", only.pos =F)
 
-# Generate differential abundance and expression results for integrated clustering
-Idents(striatum) <- "lesion"
-deg =  FindAllMarkers(striatum,  assay = "SPT",only.pos =F)
-dem =  FindAllMarkers(striatum , assay = "SPM", only.pos =F)
-
-ids <- striatum@assays$SPM@meta.data[c("mz_names", "all_Isomers_IDs")]
-dem$mz_names <- dem$gene
-dem <- merge(dem, ids, by = "mz_names")
-
-## Run DE analysis for DHB data
-Idents(striatum.dhb.data) <- "lesion"
-deg_dhb =  FindAllMarkers(striatum.dhb.data ,  assay = "SPT",only.pos =F)
-dem_dhb =  FindAllMarkers(striatum.dhb.data , assay = "SPM", only.pos =F)
-
-ids <- striatum.dhb.data@assays$SPM@meta.data[c("mz_names", "all_Isomers_IDs")]
-dem_dhb$mz_names <- dem_dhb$gene
-dem_dhb <- merge(dem_dhb, ids, by = "mz_names")
-
-degs <- do.call(rbind, list(deg, deg_dhb))
-dems <- do.call(rbind, list(dem, dem_dhb))
-
-DE.up = list("genes" = degs[degs$cluster == "intact" & degs$avg_log2FC > 0 & degs$p_val_adj < 0.05, ],"metabolites" = dems[dems$cluster == "intact"& dems$avg_log2FC > 0 & dems$p_val_adj < 0.05, ])
-DE.down = list("genes" = degs[degs$cluster == "intact" & degs$avg_log2FC < 0 & degs$p_val_adj < 0.05, ],"metabolites" = dems[dems$cluster == "intact"& dems$avg_log2FC < 0 & dems$p_val_adj < 0.05, ])
-
-filtered_metabolites <- unique(unlist(strsplit(DE.up$metabolites$all_Isomers_IDs, "; ")))
-filtered_metabolites <- filtered_metabolites[!filtered_metabolites %in% c("", "No Annotation")]
-
-FishersPathwayAnalysis(list("genes" = DE.up$genes$gene, "metabolites" = filtered_metabolites))
-
+DE.list = list("genes" = deg,"metabolites" = dem)
 
 ## Run multi-modal pathway analysis
 regpathway = FindRegionalPathways(
-  merged_db3,
+  striatum.dhb.data,
   analyte_types = c("genes", "metabolites"),
   SM_slot = "counts", ST_slot = "counts",
   ident = "striatum",
