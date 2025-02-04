@@ -402,8 +402,6 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
-
-rm(msi_annotated)
 ```
 
 
@@ -436,6 +434,11 @@ We can also check that our SM coordinates haven't been distorted by plotting a m
 ```{r, fig.width=15, fig.height=8}
 ImageMZPlot(msi_annotated, mzs = 674.28, size = 2, slot = "counts") | 
   ImageMZPlot(msi_transformed, mzs = 674.28, size = 2, slot = "counts")
+```
+
+
+```{r, echo=FALSE}
+rm(msi_annotated)
 ```
 
 
@@ -504,7 +507,7 @@ intergrated_palette <- list("0" = "#9dce71",
                             "2" = "#348bc2", 
                             "3" = "#fcf283" ,
                             "4" = "#0067a8", 
-                            "5" = "#8bc5de",
+                            "5" = "#b3dff2",
                             "6" = "#c29fcb",
                             "7" = "#009648",
                             "8" = "#f37985",
@@ -514,15 +517,15 @@ intergrated_palette <- list("0" = "#9dce71",
 
 SM_palette <- list("0" = "#9dce71", 
                    "1" = "#009648",
-                   "2" = "#0067a8", 
-                   "3" = "#8bc5de",
+                   "2" = "#348bc2", 
+                   "3" = "#b3dff2",
                    "4" = "#c29fcb")
 
-ST_palette <- list("0" = "#0067a8", 
+ST_palette <- list("0" = "#348bc2", 
                            "1" = "#009648", 
                            "2" = "#f37985",
                            "3" = "#fcf283", 
-                           "4" = "#faa957" ,
+                           "4" = "#0067a8" ,
                            "5" = "#9dce71",
                            "6" = "#c29fcb",
                            "7" = "#592e8b",
@@ -534,8 +537,8 @@ annotation_palette <- list("ACB_intact" = "#faa957",
                            "ACB_lesioned" = "#d16d08", 
                            "aco" = "#592e8b",
                            "cc" = "#c29fcb", 
-                           "CP_intact" = "#8bc5de" ,
-                           "CP_lesioned" = "#0067a8",
+                           "CP_intact" = "#b3dff2" ,
+                           "CP_lesioned" = "#348bc2",
                            "CTX" = "#aedea0",
                            "LSX" = "#f37985",
                            "MSC" = "#e34045",
@@ -726,7 +729,7 @@ cluster_DEMs <- FindAllDEMs(data = integrated.data, ident = "integrated_clusters
     Starting condition: 10
     
 ```{r, fig.width=8, fig.height=8}
-results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "4",]
+results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "5",]
 
 metabolites <- c("Dopamine (double derivatized)", "Dopamine (single derivatized)")
 
@@ -737,10 +740,10 @@ keyvals <- ifelse(
       ifelse(results$logFC > 1.2 & results$PValue < 10e-4, 'red',
         'black')))
   keyvals[is.na(keyvals)] <- 'black'
-  names(keyvals)[keyvals == 'red'] <- 'Cluster 4 - UP'
+  names(keyvals)[keyvals == 'red'] <- 'Cluster 5 - UP'
   names(keyvals)[keyvals == 'black'] <- 'Non-Sig'
   names(keyvals)[keyvals == 'orange'] <- 'Dopamine'
-  names(keyvals)[keyvals == "royalblue"] <- "Cluster 4 - Down"
+  names(keyvals)[keyvals == "royalblue"] <- "Cluster 5 - Down"
 
 
 ### Plots volcano plot with DEM results
@@ -765,24 +768,25 @@ volc_plot
 
 Analysing the DE results, we can see that dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #8bc5de">cluster 4</span>. 
 
-Now we will look at the gene expression differences between cluster 4 vs all other clusters within the striatum:
+Now we will look at the gene expression differences between cluster 4 vs all other clusters within the Striatum:
 
 
 ```{r, warning=FALSE, message=FALSE}
+## subset data to only contain the striatum
 Idents(integrated.data) <- "integrated_clusters"
-DefaultAssay(integrated.data) <- "SPT"
-
 striatum <- subset(integrated.data, subset = region == "striatum")
 
+## Find Differentially Expressed Genes
+DefaultAssay(striatum) <- "SPT"
 striatum_DEGs <- FindAllMarkers(striatum, only.pos = T)
 ```
 
 ```{r, echo=TRUE, results='hide'}
-head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
+head(striatum_DEGs[striatum_DEGs$cluster == "5",], n = 4)
 ```
 
 ```{r, echo=FALSE}
-df <- head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
+df <- head(striatum_DEGs[striatum_DEGs$cluster == "5",], n = 4)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -830,8 +834,6 @@ Now that we have identified there are metabolic and transcriptional differences 
 
 
 ```{r}
-striatum <- subset(integrated.data, subset = region == "striatum")
-
 # Generate differential abundance and expression results for integrated clustering
 Idents(striatum) <- "integrated_clusters"
 deg =  FindAllMarkers(striatum,  assay = "SPT",only.pos =F)
