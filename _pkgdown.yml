@@ -104,11 +104,12 @@ reference:
     metabolic database
   contents:
   - AnnotateSM
-  - getRefinedAnnotations
+  - AddCustomMZAnnotations
+  - AddFMP10Annotations
   - SearchAnnotations
   - FindDuplicateAnnotations
   - SubsetMZFeatures
-  - AddCustomMZAnnotations
+  - getRefinedAnnotations
 - title: Metabolic and Transcriptomic Pathway Analysis
   desc: Functions used to perform pathway analysis, both PCA and metabolite/gene set-based
     (GSEA)
@@ -237,6 +238,7 @@ reference:
   - ppm_error
   - ppm_range_match
   - proc_db
+  - filtered_fmp10
 - title: Helper Functions for Multi-Omic Analysis
   desc: Helper functions used in multi-omic analysis functions
   contents:
