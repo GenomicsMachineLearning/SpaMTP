@@ -72,7 +72,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">BinnedCardinalToSeurat</span><span class="op">(</span><span class="va">data</span>, <span class="va">mtx</span>, <span class="va">run_name</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">BinnedCardinalToSeurat</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">mtx</span>,</span>
+<span>  multi.run <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -87,8 +93,8 @@
 <dd><p>Matrix object containing</p></dd>
 
 
-<dt id="arg-run-name">run_name<a class="anchor" aria-label="anchor" href="#arg-run-name"></a></dt>
-<dd><p>A character string defining the run name of the Cardinal data to be converted to a Seurat Object</p></dd>
+<dt id="arg-multi-run">multi.run<a class="anchor" aria-label="anchor" href="#arg-multi-run"></a></dt>
+<dd><p>Boolean indicating if there are multiple runs within the imported data. If <code>TRUE</code>, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>

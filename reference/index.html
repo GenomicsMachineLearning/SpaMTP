@@ -70,7 +70,7 @@
           <p class="section-desc"></p><p>Functions that allow the user to load in SM data in different formats</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="loadSM.html">LoadSM()</a></code> </p>
+          <p><code><a href="LoadSM.html">LoadSM()</a></code> </p>
         </td>
         <td><p>Loads in spatial metabolomic data directly to a SpaMTP Seurat Object</p></td>
       </tr><tr><td>
@@ -158,9 +158,13 @@
         </td>
         <td><p>Annotates m/z values based on reference metabolite dataset</p></td>
       </tr><tr><td>
-          <p><code><a href="getRefinedAnnotations.html">getRefinedAnnotations()</a></code> </p>
+          <p><code><a href="AddCustomMZAnnotations.html">AddCustomMZAnnotations()</a></code> </p>
         </td>
-        <td><p>Used to subset dataset to only include annotations that have n number of entries </p><ul><li><p>(i.e. some peaks can have multiple annotations. Peaks which have above n number of annotations assigned will be removed from Seurat Object)</p></li> </ul></td>
+        <td><p>Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)</p></td>
+      </tr><tr><td>
+          <p><code><a href="AddFMP10Annotations.html">AddFMP10Annotations()</a></code> </p>
+        </td>
+        <td><p>Adds metabolite annotations to respective m/z values generated using an FMP10 matrix.</p></td>
       </tr><tr><td>
           <p><code><a href="SearchAnnotations.html">SearchAnnotations()</a></code> </p>
         </td>
@@ -174,9 +178,9 @@
         </td>
         <td><p>Subset a Seurat Spatial Metabolomic object by list of m/z's</p></td>
       </tr><tr><td>
-          <p><code><a href="AddCustomMZAnnotations.html">AddCustomMZAnnotations()</a></code> </p>
+          <p><code><a href="getRefinedAnnotations.html">getRefinedAnnotations()</a></code> </p>
         </td>
-        <td><p>Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)</p></td>
+        <td><p>Used to subset dataset to only include annotations that have n number of entries </p><ul><li><p>(i.e. some peaks can have multiple annotations. Peaks which have above n number of annotations assigned will be removed from Seurat Object)</p></li> </ul></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="metabolic-and-transcriptomic-pathway-analysis">Metabolic and Transcriptomic Pathway Analysis <a href="#metabolic-and-transcriptomic-pathway-analysis" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Functions used to perform pathway analysis, both PCA and metabolite/gene set-based (GSEA)</p>
@@ -326,7 +330,7 @@
           <p class="section-desc"></p><p>Function to export SpaMTP data in .mtx, barcodes.csv, features.csv, metadata.csv, and feature.metadata.csv files</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="saveSpaMTPData.html">SaveSpaMTPData()</a></code> </p>
+          <p><code><a href="SaveSpaMTPData.html">SaveSpaMTPData()</a></code> </p>
         </td>
         <td><p>Saves Seurat Spatial Metabolomic object to files.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
@@ -541,6 +545,10 @@
           <p><code><a href="proc_db.html">proc_db()</a></code> </p>
         </td>
         <td><p>Searches observed mz values against the data base list and returns matching annotations</p></td>
+      </tr><tr><td>
+          <p><code><a href="filtered_fmp10.html">filtered_fmp10</a></code> </p>
+        </td>
+        <td><p>filtered_fmp10: data.frame containing FMP10+ metabolite mappings</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="helper-functions-for-multi-omic-analysis">Helper Functions for Multi-Omic Analysis <a href="#helper-functions-for-multi-omic-analysis" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Helper functions used in multi-omic analysis functions</p>
