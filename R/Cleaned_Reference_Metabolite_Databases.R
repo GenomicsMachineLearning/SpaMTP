@@ -409,3 +409,26 @@
 #' }
 #'
 "reaction_type"
+
+
+#' @title filtered_fmp10: data.frame containing FMP10+ metabolite mappings
+#'
+#' @description This dataset contains metabolite information for various m/z values corresponding to metabolite ID's from the HMDB, LipidMaps and ChEMI databases.
+#'
+#' @format A data frame with the following columns:
+#' \describe{
+#'   \item{\code{mass}}{(numeric) The mass-to-charge ratio (\emph{m/z}) of the metabolite.}
+#'   \item{\code{annotation}}{(character) The metabolite name or structural description.}
+#'   \item{\code{Adduct}}{(character) The ionisation adduct associated with the metabolite, e.g., \code{[M+K]}.}
+#'   \item{\code{Formula}}{(character) The chemical formula of the metabolite, e.g., \code{C9H16O}.}
+#'   \item{\code{Isomers}}{(character) A unique identifier for the isomers of the metabolite, often linked to external databases.}
+#'   \item{\code{Isomers_IDs}}{(character) The database-specific IDs for the isomers, such as \code{LIPIDMAPS:LMFA05000118}.}
+#'   \item{\code{Error}}{(numeric) The mass error or difference between the observed and theoretical \emph{m/z}, typically in parts-per-million (ppm).}
+#'   \item{\code{IsomerNames}}{(character) Names of the isomers for the metabolite.}
+#'   \item{\code{Reference_mz}}{(numeric) The reference mass-to-charge ratio (\emph{m/z}) used for comparison or alignment.}
+#' }
+#'
+"filtered_fmp10"
+
+
+

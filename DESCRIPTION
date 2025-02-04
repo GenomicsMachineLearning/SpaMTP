@@ -84,7 +84,7 @@ Imports:
 URL: https://github.com/genomicsmachinelearning/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP/
 BugReports: https://github.com/genomicsmachinelearning/SpaMTP/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 LazyData: true
 LazyDataCompression: xz
 VignetteBuilder: knitr

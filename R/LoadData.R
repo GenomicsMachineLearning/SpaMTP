@@ -18,18 +18,21 @@
 #' # data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", bin_package = "SpaMTP", multi.run = FALSE, ...){
 
+  args <- list(...)
+  args$multi.run <- NULL
+
   if (check_cardinal_version()){
     file_name <- paste0(path, name)
-    data <- Cardinal::readImzML(file = file_name, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, ...)
+    data <- Cardinal::readImzML(file = file_name, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, args)
     if (!is.null(mass.range)| !is.null(resolution)){
       if (bin_package == "Cardinal"){
         verbose_message(message_text = "Binning data using Cardinal's m/z bin method .... ", verbose = verbose)
         warning("If data loading/conversion is taking a long time try chaning bin_method = 'SpaMTP'... This function speads up matrix conversion for data with identical m/z values for each pixel!")
-        data <- Cardinal::bin(data, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, ...)
+        data <- Cardinal::bin(data, mass.range = mass.range, resolution = resolution, units = units, verbose = verbose, args)
         data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay )
       } else if (bin_package == "SpaMTP"){
         verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
-        mtx <- bin_cardinal(data, mass.range = mass.range, resolution = resolution, units = units, ...)
+        mtx <- bin_cardinal(data, mass.range = mass.range, resolution = resolution, units = units, args)
         data <- BinnedCardinalToSeurat(data, mtx, multi.run = multi.run, verbose = verbose, assay = assay)
       } else {
         stop("bin_package value is incorrect! bin_package must be either 'SpaMTP' or 'Cardinal'")
@@ -41,12 +44,12 @@ LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
     if (bin_package == "Cardinal"){
       verbose_message(message_text = "Binning data using Cardinal's m/z bin method .... ", verbose = verbose)
       warning("If data loading/conversion is taking a long time try chaning bin_method = 'SpaMTP'... This function speads up matrix conversion for data with identical m/z values for each pixel!")
-      data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, ...)
+      data <- Cardinal::readImzML(name,folder = path, mass.range =  mass.range, resolution = resolution, args)
       data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
     } else if (bin_package == "SpaMTP"){
       verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
-      data <- Cardinal::readImzML(name,folder = path, mass.range =  NULL, resolution = NULL, ...)
-      mtx <- bin_cardinal(data, units = units, mass.range = mass.range, resolution = resolution, ...)
+      data <- Cardinal::readImzML(name,folder = path, mass.range =  NULL, resolution = NULL, args)
+      mtx <- bin_cardinal(data, units = units, mass.range = mass.range, resolution = resolution, args)
       data <- BinnedCardinalToSeurat(data, mtx, multi.run = multi.run, verbose = verbose, assay = assay)
 
     } else {

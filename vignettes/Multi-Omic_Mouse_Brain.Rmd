@@ -137,6 +137,13 @@ msi <- subset(msi, subset = nCount_Spatial > 0)
 ImageFeaturePlot(msi, "nCount_Spatial", size = 1.3, dark.background = FALSE) | ImageFeaturePlot(msi, "nFeature_Spatial", size = 1.3, dark.background = FALSE)
 ```
 
+
+We will also change our `orig.ident` to sample name for later reference:
+
+```{r}
+msi@meta.data$orig.ident <- "msi_sample1"
+```
+
 <br>
 
 #### Load *ST* Data
@@ -158,7 +165,7 @@ The ST data has 32,285 genes and 3,120 spots. Next, we will visualise the sample
 
 
 ```{r fig.width=10, fig.height=6}
-SpatialFeaturePlot(vis, features = c("nCount_Spatial", "nFeature_Spatial"), pt.size.factor = 1.2)
+SpatialFeaturePlot(vis, features = c("nCount_Spatial", "nFeature_Spatial"), pt.size.factor = 2)
 ```
 
 
@@ -181,6 +188,23 @@ vis@meta.data[colnames(annotations)] <- annotations[colnames(annotations)]
 vis@meta.data <- vis@meta.data %>% mutate(annotations = ifelse(RegionLoupe %in% c("CP", "ACB"), paste0(RegionLoupe, "_", lesion), RegionLoupe))
 ```
 
+
+```{r, echo=TRUE, results='hide'}
+head(vis)
+```
+
+```{r, echo=FALSE}
+df <- head(vis, n = 4)
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
+```
+
 Now, we can plot the results. We can use this information later for tissue alignment and removing poor quality spots sitting outside the tissue section. 
 
 
@@ -196,11 +220,14 @@ SpatialDimPlot(vis, group.by = c("lesion","region", "RegionLoupe"))
 
 Now that we have successfully loaded our ST and SM data, we can now run some general pre-processing to remove any poor quality spots/pixel and genes/metabolites. 
 
-In this case, the matrix run was an FMP10 matrix, meaning the masses of our metabolites have been previously annotated. We will load this file in and add the results to our SpaMTP SM object.
+In this case, the matrix run was an FMP10 matrix, meaning some of the masses of our metabolites have an additional mass added to their weight, and thus require a specialised annotation database to ensure the annotations correct for this additional mass. SpaMTP has an inbuilt function for annotating metabolites from FMP10 matrices called `AddFMP10Annotations()`. This function also allows for the addition of custom/additional metabolites that aren't annotated in the current dataset. 
 
+Parkinson's is heavily associated with dopamine regulation, and thus we will also use the `add.custom.annotations` parameter to include the annotation of this molecule.
+
+First, we will need to load this additional data.frame containing the custom annotations:
 
 ```{r}
-fmp10_metabolites <- read.csv("vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv")
+fmp10_metabolites <- read.csv("vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv", row.names = 1)
 ```
 
 
@@ -218,13 +245,37 @@ df %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
+Next, we can add these custom annotations to the FMP10 database and annotate our dataset:
 
 
 ```{r}
-msi_annotated <- AddCustomMZAnnotations(msi, fmp10_metabolites)
+msi_annotated <- AddFMP10Annotations(msi, add.custom.annotation = fmp10_metabolites,  assay = "Spatial", return.only.annotated = F)
 ```
 
-The function above adds these annotations into the SpaMTP object's feature meta.data slot. We can see this below:
+If we had a specific list of annotations, regardless of the matrix used to generate the data, we can add these custom annotations using the `AddCustomMZAnnotations()` function. This function only requires a data.frame containing two columns named `mass` and `annotation`. We can see below how this differs from using the inbuilt FMP10 database:
+
+
+```{r, echo=TRUE, results='hide'}
+custom_panel <- fmp10_metabolites[c("mass", "annotation")]
+custom_panel
+```
+
+```{r, echo=FALSE}
+df <- custom_panel
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+
+```{r}
+msi_custom_annotated <- AddCustomMZAnnotations(msi, custom_panel)
+```
+
+The functions above add these annotations into the SpaMTP object's feature meta.data slot. We can see and this below:
 
 
 ```{r, echo=TRUE, results='hide'}
@@ -241,7 +292,19 @@ df %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
+```{r, echo=TRUE, results='hide'}
+msi_custom_annotated[["Spatial"]]@meta.data[410:415,]
+```
 
+```{r, echo=FALSE}
+df <- msi_custom_annotated[["Spatial"]]@meta.data[410:415,]
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
 
 We can see that based on the FMP10-tagged value, we are able to annotated some of our m/z values with their respective metabolites.
 
@@ -249,7 +312,7 @@ Dopamine plays a critical part in Parkinson's disease, so lets visualise this an
 
 
 ```{r, fig.width=7, fig.height=6}
-ImageMZAnnotationPlot(msi_annotated, "Dopamine (single derivatized)", slot = "counts", dark.background = FALSE, size = 1.5)
+ImageMZAnnotationPlot(msi_annotated, "Dopamine (double derivatized)", slot = "counts", dark.background = FALSE, size = 1.5)
 ```
 
 
@@ -303,24 +366,27 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 
     Loading required package: shiny
     
-    Listening on http://0.0.0.0:4698
+    Show in New Window
 
+    Listening on http://0.0.0.0:4698
+    
     Sample: 2 
-     1.232057 0.006562681 67.76325 
-     0.02321728 -1.188214 569.6908 
-     0 0 1 
+     1.21 4.587997e-18 73.5047 
+     4.587997e-18 -1.21 580.6509 
+     0 0 1   
 
 ```{r, include=FALSE}
 msi_transformed <- readRDS("vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS")
 ```    
 
+Lets observe the change to the coordinates, comparing between the original x and y coordinates stored in our meta.data and our updated pixel coordinates stored in the `@image$fov` slot:
 
 ```{r, echo=TRUE, results='hide'}
-head(vis)
+head(msi_transformed)
 ```
 
 ```{r, echo=FALSE}
-df <- head(vis, n = 4)
+df <- head(msi_transformed, n = 4)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -332,6 +398,23 @@ df %>%
 ```
 
 
+```{r, echo=TRUE, results='hide'}
+head(GetTissueCoordinates(msi_transformed))
+```
+
+```{r, echo=FALSE}
+df <- head(GetTissueCoordinates(msi_transformed))
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
+```
+
+We can see that the values have been up-scaled to matched with the visium coordinates.
 
 ```{r, fig.width=10, fig.height=8}
 CheckAlignment(msi_transformed, vis, image.res = NULL, size = 0.8)
@@ -353,7 +436,7 @@ NOTE: we have selected an overlap threshold of 20%, meaning that for a pixel to 
 
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
-combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, overlap.threshold = 0.1, annotations = TRUE, ST.scale.factor = NULL)
+combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, overlap.threshold = 0.3, annotations = TRUE, ST.scale.factor = NULL)
 ```
 
     Running `MapSpatialOmics` in lowres mode! This is normally used for bin/spot-based spatial data (Visium)... 
@@ -390,7 +473,7 @@ combined.data <- subset(combined.data, subset = RegionLoupe == "", invert = T)
 
 
 ```{r, fig.width=20, fig.height=6}
-SpatialDimPlot(combined.data, group.by = c("lesion", "RegionLoupe"))
+SpatialDimPlot(combined.data, group.by = c("lesion", "RegionLoupe"), pt.size.factor = 2)
 ```
 
 
@@ -408,22 +491,24 @@ Note: Hidden below are the colour palettes used to plot.
   <summary>*Colour Palettes*</summary>
 ```{r}
 intergrated_palette <- list("0" = "#9dce71", 
-                           "1" = "#8bc5de", 
-                           "2" = "#009648",
-                           "3" = "#0067a8", 
-                           "4" = "#faa957" ,
-                           "5" = "#fcf283",
-                           "6" = "#f37985",
-                           "7" = "#c29fcb",
-                           "8" = "#592e8b",
-                           "9" = "#e81d25",
-                           "10" = "#f15a22")
+                            "1" = "#fcb992",
+                            "2" = "#0067a8", 
+                            "3" = "#faa957" ,
+                            "4" = "#8bc5de", 
+                            "5" = "#fcf283",
+                            "6" = "#c29fcb",
+                            "7" = "#348bc2",
+                            "8" = "#009648",
+                            "9" = "#f37985",
+                            "10" = "#592e8b")
+                        
+                          
 
-SM_palette <- list("0" = "#0067a8", 
-                           "1" = "#9dce71", 
-                           "2" = "#009648",
-                           "3" = "#c29fcb", 
-                           "4" = "#8bc5de")
+SM_palette <- list("0" = "#9dce71", 
+                   "1" = "#009648",
+                   "2" = "#0067a8", 
+                   "3" = "#8bc5de",
+                   "4" = "#c29fcb")
 
 ST_palette <- list("0" = "#0067a8", 
                            "1" = "#009648", 
@@ -540,13 +625,13 @@ Clustering based on metabolic information will likely reveal different informati
 DefaultAssay(combined.data) <- "SPM"
 
 ## Run SM clustering 
-combined.data <- NormalizeSMData(combined.data, assay = "SPM")
+combined.data <- NormalizeData(combined.data, assay = "SPM")
 combined.data <- FindVariableFeatures(combined.data, verbose = FALSE)
 combined.data <- ScaleData(combined.data, verbose = FALSE)
 combined.data <- RunPCA(combined.data, npcs = 30, reduction.name = "spm.pca", verbose = FALSE)
-combined.data <- FindNeighbors(combined.data, dims = 1:30, reduction = "spm.pca", verbose = FALSE)
-combined.data <- RunUMAP(combined.data, dims = 1:30, reduction = "spm.pca", reduction.name = "spm.umap", verbose = FALSE)
-combined.data <- FindClusters(combined.data, resolution = 0.3,  cluster.name = "SM_clusters", verbose = FALSE)
+combined.data <- FindNeighbors(combined.data, dims = 1:15, reduction = "spm.pca", verbose = FALSE)
+combined.data <- RunUMAP(combined.data, dims = 1:15, reduction = "spm.pca", reduction.name = "spm.umap", verbose = FALSE)
+combined.data <- FindClusters(combined.data, resolution = 0.5,  cluster.name = "SM_clusters", verbose = FALSE)
 ```
 
 
@@ -578,19 +663,19 @@ The SpaMTP *MultiOmicIntegration* function allows for automated or manual specif
 
 ```{r}
 integrated.data <- MultiOmicIntegration(combined.data,return.intermediate = T, weight.list = list(0.4,0.6),
-                                        reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))
+                                        reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:15))
 ```
 
 
 ```{r}
 integrated.data <- RunUMAP(integrated.data, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_",verbose = FALSE)
-integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm = 1, resolution = 1,  cluster.name = "integrated_clusters", verbose = FALSE)
+integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm = 3, resolution = 1.3,  cluster.name = "integrated_clusters", verbose = FALSE)
 ```
 
 
 ```{r, fig.width=20, fig.height=8}
 DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F, cols = intergrated_palette, size = 4) | 
-  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1, cols = intergrated_palette) 
+  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.2, cols = intergrated_palette, image.alpha =  0.8) 
 ```
 
 Looking at the results above, we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #E68613">cluster 1</span> and <span style="color: #7CAE00">cluster 3</span> respectively)
@@ -632,8 +717,8 @@ cluster_DEMs <- FindAllDEMs(data = integrated.data, ident = "integrated_clusters
     Starting condition: 8
     Starting condition: 10
     
-```{r, fig.width=6, fig.height=8}
-results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "2",]
+```{r, fig.width=8, fig.height=8}
+results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "4",]
 
 metabolites <- c("Dopamine (double derivatized)", "Dopamine (single derivatized)")
 
@@ -644,9 +729,10 @@ keyvals <- ifelse(
       ifelse(results$logFC > 1.2 & results$PValue < 10e-4, 'red',
         'black')))
   keyvals[is.na(keyvals)] <- 'black'
-  names(keyvals)[keyvals == 'red'] <- 'Cluster 1 - UP'
+  names(keyvals)[keyvals == 'red'] <- 'Cluster 4 - UP'
   names(keyvals)[keyvals == 'black'] <- 'Non-Sig'
   names(keyvals)[keyvals == 'orange'] <- 'Dopamine'
+  names(keyvals)[keyvals == "royalblue"] <- "Cluster 4 - Down"
 
 
 ### Plots volcano plot with DEM results
@@ -669,26 +755,26 @@ volc_plot
 
 
 
-Analysing the DE results, we can see that dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #E68613">cluster 1</span>. 
+Analysing the DE results, we can see that dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #8bc5de">cluster 4</span>. 
 
-Now we will look at the gene expression differences between cluster 1 and 3:
+Now we will look at the gene expression differences between cluster 4 vs all other clusters within the striatum:
 
 
 ```{r, warning=FALSE, message=FALSE}
 Idents(integrated.data) <- "integrated_clusters"
 DefaultAssay(integrated.data) <- "SPT"
 
-striatum <- subset(integrated.data, subset = integrated_clusters %in% c("2", "3"))
+striatum <- subset(integrated.data, subset = region == "striatum")
 
 striatum_DEGs <- FindAllMarkers(striatum, only.pos = T)
 ```
 
 ```{r, echo=TRUE, results='hide'}
-head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 5)
+head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
 ```
 
 ```{r, echo=FALSE}
-df <- head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 5)
+df <- head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -699,7 +785,7 @@ df %>%
 ```
 
 
-Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 1 (in-tact striatum cells).
+Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 4 (in-tact striatum cells).
 
 
 ```{r, fig.width=6, fig.height=8}
@@ -726,9 +812,52 @@ Plot3DFeature(combined.data,
 
 <br>
 
+
+
+
 ## Multi-Modality Pathway Analysis
 
-Now that we have identified there are metabolic and transcriptional differences between the lesioned and intact striatum regions, we can now further assess the activity of each region by performing multi-modal pathway analysis using both genes and metabolites. Due to the nature of the FMP10 matrix, there are only a handful of metabolites annotated and all additional m/z values will **currently** not match the mass values found in any of the ***SpaMTP*** provided databases (due to the additional weight of the FMP10 adduct). Instead, we will use paired Visium and MALDI DHB-matrix data. This data has already been processed with the code hidden below:
+Now that we have identified there are metabolic and transcriptional differences between the lesioned and intact striatum regions, we can now further assess the activity of each region by performing multi-modal pathway analysis using both genes and metabolites. Another novel feature of SpaMTP is the curated FMP10 annotation database which allows users to run pathway analysis with FMP10 data. Below we will identify pathways based on both genes and metabolites that are significantly altered between striatum regions. 
+
+
+
+```{r}
+striatum <- subset(integrated.data, subset = region == "striatum")
+
+# Generate differential abundance and expression results for integrated clustering
+Idents(striatum) <- "integrated_clusters"
+deg =  FindAllMarkers(striatum,  assay = "SPT",only.pos =F)
+dem =  FindAllMarkers(striatum , assay = "SPM", only.pos =F)
+
+DE.list = list("genes" = deg,"metabolites" = dem)
+
+## Run multi-modal pathway analysis
+regpathway = FindRegionalPathways(
+  striatum,
+  analyte_types = c("genes", "metabolites"),
+  SM_slot = "counts", ST_slot = "counts",
+  ident = "integrated_clusters",
+  DE.list = DE.list
+)
+
+## Select some key pathways to plot
+selected_pathways <- c("Epinephrine Action Pathway", 
+                       "GABA receptor activation", 
+                       "GABA receptor signaling",
+                       "GABAergic synapse",
+                       "Neuroinflammation and glutamatergic signaling",
+                       "Nicotine effect on dopaminergic neurons",
+                       "G alpha (i) signalling events",
+                       "Neuronal System",
+                       "Transmission across Chemical Synapses",
+                       "VEGFA-VEGFR2 signaling",
+                       "Apoptosis")
+
+PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathways)
+```
+
+
+Due to the nature of the FMP10 matrix, there are often only a handful of metabolites annotated meaning some metabolites within various pathwasy are not captured. To resolve this we will run multi-modality pathway analysis using a paired Visium and MALDI DHB-matrix dataset. This data has already been processed with the code hidden below:
 
 <details>
   <summary>*DHB Data Processing*</summary>
@@ -793,16 +922,40 @@ SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
 
 Lets run DE and then find regional pathways `FindRegionalPathways()` on our combined data object. 
 ```{r, results='hide', warning=FALSE, message=FALSE}
-## Run DE analysis for transcriptomics and metabolomics
-Idents(striatum.dhb.data) <- "striatum"
-deg =  FindAllMarkers(striatum.dhb.data , test.use = "wilcox_limma", assay = "SPT",only.pos =F)
-dem =  FindAllMarkers(striatum.dhb.data , assay = "SPM", only.pos =F)
 
-DE.list = list("genes" = deg,"metabolites" = dem)
+# Generate differential abundance and expression results for integrated clustering
+Idents(striatum) <- "lesion"
+deg =  FindAllMarkers(striatum,  assay = "SPT",only.pos =F)
+dem =  FindAllMarkers(striatum , assay = "SPM", only.pos =F)
+
+ids <- striatum@assays$SPM@meta.data[c("mz_names", "all_Isomers_IDs")]
+dem$mz_names <- dem$gene
+dem <- merge(dem, ids, by = "mz_names")
+
+## Run DE analysis for DHB data
+Idents(striatum.dhb.data) <- "lesion"
+deg_dhb =  FindAllMarkers(striatum.dhb.data ,  assay = "SPT",only.pos =F)
+dem_dhb =  FindAllMarkers(striatum.dhb.data , assay = "SPM", only.pos =F)
+
+ids <- striatum.dhb.data@assays$SPM@meta.data[c("mz_names", "all_Isomers_IDs")]
+dem_dhb$mz_names <- dem_dhb$gene
+dem_dhb <- merge(dem_dhb, ids, by = "mz_names")
+
+degs <- do.call(rbind, list(deg, deg_dhb))
+dems <- do.call(rbind, list(dem, dem_dhb))
+
+DE.up = list("genes" = degs[degs$cluster == "intact" & degs$avg_log2FC > 0 & degs$p_val_adj < 0.05, ],"metabolites" = dems[dems$cluster == "intact"& dems$avg_log2FC > 0 & dems$p_val_adj < 0.05, ])
+DE.down = list("genes" = degs[degs$cluster == "intact" & degs$avg_log2FC < 0 & degs$p_val_adj < 0.05, ],"metabolites" = dems[dems$cluster == "intact"& dems$avg_log2FC < 0 & dems$p_val_adj < 0.05, ])
+
+filtered_metabolites <- unique(unlist(strsplit(DE.up$metabolites$all_Isomers_IDs, "; ")))
+filtered_metabolites <- filtered_metabolites[!filtered_metabolites %in% c("", "No Annotation")]
+
+FishersPathwayAnalysis(list("genes" = DE.up$genes$gene, "metabolites" = filtered_metabolites))
+
 
 ## Run multi-modal pathway analysis
 regpathway = FindRegionalPathways(
-  striatum.dhb.data,
+  merged_db3,
   analyte_types = c("genes", "metabolites"),
   SM_slot = "counts", ST_slot = "counts",
   ident = "striatum",

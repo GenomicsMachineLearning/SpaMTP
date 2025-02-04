@@ -783,3 +783,98 @@ AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.
   return(data)
 }
 
+
+#' Adds metabolite annotations to respective m/z values generated using an FMP10 matrix.
+#'
+#' @param obj SpaMTP Seurat object containing m/z intensity values for annotation. Data should be generated with a FMP10 matrix.
+#' @param only.fmp.adduct Boolean indicating if only metabolites with FMP10+ adducts (`+FMP10`, +`2FMP10`, etc.) should be assigned to m/z values (default = FALSE).
+#' @param add.custom.annotation data.frame containing addition FMP10 metabolite annotations that are not in the current FMP10 database. Note: this data.frame must contain these column c("mass", "annotation", "Adduct", "Formula", "Isomers", "Isomers_IDs"). If set to NULL, only reference FMP10 database will be used (default = NULL).
+#' @param assay Character string defining the Seurat object assay to store the respective annotations in the feature meta.data dataframe (default = "Spatial").
+#' @param return.only.annotated Boolean defining whether to return a SpaMTP Seurat object containing only successfully annotated m/z values (default = FALSE).
+#' @param mass.threshold Numeric value defining the acceptable threshold (plus-minus) between the custom annotations and the actual m/z values contained within the SpaMTP object (default = 0.05).
+#' @param annotation.column Character string defining the feature meta.data column name that will contain the assigned annotations (default = "all_IsomerNames").
+#'
+#' @return SpaMTP Seurat object containing the relative metabolite annotations stored in the feature metadata dataframe.
+#' @export
+#'
+#' @examples
+#' # AddFMP10Annotations(spamtp, only.fmp.adduct = FALSE)
+AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
+                                add.custom.annotation = NULL,
+                                assay = "Spatial",
+                                return.only.annotated = FALSE,
+                                mass.threshold = 0.05,
+                                annotation.column = "all_IsomerNames"){
+
+  if(only.fmp.adduct){
+    filtered_fmp10 <- filtered_fmp10[grepl(x = filtered_fmp10$Adduct, pattern = "FMP10"),]
+  }
+
+  if(!is.null(add.custom.annotation)){
+    required_columns <- c("mass", "annotation", "Adduct", "Formula", "Isomers", "Isomers_IDs")
+
+    if (all(required_columns %in% colnames(add.custom.annotation))) {
+      add.custom.annotation$IsomerNames <- add.custom.annotation$annotation
+      add.custom.annotation <- add.custom.annotation[c(required_columns, "IsomerNames")]
+      filtered_fmp10 <- dplyr::bind_rows(filtered_fmp10, add.custom.annotation)
+    } else {
+      stop("data.frame provided in `add.custom.annotation` does not contain the correct column names. Column names must be: c('mass', 'annotation', 'Adduct', 'Formula', 'Isomers', 'Isomers_IDs')")
+    }
+
+  }
+
+
+
+  obj <- AddCustomMZAnnotations(obj, filtered_fmp10,
+                                assay = assay,
+                                return.only.annotated = return.only.annotated,
+                                annotation.column = annotation.column,
+                                mass.threshold = mass.threshold)
+
+
+  # Set up @tools$db_3
+  mz_list <- lapply(obj[[assay]]@meta.data$mass, function(x) unlist(strsplit(x, "; ")))
+  error_list <-  lapply(obj[[assay]]@meta.data$error, function(x) unlist(strsplit(x, "; ")))
+
+  names(mz_list) <- obj[[assay]]@meta.data$raw_mz
+
+  db_3 <- filtered_fmp10
+  db_3$observed_mz <- ""
+
+  # Iterate through the list to find matches and update the new column
+  for (mz_name in names(mz_list)) {
+    for (value in mz_list[[mz_name]]) {
+      # Find matching values in the observed_mz column
+      matches <- which(db_3$mass == value)
+      # If there are matches, append the mz name to the new column
+      if (length(matches) > 0) {
+        db_3$observed_mz[matches] <- paste(db_3$observed_mz[matches], mz_name, sep = "; ")
+        db_3$observed_mz[matches] <- paste(db_3$observed_mz[matches], mz_name, sep = "; ")
+
+      }
+    }
+  }
+
+  # Clean up the new_column by removing the leading "; "
+  db_3$observed_mz <- sub("^; ", "", db_3$observed_mz)
+
+  db_3 = db_3 %>%
+    tidyr::separate_rows(observed_mz, sep = "; ")
+
+  db_3 <- db_3[db_3$observed_mz != "",]
+
+  #Add to obj
+  obj@tools$db_3 <- db_3
+
+  obj[[assay]]@meta.data$observed_mz <- obj[[assay]]@meta.data$mass
+  obj[[assay]]@meta.data$all_Isomers <- obj[[assay]]@meta.data$Isomers
+  obj[[assay]]@meta.data$all_Isomers_IDs <- obj[[assay]]@meta.data$Isomers_IDs
+  obj[[assay]]@meta.data$all_Adducts <- obj[[assay]]@meta.data$Adduct
+  obj[[assay]]@meta.data$all_Formulas <- obj[[assay]]@meta.data$Formula
+  obj[[assay]]@meta.data$all_Errors <- obj[[assay]]@meta.data$ppm_diff
+
+  obj[[assay]]@meta.data[c("mass", "Isomers", "Isomers_IDs", "Adduct","Formula", "ppm_diff", "IsomerNames", "observed_mz")] <- NULL
+
+  return(obj)
+}
+

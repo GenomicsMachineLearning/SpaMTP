@@ -1,12 +1,5 @@
-﻿annotation,mass
-GABA,371.18
-GABA-H2O,353.16
-Taurine,393.13
-Serotonin (5-HT),444.21
-Histidine,423.18
-3-Methoxytyramine (3-MT) ,435.21
-Dopamine (single derivatized),421.19
-Dopamine (double derivatized),674.28
-"3,4-Dihydroxyphenylacetic acid (DOPAC)  (double derivatized) ",689.24
-Norephinephrine (NE) (double derivatized),690.28
-Tocopherol,698.49
+"","Observed.MZ","Reference_mz","IsomerNames","Adduct","Formula","Matched.delta.mass..Da.","Error","Exactmass","mass","annotation","Isomers","Isomers_IDs"
+"1",435.21,435.21,"3-Methoxytyramine (3-MT)"," [M+FMP10]","C9H13NO2",0,0,435.21,435.21,"3-Methoxytyramine (3-MT)","HMDB0000022","hmdb:HMDB0000022"
+"2",421.19,421.19,"Dopamine (single derivatized)"," [M+FMP10]","C8H11NO2",0,0,421.19,421.19,"Dopamine (single derivatized)","HMDB0000073","hmdb:HMDB0000073"
+"3",674.28,674.28,"Dopamine (double derivatized)"," [M+2FMP10a]","C8H11NO2",0,0,674.28,674.28,"Dopamine (double derivatized)","HMDB0000073","hmdb:HMDB0000073"
+"4",690.28,690.28,"Norephinephrine (NE) (double derivatized)"," [M+2FMP10a]","C8H11NO3",0,0,690.28,690.28,"Norephinephrine (NE) (double derivatized)","HMDB0000216","hmdb:HMDB0000216"

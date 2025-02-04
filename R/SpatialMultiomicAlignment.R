@@ -119,6 +119,11 @@ MapSpatialOmics <- function(SM.data, ST.data, ST.hires = FALSE,
 
   }
 
+  if(!is.null(SM.data@tools)){
+    mapped.data@tools[names(SM.data@tools)] <- SM.data@tools[names(SM.data@tools)]
+  }
+
+
   return(mapped.data)
 
 }

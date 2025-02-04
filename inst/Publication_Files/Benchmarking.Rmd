@@ -20,6 +20,120 @@ library(UpSetR)
 library(Seurat)
 ```
 
+
+## Clustering Comparison to find dopamine neurons
+
+```{r}
+## use integrated.data from `Multi-Omic_Mouse_Brain.Rmd` tutorial
+
+### split data based on spots identified as containing dopamine neurons 
+annot <- subset(integrated.data, subset = annotations == "CP_intact")
+sm <- subset(integrated.data, subset = SM_clusters=="3")
+st <- subset(integrated.data, subset = ST_clusters == "0")
+int <- subset(integrated.data, subset = integrated_clusters == "4")
+
+list_names <- c("annot", "sm", "st", "int")
+comp_data <- list("annot" = annot, "sm" = sm, "st" = st, "int" = int)
+
+
+### Set up data.frame for storing results
+df <- data.frame(matrix(ncol = 4, nrow = length(list_names)))
+# Set row names
+rownames(df) <- list_names
+# Set column names
+colnames(df) <- c("Mean", 
+                  "Median", 
+                  " % Dopamine Spots", 
+                  "Mean Expression in Dopamine Positive Spots")
+
+
+### Calculate statistics on dopamine expression across each clustering group
+dopamine_mzs <- SearchAnnotations(integrated.data, "Dopamine", assay = "SPM")
+
+
+for (x in names(comp_data)) {
+  comp_data[[x]] <- BinMetabolites(comp_data[[x]], mzs = dopamine_mzs$mz_names, slot = "counts", assay = "SPM",  bin_name = "Dopamine")
+  
+  df[x, 1] <- mean(comp_data[[x]]$Dopamine)
+  df[x, 2] <- median(comp_data[[x]]$Dopamine)
+  
+  data <- comp_data[[x]][["SPM"]]["counts"]["mz-674.2805",]
+  comp_data[[x]]$contains_dop <- ifelse(data > 0, "pos", "neg")
+  
+  # Subset where contains_dop is "pos"
+  sub <- subset(comp_data[[x]], subset = contains_dop == "pos")
+  
+  df[x, 3] <- sum(comp_data[[x]]$contains_dop == "pos") * 100 / (sum(comp_data[[x]]$contains_dop == "neg") + sum(comp_data[[x]]$contains_dop == "pos"))
+  df[x, 4] <- mean(sub[["SPM"]]["counts"]["mz-674.2805",], na.rm = TRUE)
+}
+
+
+
+### Get Gene and metabolite correlation per cluster
+integrated.data$annot <- ifelse(integrated.data$annotations == "CP_intact", "T","F")
+integrated.data$sm <- ifelse(integrated.data$SM_clusters == "3", "T","F")
+integrated.data$st <- ifelse(integrated.data$ST_clusters == "0", "T","F")
+integrated.data$int <- ifelse(integrated.data$integrated_clusters == "4", "T","F")
+
+striatum <- subset(integrated.data, subset = region == "striatum"& lesion == "intact")
+
+correlation_df <- lapply(list_names, function(x){
+  suppressWarnings({
+  cor <- FindCorrelatedFeatures(striatum, ident = x, ST.assay = "SPT", SM.assay = "SPM", ST.slot = "counts", SM.slot = "counts", nfeatures = NULL)
+  })
+  cor[cor$ident == "T",]
+})
+
+names(correlation_df) <- list_names
+
+lapply(names(correlation_df), function(x){
+  correlation_df[[x]][correlation_df[[x]]$features == "mz-674.28833",]
+})
+
+df$Dopamine.Correlation <- do.call(rbind,lapply(names(correlation_df), function(x){
+     correlation_df[[x]][correlation_df[[x]]$features == "mz-674.28833",]}))$correlation
+
+df$Group <- rownames(df)
+scaled_data <- df %>%
+    select(-Group) %>%
+    scale()  # Scale the data by column
+
+# Add the 'Group' column back
+scaled_data <- data.frame(cbind(Group = df$Group, scaled_data))
+
+for(i in colnames(scaled_data)){
+  if(i != "Group"){
+    scaled_data[[i]] <- as.numeric(scaled_data[[i]])    
+  }
+} 
+# Reshape the scaled data into long format
+long_data <- scaled_data %>%
+    pivot_longer(cols = -Group, names_to = "Metric", values_to = "Value")
+
+# Plot the heatmap
+ggplot(long_data, aes(x = Group, y = Metric, fill = Value)) +
+    geom_tile() +
+    scale_fill_gradientn(colors = c("blue","white",  "red")) +
+    theme_minimal() +
+    labs(title = "Scaled Heatmap of Metrics by Group", x = "Group", y = "Metric") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+
+
+ggplot(long_data, aes(x = Metric, y = Value, group = Group, color = Group)) +
+    geom_line(size = 1) +  # Line plot
+    geom_point(size = 3) + # Add points
+    theme_minimal() +
+    labs(title = "Line Plot of Metrics by Group",
+         x = "Metric", 
+         y = "Scaled Value") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme_classic()
+
+```
+
+
+
+
 ## Pathway Analysis Benchmarking
 
 Load data, run DE and ***SpaMTP*** pathway analysis
@@ -126,3 +240,8 @@ ggplot(df_long, aes(x = Tool, y = Pathway, fill = factor(Value))) +
 
 
 ```
+
+
+
+
+
