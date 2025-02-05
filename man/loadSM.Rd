@@ -45,5 +45,5 @@ A new SpaMTP Seurat object contain the imported spatial metabolic intensity valu
 Loads in spatial metabolomic data directly to a SpaMTP Seurat Object
 }
 \examples{
-# data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
+# data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 }

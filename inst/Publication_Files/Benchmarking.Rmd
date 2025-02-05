@@ -94,40 +94,74 @@ df$Dopamine.Correlation <- do.call(rbind,lapply(names(correlation_df), function(
      correlation_df[[x]][correlation_df[[x]]$features == "mz-674.28833",]}))$correlation
 
 df$Group <- rownames(df)
+original_data <- df
+
+# Scale the data (excluding Group)
 scaled_data <- df %>%
     select(-Group) %>%
-    scale()  # Scale the data by column
+    scale() %>%
+    as.data.frame()
 
-# Add the 'Group' column back
-scaled_data <- data.frame(cbind(Group = df$Group, scaled_data))
+# Add 'Group' back
+scaled_data$Group <- df$Group
 
-for(i in colnames(scaled_data)){
-  if(i != "Group"){
-    scaled_data[[i]] <- as.numeric(scaled_data[[i]])    
-  }
-} 
-# Reshape the scaled data into long format
-long_data <- scaled_data %>%
-    pivot_longer(cols = -Group, names_to = "Metric", values_to = "Value")
+# Convert scaled data to long format
+long_scaled <- scaled_data %>%
+    pivot_longer(cols = -Group, names_to = "Metric", values_to = "Scaled_Value")
 
-# Plot the heatmap
-ggplot(long_data, aes(x = Group, y = Metric, fill = Value)) +
+# Convert original data to long format
+long_original <- original_data %>%
+    pivot_longer(cols = -Group, names_to = "Metric", values_to = "Original_Value")
+
+# Merge scaled and original data
+long_data <- left_join(long_scaled, long_original, by = c("Group", "Metric"))
+
+long_data$Metric <- factor(long_data$Metric, levels = rev(c("Mean", 
+                                                        "Median",
+                                                        "Dopamine.Correlation", 
+                                                        " % Dopamine Spots", 
+                                                        "Mean Expression in Dopamine Positive Spots"
+                                                        )))
+
+# Plot heatmap with original values displayed
+ggplot(long_data, aes(x = Group, y = Metric, fill = Scaled_Value)) +
     geom_tile() +
-    scale_fill_gradientn(colors = c("blue","white",  "red")) +
+    geom_text(aes(label = round(Original_Value, 1)), color = "black", size = 3) +  # Add original values as text
+    scale_fill_gradientn(colors = c("blue", "white", "red")) +
     theme_minimal() +
-    labs(title = "Scaled Heatmap of Metrics by Group", x = "Group", y = "Metric") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+    labs(title = "Scaled Heatmap with Original Values", x = "Group", y = "Metric") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
+metric_levels <- unique(long_data$Metric)
+background_df <- data.frame(
+    Metric = metric_levels,
+    Index = seq_along(metric_levels)  # Create an index to alternate colors
+)
 
-ggplot(long_data, aes(x = Metric, y = Value, group = Group, color = Group)) +
+
+long_data$Metric <- factor(long_data$Metric, levels = c("Mean", 
+                                                        "Median",
+                                                        "Dopamine.Correlation", 
+                                                        " % Dopamine Spots", 
+                                                        "Mean Expression in Dopamine Positive Spots"
+                                                        ))
+
+ggplot(long_data, aes(x = Metric, y = Scaled_Value, group = Group, color = Group)) +
+    # Add alternating grey bars
+    geom_rect(data = background_df, 
+              aes(xmin = Index - 0.5, xmax = Index + 0.5, ymin = -Inf, ymax = Inf), 
+              fill = rep(c("grey90", "white"), length.out = nrow(background_df)), 
+              inherit.aes = FALSE, alpha = 0.5) +
+    
     geom_line(size = 1) +  # Line plot
     geom_point(size = 3) + # Add points
     theme_minimal() +
     labs(title = "Line Plot of Metrics by Group",
          x = "Metric", 
          y = "Scaled Value") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme_classic()
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme_classic()
 
 ```
 

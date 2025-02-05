@@ -686,7 +686,7 @@ integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm 
 
 
 ```{r, fig.width=20, fig.height=8}
-DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F, cols = intergrated_palette, size = 4) | 
+DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F, cols = intergrated_palette, pt.size = 1.5) | 
   SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.2, cols = intergrated_palette, image.alpha =  1) 
 ```
 
@@ -696,10 +696,10 @@ Looking at the results above, we can see the integrative analysis identifies a d
 We can also compare the difference between ST only, SM only and integrated clustering:
 
 ```{r fig.width=10, fig.height=10}
-(SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.1, cols = annotation_palette)| 
-SpatialDimPlot(integrated.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_palette))/
-(SpatialDimPlot(integrated.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_palette)| 
-  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.1, cols = intergrated_palette))
+(SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.5, cols = annotation_palette, image.alpha = 0.8)| 
+SpatialDimPlot(integrated.data, group.by = "SM_clusters", pt.size.factor = 2.5, cols = SM_palette, image.alpha = 0.8))/
+(SpatialDimPlot(integrated.data, group.by = "ST_clusters", pt.size.factor = 2.5, cols = ST_palette, image.alpha = 0.8)| 
+  SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.5, cols = intergrated_palette, image.alpha = 0.8))
 ```
 
 

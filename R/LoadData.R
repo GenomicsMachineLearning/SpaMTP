@@ -1,3 +1,4 @@
+
 #' Loads in spatial metabolomic data directly to a SpaMTP Seurat Object
 #'
 #' @param name Character string of the object name. This should match the filename.
@@ -15,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' # data <-loadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
+#' # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", bin_package = "SpaMTP", multi.run = FALSE, ...){
 
   args <- list(...)
