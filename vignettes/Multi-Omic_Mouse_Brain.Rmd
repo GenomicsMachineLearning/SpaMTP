@@ -783,11 +783,11 @@ striatum_DEGs <- FindAllMarkers(striatum, only.pos = T)
 ```
 
 ```{r, echo=TRUE, results='hide'}
-head(striatum_DEGs[striatum_DEGs$cluster == "5",], n = 4)
+head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
 ```
 
 ```{r, echo=FALSE}
-df <- head(striatum_DEGs[striatum_DEGs$cluster == "5",], n = 4)
+df <- head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
