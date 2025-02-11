@@ -1,10 +1,11 @@
 ---
 title: "SpaMTP_Additional_Features"
-output: rmarkdown::html_vignette
+output: rmarkdown::html_vignette 
 vignette: >
   %\VignetteIndexEntry{SpaMTP_Additional_Features}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+runtime: shiny
 ---
 
 ```{r, include = FALSE}
@@ -340,8 +341,12 @@ Plot3DFeature(ROI_HE, features = c(mzs[2], "ssc"), show.image = "slice1", assays
 One important element in analysing spatial metabolic data is choosing a bin size to reduce the dimensionality of the dataset. SpaMTP provides an interactive plot that lets you change the size of the bin and see which metabolites are included within that bin for a specific peak, and how that changes the expression spatially across the tissue. We can observe this below:
 
 ```{r, echo=FALSE}
-InteractiveSpatialPlot(ROI_HE)
+knitr::include_app("https://agc888.shinyapps.io/InteractiveSpatialPlot/")
 ```
+
+Based on this plot, users can adjust the bin size of their data (by running `BinSpaMTP`) or can adjust the `plusminus` attribute when using `ImageMZPlot`.    
+
+<br> 
 
 ## Data Export
 
