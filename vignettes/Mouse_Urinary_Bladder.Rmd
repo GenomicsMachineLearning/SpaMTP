@@ -113,7 +113,7 @@ Here, we have specified the file path were the .imzML and .imb files are stored,
 
 
 ```{r warning=FALSE, message=FALSE}
-bladder <- LoadSM(name = "mouse-bladder-peaks", path = "./vignette_data_files/Mouse_Urinary_Bladder/", mass.range=c(400,1000), resolution=10, units="ppm", bin_package = "Cardinal")
+bladder <- LoadSM(name = "mouse-bladder-peaks", path = "vignette_data_files/Mouse_Urinary_Bladder/", mass.range=c(400,1000), resolution=10, units="ppm", bin_package = "Cardinal")
 ```
 
 

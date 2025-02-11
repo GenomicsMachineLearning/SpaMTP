@@ -1938,8 +1938,7 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 #' @param slot Character defining the Seurat object assay slot to extract the intensity data from (default = "counts").
 #' @param image Character defining the the name of the image to use for tissue coordinates and spatial plotting (default = "slice1").
 #'
-#' @importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput checkboxInput selectInput actionButton plotOutput reactive
-#' renderPlot eventReactive observe stopApp h4 numericInput HTML showModal titlePanel
+#' @import shiny
 #' @importFrom shinyjs useShinyjs reset
 #' @importFrom plotly plotlyOutput renderPlotly plot_ly add_bars add_lines layout
 #' @importFrom ggplot2 theme_void
