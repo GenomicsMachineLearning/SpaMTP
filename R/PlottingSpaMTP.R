@@ -1292,7 +1292,7 @@ CheckAlignment <- function(SM.data, ST.data, image.res = NULL, names = c("SM", "
 #' @param between.layer.height A numeric value specifying the height between layers (default = 100).
 #' @param names A character vector specifying custom names for the features. If NULL will use feature names (default = NULL).
 #' @param size A numeric value specifying the size of markers in the plot (default = 3).
-#' @param col.palette Character vector defining the colour palettes to use for plotting. If only 1 is supplied than it will be used for both variables. Possible palettes to use are: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd (default = "Reds").
+#' @param col.palette Character list defining the colour palettes to use for plotting. If only 1 is supplied than it will be used for both variables. Possible palettes to use are: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd (default = "Reds").
 #' @param x.axis.label A character string specifying the label for the x-axis (default = "x").
 #' @param y.axis.label A character string specifying the label for the y-axis (default = "y").
 #' @param z.axis.label A character string specifying the label for the z-axis (default = "z").
@@ -1356,7 +1356,7 @@ Plot3DFeature <- function(data,
     slots <- c(slots, slots)
   }
   if (length(col.palette) ==  1 ){
-    col.palette <- c(col.palette, col.palette)
+    col.palette <- list(col.palette[[1]], col.palette[[1]])
   }
   if (length(names) ==  1 ){
     names <- c(names, names)
@@ -1436,7 +1436,7 @@ Plot3DFeature <- function(data,
                                        title = list( side = "top",
                                                      text = default_names[1]
                                        )),
-                       colorscale = col.palette[1]),
+                       colorscale = col.palette[[1]]),
       coloraxis2 = list(colorbar = list(orientation = "v",
                                         xanchor ="left",
                                         len = 0.5,
@@ -1444,7 +1444,7 @@ Plot3DFeature <- function(data,
                                         title = list( side = "top",
                                                       text = default_names[2]
                                         )),
-                        colorscale = col.palette[2])
+                        colorscale = col.palette[[2]])
 
     )
 
@@ -1939,8 +1939,10 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 #' @param image Character defining the the name of the image to use for tissue coordinates and spatial plotting (default = "slice1").
 #'
 #' @importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput checkboxInput selectInput actionButton plotOutput reactive
-#' renderPlot eventReactive observe stopApp h4 numericInput HTML showModal
+#' renderPlot eventReactive observe stopApp h4 numericInput HTML showModal titlePanel
 #' @importFrom shinyjs useShinyjs reset
+#' @importFrom plotly plotlyOutput renderPlotly plot_ly add_bars add_lines layout
+#' @importFrom ggplot2 theme_void
 #'
 #' @export
 #'
@@ -2036,7 +2038,7 @@ InteractiveSpatialPlot <- function(obj, assay = "Spatial", slot = "counts", imag
         features_to_plot <- paste0("mz-",features_to_plot)
         feature_name <- sprintf("mz-%d \u00B1 %.1f", input$curve_center, input$curve_width)
         binned_obj <- BinMetabolites(obj, mzs = features_to_plot, assay = "Spatial", slot = "counts", bin_name = feature_name)
-        SpatialFeaturePlot(binned_obj, images = image, features = feature_name,  pt.size.factor = spot_size) &theme_void()
+        Seurat::SpatialFeaturePlot(binned_obj, images = image, features = feature_name,  pt.size.factor = spot_size) &theme_void()
       } else {
         plot(1, type = "n", xlab = "", ylab = "", main = "No selected features")
         text(1, 1, "No data available")

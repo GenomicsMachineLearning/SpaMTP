@@ -41,7 +41,7 @@ Plot3DFeature(
 
 \item{size}{A numeric value specifying the size of markers in the plot (default = 3).}
 
-\item{col.palette}{Character vector defining the colour palettes to use for plotting. If only 1 is supplied than it will be used for both variables. Possible palettes to use are: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd (default = "Reds").}
+\item{col.palette}{Character list defining the colour palettes to use for plotting. If only 1 is supplied than it will be used for both variables. Possible palettes to use are: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd (default = "Reds").}
 
 \item{x.axis.label}{A character string specifying the label for the x-axis (default = "x").}
 

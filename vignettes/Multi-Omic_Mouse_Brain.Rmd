@@ -737,8 +737,8 @@ metabolites <- c("Dopamine (double derivatized)", "Dopamine (single derivatized)
 ### Sets up colouring for significant spots in volcano plot
 keyvals <- ifelse(
     results$annotations %in% metabolites, "orange", ifelse(
-    results$logFC < -1.2  & results$PValue < 10e-4, 'royalblue',
-      ifelse(results$logFC > 1.2 & results$PValue < 10e-4, 'red',
+    results$logFC < -1.2  & results$PValue < 50e-4, 'royalblue',
+      ifelse(results$logFC > 1.2 & results$PValue < 50e-4, 'red',
         'black')))
   keyvals[is.na(keyvals)] <- 'black'
   names(keyvals)[keyvals == 'red'] <- 'Cluster 4 - UP'
@@ -752,7 +752,7 @@ volc_plot <- EnhancedVolcano::EnhancedVolcano( results,
                                   selectLab = c(""), 
                                   lab = results$annotations,
                                   colCustom = keyvals,
-                                  pCutoff = 10e-4,
+                                  pCutoff = 50e-4,
                                   FCcutoff = 1.2,
                                   pointSize = 3,
                                   colAlpha = 1,

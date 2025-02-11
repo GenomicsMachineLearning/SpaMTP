@@ -148,10 +148,33 @@ p1|p2
 
 Comparing the mapped data to the original SM data we can see that the spatial pattern of both clusters and metabolite ('mz-100') match. Now that our data is mapped to single cell resolution we have a much more detailed visualisation of SM based clustering across our simulated tissue sample. 
 
+
+SM data indicates the metabolic functioning of a cell, and based on this we can identify cell types with different metabolic states:
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+table(MO_data$clusters_SPM, MO_data$celltype)
+```
+Looking at Oligodendrocytes for example, we can identify different subtypes based on their metabolic activity. 
+
+
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+MO_data$Oligo_states <- ifelse(MO_data$celltype == "Oligodendrocyte", paste0("Oligo State: ", MO_data$clusters_SPM),  "Other")
+
+ImageDimPlot(MO_data, group.by = "Oligo_states", fov = "zoom", dark.background = F, cols = c("grey", "red", "blue", "yellow", "green", "pink"))
+```
+
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+DotPlot(MO_data, group.by = "Oligo_states", features = c(rownames(MO_data[["SPT"]]), "spm_mz-200"))
+```
+This dotplot may suggest that Oligo State 1 and 2 are different cell subtypes based on their differential expression of gene1/gene2 and mz-200 (Note: this is synthetic data and has no biological context - results only used as example).
+
+
+
 An additional features of having multi-omic data mapped to the same coordinates is that we can visualise the expression of both metabolites and gene expression on a single plot. 
 
 ```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
-ImageFeaturePlot(MO_data, features = "mz-100", molecules = "gene1", fov = "zoom", mols.cols = "blue")
+
+ImageFeaturePlot(MO_data, features = "mz-200", molecules = c("gene1", "gene2"), fov = "zoom", mols.cols = c("blue", "green"))
 ```
 Analysing this spatial plot, there is a clear correlation between 'mz-100' and 'gene1' suggesting there interaction or similar functionality. 
 
