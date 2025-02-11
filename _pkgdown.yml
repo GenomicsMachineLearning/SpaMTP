@@ -38,8 +38,8 @@ authors:
     - lbr
     - fnd
 template:
-  params:
-    bootswatch: flatly
+  bootstrap: 5
+  bootswatch: flatly
 navbar:
   bg: primary
   structure:
