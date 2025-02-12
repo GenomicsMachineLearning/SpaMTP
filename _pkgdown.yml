@@ -40,12 +40,10 @@ authors:
 template:
   bootstrap: 5
   bootswatch: flatly
-  light-switch: true
 navbar:
-  bg: primary
   structure:
     left: [intro, reference, articles]
-    right: [github, lightswitch]
+    right: [search, github, lightswitch]
   components:
     github:
       icon: fa-github
