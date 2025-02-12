@@ -39,7 +39,11 @@ authors:
     - fnd
 template:
   bootstrap: 5
+  light-switch: true
   bootswatch: flatly
+  bslib:
+    pkgdown-navbar-bg: '#212F3F'
+    body-secondary-color: "#18BC9C"
 navbar:
   structure:
     left: [intro, reference, articles]
