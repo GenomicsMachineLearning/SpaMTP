@@ -1,5 +1,5 @@
 ---
-title: "Multi-Omic Mouse Brain"
+title: "SpaMTP: Spatial Multi-Omics Analysis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Multi-Omic Mouse Brain}
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 <br>
 
-# SpaMTP: Multi-Omic Mouse Brain Vignette
+# Multi-Omics Mouse Brain Vignette
 <br>
 This tutorial highlights the highlights the utility of *SpaMTP* on multi-omic data. This vignette will use mouse brain data, where both Spatial Transcriptomics (Visium), ST, and Spatial Metabolomics (MALDI-MSI), SM, were generated from the same tissue section. This data is publicly available from [Vicari et al](https://doi.org/10.17632/w7nw4km7xd.1).
 
@@ -32,7 +32,7 @@ Using **SpaMTP** we will highlight:
 * Co-localisation of Metabolites and Genes
 * Multi-Modality Pathway Analysis
 
-Author: Andrew Causer
+*Author: Andrew Causer*
 
 <br>
 <br>

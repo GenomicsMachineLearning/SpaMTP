@@ -56,13 +56,13 @@ navbar:
     articles:
       text: Vignettes
       menu:
-      - text: Mouse Urinary Bladder
+      - text: Spatial Metabolomics Analysis
         href: articles/Mouse_Urinary_Bladder.html
-      - text: Multi-Omic Mouse Brain
+      - text: Spatial Multi-Omics Analysis
         href: articles/Multi-Omic_Mouse_Brain.html
       - text: Additional SpaMTP Features
         href: articles/SpaMTP_Additional_Features.html
-      - text: Single Cell Multi-Omic Analysis
+      - text: Simulated Single Cell Multi-Omics Analysis
         href: articles/Single_Cell_MultiOmics.html
 reference:
 - title: Loading Spatial Metabolic Data into a SpaMTP Seurat Object

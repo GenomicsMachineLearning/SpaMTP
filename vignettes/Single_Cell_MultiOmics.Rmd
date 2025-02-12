@@ -1,5 +1,5 @@
 ---
-title: "Single_Cell_MultiOmics"
+title: "SpaMTP: Simulated Single Cell Multi-Omics Analysis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Single_Cell_MultiOmics}

@@ -1,5 +1,5 @@
 ---
-title: "SpaMTP_Additional_Features"
+title: "SpaMTP: Additional Analysis Features"
 output: rmarkdown::html_vignette 
 vignette: >
   %\VignetteIndexEntry{SpaMTP_Additional_Features}
@@ -15,10 +15,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+<br>
 
 This vignette will highlights some additional features of [***SpaMTP***](https://github.com/GenomicsMachineLearning/SpaMTP) that can be useful for analysing and visualising your SM data. This vignette will again use the public mouse urinary bladder dataset analysed extensively [here](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html).
 
-Author: Andrew Causer
+*Author: Andrew Causer*
 
 ```{r load_packages, warning=FALSE, message=FALSE}
 ## Install SpaMTP if not previously installed
