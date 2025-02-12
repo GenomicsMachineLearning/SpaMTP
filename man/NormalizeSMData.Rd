@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMPreprocessing.R
 \name{NormalizeSMData}
 \alias{NormalizeSMData}
-\title{Normalizes m/z intensity data stored in a Seurat Object}
+\title{Normalizes m/z intensity data stored in a SpaMTP Seurat Object}
 \usage{
 NormalizeSMData(
   data,
@@ -30,7 +30,8 @@ NormalizeSMData(
 A Seurat Object with intensity values normalized. Normalized data is stored in the $data slot of the specified assay
 }
 \description{
-Normalizes m/z intensity data stored in a Seurat Object
+This function can be used for normalising data already stored in a SpaMTP Seurat Object.
+Normalisation methods include total ion count (TIC), log normalisation and counts per million (RC).
 }
 \examples{
 # normalised_data <- NormalizeSMData(SeuratObject)

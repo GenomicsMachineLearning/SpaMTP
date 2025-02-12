@@ -1,8 +1,11 @@
 
 #### SpaMTP Saving Data Objects ########################################################################################################################################################################################
 
-#' Saves Seurat Spatial Metabolomic object to files.
-
+#' Saves SpaMTP Object
+#'
+#' This function saves a SpaMTP Seurat Object into a standard single-cell/spatial file format.
+#' This includes a filtered_feature_bc_matrix folder containing files storing the features, barcode/pixels and intensity matrix.
+#' Metadata and sapatial files (such as scale factors and hires/lowres images) are also stored.
 #'
 #' @param data A Seurat Spatial Metabolomic Object being saved.
 #' @param outdir Character string of the directory to save the mtx.mtx, barcode.tsv, features.tsv, barcode_metadata.csv and feature_metadata.csv in.

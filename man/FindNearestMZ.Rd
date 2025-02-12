@@ -2,7 +2,7 @@
 % Please edit documentation in R/PlottingSpaMTP.R
 \name{FindNearestMZ}
 \alias{FindNearestMZ}
-\title{Finds the nearest m/z peak to a given value in the specified Seurat Object}
+\title{Finds the nearest m/z peak to a given value in a SpaMTP Object}
 \usage{
 FindNearestMZ(data, target_mz, assay = NULL)
 }
@@ -17,7 +17,7 @@ FindNearestMZ(data, target_mz, assay = NULL)
 String of the closest m/z value within the given dataset
 }
 \description{
-Finds the nearest m/z peak to a given value in the specified Seurat Object
+Finds the nearest m/z peak to a given value in a SpaMTP Object
 }
 \examples{
 # FindNearestMZ(SeuratObj, target_mz = 400.01)

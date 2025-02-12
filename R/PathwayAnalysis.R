@@ -335,6 +335,8 @@ FishersPathwayAnalysis <- function (Analyte,
 }
 
 
+#' Regional Pathway Enrichment
+#'
 #' This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data
 #'
 #' @param SpaMTP A SpaMTP Seurat object contains spatial metabolomics(SM)/transcriptomics(ST) data or both, if contains SM data, it should be annotated via SpaMTP::AnnotateSM function.

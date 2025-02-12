@@ -2,9 +2,7 @@
 % Please edit documentation in R/PlottingSpaMTP.R
 \name{ImageMZPlot}
 \alias{ImageMZPlot}
-\title{Visualise expression of m/z values in a spatial context
-- This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image)
-- This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.}
+\title{Plot expression of m/z values spatially}
 \usage{
 ImageMZPlot(
   object,
@@ -112,9 +110,8 @@ ImageMZPlot(
 A ggplot showing the Spatial representation of expression data of specified m/z values
 }
 \description{
-Visualise expression of m/z values in a spatial context
-- This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image)
-- This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
+This is for plotting SM data from a SpaMTP Seurat Object that does not contain an image(i.e. H&E image).
+This function inherits from Seurat::ImageFeaturePlot().
 }
 \examples{
 # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1))

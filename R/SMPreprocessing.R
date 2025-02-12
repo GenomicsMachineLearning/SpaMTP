@@ -1,4 +1,7 @@
-#' Normalizes m/z intensity data stored in a Seurat Object
+#' Normalizes m/z intensity data stored in a SpaMTP Seurat Object
+#'
+#' This function can be used for normalising data already stored in a SpaMTP Seurat Object.
+#' Normalisation methods include total ion count (TIC), log normalisation and counts per million (RC).
 #'
 #' @param data Seurat Object to be normalized.
 #' @param normalisation.type Character string defining the normalization method to run. Options are either c("TIC", "LogNormalize", "RC") which represent Total Ion Current (TIC) normalization, Log Normalization or counts per million (RC), respectively (default = "TIC").
@@ -39,6 +42,8 @@ NormalizeSMData <- function(data, normalisation.type = 'TIC', scale.factor = NUL
 }
 
 #' Performs TMM normalization between categories based on a specified ident
+#'
+#' This function is mainly used for normalising a merged SpaMTP Seurat Object containing multiple samples.
 #'
 #' @param combined.obj Seurat object that contains groups being normalized.
 #' @param ident Character string defining the column name or ident group to normalize between.
@@ -185,10 +190,7 @@ statPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "co
 
 
 
-
-
-
-#' Generates a ridge plot of Spatial Metabolomic intensity data
+#' Generates a ridge plot of spatial metabolic intensity data
 #'
 #' @param seurat.obj Seurat object containing the metabolomic intensity data.
 #' @param group.by Character string specifying the meta.data column to group by (default = NULL).
@@ -245,7 +247,7 @@ MZRidgePlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spati
 
 
 
-#' Generates a Violin plot of Spatial Metabolomic intensity data
+#' Generates a violin plot of spatial metabolic intensity data
 #'
 #' @param seurat.obj Seurat object containing the metabolomic intensity data.
 #' @param group.by Character string specifying the meta.data column to group by (default = NULL).
@@ -308,7 +310,7 @@ MZVlnPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial
 }
 
 
-#' Generates a Boxplot of Spatial Metabolomic intensity data
+#' Generates a Boxplot of spatial metabolic intensity data
 #'
 #' @param seurat.obj Seurat object containing the metabolomic intensity data.
 #' @param group.by Character string specifying the meta.data column to group by (default = NULL).

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialMultiomicAlignment.R
 \name{lowresMapping}
 \alias{lowresMapping}
-\title{Function used by MapSpatialOmics to align SM data to ST spots with lower resolution (i.e. Visium Spots)}
+\title{Maps SM pixels to low resolution ST data}
 \usage{
 lowresMapping(
   SM.data,

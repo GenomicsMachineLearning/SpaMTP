@@ -2,9 +2,7 @@
 % Please edit documentation in R/PlottingSpaMTP.R
 \name{ImageMZAnnotationPlot}
 \alias{ImageMZAnnotationPlot}
-\title{Visualise expression of metabolites in a spatial context
-- This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image) that has been annotated using annotate.SeuratMALDI()
-- This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.}
+\title{Plot expression of annotated metabolites spatially}
 \usage{
 ImageMZAnnotationPlot(
   object,
@@ -118,9 +116,9 @@ ImageMZAnnotationPlot(
 A ggplot showing the Spatial representation of expression data of specified metabolites.
 }
 \description{
-Visualise expression of metabolites in a spatial context
-- This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image) that has been annotated using annotate.SeuratMALDI()
-- This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
+This is for plotting annotated SM data from a SpaMTP Seurat Object that does not contain an image(i.e. H&E image).
+This function inputs the metabolite name such as 'Glutamine' rather then a specific m/z value.
+For m/z values please use \code{ImageMZPlot()}.This function inherits off Seurat::ImageFeaturePlot().
 }
 \examples{
 # ImageMZPlot(SeuratObj, mzs = c("Glucose", "Glutamine"))

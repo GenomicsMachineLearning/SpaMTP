@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialMultiomicAlignment.R
 \name{AlignSpatialOmics}
 \alias{AlignSpatialOmics}
-\title{Shiny app allowing for manual alignment of SM and ST data coordinates}
+\title{Interactive app for SM and ST coordinate alignment}
 \usage{
 AlignSpatialOmics(
   sm.data,
@@ -45,7 +45,7 @@ AlignSpatialOmics(
 A SpaMTP Seurat Object containing SM data with transformed coordinated to match the aligned ST data
 }
 \description{
-Shiny app allowing for manual alignment of SM and ST data coordinates
+Shiny app allowing for manual alignment of SM pixel coordinates to the same coordinate system of the provided ST data.
 }
 \examples{
 # SM_Transformed <- AlignSpatialOmics(SM.data, ST.data)

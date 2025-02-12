@@ -2,8 +2,7 @@
 % Please edit documentation in R/DifferentialMZPeaks.R
 \name{run_pooling}
 \alias{run_pooling}
-\title{Runs pooling of a merged Seurat Dataset to generate pseudo-replicates for each sample
-- This function is used by run_edgeR_annotations()}
+\title{Pools SpaMTP Seurat object into random pools for pseudo-bulking.}
 \usage{
 run_pooling(data.filt, idents, n, assay, slot, verbose = TRUE)
 }
@@ -24,8 +23,8 @@ run_pooling(data.filt, idents, n, assay, slot, verbose = TRUE)
 A SinglCellExpereiment object which contains pooled (n)-pseudo-replicate counts data based on the Seurat Object input
 }
 \description{
-Runs pooling of a merged Seurat Dataset to generate pseudo-replicates for each sample
-- This function is used by run_edgeR_annotations()
+Runs pooling of a SpaMTP dataset to generate pseudo-replicates for each unique identity provided.
+This function is used by \code{FindAllDEMs()}.
 }
 \examples{
 # run_pooling <- list(seuratObj, idents = "sample", n = 3, assay = "Spatial", slot = "counts")

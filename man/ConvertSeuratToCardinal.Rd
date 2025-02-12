@@ -2,7 +2,7 @@
 % Please edit documentation in R/ConvertingBetweenObjects.R
 \name{ConvertSeuratToCardinal}
 \alias{ConvertSeuratToCardinal}
-\title{Converts a Seurat object to a Cardinal object, including annotations and metadata}
+\title{Converts a SpaMTP Seurat object to a Cardinal object, including annotations and metadata}
 \usage{
 ConvertSeuratToCardinal(
   data,
@@ -30,7 +30,7 @@ ConvertSeuratToCardinal(
 A Cardinal object containing intensity values and feature metadata (annotations)
 }
 \description{
-Converts a Seurat object to a Cardinal object, including annotations and metadata
+Converts a SpaMTP Seurat object to a Cardinal object, including annotations and metadata
 }
 \examples{
 # cardinal.obj <- ConvertSeuratToCardinal(SeuratObject, feature.metadata = TRUE)

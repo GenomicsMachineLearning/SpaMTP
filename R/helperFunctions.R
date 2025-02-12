@@ -2,7 +2,6 @@
 #'
 #' @param message_text Character string containing the message being shown
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the messsage will be suppressed (default = TRUE).
-#'
 verbose_message <- function(message_text, verbose) {
   if (verbose) {
     message(message_text)
@@ -16,10 +15,12 @@ verbose_message <- function(message_text, verbose) {
 #'@importFrom magrittr %>% %<>%
 NULL
 
+#' Subsets SpaMTP Seurat Object containing FOVs
+#'
 #' Intermediate solution to \code{subset()}:
 #' subset FOVs/centroids if selected cells are NOT found in each FOV
 #' NOTE: some code parts and args are taken from SeuratObject
-
+#'
 #' Function params/args:
 #' @param object An S4 object or A \code{FOV} object
 #' @param subset Logical expression indicating features/variables to keep
@@ -176,6 +177,8 @@ subset_SPM <- function(
 }
 
 
+#' Check Cardinal Version
+#'
 #' Checks if the Cardinal Package installed is >= version 3.6.0
 #'
 #' @return Boolean indicating if the version of Cardinal is >= 3.6.0

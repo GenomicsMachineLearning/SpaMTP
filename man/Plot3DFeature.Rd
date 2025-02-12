@@ -69,7 +69,9 @@ Plot3DFeature(
 A 3D Plotly plot
 }
 \description{
-Generates a 3D spatial feature plot from a SpaMTP object
+This function generates an interactive plotly 3D spatial plot of 2 specified features.
+These features can include a combination of metabolites and/or genes expression values, or numerical meta.data values.
+Features must be numeric values. Please see \verb{ SpaMTP Additional Features} vignette for instructions on how to plot catagorical data, or > 2 features.
 }
 \examples{
 # Plot3DFeature(data = my_data, features = c("gene1", "gene2"), assays = c("SPT", "SPM"), show.image = "slice1")

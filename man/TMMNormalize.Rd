@@ -36,7 +36,7 @@ TMMNormalize(
 Seurat object with count values normalised and corrected for between categories
 }
 \description{
-Performs TMM normalization between categories based on a specified ident
+This function is mainly used for normalising a merged SpaMTP Seurat Object containing multiple samples.
 }
 \examples{
 # norm.data <- TMMNormalize(SeuratObj, ident = "samples", refIdent = "sample1", normalisation.type = "CPM")

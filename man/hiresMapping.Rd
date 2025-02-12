@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialMultiomicAlignment.R
 \name{hiresMapping}
 \alias{hiresMapping}
-\title{Function used by MapSpatialOmics to align SM data to ST spots with higher resolution (i.e. Xenium cells)}
+\title{Maps SM pixels to high resolution ST data}
 \usage{
 hiresMapping(
   SM.data,

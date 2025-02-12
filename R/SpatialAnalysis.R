@@ -1,5 +1,9 @@
 #' Find top features and metabolites that are strongly correlated with a given feature
 #'
+#' This function returns a list of features ranked by highest Pearson correlation score.
+#' The specified feature to corrleate against can be either a m/z value, gene or an ident (i.e. cluster).
+#' For multi-omic data, both a metabolic and transcriptomic assay can be specified to calculate correlation of both metabolites and genes.
+#'
 #' @param data SpaMTP Seurat class object containing both Spatial Transcriptomic and Metabolic data assays.
 #' @param mz Numeric string specifying the m/z to find correlated features for. One of `mz`, `gene` or `ident` must be provided, alternatives must be `NULL` (default = NULL).
 #' @param gene Character string specifying the gene to find correlated features for. One of `mz`, `gene` or `ident` must be provided, alternatives must be `NULL` (default = NULL).
@@ -127,7 +131,10 @@ RowVar <- function(x) {
 }
 
 
-#' Finds metabolites that display strong spatial patterns using MoransI
+#' Find Spatially Variable Metabolites
+#'
+#' Finds metabolites that display strong spatial patterns using MoransI.
+#' Each m/z value is ranked by MoransI score and the results are stored in the SpaMTP Seurat Object feature metadata.
 #'
 #' @param object SpaMTP Seurat class object contating the intensity values for each m/z
 #' @param assay Character string indicating which Seurat object assay to pull data form (default = "SPM").
@@ -161,7 +168,9 @@ FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "coun
   return(object)
 }
 
-#' Gets the top n number of spatially variable features
+#' Get top spatially variable metabolites
+#'
+#' This function returns the names of the top n number of spatially variable features.
 #'
 #' @param object SpaMTP Seurat class object containing the intensity values for each m/z
 #' @param assay Character string indicating which Seurat object assay to pull data form (default = "SPM").
@@ -179,7 +188,9 @@ GetSpatiallyVariableMetabolites <- function(object, assay = "SPM", n = 10){
 
 
 
-#' Multi-Omic integration of Spatial Metabolomics and Transcriptomics data using Seurat's Weighted Nearest Neighbours function
+#' Mult-Omic data integration
+#'
+#' This function performs multi-omic integration of Spatial Metabolomics and Spatial Transcriptomics data using Seurat's Weighted Nearest Neighbours function.
 #'
 #' @param multiomic.data SpaMTP dataset contain Spatial Transcriptomics and Metabolomic datasets in two different assays
 #' @param weight.list List containing the relative weightings for each modality, matching the reduction order. If NULL, weights will be automatically calculated else, two values must add to 1 (default = NULL).
@@ -223,6 +234,9 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 
 
 #' Generates PCA analysis results for a SpaMTP Seurat Object
+#'
+#' This function run PCA analaysis on a SpaMTP Seurat Object.
+#' The user can provide a bin/resolution size to increase the bin size and reduce the dimensionality/noise of the SM dataset prior to calculating PCAs.
 #'
 #' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
 #' @param npcs is an integer value to indicated preferred number of PCs to retain (default = 30).

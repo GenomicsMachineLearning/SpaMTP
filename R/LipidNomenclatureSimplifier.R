@@ -3,6 +3,9 @@
 
 #' Uses common lipid nomenclature to simplify lipid annotations
 #'
+#' Based on rgoslin, this function has the ability to simplify lipid annotations into more general terms, groups and classes.
+#' This function can input a data frame containing a column storing the annotation and refine only the entries which are annotated as known lipid structures.
+#'
 #' @param data data.frame containing a column with lipid annotations
 #' @param annotation.column Character string matching the column name containing the lipid annotations in the provided df (default = "annotations").
 #' @param database Character string defining the database matching the lipid annotations. Possible entries include c('Shorthand2020','Goslin','FattyAcids','LipidMaps','SwissLipids','HMDB') (default = "HMDB").

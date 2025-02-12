@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialAnalysis.R
 \name{GetSpatiallyVariableMetabolites}
 \alias{GetSpatiallyVariableMetabolites}
-\title{Gets the top n number of spatially variable features}
+\title{Get top spatially variable metabolites}
 \usage{
 GetSpatiallyVariableMetabolites(object, assay = "SPM", n = 10)
 }
@@ -17,7 +17,7 @@ GetSpatiallyVariableMetabolites(object, assay = "SPM", n = 10)
 Vector containing m/z feature names corresponding to the top n number of spatially variable metabolites
 }
 \description{
-Gets the top n number of spatially variable features
+This function returns the names of the top n number of spatially variable features.
 }
 \examples{
 # features <- GetSpatiallyVariableMetabolites(SpaMTP, n = 6)

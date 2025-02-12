@@ -2,7 +2,7 @@
 % Please edit documentation in R/DifferentialMZPeaks.R
 \name{FindAllDEMs}
 \alias{FindAllDEMs}
-\title{Finds all differentially expressed m/z values/metabolites between comparison groups}
+\title{Finds differentially expressed m/z values/metabolites between all comparison groups.}
 \usage{
 FindAllDEMs(
   data,
@@ -45,8 +45,7 @@ FindAllDEMs(
 Returns an list() contains the EdgeR DE results. Pseudo-bulk counts are stored in $counts and DEMs are in $DEMs.
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{  - This function uses run_pooling() and run_DE() to pool and run EdgeR analysis
-}\if{html}{\out{</div>}}
+Finds differentially expressed m/z values/metabolites between all comparison groups.
 }
 \examples{
 # FindAllDEMs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)

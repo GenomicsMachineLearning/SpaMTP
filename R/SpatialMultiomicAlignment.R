@@ -130,6 +130,8 @@ MapSpatialOmics <- function(SM.data, ST.data, ST.hires = FALSE,
 
 
 
+#' Maps SM pixels to low resolution ST data
+#'
 #' Function used by MapSpatialOmics to align SM data to ST spots with lower resolution (i.e. Visium Spots)
 #'
 #' @param SM.data A SpaMTP Seurat object representing the Spatial Metabolomics data.
@@ -391,6 +393,8 @@ lowresMapping <- function(SM.data, ST.data,
 
 
 
+#' Maps SM pixels to high resolution ST data
+#'
 #' Function used by MapSpatialOmics to align SM data to ST spots with higher resolution (i.e. Xenium cells)
 #'
 #' @param SM.data A SpaMTP Seurat object representing the Spatial Metabolomics data.
@@ -548,7 +552,9 @@ hiresMapping <- function(SM.data, ST.data,
 # Code below and some function have been modified from STUtility: https://github.com/jbergenstrahle/STUtility/tree/master
 
 
-#' Shiny app allowing for manual alignment of SM and ST data coordinates
+#' Interactive app for SM and ST coordinate alignment
+#'
+#' Shiny app allowing for manual alignment of SM pixel coordinates to the same coordinate system of the provided ST data.
 #'
 #' @param sm.data SpaMTP Seurat Object containing SM data
 #' @param st.data SpaMTP Seurat Object containing ST data
@@ -1417,3 +1423,52 @@ AddSMImage <- function(image_path, SpaMTP, fov = "fov", grey.scale = 0.5, plot.g
   return(aligned_SpaMTP)
 }
 
+
+#' Check multi-modal coordinate alignment
+#'
+#' Checks the alignment of two spatial datasets by plotting their relative coordinates on the same graph
+#'
+#' @param SM.data SpaMTP Seurat object containing SM data
+#' @param ST.data SpaMTP Seurat object containing ST data
+#' @param image.res Character string defining the Visium image resolution to use. This is required for the correct scale.factor to be applied (default = NULL).
+#' @param names Vector of 2 character strings used to define each dataset being plotted (default = c("SM", "ST")).
+#' @param cols Vector of 2 colors used for plotting (default = NULL).
+#' @param image.slice Character string matching the image slice name within the ST SpaMTP Seurat object (default = "slice1").
+#' @param size Numeric value indicating the point size to plot (default = 0.5).
+#'
+#' @return A 2D scatter plot showing the relative spatial locations of the ST and SM data points
+#' @export
+#'
+#' @examples
+#' # CheckAlignment(SM.data, ST.data)
+CheckAlignment <- function(SM.data, ST.data, image.res = NULL, names = c("SM", "ST"), cols = NULL, image.slice = "slice1", size = 0.5){
+
+  if (is.null(image.res)){
+    scale.factor <- 1
+  } else {
+    if (image.res %in% c("hires", "lowres")){
+      scale.factor <- ST.data@images[[image.slice]]@scale.factors[[image.res]]
+    } else {
+      stop("invalid input for image.res! image.res must be either 'hires' or 'lowres'")
+    }
+  }
+
+  df <- GetTissueCoordinates(ST.data)[c("x", "y")] * scale.factor
+  df$sample <- names[2]
+
+  df2 <- GetTissueCoordinates(SM.data)[c("x", "y")] #* scale.factor
+  df2$sample <- names[1]
+
+  df1 <- rbind(df,df2)
+
+  if (is.null(cols)){
+    cols <- c("#F8766D", "#00BFC4")
+  } else {
+    cols <- cols
+  }
+
+  p <- ggplot(df1, aes(x, y,color = sample)) +
+    geom_point(size = size) + theme_void() +  scale_color_manual(values = cols)
+  return(p)
+
+}

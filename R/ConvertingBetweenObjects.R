@@ -1,7 +1,7 @@
 #### SpaMTP Cardinal to Seurat Functions ###############################################################################################################################################################################
 
 
-#' Converts a Cardinal Object into a Seurat Object
+#' Converts a Cardinal Object into a SpaMTP Seurat Object
 #'
 #' @param data A Cardinal Object that is being converted into a Seurat Object.
 #' @param multi.run Boolean indicating if there are multiple runs within the imported data. If `TRUE`, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).
@@ -127,7 +127,9 @@ CardinalToSeurat <- function(data, multi.run = FALSE, seurat.coord = NULL, assay
   return(seuratobj)
 }
 
-#' Converts a Cardinal Object into a Seurat Object
+#' Converts a SpaMTP binned Cardinal Object into a SpaMTP Seurat Object
+#'
+#' This function is used by `LoadSM()` when `bin_package` is set to 'SpaMTP'.
 #'
 #' @param data A Cardinal Object that is being converted into a Seurat Object.
 #' @param mtx Matrix object containing
@@ -245,7 +247,7 @@ BinnedCardinalToSeurat <- function(data, mtx, multi.run = FALSE,  assay = "Spati
 
 
 
-#' Converts a Seurat object to a Cardinal object, including annotations and metadata
+#' Converts a SpaMTP Seurat object to a Cardinal object, including annotations and metadata
 #'
 #' @param data Seurat object being converted.
 #' @param assay Character string defining the Seurat Object assay name to pull intensity count data from (default = "Spatial").

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialAnalysis.R
 \name{MultiOmicIntegration}
 \alias{MultiOmicIntegration}
-\title{Multi-Omic integration of Spatial Metabolomics and Transcriptomics data using Seurat's Weighted Nearest Neighbours function}
+\title{Mult-Omic data integration}
 \usage{
 MultiOmicIntegration(
   multiomic.data,
@@ -33,7 +33,7 @@ MultiOmicIntegration(
 SpaMTP Seurat class object containing a weighted nearest neighbours graph which integrates Metabolic and Transcriptomic modalities. This graph can be used for clustering.
 }
 \description{
-Multi-Omic integration of Spatial Metabolomics and Transcriptomics data using Seurat's Weighted Nearest Neighbours function
+This function performs multi-omic integration of Spatial Metabolomics and Spatial Transcriptomics data using Seurat's Weighted Nearest Neighbours function.
 }
 \examples{
 # SpaMTP.obj <- MultiOmicIntegration(SpaMTP.obj, weight.list = list(0.5, 0.5), reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))

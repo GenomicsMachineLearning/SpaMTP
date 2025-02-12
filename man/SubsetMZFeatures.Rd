@@ -2,7 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{SubsetMZFeatures}
 \alias{SubsetMZFeatures}
-\title{Subset a Seurat Spatial Metabolomic object by list of m/z's}
+\title{Subset a SpaMTP Seurat Spatial Metabolomic object by a list of m/z's}
 \usage{
 SubsetMZFeatures(data, features, assay = "Spatial")
 }
@@ -17,7 +17,7 @@ SubsetMZFeatures(data, features, assay = "Spatial")
 A subset Seurat object containing only m/z values that were specified
 }
 \description{
-Subset a Seurat Spatial Metabolomic object by list of m/z's
+Subset a SpaMTP Seurat Spatial Metabolomic object by a list of m/z's
 }
 \examples{
 # SubsetMZFeatures(SeuratObj, c("mz-160","mz-170","mz-180"))

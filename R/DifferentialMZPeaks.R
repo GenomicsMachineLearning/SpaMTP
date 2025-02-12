@@ -3,8 +3,10 @@
 
 
 
-#' Runs pooling of a merged Seurat Dataset to generate pseudo-replicates for each sample
-#'       - This function is used by run_edgeR_annotations()
+#' Pools SpaMTP Seurat object into random pools for pseudo-bulking.
+#'
+#' Runs pooling of a SpaMTP dataset to generate pseudo-replicates for each unique identity provided.
+#' This function is used by `FindAllDEMs()`.
 #'
 #' @param data.filt A Seurat Object containing count values for pooling.
 #' @param idents A character string defining the idents column to pool the data against.
@@ -59,7 +61,9 @@ run_pooling <- function(data.filt, idents, n, assay, slot, verbose = TRUE) {
 
 
 #' Runs EdgeR analysis for pooled data
-#'       - This function is used by run_edgeR_annotations()
+#'
+#' Worker function for calculating differentially abundant metabolites per pooling group.
+#' This function is used by by `FindAllDEMs()`.
 #'
 #' @param pooled_data A SingleCellExperiment object which contains the pooled pseudo-replicate data.
 #' @param seurat_data A Seurat object containing the merged Xenium data being analysed (this is subset).
@@ -176,9 +180,7 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
 }
 
 
-#' Finds all differentially expressed m/z values/metabolites between comparison groups
-#'
-#'       - This function uses run_pooling() and run_DE() to pool and run EdgeR analysis
+#' Finds differentially expressed m/z values/metabolites between all comparison groups.
 #'
 #' @param data A Seurat object containing mz values for differential expression analysis.
 #' @param ident A character string defining the metadata column or groups to compare mz values between.
@@ -222,8 +224,10 @@ FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
 
 
 
-#' Generates a Heatmap of DEMs generated from edgeR analysis run using FindAllDEMs().
-#'       - this function uses pheatmap() to plot data
+#' Heatmap of Differentially Expressed Metabolites
+#'
+#' Generates a heatmap of DEMs generated from edgeR analysis run using `FindAllDEMs()`.
+#' This function uses `pheatmap` to plot data.
 #'
 #' @param edgeR_output A list containing outputs from edgeR analysis (from FindAllDEMs()). This includes pseudo-bulked counts and DEMs.
 #' @param n A numeric integer that defines the number of UP and DOWN regulated peaks to plot (default = 25).
@@ -361,7 +365,7 @@ DEMsHeatmap <- function(edgeR_output,
 }
 
 
-#' Saves the DEMs generated pheatmap as a PDF
+#' Saves a DEMsHeatmap as a PDF
 #'
 #' @param pheatmap A pheatmap plot object that is being saved.
 #' @param filename Character string defining the full filepath and name of the plot to be saved as.

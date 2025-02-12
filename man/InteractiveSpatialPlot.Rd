@@ -21,7 +21,8 @@ InteractiveSpatialPlot(
 \item{image}{Character defining the the name of the image to use for tissue coordinates and spatial plotting (default = "slice1").}
 }
 \description{
-Interactive Spatial Plot for visualising different m/z bin sizes
+This function implements a shinyApp for interactive viusalisation of the samples mean mass intensity spectra.
+Users can adjust the resolution/bin size and observe changes in spatial expression respectively.
 }
 \examples{
 #InteractiveSpatialPlot(spamtp)

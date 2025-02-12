@@ -2,7 +2,7 @@
 % Please edit documentation in R/BinSMData.R
 \name{BinSpaMTP}
 \alias{BinSpaMTP}
-\title{Bins m/z peaks of a SpaMTP object.}
+\title{Bin SpaMTP Object}
 \usage{
 BinSpaMTP(
   data,
@@ -33,7 +33,7 @@ BinSpaMTP(
 Either a binned intensity matrix or a SpaMTP object contatining the binned intensity matrix stored in the \code{binned} assay.
 }
 \description{
-Bins m/z peaks of a SpaMTP object.
+Bins m/z peaks of a specified SpaMTP object to reduce dimensionality and remove noise.
 }
 \examples{
 #BinSpaMTP(spamtp.obj, resolution = 10, units = "ppm", return.only.mtx = TRUE)

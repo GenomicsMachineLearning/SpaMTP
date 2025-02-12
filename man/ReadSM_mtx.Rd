@@ -2,7 +2,7 @@
 % Please edit documentation in R/LoadData.R
 \name{ReadSM_mtx}
 \alias{ReadSM_mtx}
-\title{Read a Spatial Metabolomics image matrix file (.csv format)}
+\title{Read Spatial Metabolomics matrix file (.csv format)}
 \usage{
 ReadSM_mtx(
   mtx.file,
@@ -14,42 +14,40 @@ ReadSM_mtx(
 )
 }
 \arguments{
-\item{mtx.file}{Character string defining the path of the spatial metabolomic image matrix .csv file}
+\item{mtx.file}{Character string defining the path of the spatial metabolomic image matrix .csv file.}
 
 \item{assay}{Character string of the Seurat object assay name to store the relative intensity data (default = "Spatial").}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+\item{verbose}{Boolean indicating whether to show the message. If TRUE, the message will be shown; else, it will be suppressed (default = TRUE).}
 
-\item{feature.start.column}{Numeric value defining the start index containing the x, y and m/z value columns within the table (default = 1).}
+\item{feature.start.column}{Numeric value defining the start index containing the x, y, and m/z value columns within the table (default = 1).}
 
-\item{mz.prefix}{Character string matching the prefix string in front of each m/z name (deafult = NULL).}
+\item{mz.prefix}{Character string matching the prefix string in front of each m/z name (default = NULL).}
 
-\item{project.name}{Character string defining the name of the sample to be assigned as orig.idents (default = "SpaMTP").
-\subsection{Details}{
-
-NOTE: This file must be in a format similar to the one below:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     A data.frame: 5 × 5
-   x       y    mz1   mz2   mz3
- <int> <int> <dbl> <dbl> <dbl>
-}\if{html}{\out{</div>}}
-
-1     0       1       0       0       11
-2     0       2       0       0       0
-3     0       3       0       0       0
-4     0       4       20       0       0
-5     0       5       0       0       0
-
-Where:
-- The first 2 columns are labeled x and y containing the respective x/y spatial coordinates
-- The next columns are then the respective m/z values and their intensities for each spatial pixel
-}}
+\item{project.name}{Character string defining the name of the sample to be assigned as \code{orig.ident} (default = "SpaMTP").}
 }
 \value{
-A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay
+A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay.
 }
 \description{
-Read a Spatial Metabolomics image matrix file (.csv format)
+This function reads in SM data stored in a table format. This table must contain two rows named 'x' and 'y' storing the respective pixel coordinates.
+All other columns should be the relative m/z values containing the intensity values of each pixel.
+}
+\details{
+\strong{NOTE:} The input file must be in a format similar to the table below:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{A data.frame: 5 × 5
+   x   y   mz1  mz2  mz3
+1  0   1    0    0   11
+2  0   2    0    0    0
+3  0   3    0    0    0
+4  0   4   20    0    0
+5  0   5    0    0    0
+}\if{html}{\out{</div>}}
+\itemize{
+\item The first two columns (\code{x}, \code{y}) contain the respective spatial coordinates.
+\item The subsequent columns contain the m/z values and their intensities for each spatial pixel.
+}
 }
 \examples{
 # msi_data <- ReadSM_mtx("~/Documents/msi_mtx.csv")

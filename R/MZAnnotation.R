@@ -1,6 +1,6 @@
 #### SpaMTP m/z Annotation Functions #####################################################################################################################################################################################
 
-#' Subset a Seurat Spatial Metabolomic object by list of m/z's
+#' Subset a SpaMTP Seurat Spatial Metabolomic object by a list of m/z's
 #'
 #' @param data A Seurat Spatial Metabolomic Object for subsetting.
 #' @param features A list of character strings defining the features/mz values to subset against.
@@ -42,7 +42,10 @@ labels_to_show <- function(annotation_column, n = 3) {
 
 
 
-#' Annotates m/z values based on reference metabolite dataset
+#' Annotates m/z values stored in a SpaMTP Object
+#'
+#' This function assigns each valid m/z peak with one/multiple metabolite names based on the mass difference between the observed value and the theoretical value documented in the reference database.
+#' SpaMTP contains 4 cleaned reference databases to choose from these include HMDB, Lipid Maps, ChEBI and GNPS. These databases can also be combined for increased coverage.
 #'
 #' @param data Seurat Spatial Metabolomic Object containing m/z values for annotation.
 #' @param db Reference metabolite dataset in the form of a Data.Frame.
@@ -139,7 +142,9 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
 
 
-#' Helper function for AnnotatesSM() and FishersPathwayAnalysis()
+#' Annotates m/z values sotred in a data.frame based on reference metabolite dataset
+#'
+#' Helper function for `AnnotatesSM()` and `FishersPathwayAnalysis()`.
 #'
 #' @param mz_df dataframe containing m/z values for annotation.
 #' @param db Reference metabolite dataset in the form of a Data.Frame.
@@ -239,8 +244,10 @@ annotateTable <- function(mz_df, db, ppm_error = NULL, adducts = NULL, polarity 
 
 
 
-#' Used to subset dataset to only include annotations that have n number of entries
-#'    - (i.e. some peaks can have multiple annotations. Peaks which have above n number of annotations assigned will be removed from Seurat Object)
+#' Refines and reduces m/z annotations
+#'
+#' Used to subset dataset to only include annotations that have n number of entries.
+#' For example some peaks can have multiple annotations. Peaks which have above n number of annotations assigned will be removed from Seurat Object.
 #'
 #' @param obj Seurat object needing annotation refinement. This object must have annotations present in 'obj`[[assay]]@meta.data`'
 #' @param assay Character string defining the Seurat object assay where the annotation data is stored (default = "Spatial").
@@ -285,6 +292,8 @@ add_backslashes_to_specialfeatures <- function(input_string) {
 }
 
 
+#' Find Annotation
+#'
 #' Searches through annotated m/z values to return all which contain the metabolite search term provided
 #'
 #' @param data Seurat Spatial Metabolomic Object containing annotated m/z values.
@@ -473,7 +482,6 @@ db_adduct_filter <- function(db, adduct, polarity = "neg", verbose = TRUE) {
 #' @param formula Character string defining t
 #' @param allowed_elements Vector of character strings defining allowed elements
 #'
-#'
 #' @examples
 #' ### Helper function ###
 is_formula_valid <- function(formula,allowed_elements) {
@@ -587,9 +595,6 @@ ppm_range_match <- function(observed_mz, reference_mz, ppm) {
     abs(observed_mz - reference_mz) / abs(reference_mz) * 1e6
   abs_diff_ppm <= ppm
 }
-
-
-
 
 
 
@@ -714,7 +719,9 @@ proc_db <- function(observed_df,
 
 ########################################################################################################################################################################################################################
 
-#' Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)
+#' Assign custom annotations to m/z values
+#'
+#' Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10).
 #'
 #' @param data SpaMTP Seurat object containing m/z intensity values.
 #' @param annotations data.frame containing two columns named 'annotation' and 'mass'. These columns should contain the custom metabolite annotation and the relative m/z mass respectively.
@@ -784,7 +791,9 @@ AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.
 }
 
 
-#' Adds metabolite annotations to respective m/z values generated using an FMP10 matrix.
+#' Annotates FMP10 matrix data
+#'
+#' Adds metabolite annotations to respective m/z values generated using an FMP10 matrix. This is done based on a curated FMP10 matrix database.
 #'
 #' @param obj SpaMTP Seurat object containing m/z intensity values for annotation. Data should be generated with a FMP10 matrix.
 #' @param only.fmp.adduct Boolean indicating if only metabolites with FMP10+ adducts (`+FMP10`, +`2FMP10`, etc.) should be assigned to m/z values (default = FALSE).

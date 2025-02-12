@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMPreprocessing.R
 \name{MZBoxPlot}
 \alias{MZBoxPlot}
-\title{Generates a Boxplot of Spatial Metabolomic intensity data}
+\title{Generates a Boxplot of spatial metabolic intensity data}
 \usage{
 MZBoxPlot(
   seurat.obj,
@@ -51,7 +51,7 @@ MZBoxPlot(
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 }
 \description{
-Generates a Boxplot of Spatial Metabolomic intensity data
+Generates a Boxplot of spatial metabolic intensity data
 }
 \examples{
 # MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)

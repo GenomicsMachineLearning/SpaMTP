@@ -2,7 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{annotateTable}
 \alias{annotateTable}
-\title{Helper function for AnnotatesSM() and FishersPathwayAnalysis()}
+\title{Annotates m/z values sotred in a data.frame based on reference metabolite dataset}
 \usage{
 annotateTable(
   mz_df,
@@ -33,7 +33,7 @@ annotateTable(
 Generates an intermediate annotated m/z dataframe
 }
 \description{
-Helper function for AnnotatesSM() and FishersPathwayAnalysis()
+Helper function for \code{AnnotatesSM()} and \code{FishersPathwayAnalysis()}.
 }
 \examples{
 

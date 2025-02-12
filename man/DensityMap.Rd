@@ -2,7 +2,7 @@
 % Please edit documentation in R/PlottingSpaMTP.R
 \name{DensityMap}
 \alias{DensityMap}
-\title{Generates a 3D density plot for specific m/z values}
+\title{Generates interactive 3D spatial density plot for m/z values}
 \usage{
 DensityMap(object, assay = "SPM", slot = "counts", folder = getwd(), ...)
 }
@@ -21,7 +21,7 @@ DensityMap(object, assay = "SPM", slot = "counts", folder = getwd(), ...)
 Return a html contains the annotation/average intensity of peakbins/density of distribution of each peak
 }
 \description{
-Generates a 3D density plot for specific m/z values
+This function generates an interactive HTML file that can be used to generate spatial density kernals based on the intensity of any selected m/z value.
 }
 \examples{
 # DensityMap(SpaMTP.obj)

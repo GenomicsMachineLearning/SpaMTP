@@ -1,5 +1,8 @@
 
-#' Loads in spatial metabolomic data directly to a SpaMTP Seurat Object
+#' Loads spatial metabolic data into a SpaMTP Seurat Object
+#'
+#' This function loads raw spatial metabolic data in a .imzML and .ibd format and generates a SpaMTP Seurat Object.
+#' This function adapts the `readImzML` function implmented in Cardinal to correctly import large data.
 #'
 #' @param name Character string of the object name. This should match the filename.
 #' @param path Character string defining the directory path of the file. This should not include the file name.
@@ -62,32 +65,35 @@ LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
 
 
 
-#' Read a Spatial Metabolomics image matrix file (.csv format)
+#' Read Spatial Metabolomics matrix file (.csv format)
 #'
-#' @param mtx.file Character string defining the path of the spatial metabolomic image matrix .csv file
+#' This function reads in SM data stored in a table format. This table must contain two rows named 'x' and 'y' storing the respective pixel coordinates.
+#' All other columns should be the relative m/z values containing the intensity values of each pixel.
+#'
+#' @param mtx.file Character string defining the path of the spatial metabolomic image matrix .csv file.
 #' @param assay Character string of the Seurat object assay name to store the relative intensity data (default = "Spatial").
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#' @param feature.start.column Numeric value defining the start index containing the x, y and m/z value columns within the table (default = 1).
-#' @param mz.prefix Character string matching the prefix string in front of each m/z name (deafult = NULL).
-#' @param project.name Character string defining the name of the sample to be assigned as orig.idents (default = "SpaMTP").
+#' @param verbose Boolean indicating whether to show the message. If TRUE, the message will be shown; else, it will be suppressed (default = TRUE).
+#' @param feature.start.column Numeric value defining the start index containing the x, y, and m/z value columns within the table (default = 1).
+#' @param mz.prefix Character string matching the prefix string in front of each m/z name (default = NULL).
+#' @param project.name Character string defining the name of the sample to be assigned as `orig.ident` (default = "SpaMTP").
 #'
-#' ### Details
-#'   NOTE: This file must be in a format similar to the one below:
+#' @details
+#' **NOTE:** The input file must be in a format similar to the table below:
 #'
-#'          A data.frame: 5 × 5
-#'        x	   y    mz1   mz2   mz3
-#'      <int> <int> <dbl> <dbl> <dbl>
-#'    1	 0	   1	   0	   0	   11
-#'    2	 0	   2	   0	   0	   0
-#'    3	 0	   3	   0	   0	   0
-#'    4	 0	   4	   20	   0	   0
-#'    5	 0	   5	   0	   0	   0
+#' ```r
+#' A data.frame: 5 × 5
+#'    x   y   mz1  mz2  mz3
+#' 1  0   1    0    0   11
+#' 2  0   2    0    0    0
+#' 3  0   3    0    0    0
+#' 4  0   4   20    0    0
+#' 5  0   5    0    0    0
+#' ```
 #'
-#'  Where:
-#'      - The first 2 columns are labeled x and y containing the respective x/y spatial coordinates
-#'      - The next columns are then the respective m/z values and their intensities for each spatial pixel
+#' - The first two columns (`x`, `y`) contain the respective spatial coordinates.
+#' - The subsequent columns contain the m/z values and their intensities for each spatial pixel.
 #'
-#' @return A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay
+#' @return A SpaMTP Seurat class object containing the intensity values in the counts slot of the designated assay.
 #' @export
 #'
 #' @examples

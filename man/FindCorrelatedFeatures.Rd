@@ -39,7 +39,9 @@ FindCorrelatedFeatures(
 A data frame containing the top correlated features with columns for the feature names and their correlation values.
 }
 \description{
-Find top features and metabolites that are strongly correlated with a given feature
+This function returns a list of features ranked by highest Pearson correlation score.
+The specified feature to corrleate against can be either a m/z value, gene or an ident (i.e. cluster).
+For multi-omic data, both a metabolic and transcriptomic assay can be specified to calculate correlation of both metabolites and genes.
 }
 \examples{
 # result <- FindCorrelatedFeatures(data = SpaMTP, gene = "GeneX", nfeatures = 5)

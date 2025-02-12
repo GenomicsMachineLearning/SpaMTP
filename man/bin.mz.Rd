@@ -27,7 +27,7 @@ bin.mz(
 Vector of binned mz counts for each spot/pixel
 }
 \description{
-Bins multiple m/z values into one.
+This function is a helper function for \code{BinMetabolites}.
 }
 \examples{
 # mz_values <- plusminus(SeuratObj, 448.2, 0.05)

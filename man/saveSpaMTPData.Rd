@@ -2,7 +2,7 @@
 % Please edit documentation in R/SaveSMData.R
 \name{SaveSpaMTPData}
 \alias{SaveSpaMTPData}
-\title{Saves Seurat Spatial Metabolomic object to files.}
+\title{Saves SpaMTP Object}
 \usage{
 SaveSpaMTPData(
   data,
@@ -36,7 +36,9 @@ SaveSpaMTPData(
 }}
 }
 \description{
-Saves Seurat Spatial Metabolomic object to files.
+This function saves a SpaMTP Seurat Object into a standard single-cell/spatial file format.
+This includes a filtered_feature_bc_matrix folder containing files storing the features, barcode/pixels and intensity matrix.
+Metadata and sapatial files (such as scale factors and hires/lowres images) are also stored.
 }
 \examples{
 # saveSpaMTPData(SeuratObject, "../output", annotations = TRUE)

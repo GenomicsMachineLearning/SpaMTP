@@ -2,7 +2,7 @@
 % Please edit documentation in R/PlottingSpaMTP.R
 \name{MassIntensityPlot}
 \alias{MassIntensityPlot}
-\title{MassIntensityPlot}
+\title{Plot mass intensity spectra}
 \usage{
 MassIntensityPlot(
   data,
@@ -69,7 +69,7 @@ MassIntensityPlot(
 A mass spectrometry plot displaying mean intensity values
 }
 \description{
-A short Plots mean mass spectrometry intensity values for a given Seurat Object, and groups by categories if supplied.
+This function plots mean mass spectra intensity values for a given SpaMTP Seurat Object, and groups/splits by categories if supplied.
 }
 \examples{
 ## Plot mean of whole tissue section

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialAnalysis.R
 \name{FindSpatiallyVariableMetabolites}
 \alias{FindSpatiallyVariableMetabolites}
-\title{Finds metabolites that display strong spatial patterns using MoransI}
+\title{Find Spatially Variable Metabolites}
 \usage{
 FindSpatiallyVariableMetabolites(
   object,
@@ -30,7 +30,8 @@ FindSpatiallyVariableMetabolites(
 Returns SpaMTP object containing the MoransI pvalue and rank stored in the assay feature meta.data
 }
 \description{
-Finds metabolites that display strong spatial patterns using MoransI
+Finds metabolites that display strong spatial patterns using MoransI.
+Each m/z value is ranked by MoransI score and the results are stored in the SpaMTP Seurat Object feature metadata.
 }
 \examples{
 # SpaMTP.obj <- FindSpatiallyVariableMetabolites(SpaMTP)

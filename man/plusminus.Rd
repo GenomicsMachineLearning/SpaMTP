@@ -2,10 +2,7 @@
 % Please edit documentation in R/PlottingSpaMTP.R
 \name{plusminus}
 \alias{plusminus}
-\title{Identifies all mz peaks within a plus-minus range of the target_mz
-\itemize{
-\item This function uses FindNearestMZ()
-}}
+\title{Identifies all mz peaks within a plus-minus range of the target_mz}
 \usage{
 plusminus(data, target_mz, plus_minus)
 }
@@ -21,9 +18,6 @@ Vector of m/z values within plus-minus range of the target mz value
 }
 \description{
 Identifies all mz peaks within a plus-minus range of the target_mz
-\itemize{
-\item This function uses FindNearestMZ()
-}
 }
 \examples{
 # plusminus(SeuratObj, target_mz = 400.01, plus_minus = 0.005)

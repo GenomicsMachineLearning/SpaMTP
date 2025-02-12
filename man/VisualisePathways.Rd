@@ -2,7 +2,7 @@
 % Please edit documentation in R/PathwayVisualisation.R
 \name{VisualisePathways}
 \alias{VisualisePathways}
-\title{Displays the pathway analysis results form running the 'FishersPathwayAnalysis()' function}
+\title{Visualise Significant Pathways}
 \usage{
 VisualisePathways(
   SpaMTP,

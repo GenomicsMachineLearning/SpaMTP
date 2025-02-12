@@ -2,7 +2,7 @@
 % Please edit documentation in R/ConvertingBetweenObjects.R
 \name{CardinalToSeurat}
 \alias{CardinalToSeurat}
-\title{Converts a Cardinal Object into a Seurat Object}
+\title{Converts a Cardinal Object into a SpaMTP Seurat Object}
 \usage{
 CardinalToSeurat(
   data,
@@ -27,7 +27,7 @@ CardinalToSeurat(
 A Seurat Object containing the mz count data of the supplied Cardinal Object
 }
 \description{
-Converts a Cardinal Object into a Seurat Object
+Converts a Cardinal Object into a SpaMTP Seurat Object
 }
 \examples{
 # CardinalToSeurat(CardinalObj, run_name = "run_1", seurat.coord = NULL)

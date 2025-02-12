@@ -2,7 +2,7 @@
 % Please edit documentation in R/BinSMData.R
 \name{bin_SpectralImagingExperiment}
 \alias{bin_SpectralImagingExperiment}
-\title{Function used to generate a binned intensity matrix based on reference peaks generated via Cardinal}
+\title{Generate binned intensity matrix based on reference peaks generated via Cardinal}
 \usage{
 bin_SpectralImagingExperiment(
   x,
@@ -39,7 +39,7 @@ bin_SpectralImagingExperiment(
 Matrix object which has binned intensity values.
 }
 \description{
-Function used to generate a binned intensity matrix based on reference peaks generated via Cardinal
+Generate binned intensity matrix based on reference peaks generated via Cardinal
 }
 \examples{
 #Helper function for binning data in Matrix format

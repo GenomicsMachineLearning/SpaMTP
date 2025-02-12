@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMPreprocessing.R
 \name{MZVlnPlot}
 \alias{MZVlnPlot}
-\title{Generates a Violin plot of Spatial Metabolomic intensity data}
+\title{Generates a violin plot of spatial metabolic intensity data}
 \usage{
 MZVlnPlot(
   seurat.obj,
@@ -51,7 +51,7 @@ MZVlnPlot(
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 }
 \description{
-Generates a Violin plot of Spatial Metabolomic intensity data
+Generates a violin plot of spatial metabolic intensity data
 }
 \examples{
 # MZVlnPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)

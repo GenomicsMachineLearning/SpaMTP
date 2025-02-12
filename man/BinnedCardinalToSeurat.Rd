@@ -2,7 +2,7 @@
 % Please edit documentation in R/ConvertingBetweenObjects.R
 \name{BinnedCardinalToSeurat}
 \alias{BinnedCardinalToSeurat}
-\title{Converts a Cardinal Object into a Seurat Object}
+\title{Converts a SpaMTP binned Cardinal Object into a SpaMTP Seurat Object}
 \usage{
 BinnedCardinalToSeurat(
   data,
@@ -27,7 +27,7 @@ BinnedCardinalToSeurat(
 A Seurat Object containing the mz count data of the supplied Cardinal Object
 }
 \description{
-Converts a Cardinal Object into a Seurat Object
+This function is used by \code{LoadSM()} when \code{bin_package} is set to 'SpaMTP'.
 }
 \examples{
 # CardinalToSeurat(CardinalObj, run_name = "run_1")

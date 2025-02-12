@@ -2,8 +2,7 @@
 % Please edit documentation in R/DifferentialMZPeaks.R
 \name{run_DE}
 \alias{run_DE}
-\title{Runs EdgeR analysis for pooled data
-- This function is used by run_edgeR_annotations()}
+\title{Runs EdgeR analysis for pooled data}
 \usage{
 run_DE(
   pooled_data,
@@ -46,8 +45,8 @@ run_DE(
 A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEMs data.frame with a list of differential expressed m/z metabolites
 }
 \description{
-Runs EdgeR analysis for pooled data
-- This function is used by run_edgeR_annotations()
+Worker function for calculating differentially abundant metabolites per pooling group.
+This function is used by by \code{FindAllDEMs()}.
 }
 \examples{
 # pooled_obj <- run_pooling(SeuratObj, "sample", n = 3)

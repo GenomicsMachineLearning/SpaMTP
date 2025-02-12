@@ -2,7 +2,7 @@
 % Please edit documentation in R/PathwayAnalysis.R
 \name{FindRegionalPathways}
 \alias{FindRegionalPathways}
-\title{This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data}
+\title{Regional Pathway Enrichment}
 \usage{
 FindRegionalPathways(
   SpaMTP,

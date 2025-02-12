@@ -45,7 +45,8 @@ RunMetabolicPCA(
 SpaMTP object with pca results stored in the
 }
 \description{
-Generates PCA analysis results for a SpaMTP Seurat Object
+This function run PCA analaysis on a SpaMTP Seurat Object.
+The user can provide a bin/resolution size to increase the bin size and reduce the dimensionality/noise of the SM dataset prior to calculating PCAs.
 }
 \examples{
 # HELPER FUNCTION

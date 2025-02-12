@@ -2,10 +2,7 @@
 % Please edit documentation in R/helperFunctions.R
 \name{subset_SPM}
 \alias{subset_SPM}
-\title{Intermediate solution to \code{subset()}:
-subset FOVs/centroids if selected cells are NOT found in each FOV
-NOTE: some code parts and args are taken from SeuratObject
-Function params/args:}
+\title{Subsets SpaMTP Seurat Object containing FOVs}
 \usage{
 subset_SPM(
   object = NULL,
@@ -45,6 +42,8 @@ A subset Seurat object
 Intermediate solution to \code{subset()}:
 subset FOVs/centroids if selected cells are NOT found in each FOV
 NOTE: some code parts and args are taken from SeuratObject
+}
+\details{
 Function params/args:
 }
 \examples{

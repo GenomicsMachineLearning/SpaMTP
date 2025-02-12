@@ -1,6 +1,6 @@
 #### SpaMTP Seurat Plotting Functions #################################################################################################################################################################################
 
-#' Finds the nearest m/z peak to a given value in the specified Seurat Object
+#' Finds the nearest m/z peak to a given value in a SpaMTP Object
 #'
 #' @param data Seurat Spatial Metabolomic object containing mz values
 #' @param target_mz Numeric value defining the target m/z peak
@@ -23,6 +23,9 @@ FindNearestMZ <- function(data, target_mz, assay = NULL){
 
 #' Sums the intensity values of multiple m/z values into one
 #'
+#' This function inputs any vector of m/z values and combines their intensity values per pixel.
+#' This 'binned' data is stored in the SpaMTP Object's `@meta.data` slot.
+#'
 #' @param data SpaMTP Seurat class object containing m/z intensities.
 #' @param mzs Vector of m/z names to be binned together
 #' @param assay Character string indicating which Seurat object assay to pull data form (default = "Spatial").
@@ -44,6 +47,8 @@ BinMetabolites <- function(data, mzs, assay = "Spatial", slot = "data", bin_name
 }
 
 #' Bins multiple m/z values into one.
+#'
+#' This function is a helper function for `BinMetabolites`.
 #'
 #' @param data Seurat Spatial Metabolomic object containing mz values
 #' @param mz_list Vector of m/z names to be binned into one value
@@ -80,7 +85,7 @@ bin.mz <- function(data, mz_list, assay = "Spatial", slot = "counts", stored.in.
 
 
 #' Identifies all mz peaks within a plus-minus range of the target_mz
-#'    - This function uses FindNearestMZ()
+#'
 #'
 #' @param data Seurat Spatial Metabolomic object containing mz values
 #' @param target_mz Numeric value defining the target m/z peak
@@ -218,9 +223,10 @@ pixelPlot <- function(plot){
 
 
 
-#' Visualise expression of m/z values in a spatial context
-#'      - This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image)
-#'      - This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
+#' Plot expression of m/z values spatially
+#'
+#' This is for plotting SM data from a SpaMTP Seurat Object that does not contain an image(i.e. H&E image).
+#' This function inherits from Seurat::ImageFeaturePlot().
 #'
 #' @param object Seurat Spatial Metabolomic Object to Visualise.
 #' @param mzs Vector of numeric m/z values to plot (e.g. c(400.1578, 300.1)). The function FindNearestMZ() is used to automatically find the nearest m/z value to the ones given.
@@ -411,9 +417,11 @@ ImageMZPlot <- function(object,
 
 
 
-#' Visualise expression of metabolites in a spatial context
-#'      - This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image) that has been annotated using annotate.SeuratMALDI()
-#'      - This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
+#' Plot expression of annotated metabolites spatially
+#'
+#' This is for plotting annotated SM data from a SpaMTP Seurat Object that does not contain an image(i.e. H&E image).
+#' This function inputs the metabolite name such as 'Glutamine' rather then a specific m/z value.
+#' For m/z values please use `ImageMZPlot()`.This function inherits off Seurat::ImageFeaturePlot().
 #'
 #' @param object Seurat Spatial Metabolomic Object to Visualise.
 #' @param metabolites Vector of metabolite names to plot (e.g. c("Glucose", "Glutamine")). The Seurat Object provided must contain annotations in the respective assay metadata.
@@ -674,9 +682,10 @@ ImageMZAnnotationPlot <- function(object,
 
 
 
-#' Visualise expression of m/z values in a spatial context for Spatial Seurat Objects with H&E images.
-#'      - This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image)
-#'      - This function inherits off Seurat::SpatialFeaturePlot(). Look here for more detailed documentation about inputs.
+#' Plot expression of m/z values spatially for a Spatial SpaMTP Seurat Objects.
+#'
+#' This is for plotting SM m/z data from a SpaMTP Seurat Object that contains an image (i.e. H&E image).
+#' This function inherits off Seurat::SpatialFeaturePlot(). Look here for more detailed documentation about inputs.
 #'
 #' @param object Seurat Spatial Metabolomic Object to Visualise.
 #' @param mzs Vector of numeric m/z values to plot (e.g. c(400.1578, 300.1)). The function FindNearestMZ() is used to automatically find the nearest m/z value to the ones given.
@@ -819,9 +828,10 @@ SpatialMZPlot <- function(object,
 
 
 
-#' Visualise expression of metabolites in a spatial context for Spatial Seurat Objects with H&E images.
-#'      - This is for plotting Seurat Spatial Metabolomic data without an image(i.e. H&E image)
-#'      - This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
+#' Plot expression of metabolites in spatially from a Spatial SpaMTP Objects.
+#'
+#' This is for plotting values of annotated metabolites stored in a SpaMTP Seurat Object containing an image(i.e. H&E image).
+#' This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
 #'
 #' @param object Seurat Spatial Metabolomic Object to Visualise.
 #' @param metabolites Vector of metabolite names to plot (e.g. c("Glucose", "Glutamine")). The Seurat Object provided must contain annotations in the respective assay metadata.
@@ -973,10 +983,9 @@ get_optimal_layout <- function(list_length) {
 }
 
 
-#' MassIntensityPlot
+#' Plot mass intensity spectra
 #'
-#' @description
-#' A short Plots mean mass spectrometry intensity values for a given Seurat Object, and groups by categories if supplied.
+#' This function plots mean mass spectra intensity values for a given SpaMTP Seurat Object, and groups/splits by categories if supplied.
 #'
 #' @param data Seurat object containing data to be plot.
 #' @param group.by Character string defining the name of the meta.data column to group the data by. Results from each group will be overlayed on the one plot (default = NULL).
@@ -1233,57 +1242,11 @@ MassIntensityPlot <- function (data,
 
 
 
-#' Checks the alignment of two spatial datasets by plotting their relative coordinates on the same graph
-#'
-#' @param SM.data SpaMTP Seurat object containing SM data
-#' @param ST.data SpaMTP Seurat object containing ST data
-#' @param image.res Character string defining the Visium image resolution to use. This is required for the correct scale.factor to be applied (default = NULL).
-#' @param names Vector of 2 character strings used to define each dataset being plotted (default = c("SM", "ST")).
-#' @param cols Vector of 2 colors used for plotting (default = NULL).
-#' @param image.slice Character string matching the image slice name within the ST SpaMTP Seurat object (default = "slice1").
-#' @param size Numeric value indicating the point size to plot (default = 0.5).
-#'
-#' @return A 2D scatter plot showing the relative spatial locations of the ST and SM data points
-#' @export
-#'
-#' @examples
-#' # CheckAlignment(SM.data, ST.data)
-CheckAlignment <- function(SM.data, ST.data, image.res = NULL, names = c("SM", "ST"), cols = NULL, image.slice = "slice1", size = 0.5){
-
-  if (is.null(image.res)){
-    scale.factor <- 1
-  } else {
-    if (image.res %in% c("hires", "lowres")){
-      scale.factor <- ST.data@images[[image.slice]]@scale.factors[[image.res]]
-    } else {
-      stop("invalid input for image.res! image.res must be either 'hires' or 'lowres'")
-    }
-  }
-
-  df <- GetTissueCoordinates(ST.data)[c("x", "y")] * scale.factor
-  df$sample <- names[2]
-
-  df2 <- GetTissueCoordinates(SM.data)[c("x", "y")] #* scale.factor
-  df2$sample <- names[1]
-
-  df1 <- rbind(df,df2)
-
-  if (is.null(cols)){
-    cols <- c("#F8766D", "#00BFC4")
-  } else {
-    cols <- cols
-  }
-
-  p <- ggplot(df1, aes(x, y,color = sample)) +
-    geom_point(size = size) + theme_void() +  scale_color_manual(values = cols)
-  return(p)
-
-}
-
-
-
-
 #' Generates a 3D spatial feature plot from a SpaMTP object
+#'
+#' This function generates an interactive plotly 3D spatial plot of 2 specified features.
+#' These features can include a combination of metabolites and/or genes expression values, or numerical meta.data values.
+#' Features must be numeric values. Please see ` SpaMTP Additional Features` vignette for instructions on how to plot catagorical data, or > 2 features.
 #'
 #' @param data A SpaMTP Seurat Object.
 #' @param features A character vector specifying the features to be plotted.
@@ -1498,7 +1461,9 @@ Plot3DFeature <- function(data,
 
 
 
-#' Generates a 3D density plot for specific m/z values
+#' Generates interactive 3D spatial density plot for m/z values
+#'
+#' This function generates an interactive HTML file that can be used to generate spatial density kernals based on the intensity of any selected m/z value.
 #'
 #' @param object SpaMTP Seurat object contains spatial metabolomics data
 #' @param assay Character string defining the Seurat assay that contains intensity values to plot (default = "SPM").
@@ -1932,6 +1897,9 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 
 
 #' Interactive Spatial Plot for visualising different m/z bin sizes
+#'
+#' This function implements a shinyApp for interactive viusalisation of the samples mean mass intensity spectra.
+#' Users can adjust the resolution/bin size and observe changes in spatial expression respectively.
 #'
 #' @param obj SpaMTP object containing the intensity data to plot.
 #' @param assay Character defining the Seurat object assay to extract the intensity data from (default = "Spatial").

@@ -24,7 +24,8 @@ RefineLipids(
 Data.frame containing additional columns with simplified lipid names
 }
 \description{
-Uses common lipid nomenclature to simplify lipid annotations
+Based on rgoslin, this function has the ability to simplify lipid annotations into more general terms, groups and classes.
+This function can input a data frame containing a column storing the annotation and refine only the entries which are annotated as known lipid structures.
 }
 \examples{
 # RefineLipids(DEPs_df)

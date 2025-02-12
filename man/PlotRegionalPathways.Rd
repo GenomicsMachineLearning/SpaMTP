@@ -2,7 +2,7 @@
 % Please edit documentation in R/PathwayVisualisation.R
 \name{PlotRegionalPathways}
 \alias{PlotRegionalPathways}
-\title{Visualisation of Set Enrichment Analysis Results from \code{SpaMTP::FindRegionalPathways()}.}
+\title{Plot significantly enriched pathways per region}
 \usage{
 PlotRegionalPathways(
   regpathway,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{AnnotateSM}
 \alias{AnnotateSM}
-\title{Annotates m/z values based on reference metabolite dataset}
+\title{Annotates m/z values stored in a SpaMTP Object}
 \usage{
 AnnotateSM(
   data,
@@ -48,7 +48,8 @@ AnnotateSM(
 A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj\verb{[["Spatial"]][[]]})
 }
 \description{
-Annotates m/z values based on reference metabolite dataset
+This function assigns each valid m/z peak with one/multiple metabolite names based on the mass difference between the observed value and the theoretical value documented in the reference database.
+SpaMTP contains 4 cleaned reference databases to choose from these include HMDB, Lipid Maps, ChEBI and GNPS. These databases can also be combined for increased coverage.
 }
 \examples{
 # HMDB_db <- load("data/HMDB_1_names.rds")

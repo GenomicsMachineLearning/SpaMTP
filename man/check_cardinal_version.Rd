@@ -2,7 +2,7 @@
 % Please edit documentation in R/helperFunctions.R
 \name{check_cardinal_version}
 \alias{check_cardinal_version}
-\title{Checks if the Cardinal Package installed is >= version 3.6.0}
+\title{Check Cardinal Version}
 \usage{
 check_cardinal_version()
 }

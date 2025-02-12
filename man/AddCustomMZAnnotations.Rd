@@ -2,7 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{AddCustomMZAnnotations}
 \alias{AddCustomMZAnnotations}
-\title{Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)}
+\title{Assign custom annotations to m/z values}
 \usage{
 AddCustomMZAnnotations(
   data,
@@ -30,7 +30,7 @@ AddCustomMZAnnotations(
 SpaMTP Seurat object containing the custom annotations stored in the feature metadata dataframe.
 }
 \description{
-Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10)
+Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10).
 }
 \examples{
 # annotated_data <- AddCustomMZAnnotations(SpaMTP.obj, annotation.df)

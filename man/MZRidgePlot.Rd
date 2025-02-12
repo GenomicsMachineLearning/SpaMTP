@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMPreprocessing.R
 \name{MZRidgePlot}
 \alias{MZRidgePlot}
-\title{Generates a ridge plot of Spatial Metabolomic intensity data}
+\title{Generates a ridge plot of spatial metabolic intensity data}
 \usage{
 MZRidgePlot(
   seurat.obj,
@@ -51,7 +51,7 @@ MZRidgePlot(
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 }
 \description{
-Generates a ridge plot of Spatial Metabolomic intensity data
+Generates a ridge plot of spatial metabolic intensity data
 }
 \examples{
 # MZRidgePlot(SeuratObj, group.by = "sample")

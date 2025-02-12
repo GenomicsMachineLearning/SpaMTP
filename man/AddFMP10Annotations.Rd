@@ -2,7 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{AddFMP10Annotations}
 \alias{AddFMP10Annotations}
-\title{Adds metabolite annotations to respective m/z values generated using an FMP10 matrix.}
+\title{Annotates FMP10 matrix data}
 \usage{
 AddFMP10Annotations(
   obj,
@@ -33,7 +33,7 @@ AddFMP10Annotations(
 SpaMTP Seurat object containing the relative metabolite annotations stored in the feature metadata dataframe.
 }
 \description{
-Adds metabolite annotations to respective m/z values generated using an FMP10 matrix.
+Adds metabolite annotations to respective m/z values generated using an FMP10 matrix. This is done based on a curated FMP10 matrix database.
 }
 \examples{
 # AddFMP10Annotations(spamtp, only.fmp.adduct = FALSE)

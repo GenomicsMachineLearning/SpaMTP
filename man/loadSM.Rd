@@ -2,7 +2,7 @@
 % Please edit documentation in R/LoadData.R
 \name{LoadSM}
 \alias{LoadSM}
-\title{Loads in spatial metabolomic data directly to a SpaMTP Seurat Object}
+\title{Loads spatial metabolic data into a SpaMTP Seurat Object}
 \usage{
 LoadSM(
   name,
@@ -42,7 +42,8 @@ LoadSM(
 A new SpaMTP Seurat object contain the imported spatial metabolic intensity values
 }
 \description{
-Loads in spatial metabolomic data directly to a SpaMTP Seurat Object
+This function loads raw spatial metabolic data in a .imzML and .ibd format and generates a SpaMTP Seurat Object.
+This function adapts the \code{readImzML} function implmented in Cardinal to correctly import large data.
 }
 \examples{
 # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")

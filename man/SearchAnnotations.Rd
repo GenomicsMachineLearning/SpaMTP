@@ -2,7 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{SearchAnnotations}
 \alias{SearchAnnotations}
-\title{Searches through annotated m/z values to return all which contain the metabolite search term provided}
+\title{Find Annotation}
 \usage{
 SearchAnnotations(
   data,

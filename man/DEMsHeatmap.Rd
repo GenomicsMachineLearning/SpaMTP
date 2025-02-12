@@ -2,8 +2,7 @@
 % Please edit documentation in R/DifferentialMZPeaks.R
 \name{DEMsHeatmap}
 \alias{DEMsHeatmap}
-\title{Generates a Heatmap of DEMs generated from edgeR analysis run using FindAllDEMs().
-- this function uses pheatmap() to plot data}
+\title{Heatmap of Differentially Expressed Metabolites}
 \usage{
 DEMsHeatmap(
   edgeR_output,
@@ -73,8 +72,8 @@ DEMsHeatmap(
 A heatmap plot of significantly differentially expressed metabolites defined in the edgeR ouput object.
 }
 \description{
-Generates a Heatmap of DEMs generated from edgeR analysis run using FindAllDEMs().
-- this function uses pheatmap() to plot data
+Generates a heatmap of DEMs generated from edgeR analysis run using \code{FindAllDEMs()}.
+This function uses \code{pheatmap} to plot data.
 }
 \examples{
 # DEMs <- FindAllDEMs(SeuratObj, "sample")
