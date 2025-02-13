@@ -9,7 +9,7 @@
 #' @param mass.range Vector of numeric values indicating the mass range to use for the imported data (default = NULL).
 #' @param resolution Numeric value defining the the accuracy to which the m/z values will be binned after reading. This value can be in either "ppm" or "mz" depending on the units type specified (default = 10).
 #' @param units Character string defining the resolution value unit type, either c("ppm", "mz") (default = "ppm")
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE)
+#' @param verbose Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE)
 #' @param assay Character string describing the name of the new assay which stores the imported data (default = "Spatial").
 #' @param bin_package Character string defining the package used to bin the imported data. Options are either "SpaMTP" or "Cardinal" (default = "SpaMTP").
 #' @param multi.run Boolean indicating if there are multiple runs within the imported data. If `TRUE`, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).

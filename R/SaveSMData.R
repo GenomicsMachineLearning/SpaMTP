@@ -13,7 +13,7 @@
 #' @param slot Character string defining the Seurat assay slot that contains the m/z values directly (default = "counts").
 #' @param image Character string defining the image stored within the SpaMTP Seurat object to save. If `NULL` no image will be saved (default = NULL).
 #' @param annotations Boolean values defining if the Seurat Object contains annotations to be saved (default = FALSE).
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param verbose Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' ### Details
 #' * This can be used for saving data for transfer to python. Can be read in as Anndata using scanpy.read_10x_mtx().

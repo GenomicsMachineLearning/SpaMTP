@@ -28,7 +28,7 @@ LoadSM(
 
 \item{units}{Character string defining the resolution value unit type, either c("ppm", "mz") (default = "ppm")}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE)}
+\item{verbose}{Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE)}
 
 \item{assay}{Character string describing the name of the new assay which stores the imported data (default = "Spatial").}
 

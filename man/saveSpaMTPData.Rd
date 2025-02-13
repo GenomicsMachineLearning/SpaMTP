@@ -27,7 +27,7 @@ SaveSpaMTPData(
 
 \item{annotations}{Boolean values defining if the Seurat Object contains annotations to be saved (default = FALSE).}
 
-\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+\item{verbose}{Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 \subsection{Details}{
 \itemize{
 \item This can be used for saving data for transfer to python. Can be read in as Anndata using scanpy.read_10x_mtx().
