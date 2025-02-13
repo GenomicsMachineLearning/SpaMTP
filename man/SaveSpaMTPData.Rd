@@ -15,7 +15,7 @@ SaveSpaMTPData(
 )
 }
 \arguments{
-\item{data}{A Seurat Spatial Metabolomic Object being saved.}
+\item{data}{A Spatial Metabolomic SpaMTP Seurat Object being saved.}
 
 \item{outdir}{Character string of the directory to save the mtx.mtx, barcode.tsv, features.tsv, barcode_metadata.csv and feature_metadata.csv in.}
 
