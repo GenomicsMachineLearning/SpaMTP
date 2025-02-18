@@ -163,7 +163,7 @@ MO_data$Oligo_states <- ifelse(MO_data$celltype == "Oligodendrocyte", paste0("Ol
 ImageDimPlot(MO_data, group.by = "Oligo_states", fov = "zoom", dark.background = F, cols = c("grey", "red", "blue", "yellow", "green", "pink"))
 ```
 
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE, dev.args = list(bg = "#ffffff")}
 DotPlot(MO_data, group.by = "Oligo_states", features = c(rownames(MO_data[["SPT"]]), "spm_mz-200"))
 ```
 This dotplot may suggest that Oligo State 1 and 2 are different cell subtypes based on their differential expression of gene1/gene2 and mz-200 (Note: this is synthetic data and has no biological context - results only used as example).
