@@ -801,7 +801,7 @@ df %>%
 Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 4 (in-tact striatum cells).
 
 
-```{r, fig.width=6, fig.height=8}
+```{r, fig.width=6, fig.height=8, message=FALSE, warning=FALSE}
 SpatialFeaturePlot(integrated.data, features = "Pcp4", pt.size.factor = 2)
 ```
 

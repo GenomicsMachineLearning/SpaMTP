@@ -799,7 +799,6 @@ library(htmltools)
 file_path <- "vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html"  # Path to the HTML file
 
 
-# Include HTML content with a div wrapper for sizing
 includeHTML(file_path)
 
 ```
