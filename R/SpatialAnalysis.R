@@ -461,23 +461,6 @@ list_to_pprcomp <- function(lst) {
 }
 
 
-#' Finds the index values of the m/z values with their respective GSEA result
-#'
-#' @param lst List containing relative mz analytes and pathways
-#' @param value Value returned based on the GSEA results
-#'
-#' @return returns a vector of indices that match the relative GSEA results to the m/z list
-#'
-#' @examples
-#' #HELPER FUNCTION
-find_index <- function(lst, value) {
-  indices <- which(sapply(lst, function(x) value %in% x))
-  if (length(indices) == 0) {
-    return(NULL)  # If value not found, return NULL
-  } else {
-    return(indices)
-  }
-}
 
 
 #####################################################

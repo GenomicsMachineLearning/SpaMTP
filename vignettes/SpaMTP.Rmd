@@ -81,7 +81,7 @@ make_vignette_card_section <- function(vdat) {
         print(htmlTable(
           dat, 
           align = '|l|l|l|', 
-          css.cell = "padding-left: .75em; width: 30%"
+          css.cell = "padding-left: .75em; width: 30%; background-color: white; border-color: rgba(0,0,0,0);"
         ))
       }
       dat <- data.frame(title = character(), img = character(), desc = character())
@@ -99,9 +99,11 @@ vdat <- read_yaml(file = "get_started.yaml")
 <style>
 .two-column-htmltable {
   width: 66.666%;
+  background-color: white;
 }
 .one-column-htmltable {
   width: 33.333%;
+  background-color: white;
 }
 
 </style>
@@ -114,7 +116,7 @@ Listed below are a number of useful tutorials demonstrating how to use SpaMTP wh
 
 For a general introduction in importing data, annotating metabolites and running key analysis pipelines on your spatial metabolomic data, we suggest starting with the Spatial Metabolomic Analysis Tutorial. This vignette uses mouse bladder data and demonstrates how to perform general tasks such as plotting, subsetting, and manipulating *SpaMTP* Seurat objects. For those with paired multi-modal datasets, we suggest working through the Multi-Modal Integration Tutorial. Here, we provide methods to align your two datasets to the same coordinates, map spatial metabolomic pixels to spatial transcriptomic spots and then run various analysis using this integrated data. 
 
-```{r results='asis', echo=FALSE, warning=FALSE, message = FALSE}
+```{r results='asis', echo=FALSE, warning=FALSE, message = FALSE, dev.args = list(bg = "#ffffff")}
 make_vignette_card_section(vdat = vdat)
 ```
 

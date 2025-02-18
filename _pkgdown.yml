@@ -249,7 +249,6 @@ reference:
   - plot_plus_minus
   - check_column_type
   - pixelPlot
-  - get_optimal_layout
 - subtitle: Annotation Helper Functions
   desc: Helper functions required for running 'AnnotateSM()'
   contents:
@@ -275,7 +274,6 @@ reference:
   contents:
   - get_analytes_db
   - list_to_pprcomp
-  - find_index
   - rescale
   - ResizeMat
 - subtitle: Multi-Omic Helper Functions

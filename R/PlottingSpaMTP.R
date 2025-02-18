@@ -950,39 +950,6 @@ SpatialMZAnnotationPlot <- function(object,
 }
 
 
-########################################################################################################################################################################################################################
-
-
-#### SpaMTP Seurat mass spec plots #################################################################################################################################################################################
-
-
-#' Gets the optimal layout coordinates based on the number of different groups being plotted
-#'
-#' @param list_length Integer value defining the number of different groups being plotted.
-#'
-#' @return A vector of coordinates to use for the combined plot layout (e.g. c(3,2)).
-#'
-#' @examples
-#' ### Helper Function ###
-get_optimal_layout <- function(list_length) {
-  # Find the largest square that fits within the list length
-  max_square <- floor(sqrt(list_length))
-
-  # If the square fits perfectly, use it as the layout
-  if (max_square^2 == list_length) {
-    return(c(max_square, max_square))
-  }
-
-  # Otherwise, find the closest rectangular layout by adjusting columns
-  for (cols in max_square:1) {
-    rows <- ceiling(list_length / cols)
-    if (rows * cols >= list_length) {
-      return(c(rows, cols))  # Return rows and columns
-    }
-  }
-}
-
-
 #' Plot mass intensity spectra
 #'
 #' This function plots mean mass spectra intensity values for a given SpaMTP Seurat Object, and groups/splits by categories if supplied.

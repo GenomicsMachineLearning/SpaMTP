@@ -18,3 +18,4 @@ vignettes:
     summary: |
       Examples of additional SpaMTP visualisation and analysis functions that are useful for SM analysis pipelines.
     image: assets/AdditionalFeatures.png
+
