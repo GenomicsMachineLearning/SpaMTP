@@ -20,6 +20,10 @@ This vignette will use [***SpaMTP***](https://github.com/GenomicsMachineLearning
 Author: Andrew Causer
 
 ```{r load_packages, warning=FALSE, message=FALSE}
+## Install SpaMTP if not previously installed
+if (!require("SpaMTP"))
+    devtools::install_github("GenomicsMachineLearning/SpaMTP")
+
 #General Libraries
 library(SpaMTP)
 library(Cardinal)

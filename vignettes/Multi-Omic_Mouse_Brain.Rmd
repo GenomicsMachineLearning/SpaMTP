@@ -47,6 +47,10 @@ Here, we will load in both our Visium and MALDI-MSI data! The Visium data is con
 First, we need to import the required libraries for this analysis:
 
 ```{r warning=FALSE, message=FALSE}
+## Install SpaMTP if not previously installed
+if (!require("SpaMTP"))
+    devtools::install_github("GenomicsMachineLearning/SpaMTP")
+                             
 #General Libraries
 library(SpaMTP)
 library(Cardinal)
