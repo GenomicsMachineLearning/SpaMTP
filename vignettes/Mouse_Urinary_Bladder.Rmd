@@ -14,10 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{css, echo=FALSE}
-.white-bg {
-  background-color: #ffffff !important;
-}
+```{r, echo=FALSE, warning=FALSE,message=FALSE}
+par(bg = 'white')
 ```
 
 # Mouse Urinary Bladder Vignette
