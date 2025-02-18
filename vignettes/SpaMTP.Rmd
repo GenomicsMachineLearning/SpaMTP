@@ -81,7 +81,7 @@ make_vignette_card_section <- function(vdat) {
         print(htmlTable(
           dat, 
           align = '|l|l|l|', 
-          css.cell = "padding-left: .75em; width: 30%; background-color: white; border-color: rgba(0,0,0,0);"
+          css.cell = "padding-left: .75em; width: 30%; background-color: white; border-color: rgba(0,0,0,0); color: black;"
         ))
       }
       dat <- data.frame(title = character(), img = character(), desc = character())
