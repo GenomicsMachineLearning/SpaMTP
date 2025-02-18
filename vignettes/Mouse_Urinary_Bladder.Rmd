@@ -14,6 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{css, echo=FALSE}
+.white-bg {
+  background-color: #ffffff !important;
+}
+```
+
 # Mouse Urinary Bladder Vignette
 
 This tutorial highlights the utility of [**SpaMTP**](https://github.com/GenomicsMachineLearning/SpaMTP) on single-cell resolution Spatial Metabolomics. This vignette will use public mouse bladder Spatial Metabolomics data first published by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559), and used in the [*Cardinal V3* article](https://doi.org/10.1038/s41592-023-02070-z). 
@@ -228,7 +234,7 @@ df %>%
 Based on the image above, there are a few clusters that are associated with regions outside the tissue. Because we are not interested in these (technical noise), we will subset our SpaMTP object to only include the clusters of interest (cluster 2, 5 and 6).
 
 
-```{r, fig.width = 20, fig.height = 8}
+```{r, class.source='white-bg', fig.width = 20, fig.height = 8}
 # subset the pixels to only include our ssc clusters of interest
 tissue_clusters = c(2,5,6)
 test <- subsetPixels(bladder_cardinal, ssc %in% tissue_clusters)
@@ -775,11 +781,11 @@ We can see clearly that the combined expression of these GP lipids is highly exp
 Next, we can observe the expression of two key lipids (same as those described above) in a 3D plot:
 
 
-```{r, fig.width=10, fig.height=30, warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
 ### Identified the m/z values that are to be plot
 mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = ROI, target_mz = x)))
 
-Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 100, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 800)
+Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 100, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 700)
                      
 ```
 
