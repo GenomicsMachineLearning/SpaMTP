@@ -423,7 +423,7 @@ df %>%
 
 We can see that the values have been up-scaled to matched with the visium coordinates.
 
-```{r, fig.width=10, fig.height=8}
+```{r, fig.width=10, fig.height=8, dev.args = list(bg = "#ffffff")}
 CheckAlignment(msi_transformed, vis, image.res = NULL, size = 0.8)
 ```
 

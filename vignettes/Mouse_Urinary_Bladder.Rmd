@@ -14,9 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, echo=FALSE, warning=FALSE,message=FALSE}
-par(bg = 'white')
-```
 
 # Mouse Urinary Bladder Vignette
 
@@ -134,7 +131,7 @@ After visualising the data we can see our tissue section, and that there are som
 
 
 ```{r fig.width=30, fig.height=5, warning=FALSE, message=FALSE}
-ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1) & coord_flip() & scale_x_reverse()
+ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1.5) & coord_flip() & scale_x_reverse()
 ```
 
 
@@ -161,7 +158,7 @@ bladder_cardinal
 
 We can see that the Object layout is correct and we have 305 m/z values across 34,840 pixels. Next we can generate a plot using Cardinal:
 
-```{r, fig.width=20, fig.height=5}
+```{r, fig.width=20, fig.height=5 , dev.args = list(bg = "#ffffff")}
 bladder_cardinal %>%
     subsetFeatures(mz >= 750, mz <= 800) %>%
     plot()
@@ -188,7 +185,7 @@ ssc <- spatialShrunkenCentroids(bladder_cardinal,
 ```
 
 
-```{r fig.width=10, fig.height=10}
+```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
 
 col_palette = list("1" = "#9FBEAC", 
                    "2" = "#C2B03B",
@@ -232,7 +229,7 @@ df %>%
 Based on the image above, there are a few clusters that are associated with regions outside the tissue. Because we are not interested in these (technical noise), we will subset our SpaMTP object to only include the clusters of interest (cluster 2, 5 and 6).
 
 
-```{r, class.source='white-bg', fig.width = 20, fig.height = 8}
+```{r, fig.width = 20, fig.height = 8, dev.args = list(bg = "#ffffff")}
 # subset the pixels to only include our ssc clusters of interest
 tissue_clusters = c(2,5,6)
 test <- subsetPixels(bladder_cardinal, ssc %in% tissue_clusters)
@@ -522,7 +519,7 @@ cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 
 Lets observe the top 10 DE metabolites for each cluster in a heatmap:
 
 
-```{r, fig.width=15, fig.height=10}
+```{r, fig.width=15, fig.height=10, dev.args = list(bg = "#ffffff")}
 DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
             n = 10, save_to_path = NULL
@@ -796,7 +793,7 @@ DensityMap(object = ROI, assay = "Spatial", slot = "counts", folder = "vignette_
 
 <br>
 
-```{r echo=FALSE, results='asis', warning=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, }
 library(htmltools)
 
 file_path <- "vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html"  # Path to the HTML file
@@ -905,29 +902,29 @@ df %>%
 Now, lets visualise these results.We will first plot the results generated based on the provided metabolite ID's.
 
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, dev.args = list(bg = "#ffffff")}
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
-```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30, dev.args = list(bg = "#ffffff")}
 p <- VisualisePathways(bladder_annotated,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
 ```
 
-```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10, dev.args = list(bg = "#ffffff")}
 p
 ```
 
 We can also plot the results generated from running Fishers Exact Test using the m/z values. This will allow us to plot the expression of each pathway spatially!
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, dev.args = list(bg = "#ffffff")}
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_mz_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
-```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30}
+```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30, dev.args = list(bg = "#ffffff")}
 p <- VisualisePathways(bladder_annotated,pathway_df = cluster_6_mz_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
 ```
 
-```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10}
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10, dev.args = list(bg = "#ffffff")}
 p
 ```
 
