@@ -382,6 +382,9 @@ Running the code below will activate an interactive shiny app
 msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 ```
 
+<iframe src="https://agc888.shinyapps.io/AlignMultiOmics/" width="100%" height="600px"></iframe>
+
+
     Loading required package: shiny
     
     Show in New Window
