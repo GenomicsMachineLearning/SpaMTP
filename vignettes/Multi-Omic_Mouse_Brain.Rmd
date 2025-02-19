@@ -368,8 +368,14 @@ To achieve multi-omic alignment, we must perform 2 steps:
    * This step works by finding all SM data points within a radius of a ST spot and assigning their respective data
    * Increasing the SM resolution in this function can improve the mapping by reducing the distance between pixel and spot centroids.
 
-<br>
+
 Lets run these functions on our sample:
+
+<br>
+
+Running the code below will activate an interactive shiny app
+
+
 
 
 ```{r, eval=FALSE}
