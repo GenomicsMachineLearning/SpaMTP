@@ -59,7 +59,7 @@ library(EnhancedVolcano)
 
 <br>
 
-# Load SM Data using SpaMTP
+## Load SM Data using SpaMTP
 
 ### Sample Pre-Processing
 

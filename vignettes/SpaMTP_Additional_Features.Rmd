@@ -358,7 +358,30 @@ Based on this plot, users can adjust the bin size of their data (by running `Bin
 Exporting data can often be difficult when dealing with large datasets of different data object types such as *R's Seurat* compared to *Python's scanpy*. ***SpaMTP*** can easily export the data object into matrix.mtx, barcodes.csv and features.csv files, which can be easily read into all major spatial analysis packages. In addition, cell/pixel and feature metadata is also exported as .csv files. Below we demonstrate how to export the files:
 
 ```{r, eval=FALSE}
-saveSpaMTPData(bladder_HE, outdir = "../Documents/SpaMTP_Output/", assay = "Spatial", slot = "counts", annotations = TRUE)
+SaveSpaMTPData(bladder_HE, outdir = "../Documents/SpaMTP_Output/", assay = "Spatial", slot = "counts", annotations = TRUE)
+```
+
+Lets visualise the output files directory structure:
+
+```{r, eval=FALSE}
+fs::dir_tree("../Documents/SpaMTP_Output/")
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+cat("
+~/Documents/SpaMTP_Output/
+├── barcode_metadata.csv
+├── feature_metadata.csv
+├── filtered_feature_bc_matrix
+│   ├── barcodes.tsv
+│   ├── genes.tsv
+│   └── matrix.mtx
+└── spatial
+    ├── scalefactors_json.json
+    ├── tissue_lowres_image.png
+    └── tissue_positions_list.csv
+")
+
 ```
 
 
