@@ -373,10 +373,7 @@ Lets run these functions on our sample:
 
 <br>
 
-Running the code below will activate an interactive shiny app
-
-
-
+Running this code below will activate an interactive shiny app where users can align two datasets. This example can also be visualised [here](https://agc888.shinyapps.io/AlignMultiOmics/).
 
 ```{r, eval=FALSE}
 msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
