@@ -5,7 +5,7 @@
 \alias{pathway}
 \title{pathway: A dataframe containing RAMP_DB pathways and their relative metadata}
 \format{
-\subsection{A data frame with 53,952 rows and 5 variables:}{
+\subsection{A data frame with 54,024 rows and 5 variables:}{
 
 \describe{
 \item{pathwayRampId}{Relative source database ID for analyste (character)}

@@ -5,7 +5,7 @@
 \alias{source_df}
 \title{source_df: A dataframe containing source information about RAMP_ID analyte used for analysis}
 \format{
-\subsection{A data frame with 789,665 rows and 8 variables:}{
+\subsection{A data frame with 810,652 rows and 8 variables:}{
 
 \describe{
 \item{sourceId}{Ramp_DB analyte ID(character)}

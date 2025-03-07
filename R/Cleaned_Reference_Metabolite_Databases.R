@@ -229,7 +229,7 @@
 #'
 #' @description This object contains a collection of Ramp_DB analytes, along with an annotation of their analyte type
 #'
-#' @format ## A data frame with 250,961 rows and 2 variables:
+#' @format ## A data frame with 276,356 rows and 2 variables:
 #' \describe{
 #'   \item{rampId}{Ramp_DB analyte ID/Name (character)}
 #'   \item{type}{Analyte type (character)}
@@ -242,7 +242,7 @@
 #'
 #' @description This object contains a collection of RAMP_DB ID's, Pathway ID's and relative pathway database source
 #'
-#' @format ## A data frame with 819,103 rows and 3 variables:
+#' @format ## A data frame with 825,296 rows and 3 variables:
 #' \describe{
 #'   \item{rampId}{Ramp_DB analyte ID/Name (character)}
 #'   \item{pathwayRampId}{Ramp_DB pathway ID (character)}
@@ -256,7 +256,7 @@
 #'
 #' @description This object contains a collection of RAMP_DB analytes with their corresponding metadata including chemical structure key (smiles), isotop mass, common name and molecular fomular
 #'
-#' @format ## A data frame with 283,003 rows and 11 variables:
+#' @format ## A data frame with 283,382 rows and 11 variables:
 #' \describe{
 #'   \item{rampId}{Ramp_DB analyte ID/Name (character)}
 #'   \item{chem_data_source}{Relative source database for the respective analyte (character)}
@@ -278,7 +278,7 @@
 #'
 #' @description This object contains a collection of RAMP_DB pathways, their source ID, pathway catagory and common name
 #'
-#' @format ## A data frame with 53,952 rows and 5 variables:
+#' @format ## A data frame with 54,024 rows and 5 variables:
 #' \describe{
 #'   \item{pathwayRampId}{Relative source database ID for analyste (character)}
 #'   \item{rampId}{RAMP_DB pathway ID (character)}
@@ -295,7 +295,7 @@
 #'
 #' @description This object contains a collection of RAMP_DB analytes, their source ID, common name and pathway count
 #'
-#' @format ## A data frame with 789,665 rows and 8 variables:
+#' @format ## A data frame with 810,652 rows and 8 variables:
 #' \describe{
 #'   \item{sourceId}{Ramp_DB analyte ID(character)}
 #'   \item{rampId}{Analyte source ID (character)}

@@ -5,7 +5,7 @@
 \alias{analyte}
 \title{analyte: A dataframe containing ID's of possible RAMP analytes}
 \format{
-\subsection{A data frame with 250,961 rows and 2 variables:}{
+\subsection{A data frame with 276,356 rows and 2 variables:}{
 
 \describe{
 \item{rampId}{Ramp_DB analyte ID/Name (character)}

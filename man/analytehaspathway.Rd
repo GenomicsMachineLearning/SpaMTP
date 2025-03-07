@@ -5,7 +5,7 @@
 \alias{analytehaspathway}
 \title{analytehaspathway: A dataframe containing RAMP_pathway ID's}
 \format{
-\subsection{A data frame with 819,103 rows and 3 variables:}{
+\subsection{A data frame with 825,296 rows and 3 variables:}{
 
 \describe{
 \item{rampId}{Ramp_DB analyte ID/Name (character)}

@@ -5,7 +5,7 @@
 \alias{chem_props}
 \title{chem_props: A database containing the chemical properties and metadata of each RAMP_DB analyte}
 \format{
-\subsection{A data frame with 283,003 rows and 11 variables:}{
+\subsection{A data frame with 283,382 rows and 11 variables:}{
 
 \describe{
 \item{rampId}{Ramp_DB analyte ID/Name (character)}
