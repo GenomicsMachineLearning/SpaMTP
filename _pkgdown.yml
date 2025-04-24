@@ -91,6 +91,7 @@ reference:
   - AddCustomMZAnnotations
   - AddFMP10Annotations
   - SearchAnnotations
+  - GetMZMetadata
   - FindDuplicateAnnotations
   - SubsetMZFeatures
   - getRefinedAnnotations
@@ -117,23 +118,28 @@ reference:
   contents:
   - FishersPathwayAnalysis
   - FindRegionalPathways
+  - RunRAMPgeseca
+  - CreatePathwayAssay
 
 - title: Metabolic and Transcriptomic Pathway Visualisation
   desc: Functions used to visualise pathway analysis results
   contents:
   - VisualisePathways
   - PlotRegionalPathways
+  - PlotPathways
+  - PlotPathwaysSpatially
 
 - title: Pathway Network Plotting
   desc: Functions used to generate network plots for specified patheays
   contents:
   - PathwayNetworkPlots
 
-- title: PCA Metabolite Analysis
+- title: Dimentionality Reduction Analysis
   desc: Functions that are used for calculating PCA embeddings and projections based
-    on SM data
+    on SM and/or ST data
   contents:
   - RunMetabolicPCA
+  - RunSpatialGraphPCA
 
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
@@ -174,6 +180,7 @@ reference:
   - MapSpatialOmics
   - AlignSpatialOmics
   - MultiOmicIntegration
+  - CreateMergedModalityAssay
 
 - title: Adding Image Data
   desc: Functions used to align and add an image to a spatial metabolic SpaMTP object.
@@ -272,13 +279,15 @@ reference:
 - subtitle: Pathway Analysis Helper Functions
   desc: Helper functions used for running pathway analysis
   contents:
+  - PlotSinglePathway
+  - PlotSinglePathwaySpatially
+  - addGesecaScores
   - get_analytes_db
   - list_to_pprcomp
-  - rescale
-  - ResizeMat
 - subtitle: Multi-Omic Helper Functions
   desc: Helper functions used in multi-omic analysis functions
   contents:
+  - kneighbors_graph
   - get_square_coordinates
   - lowresMapping
   - hiresMapping

@@ -114,23 +114,6 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
 }
 
 
-
-
-#### Code is manipulated from Seurat ###########################################################################################
-
-#' Compute the row variances for each m/z value
-#'
-#' @param x Matrix containing count values used for correlation
-#'
-#' @return Vector contating the row variances for each m/z value
-#'
-#' @examples
-#' #HELPER FUNCTION
-RowVar <- function(x) {
-  .Call('_Seurat_RowVar', PACKAGE = 'Seurat', x)
-}
-
-
 #' Find Spatially Variable Metabolites
 #'
 #' Finds metabolites that display strong spatial patterns using MoransI.
@@ -188,253 +171,10 @@ GetSpatiallyVariableMetabolites <- function(object, assay = "SPM", n = 10){
 
 
 
-#' Mult-Omic data integration
-#'
-#' This function performs multi-omic integration of Spatial Metabolomics and Spatial Transcriptomics data using Seurat's Weighted Nearest Neighbours function.
-#'
-#' @param multiomic.data SpaMTP dataset contain Spatial Transcriptomics and Metabolomic datasets in two different assays
-#' @param weight.list List containing the relative weightings for each modality, matching the reduction order. If NULL, weights will be automatically calculated else, two values must add to 1 (default = NULL).
-#' @param reduction.list List containing character strings defining the reduction to use for each modality, in the order matching weight.list if applicable (default = list("spt.pca", "spm.pca")).
-#' @param dims.list List containing the numeric range of principle component dimension to include for each modality (default = list(1:30,1:30)).
-#' @param return.intermediate Boolean value indicating whether to store intermediate results in misc slot of SpaMTP Seurat class object (default = FALSE).
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#' @param ... Additional arguments that can be parsed through Seurat's FindMultModalNeighbors function. For possible inputs please visit: https://www.rdocumentation.org/packages/Seurat/versions/5.0.3/topics/FindMultiModalNeighbors.
-#'
-#' @return SpaMTP Seurat class object containing a weighted nearest neighbours graph which integrates Metabolic and Transcriptomic modalities. This graph can be used for clustering.
-#' @export
-#'
-#' @examples
-#' # SpaMTP.obj <- MultiOmicIntegration(SpaMTP.obj, weight.list = list(0.5, 0.5), reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))
-MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30), return.intermediate = FALSE, verbose = FALSE, ...){
+#######################################################################################################################
+## Code below are helper functions
+#######################################################################################################################
 
-  if (is.null(weight.list)){
-    mm.integration <- Seurat::FindMultiModalNeighbors(
-      multiomic.data, reduction.list = reduction.list,
-      dims.list = dims.list, return.intermediate = return.intermediate,verbose = verbose, ...)
-  } else {
-    mm.integration <- Seurat::FindMultiModalNeighbors(
-      multiomic.data, reduction.list = reduction.list,
-      dims.list = dims.list, return.intermediate = TRUE, verbose = verbose, ...)
-
-    x <- rep(weight.list[[1]], length(names(mm.integration@misc$modality.weight@modality.weight.list[[reduction.list[[1]]]]))) ## Setting the SPM weights
-    names(x) <- names(mm.integration@misc$modality.weight@modality.weight.list[[reduction.list[[1]]]])
-    mm.integration@misc$modality.weight@modality.weight.list[[reduction.list[[1]]]] <- x
-
-    x <- rep(weight.list[[2]], length(names(mm.integration@misc$modality.weight@modality.weight.list[[reduction.list[[2]]]]))) ## Setting the SPM weights
-    names(x) <- names(mm.integration@misc$modality.weight@modality.weight.list[[reduction.list[[2]]]])
-    mm.integration@misc$modality.weight@modality.weight.list[[reduction.list[[2]]]] <- x
-
-    mm.integration <- Seurat::FindMultiModalNeighbors(
-      multiomic.data, reduction.list = reduction.list,
-      dims.list = dims.list, return.intermediate = return.intermediate, modality.weight = mm.integration@misc$modality.weight, verbose = verbose, ...)
-  }
-
-  return(mm.integration)
-}
-
-
-#' Generates PCA analysis results for a SpaMTP Seurat Object
-#'
-#' This function run PCA analaysis on a SpaMTP Seurat Object.
-#' The user can provide a bin/resolution size to increase the bin size and reduce the dimensionality/noise of the SM dataset prior to calculating PCAs.
-#'
-#' @param SpaMTP SpaMTP Seurat class object that contains spatial metabolic information.
-#' @param npcs is an integer value to indicated preferred number of PCs to retain (default = 30).
-#' @param variance_explained_threshold Numeric value defining the explained variance threshold (default = 0.9).
-#' @param assay Character string defining the SpaMTP assay to extract intensity values from (default = "SPM").
-#' @param slot Character string defining the assay slot containing the intensity values (default = "counts").
-#' @param show_variance_plot Boolean indicating weather to display the variance plot output by this analysis (default = FALSE).
-#' @param bin_resolution Numeric value defining the resolution to use for binning m/z peaks. If set to `NULL`, no binning will be performed (default = NULL).
-#' @param resolution_units Character string specifying the units of the `bin_resolution`. Either 'ppm' or 'mz' can be provided. `bin_resolution` must be provided for this parameter to be implemented (default = "ppm").
-#' @param bin_method Character string defining the method to use for binning respective m/z peaks that fall within a bin. Options for this parameter can be one of "sum", "mean", "max" or "min". `bin_resolution` must be provided for this parameter to be implemented (default = "sum").
-#' @param reduction.name Character string indicating the name associated with the PCA results stored in the output SpaMTP Seurat object (default = "pca").
-#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
-#'
-#'
-#' @return SpaMTP object with pca results stored in the
-#' @export
-#'
-#' @examples
-#' # HELPER FUNCTION
-RunMetabolicPCA <- function(SpaMTP,
-                            npcs = 30,
-                            variance_explained_threshold = 0.9,
-                            assay = "SPM",
-                            slot = "counts",
-                            show_variance_plot= FALSE,
-                            bin_resolution = NULL,
-                            resolution_units = "ppm",
-                            bin_method = "sum",
-                            reduction.name = "pca",
-                            verbose = TRUE)
-{
-  verbose_message(message_text = "Running PCA Analysis ... ", verbose = verbose)
-
-  npcs <- as.integer(npcs)
-
-  if(!is.null(bin_resolution)){
-    verbose_message(message_text = paste0("Binned SpaMTP object to a bin size of ", bin_resolution), verbose = verbose)
-    if (!resolution_units %in% c("ppm", "mz")){
-      stop("Incorrect value assigned to 'resolution_units'... value must be either 'ppm' or 'mz', please change accordingly")
-    }
-    if ( !bin_method %in% c("sum", "mean", "max", "min")){
-      stop("Incorrect value assigned to 'bin_method'... value must be either 'sum', 'mean', 'max' or 'min', please change accordingly")
-    }
-
-    data <- BinSpaMTP(data = SpaMTP,
-                      resolution = bin_resolution,
-                      units = resolution_units,
-                      assay = assay,
-                      slot = slot,
-                      method = bin_method, return.only.mtx = FALSE)
-
-    data_mtx <- data[["binned"]]["counts"]
-    temp_assay <- "binned"
-
-  } else {
-    data_mtx <- SpaMTP[[assay]][slot]
-    data <- SpaMTP
-    temp_assay <- assay
-  }
-
-  # PCA analysis
-  verbose_message(message_text = "Scaling original matrix", verbose = verbose)
-
-
-  mass_matrix = Matrix::t(data_mtx)
-
-  verbose_message(message_text = "Running the principal component analysis ... " , verbose = verbose)
-
-  # Runing PCA
-
-  resampled_mat_standardised = as.matrix(Matrix::t(
-    Matrix::t(mass_matrix) - Matrix::colSums(mass_matrix) / nrow(mass_matrix)
-  ))
-
-  verbose_message(message_text = "Computing the covariance" , verbose = verbose)
-  cov_mat <- t(resampled_mat_standardised) %*% resampled_mat_standardised / (nrow(resampled_mat_standardised) - 1)
-
-  verbose_message(message_text = "Computing the eigenvalue/eigenvectors", verbose = verbose)
-  eigen_result <- eigen(cov_mat)
-  gc()
-  # Extract eigenvectors and eigenvalues
-  eigenvectors <- eigen_result$vectors
-  eigenvalues <- eigen_result$values
-
-  verbose_message(message_text = "Computing PCA", verbose = verbose)
-
-  pc = pbapply::pblapply(1:npcs, function(i) {
-    temp = resampled_mat_standardised[, 1] * eigenvectors[1, i]
-    for (j in 2:ncol(resampled_mat_standardised)) {
-      temp = temp + resampled_mat_standardised[, j] * eigenvectors[j, i]
-    }
-    return(temp)
-  })
-  pc = do.call(cbind, pc)
-  colnames(pc) = paste0("PC", 1:npcs)
-  # make pca object
-  eigenvectors <- eigenvectors[,1:npcs]
-  colnames(eigenvectors) = paste0("PC", 1:npcs)
-  #rownames(eigenvectors) = colnames(mass_matrix)
-  eigenvalues <- eigenvalues[1:npcs]
-
-  pca = list(
-    sdev = sqrt(eigenvalues),
-    rotation = eigenvectors,
-    center = Matrix::colSums(mass_matrix) / nrow(mass_matrix),
-    scale = FALSE,
-    x = pc
-  )
-  pca = list_to_pprcomp(pca)
-
-  verbose_message(message_text = "PCA finished!", verbose = verbose)
-
-  rm(mass_matrix)
-  gc()
-  eigenvalues = pca$sdev ^ 2
-  # Step 5: Compute Principal Components
-  # Choose number of principal components, k
-  # if not input, use scree test to help find retained components
-
-  if (show_variance_plot) {
-    if (!is.null(variance_explained_threshold)) {
-      tryCatch({
-        cumulative_variance = cumsum(eigenvalues) / sum(eigenvalues)
-        threshold = variance_explained_threshold  # Example threshold
-
-
-
-          par(mfrow = c(1, 1))
-          par(mar = c(2, 2, 1, 1))
-          # Plot cumulative proportion of variance explained
-          plot(
-            cumulative_variance,
-            type = 'b',
-            main = "Cumulative Variance Explained",
-            xlab = "Number of Principal Components",
-            ylab = "Cumulative Proportion of Variance Explained"
-          )
-
-          # Add a horizontal line at the desired threshold
-
-          abline(h = threshold,
-                 col = "red",
-                 lty = 2)
-
-
-        # Find the number of principal components to retain based on the threshold
-        retained =  which(cumulative_variance >= threshold)[1] - 1
-      },
-      error = function(cond) {
-        stop(
-          "Check if correct variance threshold for principle components are inputted, should be numeric value between 0 and 1"
-        )
-      },
-      warning = function(cond) {
-        stop(
-          "Check if correct variance threshold for principle components are inputted, should be numeric value between 0 and 1"
-        )
-      })
-
-    } else{
-      # if threshold not inputted, use Kaiser's criterion
-      verbose_message(message_text = "Both variance_explained_threshold and npcs not inputted, use Kaiser's criterion for determination", verbose = verbose)
-
-
-      plot(
-        eigenvalues,
-        type = 'b',
-        main = "Scree Plot",
-        xlab = "Principal Component",
-        ylab = "Eigenvalue"
-      )
-
-      # Add a horizontal line at 1 (Kaiser's criterion)
-      abline(h = 1,
-             col = "red",
-             lty = 2)
-
-      # Add a vertical line at the elbow point
-      elbow_point <- which(diff(eigenvalues) < 0)[1]
-      abline(v = elbow_point,
-             col = "blue",
-             lty = 2)
-      retained = length(which(eigenvalues >= 1))
-    }
-  }
-
-
-  SpaMTP_pca <- pca
-
-  rownames(SpaMTP_pca$rotation) <- SeuratObject::Features(data[[temp_assay]])
-  rownames(SpaMTP_pca$x) <- rownames(data@meta.data)
-
-  SpaMTP_pcas <- SeuratObject::CreateDimReducObject(embeddings = SpaMTP_pca$x, loadings = SpaMTP_pca$rotation, assay = assay, key = "pca_", stdev = SpaMTP_pca$sdev)
-
-  SpaMTP[[reduction.name]] <- SpaMTP_pcas
-
-  return(SpaMTP)
-}
 
 
 #' Creates a pprcomp object based on an input list
@@ -461,58 +201,16 @@ list_to_pprcomp <- function(lst) {
 }
 
 
+#### Code is manipulated from Seurat ##################################################################################
 
-
-#####################################################
-### Bellow helper functions are sourced from https://stackoverflow.com/questions/11123152/function-for-resizing-matrices-in-r by Vyga.
-
-
-#' Helper function to rescale a sampled matrix
+#' Compute the row variances for each m/z value
 #'
-#' @param x Vector defining new matrix coordinates
-#' @param newrange Vector defining range of old coordinates
+#' @param x Matrix containing count values used for correlation
 #'
-#' @return Vector containing rescaled coordinates
+#' @return Vector contating the row variances for each m/z value
 #'
 #' @examples
 #' #HELPER FUNCTION
-rescale <- function(x, newrange=range(x)){
-  xrange <- range(x)
-  mfac <- (newrange[2]-newrange[1])/(xrange[2]-xrange[1])
-  newrange[1]+(x-xrange[1])*mfac
+RowVar <- function(x) {
+  .Call('_Seurat_RowVar', PACKAGE = 'Seurat', x)
 }
-
-#' Helper function to resize a matrix back to its original layout after sampling
-#'
-#' @param mat matrix defining the sampled object
-#' @param ndim number of dimentions to resize the sampled matrix to (default = dim(mat)).
-#'
-#' @return Returns a resized sampled matrix to match the dimentions of the original
-#'
-#' @examples
-#' #HELPER FUNCTION
-ResizeMat <- function(mat, ndim=dim(mat)){
-  #if(!require(fields)) stop("`fields` required.")
-
-  # input object
-  odim <- dim(mat)
-  obj <- list(x= 1:odim[1], y=1:odim[2], z= mat)
-
-  # output object
-  ans <- matrix(NA, nrow=ndim[1], ncol=ndim[2])
-  ndim <- dim(ans)
-
-  # rescaling
-  ncord <- as.matrix(expand.grid(seq_len(ndim[1]), seq_len(ndim[2])))
-  loc <- ncord
-  loc[,1] = rescale(ncord[,1], c(1,odim[1]))
-  loc[,2] = rescale(ncord[,2], c(1,odim[2]))
-
-  # interpolation
-  ans[ncord] <- fields::interp.surface(obj, loc)
-
-  ans
-}
-
-#######################################################################################################################
-

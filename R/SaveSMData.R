@@ -13,6 +13,7 @@
 #' @param slot Character string defining the Seurat assay slot that contains the m/z values directly (default = "counts").
 #' @param image Character string defining the image stored within the SpaMTP Seurat object to save. If `NULL` no image will be saved (default = NULL).
 #' @param annotations Boolean values defining if the Seurat Object contains annotations to be saved (default = FALSE).
+#' @param generate.h5 Boolean value indicating whether to generate a filtered_feature_bc_matrix.h5 file. Often used by data loading functions (e.g. scanpy.load_visium). If `FALSE`, only a filtered_feature_bc_matrix folder will be generated (default = TRUE).
 #' @param verbose Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' ### Details
@@ -23,7 +24,7 @@
 #'
 #' @examples
 #' # saveSpaMTPData(SeuratObject, "../output", annotations = TRUE)
-SaveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", image = NULL, annotations = FALSE, verbose = TRUE){
+SaveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", image = NULL, annotations = FALSE, generate.h5 = TRUE, verbose = TRUE){
 
   if (!dir.exists(outdir)) {
     verbose_message(message_text = paste0("Generating new directory to store output here: ", outdir), verbose = verbose)
@@ -37,6 +38,11 @@ SaveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", ima
 
   verbose_message(message_text = "Writing @metadata slot to metadata.csv", verbose = verbose)
   data.table::fwrite(data@meta.data, paste0(outdir,"/barcode_metadata.csv"))
+
+  if(generate.h5){
+    DropletUtils::write10xCounts(data[[assay]][slot], path = paste0(outdir,"/filtered_feature_bc_matrix.h5"), type = "HDF5", overwrite = TRUE)
+  }
+
 
   if (!is.null(image)){
 

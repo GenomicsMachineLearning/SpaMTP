@@ -159,7 +159,7 @@ Now that we have successfully loaded our SM data, lets load in the ST Visium dat
 
 
 ```{r, warning=FALSE, message=FALSE}
-vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
+  vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
 ```
 
 

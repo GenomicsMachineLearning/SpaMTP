@@ -434,7 +434,7 @@ FindRegionalPathways = function(SpaMTP,
   }
   db_3 <- SpaMTP@tools$db_3
   db_3 = db_3 %>%
-    tidyr::separate_rows(Isomers_IDs, sep = "; ")
+    tidyr::separate_rows(Isomers_IDs, IsomerNames, sep = "; ")
 
   verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
 
@@ -591,6 +591,212 @@ FindRegionalPathways = function(SpaMTP,
   return(gsea_all_cluster)
 }
 
+
+
+
+#' Runs multilevel Monte-Carlo variant for performing gene sets co-regulation analysis using the RAMP_DB metabolite/gene database.
+#'
+#' This function is adapted from the [fgsea::geseca](https://github.com/alserglab/fgsea/blob/master/R/geseca-multilevel.R) package to identify significantly expressed RAMP_DB pathways based on an expression/feature embedding matrix.
+#'
+#' @param E expression matrix, rows corresponds to RAMP_IDs, columns corresponds to cell barcodes.
+#' @param minSize Minimal size of a gene set to test. All pathways below the threshold are excluded (default = 1).
+#' @param maxSize Maximal size of a gene set to test. All pathways above the threshold are excluded (default = `nrow(E) - 1`).
+#' @param center a logical value indicating whether the gene expression should be centered to have zero mean before the analysis takes place (default = TRUE).
+#' @param scale a logical value indicating whether the gene expression should be scaled to have unit variance before the analysis takes place (default = FALSE).
+#' @param sampleSize sample size for conditional sampling (default = 101).
+#' @param eps This parameter sets the boundary for calculating P-values (default = 1e-50).
+#' @param nproc If not equal to zero sets BPPARAM to use nproc workers (default = 0).
+#' @param BPPARAM Parallelization parameter used in bplapply (default = NULL).
+#' @param nPermSimple Number of permutations in the simple geseca implementation for preliminary estimation of P-values (default = 1000).
+#'
+#' @return A table with GESECA results. Each row corresponds to a tested RAMP_DB pathway.
+#' @export
+#'
+#' @examples
+#' # E <- SpaMTP@reductions$pca.rev@feature.loadings
+#' # sig_pathways <- RunRAMPgeseca(E, minSize=15, maxSize=500)
+RunRAMPgeseca <- function(E,
+                          minSize     = 1,
+                          maxSize     = nrow(E) - 1,
+                          center      = TRUE,
+                          scale       = FALSE,
+                          sampleSize  = 101,
+                          eps         = 1e-50,
+                          nproc       = 0,
+                          BPPARAM     = NULL,
+                          nPermSimple = 1000){
+
+  chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
+
+  pathway_db = split(chempathway$rampId, chempathway$pathwayName)
+  pathway_db = pathway_db[which(!duplicated(tolower(names(pathway_db))))]
+  pathway_db = pathway_db[lapply(pathway_db, length) >= minSize  &
+                            lapply(pathway_db, length) <= maxSize]
+
+  gesecaRes <- fgsea::geseca(pathway_db, E, minSize = minSize, maxSize = maxSize, center = center, scale = scale,sampleSize = sampleSize, eps = eps, nproc = nproc, BPPARAM = BPPARAM, nPermSimple = nPermSimple)
+
+  return(gesecaRes)
+
+}
+
+
+#' Create a Pathway Assay from Gene or Metabolite Data
+#'
+#' This function creates a new assay within the provided SpaMTP Seurat object which contains features (either genes or metabolites) labeled by their respective RAMP ID. This assay can be used for running feature set co-regulation analysis (based on [GSCA](https://doi.org/10.1093/bioinformatics/btp502)).
+#'
+#' @param SpaMTP A SpaMTP Seurat object containing either spatial metabolic or transcriptomic data
+#' @param analyte_type Character string specifying the type of analytes to process.Must be either "genes" or "metabolites" (default = "metabolites").
+#' @param assay Character string specifying the name of the assay to use as source data (default = "Spatial").
+#' @param slot Character string specifying which slot in the assay to use as source data (default = "counts").
+#' @param new_assay Character string specifying the name of the new assay to create (default = "pathway").
+#' @param verbose Boolean logical value indicating whether to print verbose messages during execution. (default = TRUE).
+#'
+#' @return A SpaMTP object with a new assay added, containing respective gene/metabolite data formatted based on RAMP_db IDs.
+#' @export
+#'
+#' @importFrom dplyr mutate group_by summarise ungroup
+#' @importFrom tidyr separate_rows
+#' @importFrom data.table as.data.table
+#' @importFrom SeuratObject CreateAssay5Object
+#'
+#' @examples
+#' ## Create a pathway assay from metabolite data
+#' #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "metabolites", assay = "SPM", new_assay = "pathway")
+#'
+#' ## Create a pathway assay from gene data with verbose output
+#' #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "genes", assay = "SPT", new_assay = "gene_pathway", verbose = TRUE)
+CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", verbose = TRUE){
+
+  if(!analyte_type %in% c("genes", "metabolites")){
+    stop("Incorrect `analyte_type` provided! must be either 'genes' or 'metabolites'. Please provided the correct analyte matching the selected assay data.")
+  }
+
+  if (analyte_type == "genes") {
+    if (is.null(SpaMTP@assays[[assay]][slot])) {
+      stop(
+        paste0(
+          "No data exists in object[[",
+          assay,
+          "]][",
+          slot,
+          "] .. If you are using transcriptomic data with 'genes' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'genes' from analyte_tpes"
+        )
+      )
+    } else{
+      matrix <- as.data.frame(SpaMTP[[assay]][slot])
+      matrix$commonName <- toupper(rownames(matrix))
+      matrix = merge(matrix,
+                     unique(source_df[which(grepl(source_df$rampId, pattern = "RAMP_G")), ][c("rampId" ,"commonName")]),
+                     by = "commonName")
+      dupe_list <- split(which(matrix$rampId %in% matrix$rampId[duplicated(matrix$rampId)]),
+                         matrix$rampId[matrix$rampId %in% matrix$rampId[duplicated(matrix$rampId)]])
+
+      meta.data <- matrix[c("rampId" ,"commonName")] %>%
+        group_by(rampId) %>%
+        summarise(commonName = paste(commonName, collapse = "; ")) %>%
+        ungroup()
+
+
+      matrix$commonName <- NULL
+
+    }
+  }
+  if (analyte_type == "metabolites") {
+    if (is.null(SpaMTP@assays[[assay]][slot])) {
+      stop(
+        paste0(
+          "No data exists in object[[",
+          assay,
+          "]][",
+          slot,
+          "] .. If you are using metabolic data with 'metabolites' in 'analyte_types', please ensure this dataslot exists within your SpaMTP object, else remove 'metabolites' from analyte_tpes"
+        )
+      )
+    } else{
+      matrix <- as.data.frame(SpaMTP[[assay]][slot])
+
+      # (2) Annotation
+      if (is.null(SpaMTP@tools$db_3)) {
+        stop(
+          "@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
+          "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ..."
+        )
+      }
+      db_3 <- SpaMTP@tools$db_3
+      db_3 = db_3 %>%
+        tidyr::separate_rows(Isomers_IDs, IsomerNames, sep = "; ")
+
+      verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
+
+      db_3 = db_3 %>% dplyr::mutate(inputid = Isomers_IDs) %>%  dplyr::mutate(chem_source_id = inputid)
+      verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
+      db_3 = merge(chem_props, db_3, by = "chem_source_id")
+      ### Adding DE Results
+      db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
+      db_3 <- db_3[c("mz_name",  "ramp_id")]
+      db_3 <- db_3 %>% distinct()
+      matrix$mz_name <- rownames(SpaMTP@assays[[assay]])
+      matrix = merge(db_3 , matrix, by = "mz_name")
+
+      meta.data <- matrix[c("ramp_id" ,"mz_name")] %>%
+        group_by(ramp_id) %>%
+        summarise(mz_name = paste(mz_name, collapse = "; ")) %>%
+        ungroup()
+
+      meta.data$rampId <- meta.data$ramp_id
+      meta.data <- meta.data[c("rampId","mz_name")]
+
+      rm(db_3)
+
+      dupe_list <- split(which(matrix$ramp_id %in% matrix$ramp_id[duplicated(matrix$ramp_id)]),
+                         matrix$ramp_id[matrix$ramp_id %in% matrix$ramp_id[duplicated(matrix$ramp_id)]])
+
+      matrix$mz_name <- NULL
+      matrix$rampId <- matrix$ramp_id
+      matrix$ramp_id <- NULL
+
+    }
+  }
+
+
+  matrix <- data.table::as.data.table(matrix)
+
+  if(length(dupe_list) > 0){
+
+    verbose_message(message_text = paste("Some RAMP_IDs have multiple mapped genes. These include: ",
+                                         paste0(names(dupe_list), collapse = ", ")) , verbose = verbose)
+
+    # Select rows using 'dupe_list' indices
+    merged_data <- matrix[unlist(dupe_list),]
+
+    # Compute mean for numeric columns by 'ramp_id'
+    merged_data <- merged_data[, lapply(.SD, mean, na.rm = TRUE), by = rampId]
+
+
+    matrix <- matrix[!rownames(matrix) %in% unlist(unname(dupe_list)),]
+
+    matrix <- rbind(matrix,  merged_data)
+
+  }
+
+  rownames(matrix) <- matrix$rampId
+  matrix$rampId <- NULL
+
+
+  SpaMTP[[new_assay]] <- SeuratObject::CreateAssay5Object(counts = matrix)
+
+  message("Warning: Restoring feature names to contain '_' ...")
+
+  # Manually restore underscores
+  rownames(SpaMTP[[new_assay]]) <- gsub("-", "_", x = rownames(SpaMTP[[new_assay]]))
+
+  SpaMTP[[new_assay]]@meta.data$rampId <- rownames(SpaMTP[[new_assay]])
+  SpaMTP[[new_assay]]@meta.data <- merge(SpaMTP[[new_assay]]@meta.data, meta.data, by = "rampId", all = TRUE)
+
+
+  return(SpaMTP)
+
+}
 
 
 

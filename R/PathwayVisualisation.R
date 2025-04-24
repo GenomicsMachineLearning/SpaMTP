@@ -459,3 +459,399 @@ PlotRegionalPathways <- function(regpathway,
   u = gg_dot|plt_dendr
   return(u)
 }
+
+
+
+
+
+
+#' Plots the expression profile of a feature set corresponding to specified pathways onto a 2D scatter plot based on a dimensionality reduction technique.
+#'
+#' This function has been adapted from fgsea package. For more detail about function inputs please visit their [documentation](https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31).
+#'
+#' @param pathways Character vector of pathway names to plot. These pathways must be those stored in the `chempathway` object. To check call `unique(chempathway$pathwayName)`.
+#' @param object SpaMTP Seurat object containing the dimensionality reduction to use for plotting.
+#' @param title Optional title for the plot. If set to `NULL` the title will be the pathway name (default = NULL).
+#' @param assay Character string defining the name of assay to use for data extraction. This `assay` should contain RAMP_IDs as feature names (default = `SeuratObject::DefaultAssay(object)`).
+#' @param slot Character string defining the name of slot to extract data from (default = "scale.data").
+#' @param reduction Character string defining which dimensionality reduction to use. If not specified, first searches for 'umap', then 'tsne', then 'pca' (default = NULL).
+#' @param colors Vector of colors for the gradient (default = c("darkblue", "lightgrey", "darkred")).
+#' @param guide Character string stating the type of legend to display (default = "colourbar").
+#' @param ... Additional inputs taken by `Seurat::FeaturePlot()`. Check the relative documentation for more infomation.
+#'
+#' @return A ggplot object visualizing the score of each pathway across the relative reduction.
+#' @export
+#'
+#' @examples
+#' #PlotPathways(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj, reduction = "umap"))
+PlotPathways <- function(pathways, object, title=NULL,
+                         assay=DefaultAssay(object),
+                         slot = "scale.data",
+                         reduction=NULL,
+                         colors=c("darkblue", "lightgrey", "darkred"),
+                         guide="colourbar",
+                         ...) {
+
+  chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
+  pathway_db <- split(chempathway$rampId, chempathway$pathwayName)
+  pathway_db <- pathway_db[!duplicated(tolower(names(pathway_db)))]
+
+  pathway_db <- pathway_db[pathways]
+
+  if (length(pathway_db) < 1) {
+    stop("None of the pathway names provided were found in the pathway database. Please check the pathway names provided!")
+  }
+
+  if (is.null(title)) {
+    titles <- names(pathway_db)
+  } else if (length(title) != length(pathway_db)) {
+    stop("Length of the specified titles does not match count of pathways")
+  } else {
+    titles <- title
+  }
+
+  # Use lapply to iterate over pathways and generate plots
+  pathway_plots <- lapply(seq_along(pathway_db), function(i) {
+    PlotSinglePathway(pathway=pathway_db[[i]], object=object,
+                      title=titles[i], assay=assay, slot = slot,
+                      reduction=reduction, colors=colors,
+                      guide=guide, ...)
+  })
+
+  names(pathway_plots) <- pathways
+  return(pathway_plots)
+}
+
+
+
+
+
+
+
+
+
+#' Plots the expression profile of a feature set corresponding to specified pathways onto a 2D scatter plot based on a dimensionality reduction technique.
+#'
+#' NOTE: This is a helper function for `PlotPathways`. This function has been adapted from fgsea package. For more detail about function inputs please visit their [documentation](https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31).
+#'
+#' @param pathway Character vector of pathway names to plot. These pathways must be those stored in the `chempathway` object. To check call `unique(chempathway$pathwayName)`.
+#' @param object SpaMTP Seurat object containing the spatial data and coordinates for plotting.
+#' @param title Optional title for the plot. If set to `NULL` the title will be the pathway name (default = NULL).
+#' @param assay Character string defining the name of assay to use for data extraction. This `assay` should contain RAMP_IDs as feature names (default = `SeuratObject::DefaultAssay(object)`).
+#' @param slot Character string defining the name of slot to extract data from (default = "scale.data").
+#' @param reduction Character string defining which dimensionality reduction to use. If not specified, first searches for 'umap', then 'tsne', then 'pca' (default = NULL).
+#' @param colors Vector of colors for the gradient (default = c("darkblue", "lightgrey", "darkred")).
+#' @param guide Character string stating the type of legend to display (default = "colourbar").
+#' @param ... Additional inputs taken by `Seurat::FeaturePlot()`. Check the relative documentation for more infomation.
+#'
+#' @return A ggplot object visualizing the pathway score spatially.
+#' @export
+#'
+#' @examples
+#' #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
+#' #PlotSinglePathway(glycolysis_list, spamtp_obj, reduction = "umap")
+PlotSinglePathway <- function(pathway, object, title=NULL,
+                              assay=DefaultAssay(object),
+                              slot = "scale.data",
+                              reduction=NULL,
+                              colors=c("darkblue", "lightgrey", "darkred"),
+                              guide="colourbar",
+                              ...) {
+  obj2 <- addGesecaScores(list(pathway=pathway), object, assay=assay, slot = slot, scale=TRUE)
+
+  p <- Seurat::FeaturePlot(obj2, features = "pathway",
+                           combine = FALSE, reduction=reduction, ...)
+
+  p2 <- lapply(1:length(p), function(x){
+
+    p2 <- p[[x]] + ggplot2::coord_fixed()
+    p2$scales$scales[p2$scales$find("color")] <- NULL
+
+    # Modify color scale
+    suppressMessages(
+      p2 <- p2 + ggplot2::scale_color_gradientn(limits=c(-3, 3), breaks=c(-3, 0, 3),
+                                                colors=colors, oob=scales::squish,
+                                                guide=guide, name="z-score"))
+
+    if (!is.null(title)) {
+      p2 <- p2 & ggplot2::ggtitle(title)
+    }
+    p2
+  })
+
+
+  if(length(p2)> 1){
+    p2 <- cowplot::plot_grid(plotlist = p2, ncol = length(p2))
+  } else{
+    p2 <- p2[[1]]
+  }
+
+  return(p2)
+}
+
+
+
+#' Plots the spatial expression profile of a feature set corresponding to specified pathways
+#'
+#' This function has been adapted from fgsea package. For more detail about function inputs please visit their [documentation](https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31).
+#'
+#' @param pathways Character vector of pathway names to plot. These pathways must be those stored in the `chempathway` object. To check call `unique(chempathway$pathwayName)`.
+#' @param object SpaMTP Seurat object containing the spatial data and coordinates for plotting.
+#' @param images Character vector specifying which images to use for plotting from the SpaMTP Seurat Object.
+#' @param title Optional title for the plot. If set to `NULL` the title will be the pathway name (default = NULL).
+#' @param image.alpha Numeric value between 0 and 1 controlling the transparency of the underlying image (default = 1).
+#' @param assay Character string defining the name of assay to use for data extraction. This `assay` should contain RAMP_IDs as feature names (default = `SeuratObject::DefaultAssay(object)`).
+#' @param slot Character string defining the name of slot to extract data from (default = "scale.data").
+#' @param colors Vector of colors for the gradient (default = c("darkblue", "lightgrey", "darkred")).
+#' @param guide Character string stating the type of legend to display (default = "colourbar").
+#' @param crop Boolean logical indicating whether to crop images (default = TRUE).
+#' @param min.cutoff Numeric value defining the minimum cutoff value for color scale. If `NA` this value will be determined based on the minimum value of the dataset (default = NA).
+#' @param max.cutoff Numeric value defining the maximum cutoff value for color scale. If `NA` this value will be determined based on the maximum value of the dataset (default = NA).
+#' @param ncol Numeric value defining Number of columns for arranging plots. Note this is useful if multiple images have been supplied/containing within the one SpaMTP Seurat Object (default = NULL).
+#' @param pt.size.factor Numeric value defining the spot point size for plotting (default = 1.6).
+#' @param alpha Numeric vector controlling the transparency of points (default = c(1,1).
+#' @param image.scale Character string defining the image resolution to use. This can be either "hires" or "lowres" (default = "lowres").
+#' @param shape Integer value defining the shape of points. If shape = 21, circles will be plotted (default = 21).
+#' @param stroke Numeric value stating the stroke width for points (default = NA).
+#' @param interactive Boolean logical indicating whether to create interactive plots. NOTE: this functionality is implemented through `Seurat::SpatialFeaturePlot` (default = FALSE).
+#' @param information An optional data.frame or matrix of extra information to be displayed on hover. NOTE: this functionality is implemented through `Seurat::SpatialFeaturePlot` (default = NULL).
+#' @param image.labels Character vector specifying optional labels for multiple images (default = NULL).
+#'
+#' @return A ggplot object visualizing the pathway score spatially.
+#' @export
+#'
+#' @examples
+#' #PlotPathwaysSpatially(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj)
+PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alpha = 1,
+                                  assay=SeuratObject::DefaultAssay(object), slot="scale.data",
+                                  colors=c("darkblue", "lightgrey", "darkred"),
+                                  guide="colourbar",
+                                  crop = TRUE,
+                                  min.cutoff = NA,
+                                  max.cutoff = NA,
+                                  ncol = NULL,
+                                  pt.size.factor = 1.6,
+                                  alpha = c(1, 1),
+                                  image.scale = "lowres",
+                                  shape = 21,
+                                  stroke = NA,
+                                  interactive = FALSE,
+                                  information = NULL,
+                                  image.labels = NULL
+) {
+
+  chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
+  pathway_db <- split(chempathway$rampId, chempathway$pathwayName)
+  pathway_db <- pathway_db[!duplicated(tolower(names(pathway_db)))]
+
+  pathway_db <- pathway_db[pathways]
+
+  if (length(pathway_db) < 1) {
+    stop("None of the pathway names provided were found in the pathway database. Please check the pathway names provided!")
+  }
+
+  if (is.null(title)) {
+    titles <- names(pathway_db)
+  } else if (length(title) != length(pathway_db)) {
+    stop("Length of the specified titles does not match count of pathways")
+  } else {
+    titles <- title
+  }
+
+  # Use lapply to iterate over pathways and generate plots
+  ps <- lapply(seq_along(pathway_db), function(i) {
+    PlotSinglePathwaySpatially(pathway_db[[i]], object, images, image.alpha = image.alpha,
+                               title=titles[i], assay=assay, slot=slot,
+                               colors=colors, guide=guide, crop = crop,
+                               ncol = ncol,
+                               min.cutoff = min.cutoff,
+                               max.cutoff = max.cutoff,
+
+                               pt.size.factor = pt.size.factor,
+                               alpha = alpha,
+                               image.scale = image.scale,
+                               shape = shape,
+                               stroke = stroke,
+                               interactive = interactive,
+                               information = information,
+                               image.labels = image.labels)
+  })
+
+  names(ps) <- pathways
+  return(ps)
+}
+
+
+
+
+#' Plot expression profile of a single RAMP pathway spatially
+#'
+#' NOTE: This is a helper function for `PlotPathwaysSpatially`. This function has been adapted from fgsea package. For more detail about function inputs please visit their [documentation](https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31).
+#'
+#' @param pathway Character vector of analyte IDs (genes or metabolites) in the pathway.
+#' @param object SpaMTP Seurat object containing the spatial data and coordinates for plotting.
+#' @param images Character vector specifying which images to use for plotting from the SpaMTP Seurat Object.
+#' @param title Optional title for the plot. If set to `NULL` the title will be the pathway name (default = NULL).
+#' @param image.alpha Numeric value between 0 and 1 controlling the transparency of the underlying image (default = 1).
+#' @param assay Character string defining the name of assay to use for data extraction. This `assay` should contain RAMP_IDs as feature names (default = `SeuratObject::DefaultAssay(object)`).
+#' @param slot Character string defining the name of slot to extract data from (default = "scale.data").
+#' @param colors Vector of colors for the gradient (default = c("darkblue", "lightgrey", "darkred")).
+#' @param guide Character string stating the type of legend to display (default = "colourbar").
+#' @param crop Boolean logical indicating whether to crop images (default = TRUE).
+#' @param min.cutoff Numeric value defining the minimum cutoff value for color scale. If `NA` this value will be determined based on the minimum value of the dataset (default = NA).
+#' @param max.cutoff Numeric value defining the maximum cutoff value for color scale. If `NA` this value will be determined based on the maximum value of the dataset (default = NA).
+#' @param ncol Numeric value defining Number of columns for arranging plots. Note this is useful if multiple images have been supplied/containing within the one SpaMTP Seurat Object (default = NULL).
+#' @param pt.size.factor Numeric value defining the spot point size for plotting (default = 1.6).
+#' @param alpha Numeric vector controlling the transparency of points (default = c(1,1).
+#' @param image.scale Character string defining the image resolution to use. This can be either "hires" or "lowres" (default = "lowres").
+#' @param shape Integer value defining the shape of points. If shape = 21, circles will be plotted (default = 21).
+#' @param stroke Numeric value stating the stroke width for points (default = NA).
+#' @param interactive Boolean logical indicating whether to create interactive plots. NOTE: this functionality is implemented through `Seurat::SpatialFeaturePlot` (default = FALSE).
+#' @param information An optional data.frame or matrix of extra information to be displayed on hover. NOTE: this functionality is implemented through `Seurat::SpatialFeaturePlot` (default = NULL).
+#' @param image.labels Character vector specifying optional labels for multiple images (default = NULL).
+#'
+#' @return A ggplot object visualizing the pathway score spatially.
+#' @export
+#'
+#' @examples
+#' #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
+#' #PlotSinglePathwaySpatially(glycolysis_list, spamtp_obj)
+PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, image.alpha= 1,
+                                       assay=SeuratObject::DefaultAssay(object), slot="scale.data",
+                                       colors=c("darkblue", "lightgrey", "darkred"),
+                                       guide="colourbar",
+                                       crop = TRUE,
+                                       min.cutoff = NA,
+                                       max.cutoff = NA,
+                                       ncol = NULL,
+                                       pt.size.factor = 1.6,
+                                       alpha = c(1, 1),
+                                       image.scale = "lowres",
+                                       shape = 21,
+                                       stroke = NA,
+                                       interactive = FALSE,
+                                       information = NULL,
+                                       image.labels = NULL
+) {
+
+  obj2 <- addGesecaScores(list(pathway_x=pathway), object, assay=assay, slot=slot, scale=TRUE)
+
+  p <- Seurat::SpatialFeaturePlot(obj2, features="pathway_x", images=images,
+                                  combine=FALSE,
+                                  image.alpha=image.alpha,
+                                  crop = crop,
+                                  min.cutoff = min.cutoff,
+                                  max.cutoff = max.cutoff,
+                                  pt.size.factor = pt.size.factor,
+                                  alpha = alpha,
+                                  image.scale = image.scale,
+                                  shape = shape,
+                                  stroke = stroke,
+                                  interactive = interactive,
+                                  information = information)
+
+
+
+  if(length(p)> 1){
+    if(!is.null(image.labels)){
+      title <- paste0(title, " (", image.labels, ")")
+    } else{
+      title <- rep(title, times = length(p))
+    }
+  }
+
+  p2 <- lapply(1:length(p), function(x){
+
+    p[[x]]$scales$scales[p[[x]]$scales$find("fill")] <- NULL
+
+    suppressMessages({
+      p2 <- p[[x]] + ggplot2::scale_fill_gradientn(limits=c(-3, 3), breaks=c(-3, 0, 3),
+                                                   oob=scales::squish, colors=colors,
+                                                   guide=guide, name="z-score") +
+        ggplot2::theme(legend.position = ggplot2::theme_get()$legend.position)
+    })
+
+    if (!is.null(title)) {
+      p2 <- p2 & ggplot2::ggtitle(title[x])
+    }
+    p2
+  })
+
+
+
+  if(length(p2)> 1){
+    if(!is.null(ncol)){
+      p2 <- cowplot::plot_grid(plotlist = p2, ncol = ncol)
+    } else {
+      p2 <- cowplot::plot_grid(plotlist = p2, ncol = length(images))
+    }
+  } else{
+    p2 <- p2[[1]]
+  }
+
+  #p$scales$scales[p$scales$find("fill")] <- NULL
+
+  #suppressMessages({
+  #    p2 <- p + ggplot2::scale_fill_gradientn(limits=c(-3, 3), breaks=c(-3, 0, 3),
+  #                                   oob=scales::squish, colors=colors,
+  #                                   guide=guide, name="z-score") +
+  #        ggplot2::theme(legend.position = ggplot2::theme_get()$legend.position)
+  #})
+
+  #if (!is.null(title)) {
+  #    p2 <- p2 #+ ggplot2::ggtitle(title)
+  #}
+  return(p2)
+}
+
+
+
+
+#' Add GESECA Scores to SpaMTP Object
+#'
+#' Adds Feature Set Enrichment Score for a specific pathway to a SpaMTP Seurat object's metadata. This is a helper function for `PlotPathwaysSpatially`.
+#'
+#' @param pathways List of gene/metabolite sets where the list names (pathway name) become metadata column names.
+#' @param object SpaMTP Seurat object to add the pathway scores to.
+#' @param assay Character string defining the name of assay to use for data extraction (default  = `SeuratObject::DefaultAssay(object)).
+#' @param slot Character string stating the name of slot to extract data from (default = "scale.data").
+#' @param prefix Character string to append before each pathway name in metadata columns (default = "").
+#' @param scale Boolean logical value indicating whether to scale the GESECA score (default = FALSE).
+#'
+#' @return SpaMTP Seurat object with added GESECA scores in metadata.
+#'
+#' @examples
+#' ### HELPER FUNCTION
+#' #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
+#' #spamtp_obj <- addGesecaScores(pathways = glycolysis_list, object = spamtp_obj ,assay = "RNA", scale = TRUE)
+addGesecaScores <- function(pathways,
+                            object,
+                            assay=SeuratObject::DefaultAssay(object),
+                            slot = "scale.data",
+                            prefix="",
+                            scale=FALSE) {
+  x <- Seurat::GetAssay(object, assay)
+  E <- x[slot]
+
+  res <- object
+
+
+  for (i in seq_along(pathways)) {
+    pathway <- pathways[[i]]
+    pathway <- intersect(unique(pathway), rownames(E))
+    score <- colSums(E[pathway, , drop=FALSE])/sqrt(length(pathway))
+    score <- scale(score, center=TRUE, scale=scale)
+    res@meta.data[[paste0(prefix, names(pathways)[i])]] <- score
+  }
+
+
+  return(res)
+}
+
+
+
+
+
+
+
+

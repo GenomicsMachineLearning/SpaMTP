@@ -11,6 +11,7 @@ SaveSpaMTPData(
   slot = "counts",
   image = NULL,
   annotations = FALSE,
+  generate.h5 = TRUE,
   verbose = TRUE
 )
 }
@@ -26,6 +27,8 @@ SaveSpaMTPData(
 \item{image}{Character string defining the image stored within the SpaMTP Seurat object to save. If \code{NULL} no image will be saved (default = NULL).}
 
 \item{annotations}{Boolean values defining if the Seurat Object contains annotations to be saved (default = FALSE).}
+
+\item{generate.h5}{Boolean value indicating whether to generate a filtered_feature_bc_matrix.h5 file. Often used by data loading functions (e.g. scanpy.load_visium). If \code{FALSE}, only a filtered_feature_bc_matrix folder will be generated (default = TRUE).}
 
 \item{verbose}{Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 \subsection{Details}{
