@@ -349,7 +349,7 @@ kneighbors_graph <- function(location, n_neighbors, platform, include_self = FAL
     col_indices <- as.vector(t(knn_result$nn.index))
 
     # Create row indices (equivalent to np.repeat())
-    row_indices <- rep(1:N, each = n_neighs)
+    row_indices <- rep(1:N, each = n_neighbors)
 
     # Apply neighbor correction if needed
 
