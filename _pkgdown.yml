@@ -140,6 +140,7 @@ reference:
   contents:
   - RunMetabolicPCA
   - RunSpatialGraphPCA
+  - GetKmeanClusters
 
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
