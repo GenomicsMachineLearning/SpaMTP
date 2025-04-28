@@ -17,6 +17,8 @@ PlotSinglePathway(
 )
 }
 \arguments{
+\item{pathway}{Character vector of pathway names to plot. These pathways must be those stored in the \code{chempathway} object. To check call \code{unique(chempathway$pathwayName)}.}
+
 \item{object}{SpaMTP Seurat object containing the spatial data and coordinates for plotting.}
 
 \item{title}{Optional title for the plot. If set to \code{NULL} the title will be the pathway name (default = NULL).}
@@ -32,8 +34,6 @@ PlotSinglePathway(
 \item{guide}{Character string stating the type of legend to display (default = "colourbar").}
 
 \item{...}{Additional inputs taken by \code{Seurat::FeaturePlot()}. Check the relative documentation for more infomation.}
-
-\item{pathways}{Character vector of pathway names to plot. These pathways must be those stored in the \code{chempathway} object. To check call \code{unique(chempathway$pathwayName)}.}
 }
 \value{
 A ggplot object visualizing the pathway score spatially.

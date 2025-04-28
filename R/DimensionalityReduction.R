@@ -234,6 +234,8 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @return A SpaMTP Seurat object with a new graph stored in `@graphs` and spatially-aware PCA reduction values stored in `@reductions`.
 #' @export
 #'
+#' @importFrom Matrix sparseMatrix
+#'
 #' @examples
 #' # spamtp_obj <- RunSpatialGraphPCA(spamtp_obj, platform = "Visium")
 RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = "scale.data", image = "slice1", platform="Visium", lambda=0.5, n_neighbors=NULL, include_self = FALSE, alg = "kd_tree", fast = TRUE, graph_name = "SpatialKNN", reduction_name = "SpatialPCA", verbose = TRUE){
@@ -277,7 +279,7 @@ RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = 
   # Create identity matrix and add lambda * graphL
   n <- nrow(Expr)
 
-  G <- Matrix::sparseMatrix(i = 1:n, j = 1:n, x = rep(1, n)) + (lambda * graphL)
+  G <- sparseMatrix(i = 1:n, j = 1:n, x = rep(1, n)) + (lambda * graphL)
 
   X <- solve(G, Expr)
 
