@@ -279,7 +279,7 @@ RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = 
     graph <- kneighbors_graph(location, n_neighbors = n_neighbors, platform = platform, include_self = include_self, alg = alg)
     graph <- 0.5 * (graph + t(graph))
 
-  } else if (length(image) < 1){
+  } else if (length(image) > 1){
 
     adj_mtxs <- lapply(image, function(i){
 
