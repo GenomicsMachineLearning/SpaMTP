@@ -220,7 +220,7 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @param n_components Integer specifying the number of principal components to compute (default = 50).
 #' @param assay Character string defining the name of the assay to use data from (default = "Spatial").
 #' @param slot Character string defining the name of the slot to extract scaled data from (default = "scale.data").
-#' @param image Character string matching the name of the image to use for extracting spatial coordinates (default = "slice1").
+#' @param image Character string matching the name of the image to use for extracting spatial coordinates (default = NULL).
 #' @param platform Character string matching either `"Visium"` or `"ST"` to determine how the k-NN graph is constructed. If "Visium" k-nns will handle the hexagon spot arrangement, including setting `n_neighbors` = 6, else "ST" assignment will set `n_neighbors` = 4 unless a value is specifically provided (default = "Visium").
 #' @param lambda Numeric value defining the regularisation parameter that controls the influence of the graph Laplacian (default = 0.5).
 #' @param n_neighbors Integer value specifying the number of spatial neighbours to use. If `NULL`, will default of 6 for "Visium" data and 4 for "ST" platforms (default = NULL).
@@ -238,7 +238,7 @@ RunMetabolicPCA <- function(SpaMTP,
 #'
 #' @examples
 #' # spamtp_obj <- RunSpatialGraphPCA(spamtp_obj, platform = "Visium")
-RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = "scale.data", image = "slice1", platform="Visium", lambda=0.5, n_neighbors=NULL, include_self = FALSE, alg = "kd_tree", fast = TRUE, graph_name = "SpatialKNN", reduction_name = "SpatialPCA", verbose = TRUE){
+RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = "scale.data", image = NULL, platform="Visium", lambda=0.5, n_neighbors=NULL, include_self = FALSE, alg = "kd_tree", fast = TRUE, graph_name = "SpatialKNN", reduction_name = "SpatialPCA", verbose = TRUE){
 
   if(!platform %in% c("Visium", "ST")){
     stop("Incorrect value for plantform! platform must be assigned either 'Visium' or 'ST'... If data is not Visium 'spot'-based then set platform to 'ST'")
@@ -265,12 +265,38 @@ RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = 
     verbose_message(message_text = paste0("Using a nearest neighbour value = ",n_neighbors,"! NOTE: the recomended values are -> 'Visium' data: n_neighbors = 6  / 'ST' data: n_neighbors = 4 ...." ), verbose = verbose)
   }
 
-  location = SeuratObject::GetTissueCoordinates(data, image = image)
-  location = location[c("x", "y")]
+  if(is.null(image)){
+    verbose_message(message_text = "'image' set to `NULL`: All images (different spatial coordinate sets) stored in your SpaMTP Seurat object will be used.", verbose = verbose)
+    image <- names(data@images)
+  }
 
 
-  graph <- kneighbors_graph(location, n_neighbors = n_neighbors, platform = platform, include_self = include_self, alg = alg)
-  graph <- 0.5 * (graph + t(graph))
+  if (length(image) == 1){
+
+    location = SeuratObject::GetTissueCoordinates(data, image = image)
+    location = location[c("x", "y")]
+
+    graph <- kneighbors_graph(location, n_neighbors = n_neighbors, platform = platform, include_self = include_self, alg = alg)
+    graph <- 0.5 * (graph + t(graph))
+
+  } else if (length(image) < 1){
+
+    adj_mtxs <- lapply(image, function(i){
+
+      location = SeuratObject::GetTissueCoordinates(data, image = i)
+      location = location[c("x", "y")]
+
+      graph <- kneighbors_graph(location, n_neighbors = n_neighbors, platform = platform, include_self = include_self, alg = alg)
+      graph <- 0.5 * (graph + t(graph))
+
+    })
+
+    graph <- Matrix::bdiag(adj_mtxs)
+
+  } else {
+    stop("No value for 'image' entered! Valid image names can be displayed by running `names(obj@images)`. Note: To only analyses a subset of images, a vector of image names can be provided.")
+  }
+
   graphL <- igraph::graph_from_adjacency_matrix(graph, mode = "undirected", weighted = TRUE)
   graphL <- igraph::laplacian_matrix(graphL, normalized = FALSE)
   graphL <- Matrix::as.matrix(graphL)
