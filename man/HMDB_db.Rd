@@ -60,6 +60,6 @@ A dataset containing metabolite information from the HMDB,
 including chemical formulas, exact masses, isomers, InChIKeys, and names.
 }
 \references{
-Wishart DS, et al. (2018). HMDB 4.0: the human metabolome database for 2018. Nucleic Acids Res. 46(D1):D608-D617.
+Wishart DS, et al. (2022). HMDB 5.0: The Human Metabolome Database for 2022. Nucleic Acids Res. 50(D1):D622-D631.
 }
 \keyword{datasets}

@@ -9,7 +9,7 @@ RunSpatialGraphPCA(
   n_components = 50,
   assay = "Spatial",
   slot = "scale.data",
-  image = "slice1",
+  image = NULL,
   platform = "Visium",
   lambda = 0.5,
   n_neighbors = NULL,
@@ -30,7 +30,7 @@ RunSpatialGraphPCA(
 
 \item{slot}{Character string defining the name of the slot to extract scaled data from (default = "scale.data").}
 
-\item{image}{Character string matching the name of the image to use for extracting spatial coordinates (default = "slice1").}
+\item{image}{Character string matching the name of the image to use for extracting spatial coordinates (default = NULL).}
 
 \item{platform}{Character string matching either \code{"Visium"} or \code{"ST"} to determine how the k-NN graph is constructed. If "Visium" k-nns will handle the hexagon spot arrangement, including setting \code{n_neighbors} = 6, else "ST" assignment will set \code{n_neighbors} = 4 unless a value is specifically provided (default = "Visium").}
 
