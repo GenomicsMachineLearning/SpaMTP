@@ -21,10 +21,15 @@ add_ssc_annotation <- function(data, data_ssc, resolution = 25){
   data_bin <- data
 
   if (check_cardinal_version()){
-    res <- names(data_bin)[grepl(names(data_ssc), pattern = paste0("s=", resolution))]
-    message(paste0("Getting cluster segments for resolution ", res))
 
-    Cardinal::pixelData(data_bin)[["ssc"]] <- data_ssc@listData[[res]]$class
+    if(class(data_ssc) != 'ResultsList'){
+      Cardinal::pixelData(data_bin)[["ssc"]] <- data_ssc$class
+    } else {
+      res <- names(data_bin)[grepl(names(data_ssc), pattern = paste0("s=", resolution))]
+      message(paste0("Getting cluster segments for resolution ", res))
+
+      Cardinal::pixelData(data_bin)[["ssc"]] <- data_ssc@listData[[res]]$class
+    }
 
   } else {
     message(paste0("Getting cluster segments for resolution (s) = ", resolution))
