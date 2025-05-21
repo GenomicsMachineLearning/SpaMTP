@@ -8,7 +8,8 @@ CreateMergedModalityAssay(
   SpaMTP,
   assays.to.merge,
   new.assay = "merged",
-  return.original = TRUE
+  return.original = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ CreateMergedModalityAssay(
 \item{new.assay}{A character string specifying the name of the new assay to be created (default = "merged").}
 
 \item{return.original}{Boolean value defining if the returned SpaMTP Seurat object will contain the original individual assays. If the data size is large it is recommended to set to \code{False} (default = TRUE).}
+
+\item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }
 \value{
 A SpaMTP Seurat object containing a new assay with the merged scaled data values.

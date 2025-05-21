@@ -54,6 +54,7 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #' @param assays.to.merge A character vector specifying the names of assays whose `scale.data` slots should be merged. At least two assay names must be provided and both must contain the `scale.data` slot, for example: assays.to.merge = c("SPM", "SPT").
 #' @param new.assay A character string specifying the name of the new assay to be created (default = "merged").
 #' @param return.original Boolean value defining if the returned SpaMTP Seurat object will contain the original individual assays. If the data size is large it is recommended to set to `False` (default = TRUE).
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @return A SpaMTP Seurat object containing a new assay with the merged scaled data values.
 #' @export
@@ -63,7 +64,7 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #'
 #' @examples
 #' # merged_obj <- CreateMergedModalityAssay(SpaMTP = spamtp_obj, assays.to.merge = c("SPM", "SPT"),new.assay = "merged")
-CreateMergedModalityAssay <- function(SpaMTP, assays.to.merge, new.assay = "merged", return.original = TRUE){
+CreateMergedModalityAssay <- function(SpaMTP, assays.to.merge, new.assay = "merged", return.original = TRUE, verbose = FALSE){
 
   if(length(assays.to.merge) < 1){
     stop("Incorrect length of assays.to.merge! atleast two assay names must be provided to combine the scale.data slots. Please adjust assays.to.merge accordingly.")
