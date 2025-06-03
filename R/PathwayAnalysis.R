@@ -763,8 +763,8 @@ CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Sp
 
   if(length(dupe_list) > 0){
 
-    verbose_message(message_text = paste("Some RAMP_IDs have multiple mapped genes. These include: ",
-                                         paste0(names(dupe_list), collapse = ", ")) , verbose = verbose)
+    verbose_message(message_text = paste0("Some RAMP_IDs have multiple mapped analytes. There are: ",
+                                         length(names(dupe_list)) , verbose = verbose))
 
     # Select rows using 'dupe_list' indices
     merged_data <- matrix[unlist(dupe_list),]

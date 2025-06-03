@@ -234,7 +234,7 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @return A SpaMTP Seurat object with a new graph stored in `@graphs` and spatially-aware PCA reduction values stored in `@reductions`.
 #' @export
 #'
-#' @importFrom Matrix sparseMatrix
+#' @import Matrix
 #'
 #' @examples
 #' # spamtp_obj <- RunSpatialGraphPCA(spamtp_obj, platform = "Visium")
@@ -448,7 +448,7 @@ GetKmeanClusters <- function(data, reduction = "SpatialPCA", cluster.name = "spa
     stop("Reduction not present in SpaMTP Seruat Object! ", "'",reduction, "' was not found, please run names(data@reductions) to check possible reductions to use ....")
   }
   set.seed(seed)
-  res <- stats::kmeans(data[[reduction]]@cell.embeddings, centers = centers, iter.max = iter.max, nstart = nstart, algorithm = algorithm,  trace = trace)
+  res <- stats::kmeans(data[[reduction]]@cell.embeddings, centers = clusters, iter.max = iter.max, nstart = nstart, algorithm = algorithm,  trace = trace)
 
   data[[cluster.name]] <- res$cluster
   return(data)
