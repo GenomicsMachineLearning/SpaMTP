@@ -88,10 +88,10 @@ CreateMergedModalityAssay <- function(SpaMTP, assays.to.merge, new.assay = "merg
 
   rownames(SpaMTP[[new.assay]]) <- gsub("-", "_", x = rownames(SpaMTP[[new.assay]]))
 
-  verbose_message(message_text = "NOTE: the matrix containing merged scaled data has been assigned to the `$counts`, `$data` and `$scaled.data` slots. All matricies are the same ...", verbose = verbose)
+  verbose_message(message_text = "NOTE: the matrix containing merged scaled data has been assigned to the `$counts` and `$data`slots. The `$scaled.data` slot is rescaled values ...", verbose = verbose)
 
   SpaMTP[[new.assay]]$data <- SpaMTP[[new.assay]]$counts
-  SpaMTP[[new.assay]]$scale.data <- SpaMTP[[new.assay]]$counts
+  SpaMTP[[new.assay]]$scale.data <- scale(SpaMTP[[new.assay]]$counts)
 
   if (!return.original){
     Seurat::DefaultAssay(SpaMTP) <- new.assay

@@ -800,6 +800,88 @@ CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Sp
 
 
 
+############################# Annotation Estimation using Pathway Results ########################################
+
+
+
+#' Create a SpaMTP Seurat Object containing expression values for all present pathways
+#'
+#' This function computes pathway-level scores from analyte-level expression data
+#' and stores the results as a new assay in a Seurat object. Each pathway score
+#' is calculated as the scaled mean expression of the analytes associated with
+#' that pathway, adjusted by the square root of the pathway size.
+#'
+#' @param object A SpaMTP Seurat object containing the expression data.
+#' @param assay Character. Name of the assay to extract analyte expression from. If no value is assigned, the DefaultAssay of the SpaMTP Seurat Object will be used (default = `DefaultAssay(object)`).
+#' @param slot Character. Which data slot to use (e.g., "scale.data") (default = "scale.data").
+#' @param new.assay Character. Name of the new assay where pathway scores will be stored (defaults = "pathway").
+#' @param remove.nans Logical. Whether to remove pathways with all NaN values (e.g., no matched analytes) (defaults = TRUE).
+#'
+#' @return A SpaMTP Seurat object with a new assay containing pathway-level expression scores.
+#'         Feature names are adjusted to use underscores instead of dashes.
+#'
+#' @export
+#'
+#' @examples
+#' #object <- CreatePathwayObject(seurat_obj, assay = "RNA", slot = "scale.data")
+CreatePathwayObject <- function(object,
+                                assay=SeuratObject::DefaultAssay(object),
+                                slot = "scale.data",
+                                new.assay = "pathway",
+                                remove.nans = TRUE
+) {
+
+  chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
+  pathway_db <- split(chempathway$rampId, chempathway$pathwayRampId)
+  pathway_db <- pathway_db[!duplicated(tolower(names(pathway_db)))]
+
+  x <- Seurat::GetAssay(object, assay)
+  E <- x[slot]
+
+  res <- object
+
+
+  pathway_sums <- list()
+  for (i in seq_along(pathway_db)) {
+    pathway <- pathway_db[[i]]
+    pathway <- intersect(unique(pathway), rownames(E))
+    score <- colSums(E[pathway, , drop=FALSE])/sqrt(length(pathway))
+    score <- scale(score, center=TRUE, scale=TRUE)
+    pathway_sums[[names(pathway_db)[i]]] <- score
+  }
+
+  pathway_mtx <- do.call(cbind, pathway_sums)
+  colnames(pathway_mtx) <- names(pathway_db)
+
+  pathway_mtx <- t(pathway_mtx)
+
+  if (remove.nans){
+    nan_rows <- apply(pathway_mtx, 1, function(row) all(is.nan(row)))
+    pathway_mtx <- pathway_mtx[!nan_rows,]
+  }
+
+  object[[new.assay]] <- SeuratObject::CreateAssay5Object(counts = pathway_mtx)
+
+  message("Warning: Restoring feature names to contain '_' ...")
+
+  rownames(object[[new.assay]]) <- gsub(pattern = "-", replacement = "_", x = rownames(object[[new.assay]]))
+
+  object[[new.assay]]@meta.data <- chempathway %>%
+    filter(pathwayRampId %in% rownames(object[[new.assay]])) %>%
+    select(pathwayRampId, pathwayName) %>%
+    distinct()
+
+  return(object)
+}
+
+
+
+
+
+
+
+
+
 ############################# PATHWAY HELPER FUNCTIONS ########################################
 
 #' Helper function for building a pathway db based on detected

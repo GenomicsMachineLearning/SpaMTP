@@ -87,7 +87,7 @@ Pre-processing is an import step in any pipeline and should be performed prior t
 #     process()
 
 # ## Normalise and pre-process the raw data using the reference peak
-# mse_peaks <- mse %>% 
+# mse_peaks <- bladder %>% 
 #     normalize(method="tic") %>%
 #     peakBin(ref=mz(ref),
 #             tolerance=15,
