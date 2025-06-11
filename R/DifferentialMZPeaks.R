@@ -80,6 +80,8 @@ run_pooling <- function(data.filt, idents, n, assay, slot, verbose = TRUE) {
 #' @returns A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEMs data.frame with a list of differential expressed m/z metabolites
 #' @export
 #'
+#' @import limma
+#'
 #' @examples
 #' # pooled_obj <- run_pooling(SeuratObj, "sample", n = 3)
 #' # run_DE(pooled_obj, SeuratObj, "sample", "~/Documents/DE_output/", "run_1", n = 3, logFC_threshold = 1.2, annotation.column = "all_IsomerNames", assay = "Spatial")
