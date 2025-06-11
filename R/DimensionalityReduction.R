@@ -311,7 +311,9 @@ RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = 
 
 
   rownames(graph) <- colnames(graph) <- colnames(data[[assay]][slot])
-  data@graphs[[graph_name]] <- graph
+
+
+  data@graphs[[graph_name]] <- as.Graph(graph)
 
   rm(G)
   rm(graph)

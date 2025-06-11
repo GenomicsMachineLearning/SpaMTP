@@ -88,65 +88,82 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
   verbose_message(message_text = paste("Running edgeR DE Analysis for ", run_name, " -> with samples [", paste(unique(unlist(seurat_data@meta.data[[ident]])), collapse = ", "), "]"), verbose = verbose)
 
   annotation_result <- list()
-  for (condition in unique(seurat_data@meta.data[[ident]])){
-    verbose_message(message_text = paste0("Starting condition: ",condition), verbose = verbose)
 
+  for (condition in unique(seurat_data@meta.data[[ident]])) {
+
+    # Create groups
     groups <- SingleCellExperiment::colData(pooled_data)[[ident]]
     groups <- gsub(condition, "Comp_A", groups)
     groups <- ifelse(groups != "Comp_A", "Comp_B", groups)
 
+    # Extract continuous expression data (e.g., intensity matrix)
+    expression_data <- SingleCellExperiment::counts(pooled_data)  # Or the assay holding your continuous data
 
+    # Optional: If your data is raw intensities, log-transform it here (add small offset if needed)
+    expression_data <- log2(expression_data + 1)
 
-    y <- edgeR::DGEList(SingleCellExperiment::counts(pooled_data), samples=SingleCellExperiment::colData(pooled_data)$orig.ident2, group = groups)
+    #keep <- rowMeans(expression_data) > some_threshold  # Define threshold based on your data
+    #expression_data <- expression_data[keep, ]
 
+    # Create design matrix
+    design <- model.matrix(~groups)
+    design[, 2] <- 1 - design[, 2]  # To match your original contrast logic
 
-    y$samples$condition <- groups
-    y$samples$ident <- sub("_(.*)", "", y$samples$samples)
+    # Fit linear model
+    fit <- lmFit(expression_data, design)
 
-    keep <- edgeR::filterByExpr(y, group = groups, min.count = 2, min.total.count = 10)
-    y <- y[keep,]
-    y <- edgeR::calcNormFactors(y)
+    # Empirical Bayes moderation
+    fit <- eBayes(fit, robust = TRUE)
 
-    design <- stats::model.matrix(~groups)
+    # Use treat for log fold change threshold testing if desired
+    res <- treat(fit, lfc = log2(logFC_threshold), robust = TRUE)
 
-    design[,2] <- 1-design[,2]
+    all_decisions <- decideTests(res)[, ncol(decideTests(res))]
 
-    y <- edgeR::estimateDisp(y, design, robust=TRUE)
-    fit <- edgeR::glmQLFit(y, design, robust=TRUE)
-    res <- edgeR::glmTreat(fit, coef=ncol(fit$design), lfc=log2(logFC_threshold))
-    summary(limma::decideTests(res))
-    res$table$regulate <- dplyr::recode(as.character(limma::decideTests(res)),"0"="Normal","1"="Up","-1"="Down")
-    de_group_edgeR <- res$table[order(res$table$PValue),]
-    table(limma::decideTests(res))
-    res <- edgeR::topTags(res,n = nrow(y))
-    res$table$regulate <- "Normal"
-    res$table$regulate[res$table$logFC>0 & res$table$FDR<0.05] <- "Up"
-    res$table$regulate[res$table$logFC<0 & res$table$FDR<0.05] <- "Down"
-    de_group_edgeR <- res$table[order(res$table$FDR),]
-    #table(de_group_edgeR$regulate)
+    res_table <- topTreat(fit, coef = ncol(fit$design), n = nrow(expression_data), lfc = log2(logFC_threshold))
 
-    if (!(is.null(annotation.column))){
+    res_table$regulate <- dplyr::recode(
+      as.character(all_decisions[rownames(res_table),]),
+      "0" = "Normal",
+      "1" = "Up",
+      "-1" = "Down"
+    )
 
+    # Order by p-value or FDR
+    de_group_limma <- res_table[order(res_table$adj.P.Val), ]
+
+    # Rename adj.P.Val to FDR
+    colnames(de_group_limma) <- ifelse(colnames(de_group_limma) == "adj.P.Val", "FDR", colnames(de_group_limma))
+
+    # Add gene/metabolite names
+    de_group_limma$gene <- rownames(de_group_limma)
+
+    # Add annotations if requested
+    if (!is.null(annotation.column)) {
       annotation.data <- seurat_data[[assay]]@meta.data
-      if (!(annotation.column %in% colnames(annotation.data))){
+      if (!(annotation.column %in% colnames(annotation.data))) {
         stop("Warning: The annotation column provided does not exist in seurat_data[[assay]]@meta.data")
       } else {
         rownames(annotation.data) <- annotation.data$mz_names
-        annotation.data_subset <- annotation.data[rownames(de_group_edgeR),]
-        de_group_edgeR$annotations <- annotation.data_subset[[annotation.column]]
+        annotation.data_subset <- annotation.data[rownames(de_group_limma), ]
+        de_group_limma$annotations <- annotation.data_subset[[annotation.column]]
       }
     }
 
-    if (!(is.null(output_dir))){
-      utils::write.csv(de_group_edgeR, paste0(output_dir,condition,"_",run_name, ".csv"))
+    # Write CSV output if directory specified
+    if (!is.null(output_dir)) {
+      utils::write.csv(de_group_limma, file.path(output_dir, paste0(condition, "_", run_name, ".csv")))
     }
 
-    de_group_edgeR$gene <- rownames(de_group_edgeR)
-
-    y$DEMs <- de_group_edgeR
+    # Store results
+    y$DEMs <- de_group_limma
     annotation_result[[condition]] <- y
 
+    verbose_message(message_text = paste("Analysis complete for condition:", condition), verbose = verbose)
+
   }
+
+
 
   if (return.individual){
     annotation_result <- lapply(names(annotation_result), function(x){
