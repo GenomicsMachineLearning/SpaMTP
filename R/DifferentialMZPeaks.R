@@ -101,6 +101,12 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
     # Extract continuous expression data (e.g., intensity matrix)
     expression_data <- SingleCellExperiment::counts(pooled_data)  # Or the assay holding your continuous data
 
+    y <- edgeR::DGEList(SingleCellExperiment::counts(pooled_data), samples=SingleCellExperiment::colData(pooled_data)$orig.ident2, group = groups)
+
+    y$samples$condition <- groups
+    y$samples$ident <- sub("_(.*)", "", y$samples$samples)
+
+
     # Optional: If your data is raw intensities, log-transform it here (add small offset if needed)
     expression_data <- log2(expression_data + 1)
 
