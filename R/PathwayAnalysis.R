@@ -562,19 +562,23 @@ FindRegionalPathways = function(SpaMTP,
 
     addtional_entry = do.call(rbind, lapply(1:nrow(gsea_result), function(x) {
       temp = unique(unlist(gsea_result$leadingEdge[x]))
-      temp_ref =   sub_db3[which(sub_db3$ramp_id %in% temp), ] %>% dplyr::mutate(adduct_info = paste0(observed_mz, "[", Adduct, "]")) %>% dplyr::filter(!duplicated(adduct_info))
-      temp_rna = short_source[which((short_source$rampId %in% temp) &
-                                      (grepl(short_source$rampId, pattern = "RAMP_G"))), ]
+      if ("metabolites" %in% analyte_types) {
+        temp_ref =   sub_db3[which(sub_db3$ramp_id %in% temp), ] %>% dplyr::mutate(adduct_info = paste0(observed_mz, "[", Adduct, "]")) %>% dplyr::filter(!duplicated(adduct_info))
+      }
+      if ("genes" %in% analyte_types) {
+        temp_rna = short_source[which((short_source$rampId %in% temp) &
+                                        (grepl(short_source$rampId, pattern = "RAMP_G"))), ]
+      }
       return(
         data.frame(
-          adduct_info = paste0(temp_ref$adduct_info, collapse = ";"),
-          leadingEdge_metabolites = paste0(sub(";.*", "", temp_ref$IsomerNames), collapse = ";"),
-          leadingEdge_metabolites_id = paste0(temp_ref$chem_source_id, collapse = ";"),
-          leadingEdge_genes = paste0(temp_rna$commonName, collapse = ";"),
-          met_regulation = paste0(ifelse(ranks[which((names(ranks) %in% temp) &
-                                                       (grepl(names(ranks), pattern = "RAMP_C")))] >= 0, "↑", "↓"), collapse = ";"),
-          rna_regulation = paste0(ifelse(ranks[which((names(ranks) %in% temp) &
-                                                       (grepl(names(ranks), pattern = "RAMP_G")))] >= 0, "↑", "↓"), collapse = ";")
+          adduct_info = if("metabolites" %in% analyte_types){paste0(temp_ref$adduct_info, collapse = ";")}else{""},
+          leadingEdge_metabolites = if("metabolites" %in% analyte_types){paste0(sub(";.*", "", temp_ref$IsomerNames), collapse = ";")}else{""},
+          leadingEdge_metabolites_id = if("metabolites" %in% analyte_types){paste0(temp_ref$chem_source_id, collapse = ";")}else{""},
+          leadingEdge_genes = if("genes" %in% analyte_types){paste0(temp_rna$commonName, collapse = ";")}else{""},
+          met_regulation = if("metabolites" %in% analyte_types){paste0(ifelse(ranks[which((names(ranks) %in% temp) &
+                                                       (grepl(names(ranks), pattern = "RAMP_C")))] >= 0, "↑", "↓"), collapse = ";")}else{""},
+          rna_regulation = if("genes" %in% names(DE.list)){paste0(ifelse(ranks[which((names(ranks) %in% temp) &
+                                                       (grepl(names(ranks), pattern = "RAMP_G")))] >= 0, "↑", "↓"), collapse = ";")}else{""}
         )
       )
     }))
