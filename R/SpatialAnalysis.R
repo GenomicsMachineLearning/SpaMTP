@@ -87,6 +87,11 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
   for (i in names(data_list)){
 
     result <- data_list[[i]]
+
+    if ("cor" %in% colnames(result)){
+      names(result)[names(result) == "cor"] <- "correlation"
+    }
+
     result <- result[order(-abs(result$correlation)), ]
     result$ident <- i
     result$rank <- c(1:length(result$ident))
@@ -190,7 +195,7 @@ list_to_pprcomp <- function(lst) {
   obj <- structure(list(), class = "prcomp")
   # Assign components from the list to the object
   obj$sdev <- lst$sdev
-  obj$rotation <- lst$rotation
+  obj$rotation <- lst$rotationf
   obj$center <- lst$center
   obj$scale <- lst$scale
   obj$x <- lst$x

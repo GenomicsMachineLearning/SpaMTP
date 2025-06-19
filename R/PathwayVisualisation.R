@@ -64,7 +64,7 @@ VisualisePathways = function(SpaMTP,
           duplicates <- which(all_pathways$p_val == unique_pathways$p_val[i])
           duplicate_ids <- all_pathways$pathway_id[duplicates]
           unique_pathways$duplicate_pathways[i] <- paste(duplicate_ids, collapse = ", ")
-          }
+        }
 
         unique_pathways$pathway_name <- name
         merged_pathways = rbind(merged_pathways, unique_pathways)
@@ -155,30 +155,30 @@ VisualisePathways = function(SpaMTP,
     if ("mz-" %in% mzs){
       image_raster[[z]] <- NULL
     } else{
-    mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
-    pca_result <- prcomp(mass_matrix[, mat_ind])
-    nc = 3
-    pca_re_df <- pca_result[["x"]][, 1:nc]
-    pca_df_normalized <- as.data.frame(apply(
-      pca_re_df,
-      MARGIN = 2 ,
-      FUN =  function(x)
-        (x - min(x)) / (max(x) - min(x))
-    ))
-    coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
-    # Convert the normalized UMAP result to an image matrix
-    # 3 channels side by side
+      mat_ind = which(row.names(SpaMTP[[assay]]@features) %in% mzs)
+      pca_result <- prcomp(mass_matrix[, mat_ind])
+      nc = 3
+      pca_re_df <- pca_result[["x"]][, 1:nc]
+      pca_df_normalized <- as.data.frame(apply(
+        pca_re_df,
+        MARGIN = 2 ,
+        FUN =  function(x)
+          (x - min(x)) / (max(x) - min(x))
+      ))
+      coords <- GetTissueCoordinates(SpaMTP)[c("x", "y")]
+      # Convert the normalized UMAP result to an image matrix
+      # 3 channels side by side
 
-    rgb_m = array(dim = c(max(coords[, 1]), max(coords[, 2]), nc))
-    for (j in 1:nc) {
-      rgb_m[, , j] = matrix(pca_df_normalized[, j], nrow = max(coords[, 1]))
-    }
-    # Convert the image matrix to a raster object
-    image_raster[[z]] <- as.raster(rgb_m)
-    # # Plot the RGB image using ggplot2
-    # ggplot() + annotation_custom(rasterGrob(image_raster, width = unit(1, "npc"), height = unit(1, "npc"))) +
-    #   theme_void()
-    setTxtProgressBar(pb, z)
+      rgb_m = array(dim = c(max(coords[, 1]), max(coords[, 2]), nc))
+      for (j in 1:nc) {
+        rgb_m[, , j] = matrix(pca_df_normalized[, j], nrow = max(coords[, 1]))
+      }
+      # Convert the image matrix to a raster object
+      image_raster[[z]] <- as.raster(rgb_m)
+      # # Plot the RGB image using ggplot2
+      # ggplot() + annotation_custom(rasterGrob(image_raster, width = unit(1, "npc"), height = unit(1, "npc"))) +
+      #   theme_void()
+      setTxtProgressBar(pb, z)
     }
   }
   close(pb)
@@ -298,11 +298,11 @@ VisualisePathways = function(SpaMTP,
 #' # PlotRegionalPathways(SpaMTP, ident = "clusters", regpathway = pathway_df)
 PlotRegionalPathways <- function(regpathway,
                                  ident.column = "Cluster_id",
-                   selected_pathways = NULL,
-                   sig_cutoff = NULL,
-                   num_display = NULL,
-                   text_size = NULL,
-                   verbose = TRUE) {
+                                 selected_pathways = NULL,
+                                 sig_cutoff = NULL,
+                                 num_display = NULL,
+                                 text_size = NULL,
+                                 verbose = TRUE) {
 
   ## Checks for ident column
   if (!is.null(regpathway)){
@@ -736,21 +736,38 @@ PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, imag
 
   obj2 <- addGesecaScores(list(pathway_x=pathway), object, assay=assay, slot=slot, scale=TRUE)
 
-  p <- Seurat::SpatialFeaturePlot(obj2, features="pathway_x", images=images,
-                                  combine=FALSE,
-                                  image.alpha=image.alpha,
-                                  crop = crop,
-                                  min.cutoff = min.cutoff,
-                                  max.cutoff = max.cutoff,
-                                  pt.size.factor = pt.size.factor,
-                                  alpha = alpha,
-                                  image.scale = image.scale,
-                                  shape = shape,
-                                  stroke = stroke,
-                                  interactive = interactive,
-                                  information = information)
 
+  if (class(obj2@images[[images]]) == "FOV"){
+    p <- Seurat::ImageFeaturePlot(
+      obj2,
+      features="pathway_x",
+      fov=images,
+      boundaries = NULL,
+      cols = colors[2:3],
+      size = pt.size.factor,
+      min.cutoff = min.cutoff,
+      max.cutoff = max.cutoff,
+      alpha = alpha[1],
+      dark.background = "white",
+      crop = crop
+    )
 
+  }else{
+    p <- Seurat::SpatialFeaturePlot(obj2, features="pathway_x", images=images,
+                                    combine=FALSE,
+                                    image.alpha=image.alpha,
+                                    crop = crop,
+                                    min.cutoff = min.cutoff,
+                                    max.cutoff = max.cutoff,
+                                    pt.size.factor = pt.size.factor,
+                                    alpha = alpha,
+                                    image.scale = image.scale,
+                                    shape = shape,
+                                    stroke = stroke,
+                                    interactive = interactive,
+                                    information = information)
+
+  }
 
   if(length(p)> 1){
     if(!is.null(image.labels)){
@@ -788,6 +805,7 @@ PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, imag
   } else{
     p2 <- p2[[1]]
   }
+
 
   #p$scales$scales[p$scales$find("fill")] <- NULL
 

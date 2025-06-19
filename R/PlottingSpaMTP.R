@@ -340,29 +340,29 @@ ImageMZPlot <- function(object,
     plot_titles <- pl.plustmin.data$plot_titles
 
     plot <- Seurat::ImageFeaturePlot(object = data_copy,
-                             features = col_names_to_plot,
-                             fov = fov,
-                             boundaries = boundaries,
-                             cols = cols,
-                             size = size,
-                             min.cutoff = min.cutoff,
-                             max.cutoff = max.cutoff,
-                             split.by = split.by,
-                             molecules = molecules,
-                             mols.size = mols.size,
-                             mols.cols = mols.cols,
-                             nmols = nmols,
-                             alpha = alpha,
-                             border.color = border.color,
-                             border.size = border.size,
-                             dark.background = dark.background,
-                             crop = crop,
-                             cells = cells,
-                             scale = scale,
-                             overlap = overlap,
-                             axes = axes,
-                             combine = combine,
-                             coord.fixed = coord.fixed
+                                     features = col_names_to_plot,
+                                     fov = fov,
+                                     boundaries = boundaries,
+                                     cols = cols,
+                                     size = size,
+                                     min.cutoff = min.cutoff,
+                                     max.cutoff = max.cutoff,
+                                     split.by = split.by,
+                                     molecules = molecules,
+                                     mols.size = mols.size,
+                                     mols.cols = mols.cols,
+                                     nmols = nmols,
+                                     alpha = alpha,
+                                     border.color = border.color,
+                                     border.size = border.size,
+                                     dark.background = dark.background,
+                                     crop = crop,
+                                     cells = cells,
+                                     scale = scale,
+                                     overlap = overlap,
+                                     axes = axes,
+                                     combine = combine,
+                                     coord.fixed = coord.fixed
     )
 
     for (plot_idx in seq(1, length(plot_titles))){
@@ -374,29 +374,29 @@ ImageMZPlot <- function(object,
   } else {
 
     plot <- Seurat::ImageFeaturePlot(object = object,
-                             features = mz_list,
-                             fov = fov,
-                             boundaries = boundaries,
-                             cols = cols,
-                             size = size,
-                             min.cutoff = min.cutoff,
-                             max.cutoff = max.cutoff,
-                             split.by = split.by,
-                             molecules = molecules,
-                             mols.size = mols.size,
-                             mols.cols = mols.cols,
-                             nmols = nmols,
-                             alpha = alpha,
-                             border.color = border.color,
-                             border.size = border.size,
-                             dark.background = dark.background,
-                             crop = crop,
-                             cells = cells,
-                             scale = scale,
-                             overlap = overlap,
-                             axes = axes,
-                             combine = combine,
-                             coord.fixed = coord.fixed
+                                     features = mz_list,
+                                     fov = fov,
+                                     boundaries = boundaries,
+                                     cols = cols,
+                                     size = size,
+                                     min.cutoff = min.cutoff,
+                                     max.cutoff = max.cutoff,
+                                     split.by = split.by,
+                                     molecules = molecules,
+                                     mols.size = mols.size,
+                                     mols.cols = mols.cols,
+                                     nmols = nmols,
+                                     alpha = alpha,
+                                     border.color = border.color,
+                                     border.size = border.size,
+                                     dark.background = dark.background,
+                                     crop = crop,
+                                     cells = cells,
+                                     scale = scale,
+                                     overlap = overlap,
+                                     axes = axes,
+                                     combine = combine,
+                                     coord.fixed = coord.fixed
     )
 
     for (plot_idx in seq(1, length(mz_list))){
@@ -597,31 +597,31 @@ ImageMZAnnotationPlot <- function(object,
     }
 
     plot <- Seurat::ImageFeaturePlot(data_copy,
-                             features =  mzs,
-                             fov = fov,
-                             boundaries = boundaries,
-                             cols = cols,
-                             size = size,
-                             min.cutoff = min.cutoff,
-                             max.cutoff = max.cutoff,
-                             split.by = split.by,
-                             molecules = molecules,
-                             mols.size = mols.size,
-                             mols.cols = mols.cols,
-                             nmols = nmols,
-                             alpha = alpha,
-                             border.color = border.color,
-                             border.size = border.size,
-                             dark.background = dark.background,
-                             blend = blend,
-                             blend.threshold = blend.threshold,
-                             crop = crop,
-                             cells = cells,
-                             scale = scale,
-                             overlap = overlap,
-                             axes = axes,
-                             combine = combine,
-                             coord.fixed = coord.fixed)
+                                     features =  mzs,
+                                     fov = fov,
+                                     boundaries = boundaries,
+                                     cols = cols,
+                                     size = size,
+                                     min.cutoff = min.cutoff,
+                                     max.cutoff = max.cutoff,
+                                     split.by = split.by,
+                                     molecules = molecules,
+                                     mols.size = mols.size,
+                                     mols.cols = mols.cols,
+                                     nmols = nmols,
+                                     alpha = alpha,
+                                     border.color = border.color,
+                                     border.size = border.size,
+                                     dark.background = dark.background,
+                                     blend = blend,
+                                     blend.threshold = blend.threshold,
+                                     crop = crop,
+                                     cells = cells,
+                                     scale = scale,
+                                     overlap = overlap,
+                                     axes = axes,
+                                     combine = combine,
+                                     coord.fixed = coord.fixed)
   } else {
     plot <- ImageMZPlot(data_copy,
                         mzs,
@@ -714,25 +714,25 @@ ImageMZAnnotationPlot <- function(object,
 #' # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 #' # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 SpatialMZPlot <- function(object,
-                        mzs,
-                        plusminus = NULL,
-                        images = NULL,
-                        crop = TRUE,
-                        assay = "Spatial",
-                        slot = "counts",
-                        keep.scale = "feature",
-                        min.cutoff = NA,
-                        max.cutoff = NA,
-                        ncol = NULL,
-                        combine = TRUE,
-                        pt.size.factor = 1.6,
-                        alpha = c(1, 1),
-                        image.alpha = 1,
-                        stroke = 0.25,
-                        interactive = FALSE,
-                        information = NULL,
-                        verbose = TRUE
-                      ){
+                          mzs,
+                          plusminus = NULL,
+                          images = NULL,
+                          crop = TRUE,
+                          assay = "Spatial",
+                          slot = "counts",
+                          keep.scale = "feature",
+                          min.cutoff = NA,
+                          max.cutoff = NA,
+                          ncol = NULL,
+                          combine = TRUE,
+                          pt.size.factor = 1.6,
+                          alpha = c(1, 1),
+                          image.alpha = 1,
+                          stroke = 0.25,
+                          interactive = FALSE,
+                          information = NULL,
+                          verbose = TRUE
+){
 
   if (is.null(mzs)){
     stop("No mz values have been supplied")
@@ -772,21 +772,21 @@ SpatialMZPlot <- function(object,
     }
 
     plot <- Seurat::SpatialFeaturePlot(object = data_copy,
-                             features = col_names_to_plot,
-                             images = images,
-                             crop = crop,
-                             slot = slot,
-                             keep.scale = keep.scale,
-                            min.cutoff = min.cutoff,
-                            max.cutoff = max.cutoff,
-                            ncol = ncol,
-                            combine = combine,
-                            pt.size.factor = pt.size.factor,
-                            alpha = alpha,
-                            image.alpha = image.alpha,
-                            stroke = stroke,
-                            interactive = interactive,
-                            information = information
+                                       features = col_names_to_plot,
+                                       images = images,
+                                       crop = crop,
+                                       slot = slot,
+                                       keep.scale = keep.scale,
+                                       min.cutoff = min.cutoff,
+                                       max.cutoff = max.cutoff,
+                                       ncol = ncol,
+                                       combine = combine,
+                                       pt.size.factor = pt.size.factor,
+                                       alpha = alpha,
+                                       image.alpha = image.alpha,
+                                       stroke = stroke,
+                                       interactive = interactive,
+                                       information = information
     )
 
     for (plot_idx in seq(1, length(plot_titles))){
@@ -797,21 +797,21 @@ SpatialMZPlot <- function(object,
   } else {
 
     plot <- Seurat::SpatialFeaturePlot(object = object,
-                             features = mz_list,
-                             images = images,
-                             crop = crop,
-                             slot = slot,
-                             keep.scale = keep.scale,
-                            min.cutoff = min.cutoff,
-                            max.cutoff = max.cutoff,
-                            ncol = ncol,
-                            combine = combine,
-                            pt.size.factor = pt.size.factor,
-                            alpha = alpha,
-                            image.alpha = image.alpha,
-                            stroke = stroke,
-                            interactive = interactive,
-                            information = information
+                                       features = mz_list,
+                                       images = images,
+                                       crop = crop,
+                                       slot = slot,
+                                       keep.scale = keep.scale,
+                                       min.cutoff = min.cutoff,
+                                       max.cutoff = max.cutoff,
+                                       ncol = ncol,
+                                       combine = combine,
+                                       pt.size.factor = pt.size.factor,
+                                       alpha = alpha,
+                                       image.alpha = image.alpha,
+                                       stroke = stroke,
+                                       interactive = interactive,
+                                       information = information
     )
 
     for (plot_idx in seq(1, length(mz_list))){
@@ -994,24 +994,24 @@ SpatialMZAnnotationPlot <- function(object,
 #' ## Plot mean of each ssc segmentation of separate plot with metabolite annotations
 #' # MassIntensityPlot(SeuratObj, split.by= "ssc", mz.labels = c(329.166), label.annotations = TRUE)
 MassIntensityPlot <- function (data,
-                                     group.by = NULL,
-                                     split.by = NULL,
-                                     cols = NULL,
-                                     assay = "Spatial",
-                                     slot = "counts",
-                                     label.annotations = FALSE,
-                                     annotation.column = "all_IsomerNames",
-                                     mz.labels = NULL,
-                                     metabolite.labels = NULL,
-                                     xlab = "m/z",
-                                     ylab = "intensity",
-                                     mass.range = NULL,
-                                     y.lim = NULL,
-                                     labelCex = 5,
-                                     labelAdj = -1,
-                                     labelOffset = 0,
-                                     labelCol = "#eb4034",
-                                     nlabels.to.show = NULL){
+                               group.by = NULL,
+                               split.by = NULL,
+                               cols = NULL,
+                               assay = "Spatial",
+                               slot = "counts",
+                               label.annotations = FALSE,
+                               annotation.column = "all_IsomerNames",
+                               mz.labels = NULL,
+                               metabolite.labels = NULL,
+                               xlab = "m/z",
+                               ylab = "intensity",
+                               mass.range = NULL,
+                               y.lim = NULL,
+                               labelCex = 5,
+                               labelAdj = -1,
+                               labelOffset = 0,
+                               labelCol = "#eb4034",
+                               nlabels.to.show = NULL){
 
   if (!(is.null(group.by))&!(is.null(split.by))){
     stop("'group.by' and 'split.by' cannot both be valid -> pick only one option to set = idents")
@@ -1132,22 +1132,29 @@ MassIntensityPlot <- function (data,
   df <- data.frame(means)
   df$y <- as.numeric(gsub("mz-", "", rownames(df)))
   df$annotation <- labels
-  df_long <- df %>%
-    pivot_longer(
-      cols = starts_with("X"),   # Select columns X1, X2, X3
-      names_to = "variable",     # Name for the new column that will store column names (X1, X2, X3)
-      values_to = "value"        # Name for the new column that will store the values
-    )
 
-  df_long <- df_long %>%
-    dplyr::mutate(variable = as.numeric(gsub("X", "", variable)))
+  if("means" %in% colnames(df)){
+    df$variable <- run
+    df$value <- df$means
+    df_long <- df[c("y", "annotation", "variable", "value")]
+  } else{
 
-  # Replace the indices with the corresponding names
-  df_long <- df_long %>%
-    dplyr::mutate(variable = ifelse(variable <= length(unique(run)), unique(run)[variable], NA))
+    df_long <- df %>%
+      pivot_longer(
+        cols = starts_with("X"),   # Select columns X1, X2, X3
+        names_to = "variable",     # Name for the new column that will store column names (X1, X2, X3)
+        values_to = "value"        # Name for the new column that will store the values
+      )
 
-  df_long[["variable"]] <- as.character(df_long[["variable"]])
+    df_long <- df_long %>%
+      dplyr::mutate(variable = as.numeric(gsub("X", "", variable)))
 
+    # Replace the indices with the corresponding names
+    df_long <- df_long %>%
+      dplyr::mutate(variable = ifelse(variable <= length(unique(run)), unique(run)[variable], NA))
+
+    df_long[["variable"]] <- as.character(df_long[["variable"]])
+  }
 
   if (!is.null(mass.range)){
     df_long <- df_long[df_long$y > mass.range[1] & df_long$y < mass.range[2],]
@@ -1262,7 +1269,7 @@ Plot3DFeature <- function(data,
                           plot.width = 1500,
                           image.sf = "lowres",
                           downscale.image = NULL
-                          ){
+){
 
   ## handeling of inncorect input legnths
   if (length(features) < 1 | length(features) > 2){
@@ -1354,27 +1361,27 @@ Plot3DFeature <- function(data,
                                 marker = list(color = feature_data[[2]],
                                               coloraxis = 'coloraxis2')) %>%
     layout(autosize = F,
-      scene = list(
-        aspectmode = "data",
-        xaxis = list(title = x.axis.label, showticklabels = show.x.ticks),
-        yaxis = list(title = y.axis.label, showticklabels = show.y.ticks),
-        zaxis = list(title = z.axis.label, showticklabels = show.z.ticks)),
-      coloraxis = list(colorbar = list(orientation = "v",
-                                       xanchor ="right",
-                                       x = 0,
-                                       len = 0.5,
-                                       title = list( side = "top",
-                                                     text = default_names[1]
-                                       )),
-                       colorscale = col.palette[[1]]),
-      coloraxis2 = list(colorbar = list(orientation = "v",
-                                        xanchor ="left",
-                                        len = 0.5,
-                                        x = 0,
-                                        title = list( side = "top",
-                                                      text = default_names[2]
-                                        )),
-                        colorscale = col.palette[[2]])
+           scene = list(
+             aspectmode = "data",
+             xaxis = list(title = x.axis.label, showticklabels = show.x.ticks),
+             yaxis = list(title = y.axis.label, showticklabels = show.y.ticks),
+             zaxis = list(title = z.axis.label, showticklabels = show.z.ticks)),
+           coloraxis = list(colorbar = list(orientation = "v",
+                                            xanchor ="right",
+                                            x = 0,
+                                            len = 0.5,
+                                            title = list( side = "top",
+                                                          text = default_names[1]
+                                            )),
+                            colorscale = col.palette[[1]]),
+           coloraxis2 = list(colorbar = list(orientation = "v",
+                                             xanchor ="left",
+                                             len = 0.5,
+                                             x = 0,
+                                             title = list( side = "top",
+                                                           text = default_names[2]
+                                             )),
+                             colorscale = col.palette[[2]])
 
     )
 
