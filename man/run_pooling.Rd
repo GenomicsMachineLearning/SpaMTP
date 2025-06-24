@@ -4,7 +4,7 @@
 \alias{run_pooling}
 \title{Pools SpaMTP Seurat object into random pools for pseudo-bulking.}
 \usage{
-run_pooling(data.filt, idents, n, assay, slot, verbose = TRUE)
+run_pooling(data.filt, idents, n, assay, slot, seed = 1234, verbose = TRUE)
 }
 \arguments{
 \item{data.filt}{A Seurat Object containing count values for pooling.}
@@ -16,6 +16,8 @@ run_pooling(data.filt, idents, n, assay, slot, verbose = TRUE)
 \item{assay}{Character string defining the assay where the mz count data and annotations are stored (default = "Spatial").}
 
 \item{slot}{Character string defining the assay storage slot to pull the relative mz intensity values from (default = "counts").}
+
+\item{seed}{Numeric value used to set the seed for reproducible randomisation (default = 1234).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }

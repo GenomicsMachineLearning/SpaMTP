@@ -15,7 +15,8 @@ FindAllDEMs(
   assay = "Spatial",
   slot = "counts",
   return.individual = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  seed = 1234
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ FindAllDEMs(
 \item{return.individual}{Boolean value defining whether to return a list of individual edgeR objects for each designated ident. If FALSE, one merged edgeR object will be returned (default = FALSE).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{seed}{Numeric value used to set the seed for reproducible randomisation (default = 1234).}
 }
 \value{
 Returns an list() contains the EdgeR DE results. Pseudo-bulk counts are stored in $counts and DEMs are in $DEMs.
