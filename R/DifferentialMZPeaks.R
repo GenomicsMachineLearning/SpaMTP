@@ -14,13 +14,14 @@
 #' @param assay Character string defining the assay where the mz count data and annotations are stored (default = "Spatial").
 #' @param slot Character string defining the assay storage slot to pull the relative mz intensity values from (default = "counts").
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param seed Numeric value used to set the seed for reproducible randomisation (default = 1234).
 #'
 #' @returns A SinglCellExpereiment object which contains pooled (n)-pseudo-replicate counts data based on the Seurat Object input
 #' @export
 #'
 #' @examples
 #' # run_pooling <- list(seuratObj, idents = "sample", n = 3, assay = "Spatial", slot = "counts")
-run_pooling <- function(data.filt, idents, n, assay, slot, verbose = TRUE) {
+run_pooling <- function(data.filt, idents, n, assay, slot, seed = 1234, verbose = TRUE) {
 
   cell_metadata <- data.filt@meta.data
   samples <- unique(cell_metadata[[idents]])
@@ -29,7 +30,7 @@ run_pooling <- function(data.filt, idents, n, assay, slot, verbose = TRUE) {
 
   nrg <- n
   for(i in c(1:length(samples))){
-    set.seed(i)
+    set.seed(seed+i)
     wo<-which(cell_metadata[[idents]]== samples[i])
     cell_metadata[wo,'orig.ident2']<-paste(samples[i],sample(c(1:n),length(wo)
                                                              ,replace=T,prob=rep(1/nrg,nrg)),sep='_')
@@ -218,13 +219,14 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
 #' @param slot Character string defining the assay storage slot to pull the relative mz intensity values from. Note: EdgeR requires raw counts, all values must be positive (default = "counts").
 #' @param return.individual Boolean value defining whether to return a list of individual edgeR objects for each designated ident. If FALSE, one merged edgeR object will be returned (default = FALSE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param seed Numeric value used to set the seed for reproducible randomisation (default = 1234).
 #'
 #' @returns Returns an list() contains the EdgeR DE results. Pseudo-bulk counts are stored in $counts and DEMs are in $DEMs.
 #' @export
 #'
 #' @examples
 #' # FindAllDEMs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)
-FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir = NULL, run_name = "FindAllDEMs", annotation.column = NULL, assay = "Spatial", slot = "counts", return.individual = FALSE, verbose = TRUE){
+FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir = NULL, run_name = "FindAllDEMs", annotation.column = NULL, assay = "Spatial", slot = "counts", return.individual = FALSE, verbose = TRUE, seed = 1234){
 
   if (!(is.null(DE_output_dir))){
     if (dir.exists(DE_output_dir)){
