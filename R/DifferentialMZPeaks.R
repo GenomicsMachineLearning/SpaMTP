@@ -238,7 +238,7 @@ FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
   }
 
   #Step 1: Run Pooling to split each unique ident into 'n' number of pseudo-replicate pools
-  pooled_data <- run_pooling(data,ident, n = n, assay = assay, slot = slot, verbose = verbose)
+  pooled_data <- run_pooling(data,ident, n = n, assay = assay, slot = slot, verbose = verbose, seed = seed)
 
   #Step 2: Run EdgeR to calculate differentially expressed m/z peaks
   DEM_results <- run_DE(pooled_data, data, ident = ident, output_dir = DE_output_dir, run_name = run_name, n=n, logFC_threshold=logFC_threshold, annotation.column = annotation.column, assay = assay, verbose = verbose, return.individual = return.individual)
