@@ -1,0 +1,166 @@
+---
+title: "DE Assumption Testing"
+output: html_document
+date: "2025-06-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#General Libraries
+library(SpaMTP)
+library(Cardinal)
+library(Seurat)
+library(dplyr)
+
+#For plotting + DE plots
+library(ggplot2)
+library(EnhancedVolcano)
+```
+
+
+```{r}
+bladder <- readRDS("vignettes/vignette_data_files/Mouse_Urinary_Bladder/bladder_annotated.RDS")
+ROI <- subset(bladder, subset = ssc %in% c("2", "5", "6"))
+```
+
+```{r}
+## Check for normal distibution
+expr <- ROI@assays$Spatial$counts
+genes <- rownames(ROI@assays$Spatial$counts)
+shapiro_safe <- function(vals, max_n = 5000) {
+  vals <- vals[!is.na(vals)]  # remove NAs
+  if (length(unique(vals)) < 3) {
+    return(NA)  # not enough variation
+  }
+  if (length(vals) > max_n) {
+    vals <- sample(vals, max_n)
+  }
+  return(shapiro.test(vals)$p.value)
+}
+
+shapiro_p <- sapply(rownames(expr), function(g) {
+  vals <- as.numeric(expr[g, ])
+  shapiro_safe(vals)
+})
+
+qqnorm(as.numeric(expr[genes[50], ]), main = paste("Q-Q Plot of", genes[50]))
+qqline(as.numeric(expr[genes[50], ]), col = "red")
+
+```
+
+shapiro_p
+                    Category Count
+1     p <= 0.05 (Not Normal)    79
+2 p > 0.05 (Possibly Normal)     0
+
+
+
+Method     Continous Data    Normality?	    Your Data OK?	          Notes
+t-test	        ✅ Yes	        ❌             No	                  Violated assumption — don't use for raw or count-based data.
+wilcox	        ✅ Yes	        ✅             Yes	                  Non-parametric, safe and robust.
+MAST	          ✅ Yes	        ✅             Yes                  	Models dropout explicitly, good for scRNA-seq.
+negbinom        ❌ No	        ✅             No                   	OK for UMI count data.
+DESeq2	        ❌ No	        ✅             No                   	Uses negative binomial, robust.
+poisson	        ❌ No	     Assumes Poisson	 No	                   Often too simplistic.
+LR	            ✅ Yes	        ✅             Yes	                  Logistic regression on group membership.
+roc	            ✅ Yes	        ✅             Yes	                  Measures predictive power, not dependent on distribution.
+wilcox_limma	  ✅ Yes	        ✅             Yes                 	limma wrapper, does not assume normality.
+bimod	          ✅ Yes         ✅             Yes                 	LRT based, flexible.
+
+
+
+
+```{r}
+library(ggvenn)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+
+pool_sizes <- 1:20
+seeds <- c(8880, 4512, 3291, 10, 30)  # number of repetitions per pool size
+
+# Run DEMs multiple times per pool size
+results <- expand.grid(pool_n = pool_sizes, rep = 1:length(seeds)) %>%
+  pmap_dfr(function(pool_n, rep) {
+    de <- FindAllDEMs(ROI, ident = "ssc", n = pool_n, seed = seeds[rep])
+    de$DEMs %>%
+      mutate(pool_n = pool_n, rep = rep)
+  })
+
+# Count significant DEMs (FDR < 0.05) per pool size, cluster, and rep
+sig_counts <- results %>%
+  filter(FDR < 0.05) %>%
+  filter(logFC > 0) %>%
+  group_by(pool_n, cluster, rep) %>%
+  summarise(num_significant = n(), .groups = "drop")
+
+# Summarise across reps: mean ± sd
+sig_summary <- sig_counts %>%
+  group_by(pool_n, cluster) %>%
+  summarise(
+    mean_sig = mean(num_significant),
+    sd_sig = sd(num_significant),
+    se_sig = sd_sig / sqrt(n()),
+    .groups = "drop"
+  )
+
+# Plot with error bars
+ggplot(sig_summary, aes(x = pool_n, y = mean_sig, colour = as.factor(cluster))) +
+  geom_line() +
+  geom_point() +
+  #geom_ribbon(aes(ymin = mean_sig - se_sig, ymax = mean_sig + se_sig, fill = as.factor(cluster)), alpha = 0.2, colour = NA)+
+  geom_errorbar(aes(ymin = mean_sig - se_sig, ymax = mean_sig + se_sig), width = 0.3) +
+  labs(
+    title = "Number of Significant DEMs vs Pool Size (Mean ± SE)",
+    x = "Number of Pools (n)",
+    y = "Mean Significant DEMs (FDR < 0.05)",
+    colour = "Cluster"
+  ) +
+  theme_classic()
+
+
+
+# Step 1: Get sets of sig m/z per (pool_n, cluster, rep)
+sig_sets <- results %>%
+  filter(FDR < 0.05) %>%
+  group_by(pool_n, cluster, rep) %>%
+  summarise(sig_mz = list(gene), .groups = "drop")
+
+# Step 2: Compute intersection across replicates for each (pool_n, cluster)
+consistency_summary <- sig_sets %>%
+  group_by(pool_n, cluster) %>%
+  summarise(
+    shared_mz = reduce(sig_mz, intersect),
+    num_shared = length(shared_mz),
+    .groups = "drop"
+  )
+
+# Step 3: Plot
+ggplot(consistency_summary, aes(x = pool_n, y = num_shared, colour = as.factor(cluster))) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Number of Shared Significant m/z Across Replicates",
+    x = "Number of Pools (n)",
+    y = "Shared m/z (FDR < 0.05) Across All Seeds",
+    colour = "Cluster"
+  ) +
+  theme_classic()
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
