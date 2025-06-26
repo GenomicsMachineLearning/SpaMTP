@@ -162,6 +162,12 @@ FishersPathwayAnalysis <- function (Analyte,
   temp_mz_analyte = data.frame(cbind(mz_array = mz_array,
                                      sourceId = analytes_new,
                                      adduct = adducts_array)) %>% filter(!duplicated(sourceId))
+  temp_mz_analyte2 = temp_mz_analyte
+  colnames(temp_mz_analyte2)[2] = "commonName"
+  analytes_rampids_df2 = merge(source_new %>% mutate(sourceId = tolower(commonName)),
+                               temp_mz_analyte2 %>% mutate(sourceId = tolower(commonName)),
+                              by = "commonName")
+  analytes_rampids_df = rbind(analytes_rampids_df,analytes_rampids_df2)
 
   analytehaspathway_new = unique(analytehaspathway_new)
   source_new = unique(source_new)
