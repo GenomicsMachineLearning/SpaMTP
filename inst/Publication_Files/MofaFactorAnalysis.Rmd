@@ -1,0 +1,105 @@
+```{r}
+
+factors <- get_factors(sm, factors = "all", groups = "all", as.data.frame = TRUE)
+factors_wide <- pivot_wider(factors, names_from = factor, values_from = value)
+rows <-factors_wide$sample
+factors_wide$sample <- NULL
+factors_wide$group <- NULL
+
+set.seed(123)  # For reproducibility
+kmeans_result <- kmeans(factors_wide, centers = 11)  # Remove 'sample' column, choose 4 clusters
+
+# Add cluster labels
+factors_wide$cluster <- paste0("clust_", kmeans_result$cluster)
+
+factors_for_clustering <- factors_wide[, -c(11)]
+# install if needed
+# install.packages("uwot")
+
+library(uwot)
+library(dplyr)
+
+# Only keep factor columns (not cluster)
+factors_only <- factors_wide %>% select(starts_with("Factor"))
+
+# Run UMAP
+set.seed(123)  # for reproducibility
+umap_result <- umap(factors_only, n_neighbors = 15, min_dist = 0.1, metric = "euclidean")
+
+# Put the UMAP results into a tibble
+umap_df <- as_tibble(umap_result) %>%
+  rename(UMAP1 = V1, UMAP2 = V2) %>%
+  bind_cols(cluster = factors_wide$cluster)  # add cluster labels if you want
+
+options(repr.plot.width = 7, repr.plot.height = 7)
+library(ggplot2)
+
+ggplot(umap_df, aes(x = UMAP1, y = UMAP2, color = cluster)) +
+  geom_point(size = 1.5) +
+  theme_minimal() +
+  labs(title = "UMAP of MOFA Factors", color = "Cluster")
+
+factors_wide <- data.frame(factors_wide)
+rownames(factors_wide) <- rows
+data@meta.data[colnames(factors_wide)] <- factors_wide
+
+options(repr.plot.width = 15, repr.plot.height = 7)
+SpatialDimPlot(data, "annotations", pt.size.factor = 2)|SpatialDimPlot(data, "cluster", pt.size.factor = 2)
+# 1. Extract weights
+weights <- get_weights(sm, views = c(1,2), factors = "all")
+
+# 2. Prepare weight matrices
+weights_view1 <- weights[["RNA"]]
+weights_view2 <- weights[["MET"]]
+
+# Add prefixes so feature names are unique
+#rownames(weights_view1) <- paste0("view1_", rownames(weights_view1))
+#rownames(weights_view2) <- paste0("view2_", rownames(weights_view2))
+
+# 3. Combine into one matrix
+weights_combined <- rbind(weights_view1, weights_view2)
+
+# Assuming 'data' is your data frame or matrix
+
+# Step 1: Convert each column to absolute values
+data_abs <- abs(weights_combined)
+
+# Step 2: Rank each column from highest to lowest and store the rank and score
+ranked_data <- lapply(1:ncol(data_abs), function(i) {
+  # Rank the absolute values in each column (factor) from highest to lowest
+  rank_values <- rank(-data_abs[, i], ties.method = "first")  # Negative for descending rank
+  score_values <- data_abs[, i]
+  
+  # Create a data frame with the gene, rank, and score for each factor
+  df <- data.frame(
+    factor = colnames(weights_combined)[i],
+    gene = rownames(weights_combined),
+    rank = rank_values,
+    score = score_values
+  )
+  
+  return(df)
+})
+
+# Step 3: Combine the results into one data frame
+ranked_df <- do.call(rbind, ranked_data)
+
+# Assuming 'ranked_df' is the data frame that contains rank and score for each gene and factor
+
+# Step 1: Filter for top 50 ranked genes in each factor
+top_20_df <- ranked_df %>%
+  group_by(factor) %>%
+  filter(rank <= 20)  # Filter for top 20 genes based on rank
+
+
+options(repr.plot.width = 25, repr.plot.height = 10)
+# Step 2: Plot the top 20 genes for each factor, with labels for each gene
+ggplot(top_20_df, aes(x = rank, y = score, label = gene)) +
+  geom_point(aes(color = factor), size = 3) +  # Plot the points with colors for each factor
+  geom_text(aes(label = gene), vjust = -0.5, size = 3) +  # Add labels above the points
+  facet_wrap(~ factor, scales = "free_y") +  # Create a separate plot for each factor
+  labs(x = "Rank (Top 20)", y = "Score", title = "Top 20 Ranked Genes for Each Factor") +
+  theme_minimal() +
+  theme(strip.text = element_text(size = 8))
+
+```

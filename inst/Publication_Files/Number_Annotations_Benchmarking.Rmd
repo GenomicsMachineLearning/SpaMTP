@@ -1,0 +1,158 @@
+```{r}
+library(Seurat)
+library(Cardinal)
+library(SpaMTP)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+```
+
+```{r}
+## 1.
+cardinal <- readImzML("./Test_Data/Spotted/2020-12-05_ME_X190_L1_Spotted_20umss_375x450_33at_DAN_Neg")
+metaspace <- read.csv("./Test_Data/Spotted/metaspace_annotations_HMDB.csv", skip = 2, header = TRUE, stringsAsFactors = FALSE)
+
+## 2.
+ref_mz <- sort(unique(metaspace$mz))
+cardinal <- bin(x = cardinal,ref = ref_mz, tolerance = 3, units = "ppm")
+
+## 3.
+mzs <- data.frame(Cardinal::featureData(cardinal))$mz
+
+
+## 4.
+results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative") 
+
+## 5.
+cardinal_subset <- Cardinal::subset(cardinal, mz %in% results$observed_mz)
+
+## 6. 
+gc()
+rm(results)
+rm(cardinal)
+rm(mzs)
+rm(ref_mz)
+
+data <- CardinalToSeurat(cardinal_subset)
+data <- AnnotateSM(data, db = HMDB_db, ppm_error = 3, , adducts = c("M-H", "M+Cl"), polarity = "negative")
+
+metaspace$mz_names <- paste0("mz-",metaspace$mz)
+
+common_ids <- intersect(metaspace$mz_names, data@assays$Spatial@meta.data$mz_names)
+
+metaspace_filtered <- metaspace %>% filter(mz_names %in% common_ids)
+
+#metaspace_filtered <- metaspace_filtered[c("mz", "adduct", "fdr", "moleculeNames", "moleculeIds")]
+
+
+metaspace_filtered <- metaspace_filtered %>%
+  group_by(mz) %>%
+  summarise(
+    moleculeNames = paste(moleculeNames, collapse = ", "),
+    moleculeIds = paste(moleculeIds, collapse = ", "),
+    adduct = paste(adduct, collapse = ", "),
+    fdr = paste(fdr, collapse = ", "),
+    mz_names = paste(mz_names, collapse = ", ")
+  ) %>%
+  ungroup()
+
+spamtp_filtered <- data@assays$Spatial@meta.data %>% filter(mz_names %in% common_ids)
+
+
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(tidyr)
+
+df1 <- metaspace_filtered
+df2 <- spamtp_filtered
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(patchwork)  # for vertical plot layout
+
+# Define bin breaks
+mz_bins <- seq(0, 1000, by = 50)
+
+# Prepare df1
+df1_binned <- df1 %>%
+  mutate(
+    n_annotations = str_count(moleculeIds, ",") + 1,
+    bin = cut(mz, breaks = mz_bins, include.lowest = TRUE, right = FALSE)
+  ) %>%
+  group_by(bin) %>%
+  summarise(mean_annotations = mean(n_annotations, na.rm = TRUE)) %>%
+  mutate(source = "df1")
+
+# Prepare df2
+df2_binned <- df2 %>%
+  mutate(
+    n_annotations = str_count(all_Isomers, ";") + 1,
+    bin = cut(raw_mz, breaks = mz_bins, include.lowest = TRUE, right = FALSE)
+  ) %>%
+  group_by(bin) %>%
+  summarise(mean_annotations = mean(n_annotations, na.rm = TRUE)) %>%
+  mutate(source = "df2")
+
+# Combine and compute bin midpoints
+binned_data <- bind_rows(df1_binned, df2_binned) %>%
+  mutate(
+    bin_mid = as.numeric(str_extract(bin, "\\d+")),
+    bin_mid = bin_mid + 50  # center of bin
+  )
+
+# Get consistent x-axis range
+x_min <- floor(min(c(df1$mz, df2$raw_mz), na.rm = TRUE) / 50) * 50
+x_max <- ceiling(max(c(df1$mz, df2$raw_mz), na.rm = TRUE) / 50) * 50
+x_breaks <- seq(x_min, x_max, by = 50)
+
+
+fake_entries <- expand.grid(
+  bin_mid = c(0, 50, 100, 1050),
+  source = c("df1", "df2"),
+  stringsAsFactors = FALSE
+) %>%
+  dplyr::mutate(
+    mean_annotations = 0,
+    bin = factor(paste0("[", bin_mid - 25, ",", bin_mid + 25, ")"))  # fabricate a bin label
+  )
+
+# Combine with the original data
+binned_data_padded <- dplyr::bind_rows(binned_data, fake_entries)
+
+# Bar plot with matching x-axis
+bar_plot <- ggplot(binned_data_padded, aes(x = factor(bin_mid), y = mean_annotations, fill = source)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7, alpha = 0.8) +
+  scale_fill_manual(values = c("df1" = "blue", "df2" = "red")) +
+  labs(x = "m/z bin midpoint", y = "Mean annotations", fill = "Dataset") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+
+# Dot plot with same x-axis
+dot_plot <- ggplot() +
+  geom_point(data = df1 %>% mutate(n_annotations = str_count(moleculeIds, ",") + 1),
+             aes(x = mz, y = n_annotations),
+             color = "blue", alpha = 0.6, size = 2) +
+  geom_point(data = df2 %>% mutate(n_annotations = str_count(all_Isomers, ";") + 1),
+             aes(x = raw_mz, y = n_annotations),
+             color = "red", alpha = 0.6, size = 2) +
+  geom_smooth(data = df1 %>% mutate(n_annotations = str_count(moleculeIds, ",") + 1),
+              aes(x = mz, y = n_annotations),
+              color = "blue", method = "loess", se = FALSE) +
+  geom_smooth(data = df2 %>% mutate(n_annotations = str_count(all_Isomers, ";") + 1),
+              aes(x = raw_mz, y = n_annotations),
+              color = "red", method = "loess", se = FALSE) +
+  scale_x_continuous(limits = c(0, 1000), breaks = c(0, 250, 500, 750, 1000)) +
+  labs(x = "m/z", y = "Number of annotations") +
+  theme_minimal()
+
+
+p <- bar_plot / dot_plot + plot_layout(heights = c(1, 2))
+p
+
+```
+
+
+
+

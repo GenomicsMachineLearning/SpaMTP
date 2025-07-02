@@ -138,6 +138,7 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
 #' # SpaMTP.obj <- FindSpatiallyVariableMetabolites(SpaMTP)
 FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "counts",image = "slice1", nfeatures = 2000, verbose = TRUE){
 
+  DefaultAssay(object) <- assay
   features <- rownames(x = object[[assay]])
   spatial.location <- GetTissueCoordinates(object = object[[image]])
   data <- GetAssayData(object = object, slot = slot)

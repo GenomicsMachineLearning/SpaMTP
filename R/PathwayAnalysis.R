@@ -842,9 +842,6 @@ CreatePathwayObject <- function(object,
   x <- Seurat::GetAssay(object, assay)
   E <- x[slot]
 
-  res <- object
-
-
   pathway_sums <- list()
   for (i in seq_along(pathway_db)) {
     pathway <- pathway_db[[i]]

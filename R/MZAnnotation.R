@@ -769,7 +769,7 @@ AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.
 
   true_mzs <- c()
   for (mass in annotations$mass){
-    true_mz <- FindNearestMZ(data, mass)
+    true_mz <- FindNearestMZ(data, mass, assay = assay)
     true_mzs <- c(true_mzs,true_mz)
   }
 
@@ -913,3 +913,53 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
   return(obj)
 }
 
+
+
+
+#' Annotates vector of m/z values
+#'
+#' This function assigns each valid m/z peak with one/multiple metabolite names based on the mass difference between the observed value and the theoretical value documented in the reference database.
+#' This function is to be used when dealing with large datasets as a preprocessing step. Users can annotate m/z values first and then subset their data accordinly before loading it into a SpaMTP Seurat Object.
+#'
+#' @param mzs Vector containing m/z values for annotation.
+#' @param db Reference metabolite dataset in the form of a Data.Frame. SpaMTP provides 4 pre-cleaned and optimised databases (`HMDB_db`, `Lipidmaps_db`, `Chebi_db`, `GNPS_db`).
+#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
+#' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
+#' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
+#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
+#' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#'
+#' @returns A data.frame containing all successfully annotated m/z values, with their corresponding annotation.
+#' @export
+#'
+#' @examples
+#' #cardinal <- readImzML("./Test_Data/Spotted/test_data1")
+#' #mzs <- data.frame(Cardinal::featureData(cardinal))$mz
+#' #results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative")
+#' #cardinal_subset <- Cardinal::subset(cardinal, mz %in% results$observed_mz)
+#' #SpaMTP_data <- CardinalToSeurat(cardinal_subset)
+AnnotateBigData <- function(mzs, db,  ppm_error = NULL, adducts = NULL,polarity = "positive", tof_resolution = 30000,verbose = TRUE){
+  mz_df <- data.frame(mz = mzs)
+  mz_df$row_id <- seq(1, length(mz_df[["mz"]]))
+  mz_df <- mz_df[c("row_id", "mz")]
+
+  annotations <- annotateTable(mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose)
+
+  result_df <- annotations %>%
+    dplyr::group_by(observed_mz) %>%
+    dplyr::summarise(
+      all_IsomerNames = paste(IsomerNames, collapse = "; "),
+      all_Isomers = paste(Isomers, collapse = "; "),
+      all_Isomers_IDs = paste(Isomers_IDs, collapse = "; "),
+      all_Adducts = paste(unique(Adduct), collapse = "; "),
+      all_Formulas = paste(unique(Formula), collapse = "; "),
+      all_Errors = paste(round(Error,4), collapse = "; ")
+    )
+
+  rownames(result_df) <- paste0("mz-",result_df$observed_mz)
+  result_df$mz_names <- rownames(result_df)
+  result_df <- result_df %>% dplyr::mutate(present = TRUE)
+  result_df <- data.frame(result_df)
+  rownames(result_df) <- 1:length(result_df$observed_mz)
+  return(result_df)
+}

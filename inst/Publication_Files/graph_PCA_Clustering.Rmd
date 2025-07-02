@@ -1,0 +1,228 @@
+```{r}
+library(Seurat)
+library(ggplot2)
+library(SpaMTP)
+```
+
+
+
+```{r}
+combined.data <- readRDS("/QRISdata/Q1851/Andrew_C/SpaMTP/Public_Data/vignette_objects/fmp10.vignette.data.RDS")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+DefaultAssay(combined.data) <- "SPT"
+
+## Run ST clustering 
+combined.data <- NormalizeData(combined.data, verbose = FALSE)
+combined.data <- FindVariableFeatures(combined.data, verbose = FALSE)
+combined.data <- ScaleData(combined.data, verbose = FALSE)
+combined.data <- RunPCA(combined.data, npcs = 30, reduction.name = "spt.pca", verbose = FALSE)
+combined.data <- FindNeighbors(combined.data, dims = 1:30, reduction = "spt.pca", verbose = FALSE)
+combined.data <- RunUMAP(combined.data, dims = 1:30, reduction = "spt.pca", reduction.name = "spt.umap", verbose = FALSE)
+combined.data <- FindClusters(combined.data, resolution = 0.5, cluster.name = "ST_clusters", verbose = FALSE)
+
+
+DefaultAssay(combined.data) <- "SPM"
+
+## Run SM clustering 
+combined.data <- NormalizeData(combined.data, assay = "SPM")
+combined.data <- FindVariableFeatures(combined.data, verbose = FALSE)
+combined.data <- ScaleData(combined.data, verbose = FALSE)
+combined.data <- RunPCA(combined.data, npcs = 30, reduction.name = "spm.pca", verbose = FALSE)
+combined.data <- FindNeighbors(combined.data, dims = 1:15, reduction = "spm.pca", verbose = FALSE)
+combined.data <- RunUMAP(combined.data, dims = 1:15, reduction = "spm.pca", reduction.name = "spm.umap", verbose = FALSE)
+combined.data <- FindClusters(combined.data, resolution = 0.5,  cluster.name = "SM_clusters", verbose = FALSE)
+
+## Integrate SM and ST 
+integrated.data <- MultiOmicIntegration(combined.data,return.intermediate = T, weight.list = list(0.4,0.6),
+                                        reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:15))
+integrated.data <- RunUMAP(integrated.data, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_",verbose = FALSE)
+integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm = 3, resolution = 1.5,  cluster.name = "integrated_clusters", verbose = FALSE)
+
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+## Using GraphPCA to add spatial Infomation
+
+## Run SM clustering 
+integrated.data <- RunSpatialGraphPCA(data = integrated.data, n_components = 30, assay = "SPM", platform = "Visium")
+integrated.data <- GetKmeanClusters(integrated.data, cluster.name = "gpca_SPM", clusters = 11)
+
+## Run ST clustering 
+integrated.data <- RunSpatialGraphPCA(data = integrated.data, n_components = 30, assay = "SPT", platform = "Visium", reduction_name = "SpatialPCAT", graph_name = "SpatialKNNt")
+integrated.data <- GetKmeanClusters(integrated.data, cluster.name = "gpca_SPT", clusters = 11 ,reduction = "SpatialPCAT")
+
+## Integrate SM and ST 
+integrated.data <- MultiOmicIntegration(integrated.data,return.intermediate = T, weight.list = list(0.5,0.5),
+                                        reduction.list =  list("SpatialPCA", "SpatialPCAT"), dims.list = list(1:30, 1:30))
+integrated.data <- RunUMAP(integrated.data, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_",verbose = FALSE)
+integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm = 3, resolution = 0.6,  cluster.name = "integrated_clusters_2", verbose = FALSE)
+
+```
+
+
+```{r}
+## Get clustering metrics
+options(repr.plot.width = 25, repr.plot.height = 10)
+p <- SpatialDimPlot(integrated.data, group.by = c("annotations") , cols = annotation_palette, pt.size.factor = 2)
+p2 <- SpatialDimPlot(integrated.data, group.by = c("ST_clusters", "SM_clusters", "gpca_SPT", "gpca_SPM"), ncol = 2)
+p3 <- SpatialDimPlot(integrated.data, group.by = c("integrated_clusters","integrated_clusters_2"), ncol = 1)
+
+p|p2|p3
+
+library(Seurat)
+library(mclust)    # for adjustedRandIndex
+library(aricode)   # for NMI
+
+# Define clustering columns
+clustering_columns <- c("ST_clusters", "SM_clusters", "gpca_SPM", "gpca_SPT",
+                        "integrated_clusters", "integrated_clusters_2")
+
+# Extract metadata
+meta <- integrated.data@meta.data
+
+# Ground truth
+ground_truth <- as.factor(meta$annotations)
+
+# Compute scores
+results <- data.frame(
+  cluster = clustering_columns,
+  ARI = NA,
+  NMI = NA
+)
+
+for (i in seq_along(clustering_columns)) {
+  pred <- as.factor(meta[[clustering_columns[i]]])
+  
+  # Ensure matching non-NA values
+  valid <- !is.na(ground_truth) & !is.na(pred)
+  
+  results$ARI[i] <- adjustedRandIndex(ground_truth[valid], pred[valid])
+  results$NMI[i] <- NMI(ground_truth[valid], pred[valid])
+}
+
+print(results)
+
+library(tidyra)
+library(ggplot2)
+
+results$cluster <- factor(results$cluster, levels = c('ST_clusters','gpca_SPT','SM_clusters','gpca_SPM','integrated_clusters','integrated_clusters_2'))
+
+scores_long <- results %>%
+  pivot_longer(cols = c("ARI", "NMI"), names_to = "metric", values_to = "score")
+
+p <- ggplot(scores_long, aes(x = cluster, y = score, fill = metric)) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  scale_fill_manual(values = c("ARI" = "skyblue", "NMI" = "orange")) +
+  labs(x = "Clustering Method", y = "Score", fill = "Metric",
+       title = "Clustering Accuracy (ARI and NMI)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p
+```
+
+
+
+
+
+```{r}
+## Check Modality Weights for WNN
+library(Seurat)
+library(mclust)    # for adjustedRandIndex
+library(aricode)   # for NMI
+library(dplyr)
+
+integrated.data.copy <- integrated.data
+# Define weight steps
+weight_steps <- seq(1, 0, by = -0.1)
+
+# Prepare results dataframe
+results <- data.frame(
+  spatial_weight = numeric(),
+  transcript_weight = numeric(),
+  ARI = numeric(),
+  NMI = numeric()
+)
+
+meta_list <- list()
+
+for (w_spatial in weight_steps) {
+  w_transcript <- 1 - w_spatial
+  
+  message("Running integration with weights: Spatial = ", w_spatial, ", Transcript = ", w_transcript)
+  
+  # Run integration
+  integrated.data.copy <- MultiOmicIntegration(
+    integrated.data.copy,
+    return.intermediate = TRUE,
+    weight.list = list(w_spatial, w_transcript),
+    reduction.list = list("SpatialPCA", "SpatialPCAT"),
+    dims.list = list(1:30, 1:30)
+  )
+  
+  # Run UMAP
+  integrated.data.copy <- RunUMAP(
+    integrated.data.copy,
+    nn.name = "weighted.nn",
+    reduction.name = "wnn.umap",
+    reduction.key = "wnnUMAP_",
+    verbose = FALSE
+  )
+  
+  # Run clustering
+  integrated.data.copy <- FindClusters(
+    integrated.data.copy,
+    graph.name = "wsnn",
+    algorithm = 3,
+    resolution = 0.6,
+    cluster.name = "integrated_clusters_2",
+    verbose = FALSE
+  )
+  
+  # Extract metadata
+  meta <- integrated.data.copy@meta.data
+  meta_list[[paste0("sm_",w_spatial)]] <- meta
+  # Get ground truth
+  ground_truth <- as.factor(meta$annotations)
+  predicted <- as.factor(meta$integrated_clusters_2)
+  
+  # Valid entries only
+  valid <- !is.na(ground_truth) & !is.na(predicted)
+  
+  # Compute ARI and NMI
+  ARI_score <- adjustedRandIndex(ground_truth[valid], predicted[valid])
+  NMI_score <- NMI(ground_truth[valid], predicted[valid])
+  
+  # Store results
+  results <- rbind(
+    results,
+    data.frame(
+      spatial_weight = w_spatial,
+      transcript_weight = w_transcript,
+      ARI = ARI_score    )
+  )
+}
+
+
+library(tidyr)
+plot_data <- pivot_longer(results, cols = c("ARI"), names_to = "Metric", values_to = "Score")
+
+# Plot
+p <- ggplot(plot_data, aes(x = spatial_weight, y = Score)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(title = "Clustering Accuracy vs Integration Weights",
+       x = "Spatial Weight",
+       y = "Score (ARI / NMI)",
+       color = "Reduction Method",
+       linetype = "Metric") +
+  theme_classic()
+
+
+met <- do.call(cbind,lapply(meta_list, function(x){x$integrated_clusters_2}))
+integrated.data.copy@meta.data[colnames(met)] <- met
+SpatialDimPlot(integrated.data.copy, group.by = c("annotations", "sm_0.1", "sm_0.5", "sm_1"), pt.size.factor  = 2, ncol = 4)
+```

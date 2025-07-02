@@ -93,7 +93,6 @@ results <- expand.grid(pool_n = pool_sizes, rep = 1:length(seeds)) %>%
 # Count significant DEMs (FDR < 0.05) per pool size, cluster, and rep
 sig_counts <- results %>%
   filter(FDR < 0.05) %>%
-  filter(logFC > 0) %>%
   group_by(pool_n, cluster, rep) %>%
   summarise(num_significant = n(), .groups = "drop")
 
@@ -151,6 +150,61 @@ ggplot(consistency_summary, aes(x = pool_n, y = num_shared, colour = as.factor(c
   theme_classic()
 
 
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(reshape2)
+library(ggplot2)
+
+# Set how many genes to consider for comparison
+top_n <- 20
+
+# Get top N DE genes for each (cluster, pool_n, rep)
+top_genes_by_group <- results %>%
+  group_by(cluster, pool_n, rep) %>%
+  arrange(FDR) %>%
+  slice_head(n = top_n) %>%
+  summarise(genes = list(gene), .groups = "drop")
+
+# Function to compute average Jaccard between all replicates from two pool sizes
+compute_pool_jaccard <- function(pool1_genes, pool2_genes) {
+  intersect_size <- length(intersect(pool1_genes, pool2_genes))
+  union_size <- length(union(pool1_genes, pool2_genes))
+  if (union_size == 0) return(NA)
+  intersect_size / union_size
+}
+
+# For each cluster, compute Jaccard similarity matrix
+similarity_matrices <- top_genes_by_group %>%
+  split(.$cluster) %>%
+  map(~{
+    df <- .x
+    pool_sizes <- unique(df$pool_n)
+    
+    mat <- matrix(NA, nrow = length(pool_sizes), ncol = length(pool_sizes),
+                  dimnames = list(pool_sizes, pool_sizes))
+    
+    for (i in seq_along(pool_sizes)) {
+      for (j in seq_along(pool_sizes)) {
+        genes1 <- df %>% filter(pool_n == pool_sizes[i]) %>% pull(genes) %>% unlist()
+        genes2 <- df %>% filter(pool_n == pool_sizes[j]) %>% pull(genes) %>% unlist()
+        mat[i, j] <- compute_pool_jaccard(genes1, genes2)
+      }
+    }
+    mat
+  })
+
+# Plot per cluster
+plots <- map2(names(similarity_matrices), similarity_matrices, function(cluster_name, mat) {
+  mat_df <- melt(mat)
+  ggplot(mat_df, aes(Var1, Var2, fill = value)) +
+    geom_tile() +
+    scale_fill_gradient2(low = "white", high = "blue", midpoint = 0.5, na.value = "grey90") +
+    labs(title = paste("Cluster:", cluster_name),
+         x = "Pool Size", y = "Pool Size", fill = "Jaccard") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+})
 
 
 
