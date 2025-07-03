@@ -1,3 +1,89 @@
+
+# Annotation Benchmarking
 ```{r}
-benchmark_df
+library(Seurat)
+library(SeuratObject)
+library(Cardinal)
+library(SpaMTP)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(tibble)
+library(stringr)
+library(bench)
+
+
+data_full_init <- readRDS("./Spotted/raw_spotted_with_clusters.RDS")
+
+
+
+# Assuming `data` is your full Seurat object and SPM assay contains features
+all_features <- rownames(data_full_init[["Spatial"]])
+max_features <- length(all_features)
+feature_sizes <- c(500,1000,2000, 5000, 10000, 50000,100000)
+
+db <- HMDB_db
+# Storage for results
+benchmark_results <- vector("list", length(feature_sizes))
+
+for (i in seq_along(feature_sizes)) {
+  n <- feature_sizes[i]
+  message("Running for ", n, " features...")
+
+  # Subset Seurat object to use only first `n` features
+  temp_data <- data_full_init
+  sel_feats <- all_features[1:n]
+  temp_data[["Spatial"]] <- subset(temp_data[["Spatial"]], features = sel_feats)
+
+  # Benchmark AnnotateSM
+  result <- bench::mark(
+    AnnotateSM(temp_data, assay = "Spatial", db = db, polarity = "negative", adducts = c("M-H", "M+Cl"), ppm_error = 3),
+    iterations = 1,
+    memory = TRUE,
+    check = FALSE,
+    time_unit = "s"
+  )
+
+  result$features_used <- n
+  benchmark_results[[i]] <- result
+}
+
+# Combine results into one data frame
+benchmark_df <- bind_rows(benchmark_results)
+
+# View summary
+df <- benchmark_df[, c("features_used", "total_time", "mem_alloc")]
+
+df <- df %>%
+  dplyr::mutate(mem_gb = mem_alloc / (1024^3))  
+
+p <- ggplot(df, aes(x = features_used)) +
+  geom_line(aes(y = total_time, color = "Time (s)"), size = 1.2) +
+  geom_line(aes(y = mem_gb, color = "Memory (GB)"), size = 1.2, linetype = "dashed") +
+  scale_x_continuous(trans = "log10", labels = scales::comma) +
+  scale_y_continuous(
+    name = "Time (s)",
+    sec.axis = sec_axis(~ ., name = "Memory (GB)")
+  ) +
+  scale_color_manual(values = c("Time (s)" = "#1b9e77", "Memory (GB)" = "#d95f02")) +
+  labs(
+    title = "Method 1: Time and Memory vs Features Used",
+    x = "Features Used (log scale)",
+    color = "Metric"
+  ) +
+  theme_classic() +
+  theme(
+    axis.title.y.right = element_text(color = "#d95f02"),
+    axis.title.y.left = element_text(color = "#1b9e77"),
+    legend.position = "bottom"
+  )
+
+ggsave(p, filename = "./Annotation_Benchmarking_figure.pdf", height = 5, width = 5)
 ```
+
+
+
+
+
+
+
