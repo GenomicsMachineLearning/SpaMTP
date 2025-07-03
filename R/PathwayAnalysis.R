@@ -391,7 +391,8 @@ FindRegionalPathways = function(SpaMTP,
   cluster = levels(cluster_vector)
   ## Checks for data in SM and/or ST assay
   if ("genes" %in% analyte_types) {
-    if (is.null(SpaMTP@assays[[ST_assay]]@layers[[ST_slot]])) {
+    st_obj = slot(SpaMTP@assays[[ST_assay]], ST_slot)
+    if (is.null(st_obj)) {
       stop(
         paste0(
           "No data exists in object[[",
@@ -402,7 +403,7 @@ FindRegionalPathways = function(SpaMTP,
         )
       )
     } else{
-      gene_matrix = Matrix::t(SpaMTP[[ST_assay]]@layers[[ST_slot]])
+      gene_matrix = Matrix::t(st_obj)
       if (length(cluster_vector) != nrow(gene_matrix)) {
         stop(
           "Please make sure the input ident is a vector the same length as the number of spots/cells in the gene assay!"
@@ -411,7 +412,8 @@ FindRegionalPathways = function(SpaMTP,
     }
   }
   if ("metabolites" %in% analyte_types) {
-    if (is.null(SpaMTP@assays[[SM_assay]]@layers[[SM_slot]])) {
+    sm_obj = slot(SpaMTP@assays[[ST_assay]], ST_slot)
+    if (is.null(sm_obj)) {
       stop(
         paste0(
           "No data exists in object[[",
@@ -422,7 +424,7 @@ FindRegionalPathways = function(SpaMTP,
         )
       )
     } else{
-      mass_matrix = Matrix::t(SpaMTP[[SM_assay]]@layers[[SM_slot]])
+      mass_matrix = Matrix::t(sm_obj)
       if (length(cluster_vector) != nrow(mass_matrix)) {
         stop(
           "Please make sure the input ident is a vector the same length as the number of spots/cells in the metabolite assay!"
