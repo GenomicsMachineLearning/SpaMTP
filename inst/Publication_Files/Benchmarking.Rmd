@@ -276,6 +276,228 @@ ggplot(df_long, aes(x = Tool, y = Pathway, fill = factor(Value))) +
 ```
 
 
+## Benchmark Alignment
+```{r}
+library(bench)
+
+msi_transformed <- readRDS("vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS")
+
+vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
+## Read in metadata files
+lesion <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/lesion.csv", row.names = 1)
+region <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/region.csv", row.names = 1)
+region_loupe <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/RegionLoupe.csv", row.names = 1)
+
+## Combine into one dataframe
+annotations <- cbind(lesion,region,region_loupe)
+
+## Add data to metadata slot
+vis@meta.data[colnames(annotations)] <- annotations[colnames(annotations)]
+vis@meta.data <- vis@meta.data %>% mutate(annotations = ifelse(RegionLoupe %in% c("CP", "ACB"), paste0(RegionLoupe, "_", lesion), RegionLoupe))
 
 
 
+ spot_mapping <- bench::mark(
+    {
+      combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, overlap.threshold = 0.3, annotations = TRUE, ST.scale.factor = NULL)
+    },
+    iterations = 1, memory = TRUE, time_unit = "s", check = FALSE
+  )
+
+
+xenium <- readRDS("vignette_data_files/Simulated_data/Sim_Xenium.RDS")
+MALDI <- readRDS("vignette_data_files/Simulated_data/Sim_MALDI.RDS")
+
+
+library(future)
+plan("multicore", workers = 16) # Use all 16 cores
+
+# Each core can have up to 16 GB of memory (16 GB / 16 cores)
+options(future.globals.maxSize = 16000 * 1024^2) # 16 GB per core
+
+
+
+library(Seurat)
+
+# Original object
+original <- MALDI
+
+# Get original count matrix
+counts <- GetAssayData(original, assay = "Spatial", slot = "counts")
+
+# Function to expand features to a given number
+expand_features <- function(mat, target_n_features) {
+  n_current <- nrow(mat)
+  
+  # How many times to repeat and how many extras
+  reps <- target_n_features %/% n_current
+  remainder <- target_n_features %% n_current
+  
+  # Duplicate rows
+  mat_expanded <- mat[rep(1:n_current, times = reps), ]
+  
+  if (remainder > 0) {
+    mat_expanded <- rbind(mat_expanded, mat[1:remainder, ])
+  }
+  
+  # Assign new gene names
+  rownames(mat_expanded) <- paste0("G", seq_len(target_n_features))
+  
+  return(mat_expanded)
+}
+
+# Define gene sizes
+gene_counts <- c(10, 100, 1000, 5000)
+
+# Create and store new Seurat objects
+seurat_list <- lapply(gene_counts, function(n_genes) {
+  expanded_counts <- expand_features(counts, n_genes)
+  
+  # Create new Seurat object
+  seu <- CreateSeuratObject(counts = expanded_counts, assay = "Spatial")
+  
+  # Copy spatial info (e.g., images, coordinates) if needed
+  seu@images <- original@images
+  
+  return(seu)
+})
+
+# Optionally name the list
+names(seurat_list) <- paste0("genes_", gene_counts)
+
+cell_mapping_results <- list()
+for (i in 1:length(seurat_list)){
+  xen <- xenium
+  sm <- seurat_list[[i]]
+  cell_mapping <- bench::mark(
+    {
+      MO_data <- MapSpatialOmics(SM.data = sm, ST.data = xenium, ST.hires = TRUE, SM.assay = "Spatial",ST.assay = "Xenium", SM.fov = "fov", ST.image = "fov")
+    },
+    iterations = 1, memory = TRUE, time_unit = "s", check = FALSE
+  )
+  cell_mapping_results[[i]] <- list(time = cell_mapping$median, memory = cell_mapping$mem_alloc)
+  gc()
+}
+
+
+
+df <- bind_rows(lapply(cell_mapping_results, function(x) {
+
+  
+  tibble(
+    time = x$time,
+    memory_mb = x$memory
+  )
+}))
+
+# Step 2: Add overlaps column
+df$metabolites <- gene_counts
+
+
+
+
+
+library(ggplot2)
+
+# Assume df has: df$metabolites, df$time (in seconds), df$memory (in bytes)
+
+# Convert memory from bytes to GB for readability
+df$memory_gb <- df$memory_mb / 1024^3  # or keep in bytes if you prefer
+
+# Scale memory to align with time for plotting
+# You decide how you want the right axis to span (e.g., memory_gb from 65 to 70)
+# We'll define a linear transformation: y_secondary = memory_gb * scale_factor
+
+# Define desired y-axis ranges
+range_time <- range(df$time)
+range_mem <- c(70, 72.5)  # desired range in GB
+
+# Scaling factor to match memory to time scale
+scale_factor <- diff(range_time) / diff(range_mem)
+
+# Intercept shift to align the minimums
+intercept <- range_time[1] - range_mem[1] * scale_factor
+
+# Plot
+ggplot(df, aes(x = metabolites)) +
+  geom_line(aes(y = time, color = "Time (s)")) +
+  geom_point(aes(y = time, color = "Time (s)")) +
+  geom_line(aes(y = memory_gb * scale_factor + intercept, color = "Memory (GB)")) +
+  geom_point(aes(y = memory_gb * scale_factor + intercept, color = "Memory (GB)")) +
+  scale_y_continuous(
+    name = "Time (s)",
+    sec.axis = sec_axis(~ (. - intercept) / scale_factor, name = "Memory (GB)")
+  ) +
+  scale_color_manual(values = c("Time (s)" = "blue", "Memory (GB)" = "red")) +
+  labs(x = "Metabolites", title = "Runtime and Memory vs Metabolites", color = NULL) +
+  theme_classic() +
+  theme(
+    axis.title.y.left = element_text(color = "blue"),
+    axis.title.y.right = element_text(color = "red"),
+    axis.text.y.left = element_text(color = "blue"),
+    axis.text.y.right = element_text(color = "red")
+  )
+
+
+
+# Step 3: Plot
+p1 <- ggplot(df, aes(x = metabolites, y = time)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Runtime vs metabolites", x = "metabolites", y = "Time (s)") +
+  theme_classic()
+
+p2 <- ggplot(df, aes(x = metabolites, y = memory_mb)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Memory vs metabolites", x = "metabolites", y = "Memory (MB)") +
+  theme_classic()
+
+# Show plots side by side (optional)
+library(patchwork)
+p1 /p2
+
+
+
+
+# Extract spot mapping metrics
+spot_time <- spot_mapping$total_time[[1]]           # in seconds
+spot_memory <- as.numeric(spot_mapping$mem_alloc)   # already in bytes
+
+# Convert to GB
+spot_memory_gb <- spot_memory / 1024^3
+
+# Extract cell mapping metrics
+cell_time <- cell_mapping_results[[1]]$time
+cell_memory_str <- cell_mapping_results[[1]]$memory
+
+# Convert memory from string to GB
+cell_memory_gb <- as.numeric(str_remove(cell_memory_str, "GB"))
+
+# Create comparison dataframe
+df <- tibble(
+  method = c("Spot Mapping", "Cell Mapping"),
+  time_s = c(spot_time, cell_time),
+  memory_gb = c(spot_memory_gb, cell_memory_gb))
+
+# Pivot longer for faceted bar plot
+df_long <- df %>%
+  pivot_longer(cols = c(time_s, memory_gb), names_to = "metric", values_to = "value")
+
+# Pretty labels
+df_long$metric <- recode(df_long$metric,
+                         time_s = "Time (s)",
+                         memory_gb = "Memory (GB)")
+
+# Plot
+ggplot(df_long, aes(x = method, y = value, fill = method)) +
+  geom_col(width = 0.6, show.legend = FALSE) +
+  facet_wrap(~metric, scales = "free_y") +
+  labs(title = "Spot vs Cell Mapping: Time and Memory Comparison",
+       x = NULL, y = NULL) +
+  theme_classic(base_size = 14)
+
+
+
+
+```
