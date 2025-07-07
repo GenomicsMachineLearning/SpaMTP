@@ -82,6 +82,7 @@ Imports:
     shinyjs,
     SingleCellExperiment,
     stringr,
+    tibble,
     tidyr,
     utils,
     zeallot
