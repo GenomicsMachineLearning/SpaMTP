@@ -1,0 +1,60 @@
+Bootstrap: docker
+From: condaforge/mambaforge:latest
+
+%files
+    environment-linux.yml /opt/environment-linux.yml
+    dependencies.R /opt/dependencies.R
+
+%environment
+    export PATH=/opt/conda/bin:$PATH
+    export LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
+
+%post -c /bin/bash
+    set -e
+
+    # Configure tzdata noninteractively
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ=Etc/UTC
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+    # System packages
+    apt-get update && apt-get install -y \
+        build-essential \
+        wget \
+        git \
+        openjdk-11-jdk \
+        libfontconfig1 \
+        libharfbuzz-dev \
+        libfribidi-dev \
+        libfreetype6-dev \
+        libpng-dev \
+        libtiff5-dev \
+        libjpeg-dev \
+        libxml2-dev \
+        libcairo2-dev
+
+    # Set up conda environment
+    . /opt/conda/etc/profile.d/conda.sh
+    conda config --set solver libmamba
+
+    # Create conda environment from yml
+    conda env create --prefix /opt/conda/envs/spamtp --file=/opt/environment-linux.yml -y
+    conda activate /opt/conda/envs/spamtp
+
+    # Install R dependencies
+    Rscript /opt/dependencies.R
+
+    # Clean up
+    conda clean -afy
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%runscript
+   echo "Container for spamtp environment"
+    echo "Activate the conda environment with: conda activate /opt/conda/envs/spamtp"
+    exec "$@"
+
+%labels
+    Author andrew.newman@uq.edu.au
+    Version v1.0
+    Description spamtp analysis environment container

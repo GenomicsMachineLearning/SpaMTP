@@ -35,3 +35,27 @@ devtools::install_github("GenomicsMachineLearning/SpaMTP")
 ```
 
 For tutorials and more information please visit the [SpaMTP website](https://genomicsmachinelearning.github.io/SpaMTP/)
+
+### Apptainer
+
+To create an Apptainer image:
+```
+apptainer build spamtp.sif spamtp.def
+```
+
+### Contributing
+
+To reproduce the dependencies and install SpaMTP into a conda environment:
+```
+conda create --prefix [some-directory]/conda/spamtp python=3.10 r-base=4.4 imagemagick --y
+conda activate [some-directory]/conda/spamtp
+conda install -c conda-forge jupyter libconfig fontconfig freetype libtiff r-irkernel  --y
+conda install --no-update-deps -c conda-forge r-here r-matrix r-Seurat r-SeuratObject r-hdf5r r-ggplot2 r-reshape2 r-patchwork fftw r-RCurl r-jpeg r-locfit r-ontologyindex --y
+conda install --no-update-deps -c conda-forge r-fields r-ggdendro r-ggnewscale r-magick r-naturalsort r-pheatmap r-sf r-shinyjs r-zeallot r-r.utils --y
+conda install --no-update-deps -c bioconda bioconductor-BiocGenerics bioconductor-enhancedvolcano bioconductor-biocparallel --y
+conda install --no-update-deps -c bioconda bioconductor-protgenerics bioconductor-s4vectors bioconductor-biobase --y
+conda install --no-update-deps -c bioconda bioconductor-edger bioconductor-fgsea bioconductor-limma bioconductor-scater bioconductor-singlecellexperiment --y
+conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioconductor-hdf5array bioconductor-rhdf5 bioconductor-rhdf5lib --y
+Rscript dependencies.R
+```
+
