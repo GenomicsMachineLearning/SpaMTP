@@ -38,7 +38,16 @@ For tutorials and more information please visit the [SpaMTP website](https://gen
 
 ### Apptainer
 
-To create an Apptainer image:
+To download the image:
+```
+wget -c https://downloads.gmllab.com/SpaMTP/spamtp.sif
+```
+Verify it download correctly:
+```
+wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp.sif.md5 | md5sum -c -
+```
+
+Or to create an Apptainer image from scratch:
 ```
 apptainer build spamtp.sif spamtp.def
 ```
