@@ -47,7 +47,7 @@ Verify it download correctly:
 wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp.sif.md5 | md5sum -c -
 ```
 
-Or to create an Apptainer image from scratch:
+Or to create an Apptainer image from scratch (you need the environment-linux.yml, dependencies.R and spamtp.def files):
 ```
 apptainer build spamtp.sif spamtp.def
 ```
