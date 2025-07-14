@@ -68,7 +68,7 @@ LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
       data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
     } else if (bin_package == "SpaMTP"){
       verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
-      data <- Cardinal::readImzML, (
+      data <- Cardinal::readImzML(
         name = name,
         folder = path,
         mass.range = NULL,
