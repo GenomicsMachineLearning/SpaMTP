@@ -43,7 +43,7 @@ LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
       } else if (bin_package == "SpaMTP"){
         verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
         mtx <- bin_cardinal(
-          data = data,
+          x = data,
           mass.range = mass.range,
           resolution = resolution,
           units = units
@@ -76,7 +76,7 @@ LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm
       )
 
       mtx <- bin_cardinal(
-        data = data,
+        x = data,
         units = units,
         mass.range = mass.range,
         resolution = resolution
