@@ -15,4 +15,4 @@ remotes::install_github("kuwisdelu/Cardinal@v3.8.3", upgrade = FALSE, dependenci
 remotes::install_github("lifs-tools/rgoslin", upgrade = FALSE, dependencies = FALSE)
 remotes::install_github("MarioniLab/DropletUtils@RELEASE_3_21", upgrade = FALSE, dependencies = FALSE)
 
-remotes::install_github("GenomicsMachineLearning/SpaMTP", ref="newmana/fix", upgrade = FALSE, dependencies = FALSE)
+remotes::install_github("GenomicsMachineLearning/SpaMTP", upgrade = FALSE, dependencies = FALSE)
