@@ -65,6 +65,9 @@ library(EnhancedVolcano)
 
 Pre-processing is an import step in any pipeline and should be performed prior to any downstream analysis. For spatial metabolic data, there are various packages which have robust functions and applications for removing technical noise from a SM dataset, these include *Cardinal* and *SCILS-LAB*. This pre-processing pipeline is copied from *Cardinal's* V3 Vignette. We will not run it in this case because it can take some time. The code required for the pre-processing is provided below but we will just load the processed data object below.
 
+The data is from, "[Histology by Mass Spectrometry: Label-Free Tissue Characterization Obtained from High-Accuracy Bioanalytical Imaging](https://doi.org/10.1002/anie.200905559)",
+and can be downloaded from [Project PXD001283](https://www.ebi.ac.uk/pride/archive/projects/PXD001283).
+
 <details>
   <summary>*Cardinal Pre-Processing Code*</summary>
 ```{r cardinal_preprossing}
