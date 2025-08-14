@@ -27,10 +27,23 @@ library(Seurat)
 ## use integrated.data from `Multi-Omic_Mouse_Brain.Rmd` tutorial
 
 ### split data based on spots identified as containing dopamine neurons 
-annot <- subset(integrated.data, subset = annotations == "CP_intact")
-sm <- subset(integrated.data, subset = SM_clusters=="3")
-st <- subset(integrated.data, subset = ST_clusters == "0")
-int <- subset(integrated.data, subset = integrated_clusters == "4")
+#annot <- subset(integrated.data, subset = annotations %in% c("CP_intact", "ACB_intact"))
+#sm <- subset(integrated.data, subset = SM_clusters=="3")
+#st <- subset(integrated.data, subset = ST_clusters %in% c("0", "4"))
+#int <- subset(integrated.data, subset = integrated_clusters %in% c("4","3"))
+
+### Updated annotations
+annot <- subset(integrated.data, subset = annotations %in% c("CP_intact", "ACB_intact"))
+sm <- subset(integrated.data, subset = gpca_SPM %in% c("1","5"))
+st <- subset(integrated.data, subset = gpca_SPT %in% c("7", "5", "9"))
+int <- subset(integrated.data, subset = integrated_clusters_2 %in% c("2","10"))
+
+integrated.data$annot <- ifelse(integrated.data$annotations %in% c("CP_intact", "ACB_intact"), "T","F")
+integrated.data$sm <- ifelse(integrated.data$gpca_SPM %in% c("1","5"), "T","F")
+integrated.data$st <- ifelse(integrated.data$gpca_SPT %in% c("7", "5", "9"), "T","F")
+integrated.data$int <- ifelse(integrated.data$integrated_clusters_2 %in% c("2"), "T","F")
+
+
 
 list_names <- c("annot", "sm", "st", "int")
 comp_data <- list("annot" = annot, "sm" = sm, "st" = st, "int" = int)
@@ -70,16 +83,16 @@ for (x in names(comp_data)) {
 
 
 ### Get Gene and metabolite correlation per cluster
-integrated.data$annot <- ifelse(integrated.data$annotations == "CP_intact", "T","F")
-integrated.data$sm <- ifelse(integrated.data$SM_clusters == "3", "T","F")
-integrated.data$st <- ifelse(integrated.data$ST_clusters == "0", "T","F")
-integrated.data$int <- ifelse(integrated.data$integrated_clusters == "4", "T","F")
+#integrated.data$annot <- ifelse(integrated.data$annotations == "CP_intact", "T","F")
+#integrated.data$sm <- ifelse(integrated.data$SM_clusters == "3", "T","F")
+#integrated.data$st <- ifelse(integrated.data$ST_clusters == "0", "T","F")
+#integrated.data$int <- ifelse(integrated.data$integrated_clusters == "4", "T","F")
 
 striatum <- subset(integrated.data, subset = region == "striatum"& lesion == "intact")
 
 correlation_df <- lapply(list_names, function(x){
   suppressWarnings({
-  cor <- FindCorrelatedFeatures(striatum, ident = x, ST.assay = "SPT", SM.assay = "SPM", ST.slot = "counts", SM.slot = "counts", nfeatures = NULL)
+  cor <- FindCorrelatedFeatures(integrated.data, ident = x, ST.assay = "SPT", SM.assay = "SPM", ST.slot = "counts", SM.slot = "counts", nfeatures = NULL)
   })
   cor[cor$ident == "T",]
 })
@@ -104,7 +117,7 @@ scaled_data <- df %>%
 
 # Add 'Group' back
 scaled_data$Group <- df$Group
-
+scaled_data <-scaled_data[rev(colnames(scaled_data))]
 # Convert scaled data to long format
 long_scaled <- scaled_data %>%
     pivot_longer(cols = -Group, names_to = "Metric", values_to = "Scaled_Value")
@@ -162,6 +175,35 @@ ggplot(long_data, aes(x = Metric, y = Scaled_Value, group = Group, color = Group
          y = "Scaled Value") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme_classic()
+
+
+
+new_df <- df[c("Dopamine.Correlation", " % Dopamine Spots")]
+new_df[c(" % Dopamine Spots")] <- new_df[c(" % Dopamine Spots")]/100
+new_df$ARI <- c( 1, 0.2292700, 0.3450286,0.3871174)
+new_df$Group <- rownames(new_df)
+long_df <- new_df[c(2:4),] %>%
+  pivot_longer(cols = -Group, names_to = "Metric", values_to = "Value")
+
+library(ggplot2)
+
+library(tidyr)
+library(dplyr)
+
+background_df <- long_df %>%
+  distinct(Metric) %>%
+  mutate(Index = row_number())
+
+ggplot(long_df, aes(x = Metric, y = Value, fill = Group)) +
+  # Alternating background rectangles
+   
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  theme_minimal() +
+  labs(title = "Comparison of Metrics by Group",
+       x = "Metric", y = "Value") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 
 ```
 

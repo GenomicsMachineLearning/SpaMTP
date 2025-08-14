@@ -7,7 +7,7 @@ library(SpaMTP)
 
 
 ```{r}
-combined.data <- readRDS("/QRISdata/Q1851/Andrew_C/SpaMTP/Public_Data/vignette_objects/fmp10.vignette.data.RDS")
+combined.data <- readRDS("fmp10.vignette.data.RDS")
 ```
 
 
@@ -90,8 +90,8 @@ ground_truth <- as.factor(meta$annotations)
 # Compute scores
 results <- data.frame(
   cluster = clustering_columns,
-  ARI = NA,
-  NMI = NA
+  ARI = NA
+  #NMI = NA
 )
 
 for (i in seq_along(clustering_columns)) {
@@ -101,7 +101,7 @@ for (i in seq_along(clustering_columns)) {
   valid <- !is.na(ground_truth) & !is.na(pred)
   
   results$ARI[i] <- adjustedRandIndex(ground_truth[valid], pred[valid])
-  results$NMI[i] <- NMI(ground_truth[valid], pred[valid])
+  #results$NMI[i] <- NMI(ground_truth[valid], pred[valid])
 }
 
 print(results)
