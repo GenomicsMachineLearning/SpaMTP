@@ -1,0 +1,89 @@
+---
+title: "Reading Transformed Spatial Mass Spectrometry Data with SpaMTP"
+author: "Jurgen Kriel"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Reading Transformed Spatial Mass Spectrometry Data with SpaMTP}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r knitr_opts, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "figures/",
+  fig.width = 7,
+  fig.height = 5,
+  dpi = 150
+)
+
+
+# Load required libraries
+library(SpaMTP)
+library(Cardinal)
+library(Seurat)
+library(dplyr)
+library(hdf5r)
+library(ggplot2)
+library(EnhancedVolcano)
+library(sf)
+library(sfheaders)
+
+
+```
+
+Introduction
+This vignette demonstrates how to read and transform spatial mass spectrometry data using the SpaMTP package. The workflow includes reading transformed coordinates obtained from the SMINT pipeline and performing initial data processing and visualization.
+
+Prerequisites
+Before starting, ensure you have transformed coordinates from the SMINT pipeline (https://github.com/JurgenKriel/SMINT), required R packages installed, and access to the HMDB database for annotation.
+
+Reading Transformed Coordinates
+The first step is to read in the transformed coordinates obtained from the SMINT pipeline:
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  error = TRUE,
+  message = TRUE,
+  warning = TRUE
+)
+msi <- ReadSM_mtx("/vast/projects/BCRL_Multi_Omics/venture_pt2/aligned_metabolites/Ven2G_z7_tranformed_metabolites_coordinates_final.txt", mz.prefix = 'X')
+
+# Reorder and tidy coordinates (adjust to your data specifics)
+msi <- msi[1:((nrow(msi) - 4)), ]
+tmp <- msi$y_coord
+msi$y_coord <- msi$x_coord
+msi$x_coord <- tmp
+msi@images$fov@boundaries$centroids@coords <- msi@images$fov@boundaries$centroids@coords[, 2:1]
+msi@images$fov@boundaries$centroids@bbox <- msi@images$fov@boundaries$centroids@bbox[, 2:1]
+
+# Annotate with HMDB (ensure HMDB_db is available in your environment)
+msi <- AnnotateSM(
+  msi,
+  db = HMDB_db,
+  assay = "Spatial",
+  raw.mz.column = "raw_mz",
+  ppm_error = NULL,
+  adducts = NULL,
+  polarity = "positive",
+  tof_resolution = 30000,
+  filepath = NULL,
+  return.only.annotated = TRUE,
+  save.intermediate = TRUE,
+  verbose = TRUE
+)
+
+# Basic QC visualizations
+ImageFeaturePlot(msi, "nFeature_Spatial", size = 2, dark.background = FALSE)
+msi <- subset(msi, subset = nCount_Spatial > 0)
+ImageFeaturePlot(msi, "nCount_Spatial", size = 1.3, dark.background = FALSE) | 
+  ImageFeaturePlot(msi, "nFeature_Spatial", size = 1.3, dark.background = FALSE)
+
+```
+
+
