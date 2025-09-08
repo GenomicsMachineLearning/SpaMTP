@@ -963,3 +963,120 @@ AnnotateBigData <- function(mzs, db,  ppm_error = NULL, adducts = NULL,polarity 
   rownames(result_df) <- 1:length(result_df$observed_mz)
   return(result_df)
 }
+
+
+
+#’ Find all library spectra10 above a cosine threshold for each imaging peak,
+#’ restricting to a global precursor-mz range.
+#’
+#’ @param raw_mz         Numeric vector of length n_peaks
+#’ @param counts         Numeric matrix n_peaks × n_pixels
+#’ @param spectra10_list   List of Spectrum2 objects (length N_lib)
+#’ @param ppm_tol        Precursor‐matching tolerance in ppm (default 10)
+#’ @param frag_tol_da    Fragment‐matching tolerance in Da (default 0.01)
+#’ @param cos_threshold  Minimum cosine similarity to report (default 0.7)
+#’ @param min_precursor  Minimum allowed precursor m/z (default = 0, i.e. no lower bound)
+#’ @param max_precursor  Maximum allowed precursor m/z (default = Inf, i.e. no upper bound)
+#’
+#’ @return A list of length n_peaks. Each element is an integer vector giving
+#’         the indices in spectra10_list of all library spectra10 with
+#’         cosine ≥ cos_threshold (or integer(0) if none).
+pseudomsms <- function(raw_mz,
+                               counts,
+                               spectra10_list,
+                               ppm_tol       = 10,
+                               frag_tol_da   = 0.01,
+                               cos_threshold = 0.7,
+                               min_precursor = 0,
+                               max_precursor = Inf) {
+  stopifnot(length(raw_mz) == nrow(counts))
+  # extract library precursor m/z’s, and keep only those within [min, max]
+  prec_all<- vapply(spectra10_list, function(sp)
+    sp@precursorMz, numeric(1))
+  ok_lib<- (prec_all >= min_precursor) &
+    (prec_all <= max_precursor)
+  if (!any(ok_lib)) {
+    stop("No library spectra10 within the specified precursor range.")
+  }
+  
+  # filter down to the “in-range” subset
+  spectra10_names <- names(spectra10_list)
+  spectra10_sub   <- mget(spectra10_names[ok_lib], envir = spectra10_list)
+  prec_sub    <- prec_all[ok_lib]
+  
+  #sort the filtered library for fast window lookup
+  ord         <- order(prec_sub)
+  prec_sorted <- prec_sub[ord]
+  
+  # precompute precursor ppm windows for each imaging m/z
+  lower <- raw_mz * (1 - ppm_tol / 1e6)
+  upper <- raw_mz * (1 + ppm_tol / 1e6)
+  
+  # cosine function
+  cosine <- function(x, y)
+    sum(x * y) / (sqrt(sum(x^2)) * sqrt(sum(y^2)))
+  
+  # prepare output list
+  candidates <- vector("list", length(raw_mz))
+  
+  # loop over each imaging peak
+  for (i in seq_along(raw_mz)) {
+    # find indices in prec_sorted within the ppm window
+    li <- findInterval(lower[i], prec_sorted)
+    ui <- findInterval(upper[i], prec_sorted)
+    if (ui <= li) {
+      candidates[[i]] <- integer(0)
+      next
+    }
+    cands_sorted <- (li + 1):ui
+    
+    #  compute cosine for each candidate
+    cos_vals <- vapply(cands_sorted, function(j) {
+      sp       <- spectra10_sub[[ord[j]]]
+      mz_lib   <- sp@mz
+      int_lib  <- sp@intensity
+      
+      idx      <- findInterval(mz_lib, raw_mz)
+      idx[idx == 0] <- 1
+      
+      keep     <- abs(raw_mz[idx] - mz_lib) <= frag_tol_da
+      
+      # DEBUG: check lengths
+      if (length(idx) != length(mz_lib))
+        stop("idx length mismatch")
+      if (length(keep) != length(mz_lib))
+        stop("keep length mismatch")
+      
+      if (sum(keep) < 3)
+        return(NA_real_)  # too few matched
+      
+      int_img  <- counts[idx[keep]]
+      int_lib2 <- int_lib[keep]
+      
+      # DEBUG: check lengths before cosine
+      if (length(int_img) != length(int_lib2)) {
+        cat("int_img:",
+            length(int_img),
+            " int_lib2:",
+            length(int_lib2),
+            "\n")
+        stop("mismatch between int_img and int_lib2 lengths")
+      }
+      
+      cosine(int_img, int_lib2)
+    }, numeric(1))
+    
+    # collect all whose cosine ≥ threshold
+    good <- which(!is.na(cos_vals) & (cos_vals >= cos_threshold))
+    # map back to the original spectra10_list indices
+    if (length(good) > 0) {
+      sub_idx <- which(ok_lib)[ord[cands_sorted[good]]]
+      candidates[[i]] <- sub_idx
+    } else {
+      candidates[[i]] <- NULL
+    }
+  }
+  
+  names(candidates) <- raw_mz
+  return(candidates)
+}
