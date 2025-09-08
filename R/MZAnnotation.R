@@ -981,7 +981,7 @@ AnnotateBigData <- function(mzs, db,  ppm_error = NULL, adducts = NULL,polarity 
 #’ @return A list of length n_peaks. Each element is an integer vector giving
 #’         the indices in spectra10_list of all library spectra10 with
 #’         cosine ≥ cos_threshold (or integer(0) if none).
-pseudomsms <- function(raw_mz,
+Pseudomsms <- function(raw_mz,
                                counts,
                                spectra10_list,
                                ppm_tol       = 10,
