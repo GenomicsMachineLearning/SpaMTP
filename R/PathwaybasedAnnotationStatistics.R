@@ -38,7 +38,6 @@
 #' @examples
 #' #data <- CreatePathwayObject(data,assay="SPT_pathway",slot = "scale.data")
 #' #CalculateSingleAnnotationStatistics(mz = "mz-674.2805",data = data,mz.assay = "SPM",pathway.assay = "pathway",mz.slot = "scale.data")
-#' }
 #'
 #' @export
 CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assay = "pathway", mz.slot= "scale.data", pathway.slot = "scale.data", corr_theshold = 0, corr_weight = 1, n_weight = 1){
