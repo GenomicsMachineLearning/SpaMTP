@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
-LoadSM <- function (file, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", multi.run = FALSE){
+LoadSM <- function (file, mass.range = NULL, resolution = NA, units = "ppm", verbose = TRUE, assay = "Spatial", multi.run = FALSE){
 
 
 
@@ -28,7 +28,7 @@ LoadSM <- function (file, mass.range = NULL, resolution = 10, units = "ppm", ver
       mass.range = mass.range,
       verbose = verbose)
 
-    if (!is.null(resolution)){
+    if (!is.na(resolution)){
           data <- Cardinal::bin(
           x = data,
           mass.range = mass.range,
