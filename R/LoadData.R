@@ -19,8 +19,6 @@
 #' # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 LoadSM <- function (file, mass.range = NULL, resolution = NA, units = "ppm", verbose = TRUE, assay = "Spatial", multi.run = FALSE){
 
-
-
   if (check_cardinal_version()){
 
     data <- Cardinal::readImzML(

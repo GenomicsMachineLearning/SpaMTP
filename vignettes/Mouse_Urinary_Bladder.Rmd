@@ -81,7 +81,7 @@ Here, we have specified the file path were the .imzML and .imb files are stored,
 
 
 ```{r warning=FALSE, message=FALSE}
-bladder <- LoadSM(name = "mouse-bladder-peaks", path = "vignette_data_files/Mouse_Urinary_Bladder/", mass.range=c(400,1000), resolution=10, units="ppm", bin_package = "Cardinal")
+bladder <- LoadSM(file = "vignette_data_files/Mouse_Urinary_Bladder/mouse-bladder-peaks",mass.range=c(400,1000))
 ```
 
 
@@ -147,7 +147,7 @@ Following the *Cardinal* tutorial, we will use the same values for:
 set.seed(1)
 ssc <- spatialShrunkenCentroids(bladder_cardinal,
             r=2, s=c(24), k=10,
-            method="gaussian")
+            weights="gaussian")
 ```
 
 
