@@ -63,47 +63,10 @@ library(EnhancedVolcano)
 
 ### Sample Pre-Processing
 
-Pre-processing is an import step in any pipeline and should be performed prior to any downstream analysis. For spatial metabolic data, there are various packages which have robust functions and applications for removing technical noise from a SM dataset, these include *Cardinal* and *SCILS-LAB*. This pre-processing pipeline is copied from *Cardinal's* V3 Vignette. We will not run it in this case because it can take some time. The code required for the pre-processing is provided below but we will just load the processed data object below.
+Pre-processing is an import step in any pipeline and should be performed prior to any downstream analysis. For spatial metabolic data, there are various packages which have robust functions and applications for removing technical noise from a SM dataset, these include *Cardinal* and *SCILS-LAB*. *SpaMTP* also provides general pre-processing functions such as data normalisation, scaling and filtering. 
 
-The data is from, "[Histology by Mass Spectrometry: Label-Free Tissue Characterization Obtained from High-Accuracy Bioanalytical Imaging](https://doi.org/10.1002/anie.200905559)",
+For the following tutorial we will use processed data from [*Cardinal's* V3 Vignette (2023)](https://github.com/Vitek-Lab/Cardinal3-vignettes). The raw data is from, "[Histology by Mass Spectrometry: Label-Free Tissue Characterization Obtained from High-Accuracy Bioanalytical Imaging](https://doi.org/10.1002/anie.200905559)",
 and can be downloaded from [Project PXD001283](https://www.ebi.ac.uk/pride/archive/projects/PXD001283).
-
-<details>
-  <summary>*Cardinal Pre-Processing Code*</summary>
-```{r cardinal_preprossing}
-##### Using Cardinal #####
-
-# ## Load raw data
-# bladder <- readImzML("HR2MSImouseurinarybladderS096", folder = "vignette_data_files/", mass.range=c(400,1000), resolution=10, units="ppm") 
-  
-# ## Get mean intensity values across all spots (like bulk data)
-# mse_mean <- summarizeFeatures(bladder, FUN="mean") 
-
-# ## Generates a list of significant peaks to use as a reference for normalisation and pre-processing
-# ref <- mse_mean %>% 
-#     peakPick(method="mad",
-#             SNR=6) %>%
-#     peakAlign("mean",
-#             tolerance=15,
-#             units="ppm") %>%
-#     peakFilter() %>%
-#     process()
-
-# ## Normalise and pre-process the raw data using the reference peak
-# mse_peaks <- bladder %>% 
-#     normalize(method="tic") %>%
-#     peakBin(ref=mz(ref),
-#             tolerance=15,
-#             units="ppm") %>%
-#     process()
-
-# ## Save the data
-# write.table(fData(mse_peaks),  "mouse-bladder-peaks.tsv")
-# writeMSIData(mse_peaks, "mouse-bladder-peaks.imzML") # We will load this data in for the rest of the analysis using SpaMTP
-# save(mse_mean, file="mouse-bladder-mean.RData")
-```
-
-</details> 
 
 <br>
 
@@ -502,7 +465,7 @@ Now our object has been subset to only include our clusters of interest, we can 
 
 ```{r, warning=FALSE, message=FALSE}
 # Performs pooling, pseudo-bulking and edgeR Differential Expression Analysis
-cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 5, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, 
                             run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
 ```

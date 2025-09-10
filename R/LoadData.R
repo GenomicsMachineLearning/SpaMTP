@@ -4,14 +4,12 @@
 #' This function loads raw spatial metabolic data in a .imzML and .ibd format and generates a SpaMTP Seurat Object.
 #' This function adapts the `readImzML` function implmented in Cardinal to correctly import large data.
 #'
-#' @param name Character string of the object name. This should match the filename.
-#' @param path Character string defining the directory path of the file. This should not include the file name.
+#' @param file Character string defining the directory path of the file and the file name.
 #' @param mass.range Vector of numeric values indicating the mass range to use for the imported data (default = NULL).
 #' @param resolution Numeric value defining the the accuracy to which the m/z values will be binned after reading. This value can be in either "ppm" or "mz" depending on the units type specified (default = 10).
 #' @param units Character string defining the resolution value unit type, either c("ppm", "mz") (default = "ppm")
 #' @param verbose Boolean indicating whether to show informative processing messages. If TRUE the message will be show, else the message will be suppressed (default = TRUE)
 #' @param assay Character string describing the name of the new assay which stores the imported data (default = "Spatial").
-#' @param bin_package Character string defining the package used to bin the imported data. Options are either "SpaMTP" or "Cardinal" (default = "SpaMTP").
 #' @param multi.run Boolean indicating if there are multiple runs within the imported data. If `TRUE`, an index will be added to the pixel names per run, and an individual FOV will be generated per run in the Seurat Object (default = FALSE).
 #'
 #' @return A new SpaMTP Seurat object contain the imported spatial metabolic intensity values
@@ -19,73 +17,38 @@
 #'
 #' @examples
 #' # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
-LoadSM <- function (name, path, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", bin_package = "SpaMTP", multi.run = FALSE){
+LoadSM <- function (file, mass.range = NULL, resolution = 10, units = "ppm", verbose = TRUE, assay = "Spatial", multi.run = FALSE){
+
+  if (is.null(mass.range)){
+    stop("missing value for `mass.range`! mass.range must be provided.")
+  }
 
   if (check_cardinal_version()){
-    file_name <- paste0(path, name)
+
     data <- Cardinal::readImzML(
-      file = file_name,
+      file = file,
       mass.range = mass.range,
-      resolution = resolution,
-      units = units,
       verbose = verbose)
-    if (!is.null(mass.range)| !is.null(resolution)){
-      if (bin_package == "Cardinal"){
-        verbose_message(message_text = "Binning data using Cardinal's m/z bin method .... ", verbose = verbose)
-        warning("If data loading/conversion is taking a long time try chaning bin_method = 'SpaMTP'... This function speads up matrix conversion for data with identical m/z values for each pixel!")
-        data <- Cardinal::bin(
-          object = data,
+
+    if (!is.null(resolution)){
+          data <- Cardinal::bin(
+          x = data,
           mass.range = mass.range,
           resolution = resolution,
           units = units,
           verbose = verbose)
-        data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay )
-      } else if (bin_package == "SpaMTP"){
-        verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
-        mtx <- bin_cardinal(
-          data,
-          mass.range = mass.range,
-          resolution = resolution,
-          units = units
-        )
-        data <- BinnedCardinalToSeurat(data, mtx, multi.run = multi.run, verbose = verbose, assay = assay)
-      } else {
-        stop("bin_package value is incorrect! bin_package must be either 'SpaMTP' or 'Cardinal'")
-      }
-    } else {
-      data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
     }
+    data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
+
   } else {
-    if (bin_package == "Cardinal"){
-      verbose_message(message_text = "Binning data using Cardinal's m/z bin method .... ", verbose = verbose)
-      warning("If data loading/conversion is taking a long time try chaning bin_method = 'SpaMTP'... This function speads up matrix conversion for data with identical m/z values for each pixel!")
-      data <- Cardinal::readImzML(
-        name = name,
-        folder = path,
+        data <- Cardinal::readImzML(
+        name = basename(file),
+        folder = dirname(file),
         mass.range = mass.range,
         resolution = resolution
       )
       data <- CardinalToSeurat(data, multi.run = multi.run, verbose = verbose, assay = assay)
-    } else if (bin_package == "SpaMTP"){
-      verbose_message(message_text = "Binning data using SpaMTP's m/z bin method .... ", verbose = verbose)
-      data <- Cardinal::readImzML(
-        name = name,
-        folder = path,
-        mass.range = NULL,
-        resolution = NULL
-      )
 
-      mtx <- bin_cardinal(
-        data,
-        units = units,
-        mass.range = mass.range,
-        resolution = resolution
-      )
-      data <- BinnedCardinalToSeurat(data, mtx, multi.run = multi.run, verbose = verbose, assay = assay)
-
-    } else {
-      stop("bin_package value is incorrect! bin_package must be either 'SpaMTP' or 'Cardinal'")
-    }
   }
   return(data)
 }
