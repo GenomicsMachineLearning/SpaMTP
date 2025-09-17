@@ -229,7 +229,6 @@ CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assa
 #'
 #' @examples
 #' #CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")
-#' }
 #'
 #' @export
 CalculateAnnotationStatistics <- function(data, mz.assay, pathway.assay, mz.slot= "scale.data", pathway.slot = "scale.data", return.top = TRUE, corr_theshold = 0, corr_weight = 1, n_weight = 1){

@@ -4,14 +4,14 @@
 \alias{add_ssc_annotation}
 \title{Adds Cardinal ssc segmentation annotation to m/z count data object}
 \usage{
-add_ssc_annotation(data, data_ssc, resolution = 25)
+add_ssc_annotation(data, data_ssc, resolution)
 }
 \arguments{
 \item{data}{A Cardinal Object containing the raw/binned m/z count data.}
 
 \item{data_ssc}{A Cardinal Object containing the ssc segmentation results. Note: Cardinal's spatialShrunkenCentroids() must be run to generate this object.}
 
-\item{resolution}{An integer defining the ssc segmentation resolution to add to the raw Cardinal object (default = 25).}
+\item{resolution}{An integer (< v3.6.0) or string (>= v3.6.0) defining the ssc segmentation resolution to add to the raw Cardinal object.}
 }
 \value{
 A Cardinal Object containing the raw m/z counts and the relative ssc segmentation annotations per pixel.
@@ -22,5 +22,5 @@ This function is additional functionality that can only be run on \code{Cardinal
 }
 \examples{
 # ssc_data <- Cardinal::spatialShrunkenCentroids(CardinalObj, ...)
-# new_CardinalObj <- add_ssc_annotation(CardinalObj, ssc_data, resolution =25)
+# new_CardinalObj <- add_ssc_annotation(CardinalObj, ssc_data, resolution ="r=2,k=8,s=32")
 }

@@ -56,3 +56,8 @@ This function evaluates the potential biological relevance of an annotation for 
 \item NOTE: this function requires \code{CreatePathwayAssay} and \code{CreatePathwayObject} to be run first
 }
 }
+\examples{
+#data <- CreatePathwayObject(data,assay="SPT_pathway",slot = "scale.data")
+#CalculateSingleAnnotationStatistics(mz = "mz-674.2805",data = data,mz.assay = "SPM",pathway.assay = "pathway",mz.slot = "scale.data")
+
+}

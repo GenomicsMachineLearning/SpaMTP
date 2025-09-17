@@ -7,7 +7,7 @@
 LoadSM(
   file,
   mass.range = NULL,
-  resolution = 10,
+  resolution = NA,
   units = "ppm",
   verbose = TRUE,
   assay = "Spatial",

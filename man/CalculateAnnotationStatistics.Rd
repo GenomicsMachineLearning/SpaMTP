@@ -49,3 +49,7 @@ This function evaluates the potential biological relevance of an annotation for 
 \item NOTE: this function requires \code{CreatePathwayAssay} and \code{CreatePathwayObject} to be run first
 }
 }
+\examples{
+#CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")
+
+}
