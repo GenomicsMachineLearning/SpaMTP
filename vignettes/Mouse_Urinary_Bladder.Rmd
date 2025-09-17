@@ -15,10 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 
-# Mouse Urinary Bladder Vignette
+# Analsysing Spatial Metabolomic Data with SpaMTP
 
-This tutorial highlights the utility of [**SpaMTP**](https://github.com/GenomicsMachineLearning/SpaMTP) on single-cell resolution Spatial Metabolomics. This vignette will use public mouse bladder Spatial Metabolomics data first published by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559), and used in the [*Cardinal V3* article](https://doi.org/10.1038/s41592-023-02070-z). 
-
+This tutorial highlights the utility of [**SpaMTP**](https://github.com/GenomicsMachineLearning/SpaMTP) for analysing pixel level or single-cell resolution spatial metabolomics (SM) data. Note: This tutorial has been updated for compatibility with **Cardinal V3.8**.
 
 Using **SpaMTP** we will highlight:
 
@@ -32,9 +31,17 @@ Using **SpaMTP** we will highlight:
 * Re-Clustering using PCA and Seurat
 * Finding Spatially Correlated Metabolites
 
+
 Author: Andrew Causer
 
 <br>
+
+
+
+# Mouse Urinary Bladder Vignette
+This vignette will use various datasets, mainly focusing on the public mouse bladder SM data first published by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559), and used in the [*Cardinal V3* article](https://doi.org/10.1038/s41592-023-02070-z). 
+
+
 
 
 ## Install and Import *R* Libraries
@@ -55,11 +62,116 @@ library(dplyr)
 #For plotting + DE plots
 library(ggplot2)
 library(EnhancedVolcano)
+library(viridis)
 ```
 
 <br>
 
 ## Load SM Data using SpaMTP
+
+There are three main ways to load data with *SpaMTP*. To demonstrate each we will use three different public datasets. 
+
+
+### 1. Converting From Cardinal Object
+
+The first method is to convert a already loaded *Cardinal* object directly to a *SpaMTP* object. This will allow users to analyse any pre-existing cardinal dataset using SpaMTP, and also use pre-processing tools implmeneted by both packages. To demonstrate this we will load, process and convert the 'PIGII_206' [pig fetus dataset](https://bioconductor.org/packages/release/data/experiment/vignettes/CardinalWorkflows/inst/doc/MSI-segmentation.html).
+
+
+```{r warning=FALSE, message=FALSE}
+pig206 <- readRDS("~/Downloads/pig206.RDS")
+```
+
+```{r warning=FALSE, message=FALSE}
+pig206
+```
+
+This is an unprocessed cardinal object containing 4,959 spectra with 10,200 m/z values ranging between 150 to 1000 m/z. This object can then be processed following [*Cardinal's* vignette](https://bioconductor.org/packages/release/data/experiment/vignettes/CardinalWorkflows/inst/doc/MSI-segmentation.html).
+
+```{r warning=FALSE, message=FALSE}
+pig206 <- summarizeFeatures(pig206, c(Mean="mean"))
+
+pig206_peaks <- pig206 |>
+    normalize(method="tic") |>
+    peakProcess(SNR=3, sampleSize=0.1,
+        tolerance=0.5, units="mz")
+
+```
+
+
+```{r warning=FALSE, message=FALSE}
+pig206_peaks
+```
+
+Following our processing steps the cleaned dataset contains 687 peaks. Using *Cardinal* we can visualise one of these peaks (m/z 537) below which is abundant in the pig liver. 
+
+```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
+image(pig206_peaks, mz=537.08)
+```
+
+In addition to pre-processing methods, we can also run additional analyses such as *Cardinal's* tissue segmentation with spatial shrunken centroids (ssc). 
+
+Following the [*Cardinal's* vignette](https://bioconductor.org/packages/release/data/experiment/vignettes/CardinalWorkflows/inst/doc/MSI-segmentation.html), we will use the same values for: 
+
+* Spatial neighborhood radius  = 2
+* Maximum number of segments/clusters = 8
+* Sparsity thresholding parameter = 2,4,8,16,32,64
+
+
+```{r warning=FALSE, message=FALSE}
+set.seed(1)
+pig206_ssc <- spatialShrunkenCentroids(pig206_peaks,
+    weights="adaptive", r=2, k=8, s=2^(1:6))
+```
+
+```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
+
+col_palette = list("1" = "#5aa14f",
+                   "2" = "#4f79a6",
+                   "3" = "#e2585a",
+                   "4" = "#76b8b3", 
+                   "5" = "#ebc948", 
+                   "6" = "#f18e29")
+
+image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)))
+```
+
+From this we can see areas such as the liver, heart, and brain distinguished as segments 4, 1, and 5 as presented in the original *Cardinal* vignette. 
+
+Although the majority of functions within the SpaMTP package are used as wrappers for analysing and modifying Seurat objects, there are a few functions that are designed to assist in SM analysis in Cardinal. The function below is one, which allows you to add the SCC results back to a Cardinal Object. 
+
+```{r, warning=FALSE, message=FALSE}
+pig206_peaks <- add_ssc_annotation(pig206_peaks, pig206_ssc, resolution = "r=2,k=8,s=32")
+```
+
+
+
+
+
+Once finished with the analysis using *Cardinal* we can use the *SpaMTP* function `CardinalToSeurat` to generate a SpaMTP object from the processed data.
+
+
+```{r warning=FALSE, message=FALSE}
+pig206_ssc
+```
+
+
+
+`LoadSM`
+
+This *SpaMTP* function is a wrapper on *Cardinal's readImzML()* function. For more information on how this function works, and the relative inputs it accepts please head to [*Cardinal's* documentation page](https://rdrr.io/bioc/Cardinal/man/readMSIData.html).  
+
+
+
+1. pig load cardinal, processes, covert
+2. rcc load already processed imzML file
+3. bladder mtx
+
+```{r}
+msi <- ReadSM_mtx("~/Downloads/bladder_csv.csv", mz.prefix = "mz-", feature.start.column = 2)
+
+```
+
+
 
 ### Sample Pre-Processing
 
@@ -72,12 +184,11 @@ and can be downloaded from [Project PXD001283](https://www.ebi.ac.uk/pride/archi
 
 ### Load Processed *SM* Data
 
-The first step is loading the data. In this case our pre-processed data was saved in the format of .ibd and .imzML files. Alternative formats that data can be loaded into SpaMTP are through an intensity matrix or a Cardinal Object. These are displayed in different vignettes.
+The first step is loading the data. In this case we are using already pre-processed data generated from [*Cardinal's* V3 Vignette (2023)](https://github.com/Vitek-Lab/Cardinal3-vignettes). The data was saved in the format of .ibd and .imzML files already binned to a resolution of 10ppm. Alternative formats that data can be loaded into SpaMTP are through an intensity matrix or a Cardinal Object. These are displayed in different vignettes.
 
-This *SpaMTP* function is a wrapper on *Cardinal's readImzML()* function. For more information on how this function works, and the relative inputs it accepts please head to [*Cardinal's* documentation page](https://rdrr.io/bioc/Cardinal/man/readMSIData.html).  
 
-Here, we have specified the file path were the .imzML and .imb files are stored, along with the mass range of m/z values to include and also set the resolution or bin size of each peak to 10ppm.
 
+Here, we have specified the file path were the .imzML and .imb files are stored, along with the mass range of m/z values to include.
 
 
 ```{r warning=FALSE, message=FALSE}
@@ -152,16 +263,14 @@ ssc <- spatialShrunkenCentroids(bladder_cardinal,
 
 
 ```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
+col_palette = list("1" = "#C2B03B", 
+                   "2" = "#BF212E",
+                   "3" = "#9FBEAC",
+                   "4" = "#F99D1D", 
+                   "5" = "#DE4D6C",  
+                   "6" = "#008E87", 
+                   "7" = "#0074B0")
 
-col_palette = list("1" = "#9FBEAC", 
-                   "2" = "#C2B03B",
-                   "3" = "#F99D1D",
-                   "4" = "#008E87", 
-                   "5" = "#0074B0",  
-                   "6" = "#DE4D6C", 
-                   "7" = "#F99D1D",
-                   "8" = "#DE4D6C",
-                   "9" = "#BF212E")
 
 image(ssc, model=list(s=24), col= unlist(unname(col_palette)))
 ```
@@ -192,12 +301,12 @@ df %>%
 ```
 
 
-Based on the image above, there are a few clusters that are associated with regions outside the tissue. Because we are not interested in these (technical noise), we will subset our SpaMTP object to only include the clusters of interest (cluster 2, 5 and 6).
+Based on the image above, there are a few clusters that are associated with regions outside the tissue. Because we are not interested in these (technical noise), we will subset our SpaMTP object to only include the clusters of interest (cluster 1, 5 and 7).
 
 
 ```{r, fig.width = 20, fig.height = 8, dev.args = list(bg = "#ffffff")}
 # subset the pixels to only include our ssc clusters of interest
-tissue_clusters = c(2,5,6)
+tissue_clusters = c(1,5,7)
 test <- subsetPixels(bladder_cardinal, ssc %in% tissue_clusters)
 
 # plot a key marker m/z only across our segments of interest in Cardinal
@@ -458,14 +567,14 @@ Lets use SpaMTP's *FindAllDEMs()* function to identify differentially expressed 
 
 
 ```{r, warning=FALSE, message=FALSE}
-ROI <- subset(bladder_annotated, subset = ssc %in% c("2", "5", "6")) # subset our dataset to only include our 3 clusters (Region of Interest - ROI)
+ROI <- subset(bladder_annotated, subset = ssc %in% c("1", "5", "7")) # subset our dataset to only include our 3 clusters (Region of Interest - ROI)
 ```
 
 Now our object has been subset to only include our clusters of interest, we can now perform differential expression analysis.
 
 ```{r, warning=FALSE, message=FALSE}
 # Performs pooling, pseudo-bulking and edgeR Differential Expression Analysis
-cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 5, logFC_threshold = 1.2, 
+cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, 
                             run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
 ```
@@ -489,7 +598,7 @@ Lets observe the top 10 DE metabolites for each cluster in a heatmap:
 DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
             n = 10, save_to_path = NULL
-            ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("2","5","6")])
+            ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("1","5","7")])
 ```
 
 
@@ -511,10 +620,10 @@ The code below performs differential expression analysis just between the the mu
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 ### Subsets the original dataset to only include cluster 5 and 6
-ROI_x <- subset(bladder_annotated, subset = ssc %in% c("5", "6"))
+ROI_x <- subset(bladder_annotated, subset = ssc %in% c("5", "7"))
 
 ### Performs differential expression analysis between the two groups
-cluster_DEMs_x <- FindAllDEMs(data = ROI_x, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+cluster_DEMs_x <- FindAllDEMs(data = ROI_x, ident = "ssc", n = 10, logFC_threshold = 1.2, 
                             DE_output_dir =NULL, return.individual = FALSE, 
                             run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" )
 
@@ -522,15 +631,15 @@ cluster_DEMs_x <- FindAllDEMs(data = ROI_x, ident = "ssc", n = 3, logFC_threshol
 cluster_DEMs_x$DEMs <- RefineLipids(cluster_DEMs_x$DEMs, annotation.column = "annotations", lipid_info = "simple")
 
 ### Subsets the DEM results to only get up regulated metabolites for cluster 5 and 6
-urothelium <- cluster_DEMs_x$DEMs[cluster_DEMs_x$DEMs$cluster == "6",]
+urothelium <- cluster_DEMs_x$DEMs[cluster_DEMs_x$DEMs$cluster == "7",]
 
 ### Sets up colouring for significant spots in volcano plot
 keyvals <- ifelse(
-    urothelium$logFC < -2  & urothelium$PValue < 10e-4, 'royalblue',
-      ifelse(urothelium$logFC > 1 & urothelium$PValue < 10e-4, 'red',
+    urothelium$logFC < -2  & urothelium$P.Value < 10e-4, 'royalblue',
+      ifelse(urothelium$logFC > 1 & urothelium$P.Value < 10e-4, 'red',
         'black'))
   keyvals[is.na(keyvals)] <- 'black'
-  names(keyvals)[keyvals == 'red'] <- 'Cluster 6'
+  names(keyvals)[keyvals == 'red'] <- 'Cluster 7'
   names(keyvals)[keyvals == 'black'] <- 'Non-Sig'
   names(keyvals)[keyvals == 'royalblue'] <- 'Cluster 5'
 
@@ -562,7 +671,7 @@ volc_plot <- EnhancedVolcano::EnhancedVolcano( urothelium,
                                   labFace = 'bold',
                                   colAlpha = 4/5,
                                   x = 'logFC',
-                                  y = 'PValue', 
+                                  y = 'P.Value', 
                                   gridlines.major = FALSE,
                                   gridlines.minor = FALSE)
 ```
@@ -907,6 +1016,7 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 SM_assay = "Spatial",
                                 ST_assay = NULL)
 ```
+
 ```{r, echo=TRUE, results='hide'}
 DE_pathways
 ```
