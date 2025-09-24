@@ -196,7 +196,7 @@ list_to_pprcomp <- function(lst) {
   obj <- structure(list(), class = "prcomp")
   # Assign components from the list to the object
   obj$sdev <- lst$sdev
-  obj$rotation <- lst$rotationf
+  obj$rotation <- lst$rotation
   obj$center <- lst$center
   obj$scale <- lst$scale
   obj$x <- lst$x
