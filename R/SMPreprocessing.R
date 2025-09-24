@@ -211,7 +211,7 @@ statPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "co
 #'
 #' @examples
 #' # MZRidgePlot(SeuratObj, group.by = "sample")
-MZRidgePlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "RidgePlot", x.lab = "var", y.lab = "intensity", bottom.cutoff = NULL, top.cutoff = NULL, bins = 1000,log.data = FALSE, cols = NULL, verbose = FALSE){
+MZRidgePlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "RidgePlot", x.lab = "intensity", y.lab = "var", bottom.cutoff = NULL, top.cutoff = NULL, bins = 1000,log.data = FALSE, cols = NULL, verbose = FALSE){
   data <- statPlot(seurat.obj = seurat.obj,
                    group.by = group.by,
                    assay = assay,

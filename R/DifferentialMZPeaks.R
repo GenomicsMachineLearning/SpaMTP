@@ -88,7 +88,7 @@ run_pooling <- function(data.filt, idents, n, assay, slot, seed = 1234, verbose 
 #' # run_DE(pooled_obj, SeuratObj, "sample", "~/Documents/DE_output/", "run_1", n = 3, logFC_threshold = 1.2, annotation.column = "all_IsomerNames", assay = "Spatial")
 run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, logFC_threshold, annotation.column, assay, return.individual = FALSE, verbose = TRUE){
 
-  verbose_message(message_text = paste("Running edgeR DE Analysis for ", run_name, " -> with samples [", paste(unique(unlist(seurat_data@meta.data[[ident]])), collapse = ", "), "]"), verbose = verbose)
+  verbose_message(message_text = paste("Running limma DE Analysis for ", run_name, " -> with samples [", paste(unique(unlist(seurat_data@meta.data[[ident]])), collapse = ", "), "]"), verbose = verbose)
 
   annotation_result <- list()
 
@@ -235,6 +235,10 @@ FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
     } else{
       dir.create(DE_output_dir)
     }
+  }
+
+  if (!is.factor(data@meta.data[[ident]])){
+    stop("ident provided is not a factor! Please convert the ident column using `factor()` ...")
   }
 
   #Step 1: Run Pooling to split each unique ident into 'n' number of pseudo-replicate pools

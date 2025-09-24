@@ -391,7 +391,7 @@ FindRegionalPathways = function(SpaMTP,
   cluster = levels(cluster_vector)
   ## Checks for data in SM and/or ST assay
   if ("genes" %in% analyte_types) {
-    st_obj = slot(SpaMTP@assays[[ST_assay]], ST_slot)
+    st_obj = slot(SpaMTP@assays[[SM_assay]], SM_assay)
     if (is.null(st_obj)) {
       stop(
         paste0(
