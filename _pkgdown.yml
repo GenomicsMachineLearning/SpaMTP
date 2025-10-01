@@ -94,7 +94,15 @@ reference:
   - GetMZMetadata
   - FindDuplicateAnnotations
   - SubsetMZFeatures
+  - AnnotateBigData
   - getRefinedAnnotations
+
+- title: Simplify Annotations
+  desc: Functions required for simplifying m/z annotation results
+  contents:
+  - CalculateAnnotationStatistics
+  - CalculateSingleAnnotationStatistics
+  - CreatePathwayObject
 
 - title: Simplifying Lipid Nomenclature
   desc: Function used to simplify lipid names into general lipid categories, classes,
@@ -188,6 +196,11 @@ reference:
   contents:
   - AddSMImage
 
+- title: ROI Selection
+  desc: Functions used subset or select specific spatial regions of interest.
+  contents:
+  - SelectROIs
+
 - title: Pre-Processing SpaMTP Metabolic Data
   desc: Functions for normalising and visualising the pre-processing of SpaMTP datasets
   contents:
@@ -247,8 +260,6 @@ reference:
   contents:
   - BinnedCardinalToSeurat
   - spectral_binning
-  - bin_SpectralImagingExperiment
-  - bin_cardinal
 - subtitle: Plotting Helper Functions
   desc: Helper functions used for SpaMTP data visualisation
   contents:
