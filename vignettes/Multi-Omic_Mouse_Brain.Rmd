@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 # Multi-Omics Mouse Brain Vignette
 <br>
-This tutorial highlights the utility of *SpaMTP* on multi-omic data. This vignette will use mouse brain data, where both Spatial Transcriptomics (Visium), ST, and Spatial Metabolomics (MALDI-MSI), SM, were generated from the same tissue section. This data is publicly available from [Vicari et al](https://doi.org/10.17632/w7nw4km7xd.1).
+This tutorial highlights the utility of *SpaMTP* on multi-omic data. This vignette will use mouse brain data, where both Spatial Transcriptomics (Visium), ST, and Spatial Metabolomics (MALDI-MSI), SM, were generated from the same tissue section. This data is publicly available from [Vicari et al](https://doi.org/10.17632/w7nw4km7xd.1) and all data objects used for this vignette are available from the [*SpaMTP* zenodo page](https://zenodo.org/communities/spamtp/records). 
 
 Using **SpaMTP** we will highlight:
 
@@ -93,7 +93,7 @@ Based on this, we can read in the `.csv` file that contains our intensity and pi
 
 # Load directly from URL
 msi_url <- "https://zenodo.org/records/17246900/files/V11L12-109_B1.Visium.FMP.220826_smamsi.csv?download=1"
-msi <- ReadSM_mtx(file = msi_url)
+msi <- ReadSM_mtx(mtx.file = msi_url)
 ```
 
     Spliting matrix data from column 1 onwards .... 
