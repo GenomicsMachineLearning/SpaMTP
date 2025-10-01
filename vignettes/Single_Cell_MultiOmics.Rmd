@@ -38,8 +38,8 @@ library(ggplot2)
 Here, we will be using the simulated data which has synthetic clustering and cell type names. The gene and metabolite names are also arbitrary, this data is only used to highlight ***SpaMTP's*** functionally with single cell spatial datasets. 
 
 ```{r warning=FALSE, message=FALSE}
-xenium <- readRDS("vignette_data_files/Simulated_data/Sim_Xenium.RDS")
-MALDI <- readRDS("vignette_data_files/Simulated_data/Sim_MALDI.RDS")
+xenium <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"))
+MALDI <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"))
 
 MALDI <- UpdateSeuratObject(MALDI) # Only Required if SeuratObjects => 5.0.2
 ```  

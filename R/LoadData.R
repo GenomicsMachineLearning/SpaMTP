@@ -86,11 +86,7 @@ LoadSM <- function (file, mass.range = NULL, resolution = NA, units = "ppm", ver
 #' # msi_data <- ReadSM_mtx("~/Documents/msi_mtx.csv")
 ReadSM_mtx <- function(mtx.file, assay = "Spatial", verbose = TRUE, feature.start.column = 1, mz.prefix = NULL, project.name = "SpaMTP"){
 
-  #verbose_message(message_text = "Convering mtx to SpaMTP Seurat object .... ", verbose = verbose)
-
-  if (!file.exists(mtx.file)) {
-    stop("Expression matrix file missing. Expecting matrix.csv")
-  }
+  verbose_message(message_text = "Reading mtx file.... ", verbose = verbose)
 
   data <- as.data.frame(data.table::fread(mtx.file))
 

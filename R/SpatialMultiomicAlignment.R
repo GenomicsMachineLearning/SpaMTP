@@ -1303,6 +1303,8 @@ generate.map.affine <- function (
 #'
 #' @export
 #'
+#' @import shiny shinyjs
+#'
 #' @examples
 #' # AddSMImage(image_path = "../HnE_image.png", SpaMTP = SpaMTP_obj)
 AddSMImage <- function(image_path, SpaMTP, fov = "fov", grey.scale = 0.5, plot.greyscale = FALSE, seed = 123, n.spots = NULL, ...) {

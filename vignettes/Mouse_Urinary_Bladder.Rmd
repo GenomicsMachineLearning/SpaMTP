@@ -62,7 +62,7 @@ library(viridis)
 
 ## Load SM Data using SpaMTP
 
-There are three main ways to load data with *SpaMTP*. To demonstrate each we will use three different public datasets which you can download or load directly from [*SpaMTP* zenodo page](). 
+There are three main ways to load data with *SpaMTP*. To demonstrate each we will use three different public datasets which you can download or load directly from [*SpaMTP* zenodo page](https://zenodo.org/communities/spamtp/records). 
 
 
 ### 1. Converting From a Cardinal Object
@@ -71,7 +71,12 @@ The first method is to convert a already loaded *Cardinal* object directly to a 
 
 
 ```{r warning=FALSE, message=FALSE}
-pig206 <- readRDS("~/Documents/SpaMTP_Resubmission/DataObjects/pig206.RDS")
+# Load directly from file
+#pig206 <- readRDS("./Documents/pig206.RDS")
+
+# Load directly from URL
+pig206_url <- "https://zenodo.org/records/17246555/files/pig206.RDS?download=1"
+pig206 <- readRDS(file = url(pig206_url))
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -209,12 +214,18 @@ We can see the feature and ssc segment plots match between *SpaMTP* and *Cardina
 *SpaMTP* also provides a function for loading data directly from .ibd and .imzML files. This `LoadSM` *SpaMTP* function is a wrapper on *Cardinal's readImzML()* function. For more information on how this function works, and the relative inputs it accepts please head to [*Cardinal's* documentation page](https://rdrr.io/bioc/Cardinal/man/readMSIData.html). This function also has capabilities for splitting data containing multiple runs, into individual *SpaMTP* data FOV's. Below we will use the [Human Renal Cell Carcinoma (RCC)](https://www.bioconductor.org/packages/release/data/experiment/vignettes/CardinalWorkflows/inst/doc/MSI-testing.html) public dataset to demonstrate this. 
 
 
-The corresponding .imzML files can be downloaded directly from [*SpaMTP* zenodo page](). 
+The corresponding .imzML files can be downloaded directly from [*SpaMTP* zenodo page](https://zenodo.org/records/17246588). 
 
-```{r, warning=FALSE, message=FALSE}
-rcc_spamtp <- LoadSM(file = "~/Documents/SpaMTP_Resubmission/DataObjects/rcc/rcc", mass.range = c(150, 1000), multi.run = T)
+```{r eval=FALSE, warning=FALSE, message=FALSE}
+rcc_spamtp <- LoadSM(file = "./rcc-files/rcc", mass.range = c(150, 1000), multi.run = T)
 ```
 
+```{r, include=FALSE}
+options(timeout = 600)
+url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
+#download.file(url, destfile = "rcc.RDS", mode = "wb")
+rcc_spamtp <- readRDS(url(url))
+```
 
 ```{r warning=FALSE, message=FALSE}
 rcc_spamtp
@@ -253,8 +264,14 @@ and can be downloaded from [Project PXD001283](https://www.ebi.ac.uk/pride/archi
 This dataset will be used for the remainder of the tutorial.
 
 ```{r warning=FALSE, message=FALSE}
-bladder <- ReadSM_mtx("~/Documents/SpaMTP_Resubmission/DataObjects/bladder_csv.csv", mz.prefix = "mz-", feature.start.column = 2)
+# Load directly from file
+#bladder <- ReadSM_mtx("./Documents/bladder_csv.csv", mz.prefix = "mz-", feature.start.column = 2)
+
+# Load directly from URL
+bladder_url <- "https://zenodo.org/records/17246684/files/bladder_csv.csv?download=1"
+bladder <- ReadSM_mtx(mtx.file = bladder_url, mz.prefix = "mz-", feature.start.column = 2)
 ```
+
 
 ```{r warning=FALSE, message=FALSE}
 bladder
@@ -270,7 +287,8 @@ ImageFeaturePlot(bladder, features = "nFeature_Spatial", size = 1) + coord_flip(
 In addition we can also add metadata such as tissue segmentation results from ssc. These segments were generated following parameters specified in [*Cardinal's* V3 Vignette (2023)](https://github.com/Vitek-Lab/Cardinal3-vignettes), with 'r= 2, k=10, s=24' using 'gausian' weights.
 
 ```{r warning=FALSE, message=FALSE}
-bladder_metadata <- read.csv("~/Documents/SpaMTP_Resubmission/DataObjects/bladder_metadata.csv", row.names = 1)
+metadata_url <- "https://zenodo.org/records/17246684/files/bladder_metadata.csv?download=1"
+bladder_metadata <- read.csv(url(metadata_url), row.names = 1)
 ```
 
 ```{r, echo=TRUE, results='hide'}
@@ -356,7 +374,7 @@ Another metric to assess is the relative intensity values of each m/z across a s
 
 
 ```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
-raw_bladder <- readRDS("~/Documents/SpaMTP_Resubmission/DataObjects/raw_bladder.RDS") 
+raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1")) 
 
 MZRidgePlot(seurat.obj = raw_bladder, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
 MZRidgePlot(seurat.obj = ROI, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank())
@@ -891,7 +909,6 @@ DensityMap(object = ROI, assay = "Spatial", slot = "counts", folder = "vignette_
 library(htmltools)
 
 file_path <- "vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html"  # Path to the HTML file
-
 
 includeHTML(file_path)
 

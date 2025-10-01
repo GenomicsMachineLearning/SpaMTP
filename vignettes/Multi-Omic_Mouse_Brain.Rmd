@@ -88,7 +88,12 @@ As mentioned above, the format of our SM data is in a mtx format. This is differ
 Based on this, we can read in the `.csv` file that contains our intensity and pixel coordinate values.
 
 ```{r, warning=FALSE, message=FALSE}
-msi <- ReadSM_mtx("vignette_data_files/Mouse_Brain/SM_data/V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+# Load directly from file
+#msi <- ReadSM_mtx("./V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+
+# Load directly from URL
+msi_url <- "https://zenodo.org/records/17246900/files/V11L12-109_B1.Visium.FMP.220826_smamsi.csv?download=1"
+msi <- ReadSM_mtx(file = msi_url)
 ```
 
     Spliting matrix data from column 1 onwards .... 
@@ -160,8 +165,15 @@ msi@meta.data$orig.ident <- "msi_sample1"
 Now that we have successfully loaded our SM data, lets load in the ST Visium data. This data can be loaded using *Seurat's* `Load10X_Spatial()` function.
 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
 vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
+```
+
+
+```{r, include=FALSE}
+options(timeout = 600)
+url <- "https://zenodo.org/records/17246900/files/visium.RDS?download=1"
+vis <- readRDS(url(url))
 ```
 
 
@@ -185,9 +197,9 @@ Now, lets load this metadata and add it to our Visium Seurat object.
 
 ```{r}
 ## Read in metadata files
-lesion <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/lesion.csv", row.names = 1)
-region <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/region.csv", row.names = 1)
-region_loupe <- read.csv("vignette_data_files/Mouse_Brain/ST_data/outs/RegionLoupe.csv", row.names = 1)
+lesion <- read.csv("./outs/lesion.csv", row.names = 1)
+region <- read.csv("./outs/region.csv", row.names = 1)
+region_loupe <- read.csv("./outs/RegionLoupe.csv", row.names = 1)
 
 ## Combine into one dataframe
 annotations <- cbind(lesion,region,region_loupe)
@@ -236,7 +248,7 @@ Parkinson's is heavily associated with dopamine regulation, and thus we will als
 First, we will need to load this additional data.frame containing the custom annotations:
 
 ```{r}
-fmp10_metabolites <- read.csv("vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv", row.names = 1)
+fmp10_metabolites <- read.csv(url("https://zenodo.org/records/17246900/files/Public_data_FMP10_Annotations.csv?download=1"), row.names = 1)
 ```
 
 
@@ -396,7 +408,7 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
      0 0 1   
 
 ```{r, include=FALSE}
-msi_transformed <- readRDS("vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS")
+msi_transformed <- readRDS(url("https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS?download=1"))
 ```    
 
 Lets observe the change to the coordinates, comparing between the original x and y coordinates stored in our meta.data and our updated pixel coordinates stored in the `@image$fov` slot:
@@ -1008,7 +1020,7 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 
 This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
 ```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=8}
-striatum.dhb.data <- readRDS("vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS")
+striatum.dhb.data <- readRDS(url("https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"))
 
 SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
 ```
