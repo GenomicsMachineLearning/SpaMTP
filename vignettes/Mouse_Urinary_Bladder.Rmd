@@ -195,7 +195,7 @@ ImageMZPlot(pig206_spamtp, mzs = 537.106, size = 2.2, dark.background = F) + sca
 ::::: columns
 ::: column
 ```{r, fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
-image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)),)
+image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)))
 title("Cardinal", outer = TRUE)
 ```
 :::

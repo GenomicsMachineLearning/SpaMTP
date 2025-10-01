@@ -195,7 +195,7 @@ In addition, we can load in the metadata associated with the tissue morphology g
 Now, lets load this metadata and add it to our Visium Seurat object.
 
 
-```{r}
+```{r, eval=FALSE}
 ## Read in metadata files
 lesion <- read.csv("./outs/lesion.csv", row.names = 1)
 region <- read.csv("./outs/region.csv", row.names = 1)
