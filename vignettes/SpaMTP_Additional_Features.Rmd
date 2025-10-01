@@ -44,6 +44,8 @@ Here, we will be using already processed, clustered (via spatially-aware Shrunke
 
 ```{r warning=FALSE, message=FALSE}
 bladder_annotated <- readRDS("vignette_data_files/Mouse_Urinary_Bladder/bladder_annotated.RDS")
+
+bladder_annotated <- UpdateSeuratObject(bladder_annotated) # Only Required if SeuratObjects => 5.0.2
 ```    
 
 
@@ -52,7 +54,7 @@ bladder_annotated <- readRDS("vignette_data_files/Mouse_Urinary_Bladder/bladder_
 ***SpaMTP*** stores the relative m/z value annotations in the objects feature metadata slot. We can see this below:
 
 ```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
-head(bladder_annotated@assays$Spatial@meta.data)
+head(bladder_annotated@assays$Spatial@meta.data) 
 ```
 
 ```{r, echo=FALSE}
@@ -244,7 +246,7 @@ We can see that there is high expression of GP's in the urothelium and adventiti
 One useful feature of ***SpaMPT*** is the ability to add a H&E or tissue image to the *SpaMTP* object. This can allow the user to visualise key structural metabolic patterns that match to the tissue morphology. Below, we will demonstrate how to manually align your image with your SM dataset. 
 
 ```{r, eval=FALSE}
-bladder_HE <- AddSMImage("vignettes/vignette_data_files/Mouse_Urinary_Bladder/mouse_urinary_bladder_HE.tif", bladder_annotated, msi.pixel.multiplier = 2)
+bladder_HE <- AddSMImage("vignette_data_files/Mouse_Urinary_Bladder/mouse_urinary_bladder_HE.tif", bladder_annotated, msi.pixel.multiplier = 2)
 ```
 
 This function will activate an interactive window where you can change the MSI coordinates to align to the image provided. This includes rotating, adjusting x and y coordinates, flipping around the x or y axis, and also scaling. The user can also select any column in the object's metadata to plot. This can help assist the alignment process, in particular by using clustering results.  
@@ -259,6 +261,8 @@ After clicking the return aligned data button a ***SpaMTP*** *Seurat* object wit
 
 ```{r, include=FALSE}
 bladder_HE <- readRDS("vignette_data_files/Mouse_Urinary_Bladder/bladder_HE.RDS")
+
+bladder_HE <- UpdateSeuratObject(bladder_HE) # Only Required if SeuratObjects => 5.0.2
 ```  
 
 ```{r fig.width=30, fig.height=5, warning=FALSE, message=FALSE}

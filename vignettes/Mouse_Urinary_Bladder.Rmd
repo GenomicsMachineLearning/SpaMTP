@@ -1064,9 +1064,11 @@ ROI_pathays <- AnnotateSM(ROI_pathays, db = rbind(Chebi_db,Lipidmaps_db,HMDB_db)
 
 
 ## Re-run DE analysis
-DE <- FindAllDEMs(data = ROI_pathays, ident = "ssc", n = 3, logFC_threshold = 1.2, 
+DE <- FindAllDEMs(data = ROI_pathays, ident = "ssc", n = 5, logFC_threshold = 1, 
                             DE_output_dir =NULL, return.individual = FALSE, 
                             run_name = "FindAllDEMs", annotation.column = "all_IsomerNames")
+
+
 
 DE_pathways <- FindRegionalPathways(SpaMTP = ROI_pathays,
                                 ident = "ssc",
@@ -1098,7 +1100,7 @@ These results may not tell the entire story however, the 'SSC' clustering result
 
 <br>
 
-## Re-Clustering using PCA and Seurat
+## Clustering using PCA and Seurat
 
 Because SpaMTP is built on the foundations of a *Seurat* Object, it allows the user to still use many useful *Seurat* functions on their spatial metabolomic data using SpaMTP. Below, we will demonstrate how to use metabolite-based PCA results from **SpaMTP**, along with *Seurat's* clustering functions, to identify this rare cell type known as the ([lamina propria](https://doi.org/10.1002/anie.200905559)).
 
@@ -1128,66 +1130,6 @@ DimPlot(ROI, group.by = "clusters", cols = SpaMTP_palette, pt.size = 2) | ImageD
 
 
 Comparing these results to the SSC segmentation we can see this clustering can still detect the urinary bladder muscle (cluster <span style="color: #0074B0">0</span>/<span style="color: #008E87">1</span>), urothelium (cluster <span style="color: #DE4D6C">2</span>/<span style="color: #BF212E">3</span>) and the adventitia (cluster <span style="color: #C2B03B"> 4</span>). In addition, we are able to detect a region that matches a similar location to that of the lamina propria <span style="color: #92f09a">(cluster 5)</span> identified by the original publication.
-
-
-#TODO
-
-## Switching between SpaMTP and Cardinal Objects
-
-Similar to before we can interchangeably convert our data between *SpaMTP* and *Cardinal* objects, meaning pre-processing or analysis tools from either package can be used at any point during the analysis pipeline. 
-
-As an example, now that we have demonstrated our data is of good quality, we can convert our *SpaMTP* object to *Cardinal* to perform non-negative matrix factorization (NMF). This is method is similar to Principal component analysis (PCA) but produces non-negative loadings. Lets first convert our data:
-
-
-```{r, warning=FALSE, message=FALSE}
-bladder_cardinal <- ConvertSeuratToCardinal(data = bladder, assay = "Spatial", slot = "counts")
-```
-
-    Gathering Intensity, m/z values and metadata from Seurat Object ...
-    
-    Converting intensity matrix and Generating Cardinal Object ...
-    
-
-```{r}
-bladder_cardinal
-```
-
-
-We can see that the Object layout is correct and we have 305 m/z values and our seurat metadata has also been stored in the `pixelData` slot. Next we can run NMF and plot the results. 
-
-```{r, warning=FALSE, message=FALSE, fig.width=20, fig.height=5 , dev.args = list(bg = "#ffffff")}
-bladder_NMF <- NMF(bladder_cardinal, ncomp=3, niter=30)
-
-image(bladder_NMF, smooth="adaptive", enhance="histogram",superpose = F,layout=c(1,3))
-```
-
-We can see these components follow a similar patter to our segments. Next we can generate a plot using Cardinal:
-
-```{r, fig.width=20, fig.height=5 , dev.args = list(bg = "#ffffff")}
-image(bladder_cardinal, mz=c(798.5410, 741.5307, 743.5482),
-        main="Mouse urinary bladder",
-        col=c("green", "blue", "red"),
-        contrast.enhance="suppress",
-        smooth.image="adaptive",
-        normalize.image="linear",
-        superpose=TRUE)
-
-```
-
-
-#####
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ## Finding Spatially Correlated Metabolites
@@ -1245,6 +1187,48 @@ ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "S
 ```
 
 
+
+## Switching between SpaMTP and Cardinal Objects
+
+Similar to before we can interchangeably convert our data between *SpaMTP* and *Cardinal* objects, meaning pre-processing or analysis tools from either package can be used at any point during the analysis pipeline. 
+
+As an example, we can convert our *SpaMTP* object to *Cardinal* to generate a figure overlaying key m/z values. Lets first convert our data:
+
+
+```{r, warning=FALSE, message=FALSE}
+bladder_cardinal <- ConvertSeuratToCardinal(data = ROI, assay = "Spatial", slot = "counts")
+```
+
+    Gathering Intensity, m/z values and metadata from Seurat Object ...
+    
+    Converting intensity matrix and Generating Cardinal Object ...
+    
+
+```{r}
+bladder_cardinal
+```
+
+
+We can see that the Object layout is correct and we have 79 annotated m/z values and our seurat metadata has also been stored in the `pixelData` slot. Next we can generate a plot using Cardinal:
+
+```{r, fig.width=8, fig.height=5 , dev.args = list(bg = "#ffffff")}
+
+image(bladder_cardinal, mz=c(798.5410, 741.5307, 743.5482),
+        main="Mouse urinary bladder",
+        col=c("red", "lightblue", "green"),
+        contrast.enhance="suppress",
+        smooth.image="adaptive",
+        normalize.image="linear",
+        superpose=TRUE)
+
+image(bladder_cardinal, "Seurat_metadata.seurat_clusters", col = unlist(unname(SpaMTP_palette)))
+
+```
+We can see based on this ion image overlay plot that the three selected *m/z* values correspond quite significantly with our *Seurat* based clustering. 743.5482 clearly maps cluster 5 (green), whereas 798.5410 corresponds to cluster 2 and 3 (red).
+
+
+## Additional Pathway Analysis 
+
 We can also run pathway analysis on the new clustering results. Lets do that now, this time using *Seurat's* `FindAllMarker()` function to calculating DE metabolites, highlighting ***SpaMTP's*** flexibility. You will see below that `FindAllMarker()` requires normalised data. ***SpaMTP*** has a `NormalizeSMData()` function that allows for *TIC* (Total Ion Current) normalisation. For more info on this form of normalisation, please read [Jauhiainen et.al (2014)](https://doi.org/10.1093/bioinformatics/btu175).
 
 ```{r warning=FALSE, message=FALSE, results='hide'}
@@ -1285,6 +1269,7 @@ PlotRegionalPathways(regpathway = DE_pathways, selected_pathways = key_pathways)
 ```
 
 Based on these findings, we observe that the lamina propria (cluster 5) has an up regulation of metabolites associated with sensory perception pathways. This matches with biology, as this is the layer of the bladder that contains sensory neurons.   
+
 
 There are a large range of additional applications SpaMTP can be used for, such as, multi-modality analysis using both spatial transcriptomics and spatial metabolomics. Check out the SpaMTP github or documentation site for more. 
 

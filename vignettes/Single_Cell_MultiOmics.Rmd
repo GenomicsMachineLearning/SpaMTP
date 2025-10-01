@@ -40,6 +40,8 @@ Here, we will be using the simulated data which has synthetic clustering and cel
 ```{r warning=FALSE, message=FALSE}
 xenium <- readRDS("vignette_data_files/Simulated_data/Sim_Xenium.RDS")
 MALDI <- readRDS("vignette_data_files/Simulated_data/Sim_MALDI.RDS")
+
+MALDI <- UpdateSeuratObject(MALDI) # Only Required if SeuratObjects => 5.0.2
 ```  
 
 
@@ -80,7 +82,7 @@ options(future.globals.maxSize = 16000 * 1024^2) # 16 GB per core
 
 ```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
 # Generate a smaller FOV to look at a zoomed in region of the ST data
-cropped.coords.xenium <- Crop(xenium[["fov"]], y = c(2000, 3000), x = c(8500, 9500), coords = "tissue")
+cropped.coords.xenium <- Crop(xenium[["segmentations"]], y = c(2000, 3000), x = c(8500, 9500), coords = "tissue")
 xenium[["zoom"]] <- cropped.coords.xenium
 
 # Generate a smaller FOV to look at a zoomed in region of the SM data
@@ -111,7 +113,7 @@ Based on this, we can see our datasets are aligned correctly. Next, we will map 
 
 ```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
 # Set the boundary as segmentation for our Xenium data
-MO_data <- MapSpatialOmics(SM.data = MALDI, ST.data = xenium, ST.hires = TRUE, SM.assay = "Spatial",ST.assay = "Xenium", SM.fov = "fov", ST.image = "fov")
+MO_data <- MapSpatialOmics(SM.data = MALDI, ST.data = xenium, ST.hires = TRUE, SM.assay = "Spatial",ST.assay = "Xenium", SM.fov = "fov", ST.image = "centroids")
 ```
 
 Our two datasets have been aligned to each individual cell. Lets visualise the results:

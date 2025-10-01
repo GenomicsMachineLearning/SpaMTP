@@ -60,6 +60,8 @@ library(dplyr)
 #For plotting + DE plots
 library(ggplot2)
 library(EnhancedVolcano)
+library(mclust)
+library(patchwork)
 
 ## For reproducability
 set.seed(888)
@@ -69,7 +71,7 @@ set.seed(888)
 
 #### Load *SM* Data
 
-As mentioned above, the format of our SM data is in a mtx format. This is different to .ibd and .imzML files that were used in the [Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The layout of this dataset is demonstrated below:
+As mentioned above, the format of our SM data is in a mtx format. This is different to .ibd and .imzML files that were used in the [Spatial Metabolomics Analysis: Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The layout of this dataset is demonstrated below:
 
 <div style="text-align: center;">
 
@@ -452,9 +454,18 @@ rm(msi_annotated)
 ```
 
 
-Great, now that we are confident that our SM and ST data are aligned to the same coordinates, we can map each pixel and their relative m/z intensity values to their corresponding ST spot. 
+Great, now that we are confident that our SM and ST data are aligned to the same coordinates, we can map each pixel and their relative m/z intensity values to their corresponding ST spot. We have selected an overlap threshold of 30%, meaning that for a pixel to be mapped to a spot atleast 30% of its total area must be overlapping with the corresponding visium spot. 
 
-NOTE: we have selected an overlap threshold of 20%, meaning that for a pixel to be mapped to a spot atleast 20% of its total area must be overlapping with the corresponding visium spot. 
+NOTE: check your version of `SeuratObject`, if => 5.2.0 we must update our SpaMTP Seurat Object first before running `MapSpatialOmics`.
+
+```{r}
+packageVersion("SeuratObject")
+```
+
+In our case we need to run `UpdateSeuratObject`.
+```{r warning=FALSE, message=FALSE}
+msi_transformed <- UpdateSeuratObject(msi_transformed)
+```
 
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
@@ -512,57 +523,35 @@ Note: Hidden below are the colour palettes used to plot.
 <details>
   <summary>*Colour Palettes*</summary>
 ```{r}
-intergrated_palette <- list("0" = "#9dce71", 
-                             "1" = "#fcb992",
-                             "2" = "#348bc2", 
-                             "3" = "#0067a8" ,
-                            "4" = "#b3dff2", 
-                             "5" = "#fcf283",
-                             "6" = "#c29fcb",
-                            "7" = "#5ca6bd",                             
-                              "8" = "#009648",
-                             "9" = "#f37985",
-                             "10" = "#592e8b",
-                             "11" = "#c4c4c4")
-                        
+annotation_palette <- list("ACB_intact" = "#faa957", "ACB_lesioned" = "#d16d08", "aco" = "#592e8b","cc" = "#c29fcb", "CP_intact" = "#b3dff2" ,"CP_lesioned" = "#348bc2","CTX" = "#aedea0","LSX" = "#f37985", "MSC" = "#e34045", "OT" = "#ad9ea0","VL" = "#ff59ee")
 
-SM_palette <- list("0" = "#9dce71", 
-                   "1" = "#009648",
-                   "2" = "#348bc2", 
-                   "3" = "#b3dff2",
-                   "4" = "#c29fcb")
 
-ST_palette <- list("0" = "#348bc2", 
-                           "1" = "#009648", 
-                           "2" = "#f37985",
-                           "3" = "#fcf283", 
-                           "4" = "#0067a8" ,
-                           "5" = "#9dce71",
-                           "6" = "#c29fcb",
-                           "7" = "#592e8b",
-                           "8" = "#e81d25",
-                           "9" = "#ff59ee",
-                           "10" = "#ad9ea0")
 
-annotation_palette <- list("ACB_intact" = "#faa957", 
-                           "ACB_lesioned" = "#d16d08", 
-                           "aco" = "#592e8b",
-                           "cc" = "#c29fcb", 
-                           "CP_intact" = "#b3dff2" ,
-                           "CP_lesioned" = "#348bc2",
-                           "CTX" = "#aedea0",
-                           "LSX" = "#f37985",
-                           "MSC" = "#e34045",
-                           "OT" = "#ad9ea0",
-                           "VL" = "#ff59ee")
+# Non-Spatial Palettes 
+SM_palette <- list("0" = "#9dce71", "1" = "#009648", "2" = "#348bc2", "3" = "#b3dff2", "4" = "#c29fcb")
+
+ST_palette <- list("0" = "#348bc2", "1" = "#009648", "2" = "#f37985","3" = "#fcf283", "4" = "#0067a8" , "5" = "#9dce71", "6" = "#c29fcb", "7" = "#592e8b","8" = "#e81d25","9" = "#ff59ee","10" = "#ad9ea0")
+
+
+
+# Spatial Palettes 
+
+intergrated_palette <- list("0" = "#9dce71", "1" = "#338bc3", "2" = "#b4dff1","3" = "#e62127", "4" = "#f37985" , "5" = "#009648", "6" = "#c2a0cb", "7" = "#b0d8a0","8" = "#d16e28","9" = "#592e8a","10" = "#faaa59", "11" = "#fcf286")
+
+spatial_SM_palette <- list("1" = "#b4dff1", "2" = "#fcf286", "3" = "#009648", "4" = "#b0d8a0", "5" = "#faaa59", "6"= "#f37985", "7" = "#338bc3","8"= "#338bc3", "9"= "#cc6dab", "10"="#c2a0cb", "11"="#592e8a")
+
+spatial_ST_palette  <- list("1" = "#cc6dab", "2" = "#c2a0cb",  "3" = "#f37985" ,"4" = "#9dce71", "5" = "#b4dff1", "6" = "#e62127", "7" = "#338bc3","8" = "#009648","9" = "#0068a8","10" = "#fcf286","11" = "#592e8a")
 ```
 
 </details> 
 <br>
 
+### Seurat-Based Clustering
+As previously demonstrated in the [Spatial Metabolomics Analysis Vignette](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html), we can use functions already implemented by `Seurat` for performing unsupervised clustering on not only ST data, but also metabolic data.
+
 #### Cluster ST data
 
-First, we will run clustering on the ST data. Based on the two different modalities, mRNA data will perform much better at defining different cell types/structures within the tissue sample. We expect the clustering to be able to detect cell types, such as the striatum.
+First, we will run clustering on the ST data. Based on the two different modalities, mRNA data will perform much better at defining different cell types/structures within the tissue sample. We expect the clustering to be able to detect cell types/regions, such as the striatum.
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -664,7 +653,7 @@ DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = 
 ```
 
 
-Looking at the clustering results above we can clearly see <span style="color: purple">**(cluster 4)**</span> defines the cells of the intact Striatum which still produce dopamine. In addition, the spatial distribution of cluster 4 matches the expression pattern of dopamine displayed below:
+Looking at the clustering results above we can clearly see <span style="color: #b3dff2">**(cluster 3)**</span> defines the cells of the intact Striatum which still produce dopamine. In addition, the spatial distribution of cluster 3 matches the expression pattern of dopamine displayed below:
 
 
 ```{r, fig.width=10, fig.height=8}
@@ -674,24 +663,57 @@ combined.data <- BinMetabolites(combined.data, mzs = dopamine_mzs$mz_names, slot
 SpatialFeaturePlot(combined.data, features = "Dopamine", pt.size.factor = 2.1) + theme(legend.position = "right")
 ```
 
-<br>
+### Spatially-Informed Clustering
+
+Seurat based clustering methods provide a fast and robust method for identifying common groups of cells/spots based purely on expression/itensity profiles. However, as seen in the clustering plots above, this method can contain some noise. *SpaMTP* has implemented a method of clustering based on the python package [GraphPCA](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03429-x) which uses a spatial nearest-neighbours graph to inform dimensionality reduction and k-means clustering. 
+
+
+Lets perform spatial clsutering on both ST and SM data using `RunSpatialGraphPCA` and `GetKmeanClusters` below.
+```{r, warning=FALSE, message=FALSE}
+## Using GraphPCA to add spatial Infomation
+
+## Run SM clustering 
+combined.data <- RunSpatialGraphPCA(data = combined.data, n_components = 30, assay = "SPM", platform = "Visium")
+combined.data <- GetKmeanClusters(combined.data, cluster.name = "gpca_SPM", clusters = 11)
+
+## Run ST clustering 
+combined.data <- RunSpatialGraphPCA(data = combined.data, n_components = 30, assay = "SPT", platform = "Visium", reduction_name = "SpatialPCAT", graph_name = "SpatialKNNt")
+combined.data <- GetKmeanClusters(combined.data, cluster.name = "gpca_SPT", clusters = 11 ,reduction = "SpatialPCAT")
+```
+
+
+```{r fig.width=10, fig.height=8}
+# Non-Spatial Plots
+p1 <- SpatialDimPlot(combined.data, group.by = "ST_clusters", cols = ST_palette, pt.size.factor =2.5, image.alpha = 0.8)
+p2 <- SpatialDimPlot(combined.data, group.by = "SM_clusters", cols = SM_palette, pt.size.factor =2.5, image.alpha = 0.8)
+
+#Spatial Plots
+p3 <- SpatialDimPlot(combined.data, group.by = "gpca_SPT", cols = spatial_ST_palette, pt.size.factor =2.5, image.alpha = 0.8)
+p4 <- SpatialDimPlot(combined.data, group.by = "gpca_SPM", cols = spatial_SM_palette, pt.size.factor =2.5, image.alpha = 0.8)
+
+
+(p1|p2)/(p3|p4)
+```
+When comparing the results, our GraphPCA-based clustering has much clearer defined regions with less random noise. These regions also clearly match biological regions and states such as the lesion and intact striatum highlighted by cluster 1 (light blue) and cluster 7/8 (dark blue) respectively. 
+
+
 
 ## Multi-Modal Integrative Analysis
 
 As explained above, transcriptomic and metabolic data reveal and define different aspects of the tissue. Based on this, multi-modal integration can be used to combine these features into the one analysis. Below we will integrate the spatial transcriptomic and metabolomic data together to get a more refined and detailed clustering result.
 
-The SpaMTP *MultiOmicIntegration* function allows for automated or manual specification of weights for each modality when generating the integrated clusters. 
+The SpaMTP *MultiOmicIntegration* function allows for automated or manual specification of weights for each modality when generating the integrated clusters. Here we will use pca embeddings generated from our spatially-informed GraphPCA dimentionality reduction and equal modality weights ST = 0.5, SM = 0.5.
 
 
 ```{r}
-integrated.data <- MultiOmicIntegration(combined.data,return.intermediate = T, weight.list = list(0.4,0.6),
-                                        reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:15))
+integrated.data <- MultiOmicIntegration(combined.data,return.intermediate = T, weight.list = list(0.5,0.5),
+                                        reduction.list =  list("SpatialPCA", "SpatialPCAT"), dims.list = list(1:30, 1:30))
 ```
 
 
 ```{r}
 integrated.data <- RunUMAP(integrated.data, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_",verbose = FALSE)
-integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm = 3, resolution = 1.5,  cluster.name = "integrated_clusters", verbose = FALSE)
+integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm = 3, resolution = 0.6,  cluster.name = "integrated_clusters", verbose = FALSE)
 ```
 
 
@@ -700,17 +722,59 @@ DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.uma
   SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.2, cols = intergrated_palette, image.alpha =  1) 
 ```
 
-Looking at the results above, we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #348bc2">cluster 2</span>, <span style="color: #b3dff2">cluster 4</span> and <span style="color: #5ca6bd">cluster 7</span> respectively)
+Looking at the results above, we can see the integrative analysis identifies a difference between the lesioned and in-tact striatum cells (<span style="color: #338bc3">cluster 1</span> and <span style="color: #b3dff2">cluster 2</span> respectively). This difference is also reflected in the UMAP. 
 
 
 We can also compare the difference between ST only, SM only and integrated clustering:
 
 ```{r fig.width=10, fig.height=10}
 (SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.5, cols = annotation_palette, image.alpha = 0.8)| 
-SpatialDimPlot(integrated.data, group.by = "SM_clusters", pt.size.factor = 2.5, cols = SM_palette, image.alpha = 0.8))/
-(SpatialDimPlot(integrated.data, group.by = "ST_clusters", pt.size.factor = 2.5, cols = ST_palette, image.alpha = 0.8)| 
+SpatialDimPlot(integrated.data, group.by = "gpca_SPM", pt.size.factor = 2.5, cols = spatial_SM_palette, image.alpha = 0.8))/
+(SpatialDimPlot(integrated.data, group.by = "gpca_SPT", pt.size.factor = 2.5, cols = spatial_ST_palette, image.alpha = 0.8)| 
   SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.5, cols = intergrated_palette, image.alpha = 0.8))
 ```
+
+Visually, the integrated clustering highly correlates to the defined annotations. To check this statistically we can quickly calculate an Adjusted Rand Index (ARI) score for each cluster comparted to the annotation ground truth. 
+
+```{r warning=FALSE, message=FALSE, results='hide'}
+# Define clustering columns
+clustering_columns <- c("ST_clusters", "SM_clusters", "gpca_SPM", "gpca_SPT", "integrated_clusters")
+
+# Extract metadata
+meta <- integrated.data@meta.data
+
+# Ground truth
+ground_truth <- as.factor(meta$annotations)
+
+# Compute scores
+results <- data.frame(cluster = clustering_columns,ARI = NA)
+
+for (i in seq_along(clustering_columns)) {
+  pred <- as.factor(meta[[clustering_columns[i]]])
+  
+  # Ensure matching non-NA values
+  valid <- !is.na(ground_truth) & !is.na(pred)
+  
+  results$ARI[i] <- adjustedRandIndex(ground_truth[valid], pred[valid])
+
+}
+
+print(results)
+```
+
+
+```{r, echo=FALSE}
+df <- results
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+Based on the results we can see the integrated clustering has the highest ARI score, meaning the clustering is the most similar to the ground truth.
 
 
 
@@ -726,7 +790,7 @@ cluster_DEMs <- FindAllDEMs(data = integrated.data, ident = "integrated_clusters
 ```
 
     Pooling one sample into 3 replicates...
-    Running edgeR DE Analysis for  FindAllDEMs  -> with samples [ 3, 1, 2, 4, 7, 5, 6, 9, 0, 8, 10 ]
+    Running edgeR DE Analysis for  FindAllDEMs  -> with samples [ 3, 1, 2, 4, 7, 5, 6, 9, 0, 8, 10, 11 ]
     Starting condition: 3
     Starting condition: 1
     Starting condition: 2
@@ -738,23 +802,24 @@ cluster_DEMs <- FindAllDEMs(data = integrated.data, ident = "integrated_clusters
     Starting condition: 0
     Starting condition: 8
     Starting condition: 10
+    Starting condition: 11
     
 ```{r, fig.width=8, fig.height=8}
-results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "4",]
+results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "2",]
 
 metabolites <- c("Dopamine (double derivatized)", "Dopamine (single derivatized)")
 
 ### Sets up colouring for significant spots in volcano plot
 keyvals <- ifelse(
     results$annotations %in% metabolites, "orange", ifelse(
-    results$logFC < -1.2  & results$PValue < 50e-4, 'royalblue',
-      ifelse(results$logFC > 1.2 & results$PValue < 50e-4, 'red',
+    results$logFC < -1.2  & results$P.Value < 50e-4, 'royalblue',
+      ifelse(results$logFC > 1.2 & results$P.Value < 50e-4, 'red',
         'black')))
   keyvals[is.na(keyvals)] <- 'black'
-  names(keyvals)[keyvals == 'red'] <- 'Cluster 4 - UP'
+  names(keyvals)[keyvals == 'red'] <- 'Cluster 2 - UP'
   names(keyvals)[keyvals == 'black'] <- 'Non-Sig'
   names(keyvals)[keyvals == 'orange'] <- 'Dopamine'
-  names(keyvals)[keyvals == "royalblue"] <- "Cluster 4 - Down"
+  names(keyvals)[keyvals == "royalblue"] <- "Cluster 2 - Down"
 
 
 ### Plots volcano plot with DEM results
@@ -767,7 +832,7 @@ volc_plot <- EnhancedVolcano::EnhancedVolcano( results,
                                   pointSize = 3,
                                   colAlpha = 1,
                                   x = 'logFC',
-                                  y = 'PValue', 
+                                  y = 'P.Value', 
                                   gridlines.major = FALSE,
                                   gridlines.minor = FALSE)
 
@@ -777,9 +842,9 @@ volc_plot
 
 
 
-Analysing the DE results, we can see that dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #8bc5de">cluster 4</span>. 
+Analysing the DE results, we can see that dopamine (both the single and double FMP10-derivatized) is over expressed in <span style="color: #b3dff2">cluster 2</span>. 
 
-Now we will look at the gene expression differences between cluster 4 vs all other clusters within the Striatum:
+Now we will look at the gene expression differences between cluster 2 vs all other clusters within the Striatum:
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -793,7 +858,7 @@ striatum_DEGs <- FindAllMarkers(striatum, only.pos = T)
 ```
 
 ```{r, echo=TRUE, results='hide'}
-head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
+head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 4)
 ```
 
 ```{r, echo=FALSE}
@@ -808,7 +873,7 @@ df %>%
 ```
 
 
-Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 4 (in-tact striatum cells).
+Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 2 (in-tact striatum cells).
 
 
 ```{r, fig.width=6, fig.height=8, message=FALSE, warning=FALSE}
@@ -839,6 +904,11 @@ Plot3DFeature(combined.data,
 
 
 ## Multi-Modality Pathway Analysis
+
+In this vignette we will demonstrate two different methods of multi-omic pathway analysis. The first will be a region or cluster based pathway analysis previously described in the [Spatial Metabolomics Analysis: Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The second method uses the entire expression matrix of each cell.
+
+
+### Cluster-based Pathway Analysis
 
 Now that we have identified there are metabolic and transcriptional differences between the lesioned and intact striatum regions, we can now further assess the activity of each region by performing multi-modal pathway analysis using both genes and metabolites. Another novel feature of SpaMTP is the curated FMP10 annotation database which allows users to run pathway analysis with FMP10 data. Below we will identify pathways based on both genes and metabolites that are significantly altered between striatum regions. 
 
@@ -875,7 +945,7 @@ selected_pathways <- c("Epinephrine Action Pathway",
                        "Apoptosis")
 ```
 
-```{r, fig.width=15, fig.height=10}
+```{r, fig.width=15, fig.height=10, warning=FALSE, message=FALSE}
 PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathways)
 ```
 
@@ -961,6 +1031,7 @@ regpathway = FindRegionalPathways(
   DE.list = DE.list
 )
 ```
+
 We will select some important pathways associated with Parkinson's disease to plot
 
 ```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10}
@@ -1017,6 +1088,211 @@ striatum.dhb.data <- BinMetabolites(striatum.dhb.data, mzs, slot = "data", bin_n
 ```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
 SpatialFeaturePlot(striatum.dhb.data, features = "Dopamine_pathway", pt.size.factor = 2.5) & theme(legend.position = "right") 
 ```
+
+
+### GESECA-Based Pathway Analysis
+
+An alternative method of pathway analysis is using the `RunRAMPgeseca` function. This function is based on the [gene set co-regulation analysis tool](https://bioconductor.org/packages/devel/bioc/vignettes/fgsea/inst/doc/geseca-tutorial.html) originally implemented for spatial transcriptomic analysis. Breifly, this function take in an expression matrix, where rows and columns correspond to m/z and pixels respectively, and a list of metabolite pathway sets. This is different from the `FishersPathwayAnalysis` and `FindRegionalPathways` functions which are based on a list/ranked list of metabolites, and instead uses intensity values of all metabolites regardless of wether they are significantly differentially expressed. 
+
+The process involves a few steps:
+
+1. Generate a SpaMTP Seurat Object assay with features renaimed to have RAMP_ID names
+2. Running reverse PCA on the newly generate matrix to calculate a dimentionality reduced expression matrix (E).
+3. Run `RunRAMPgeseca` to calculate significantly regulated pathways. 
+
+
+First we will run this approach on our ST and SM data individually. Lets start with ST data:
+
+```{r, warning=FALSE, message=FALSE}
+## Generate pathway assay from ST data only
+integrated.data <-CreatePathwayAssay(integrated.data, analyte_type = "genes", assay = "SPT", new_assay = "SPT_pathway")
+
+## Format the new pathway assay correctly for running PCA
+DefaultAssay(integrated.data) <- "SPT_pathway"
+integrated.data <- NormalizeData(integrated.data)
+integrated.data <- ScaleData(integrated.data)
+integrated.data <- FindVariableFeatures(integrated.data, nfeatures = 3000)
+
+## Calculate reverse PCA
+integrated.data <- RunPCA(integrated.data, assay = "SPT_pathway", verbose = FALSE,
+                          rev.pca = TRUE, reduction.name = "pca.rev.ST",
+                          reduction.key="PCRt_", npcs = 50)
+
+## Extract the feature loadings as our expression matrix 
+E <- integrated.data@reductions$pca.rev.ST@feature.loadings
+
+## Run geseca-based pathway analysis
+ST_results <- RunRAMPgeseca(E, minSize = 3, maxSize = 500, center = FALSE)
+```
+
+We can visualise the top 6 most significant pathways:
+
+```{r, echo=TRUE, results='hide'}
+head(ST_results)
+```
+
+```{r, echo=FALSE}
+df <- head(ST_results)
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+Lets plot these:
+
+```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
+## Get top 6 pathways
+topPathways <- ST_results[, pathway] |> head(6)
+
+## Plot top 6 pathways 
+plots <- PlotPathwaysSpatially(topPathways, integrated.data, images = c("slice1"), assay = "SPT_pathway", image.alpha = 0, pt.size.factor = 2.5)
+
+## Arrange plots on the same pannel
+wrap_plots(plots, ncol = 3)
+```
+
+We can see these pathways share a similar expression, with particularly low levels in the corpus callosum. Lets do the same for our SM data:
+
+```{r, warning=FALSE, message=FALSE}
+## Generate pathway assay from SM data only
+integrated.data <-CreatePathwayAssay(integrated.data, analyte_type = "metabolites", assay = "SPM", new_assay = "SPM_pathway")
+
+## Format the new pathway assay correctly for running PCA
+DefaultAssay(integrated.data) <- "SPM_pathway"
+integrated.data <- NormalizeData(integrated.data)
+integrated.data <- ScaleData(integrated.data)
+integrated.data <- FindVariableFeatures(integrated.data, nfeatures = 3000)
+
+## Calculate reverse PCA
+integrated.data <- RunPCA(integrated.data, assay = "SPM_pathway", verbose = FALSE,
+                          rev.pca = TRUE, reduction.name = "pca.rev.SM",
+                          reduction.key="PCRm_", npcs = 50)
+
+## Extract the feature loadings as our expression matrix 
+E <- integrated.data@reductions$pca.rev.SM@feature.loadings
+
+## Run geseca-based pathway analysis
+SM_results <- RunRAMPgeseca(E, minSize = 3, maxSize = 500, center = FALSE)
+```
+
+```{r, echo=TRUE, results='hide'}
+head(SM_results)
+```
+
+```{r, echo=FALSE}
+df <- head(SM_results)
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+We can see that the top pathways based on our metabolic data are different our transcriptomic analysis. In the case of our Parkinson's mouse brain dataset, we are interested in pathways related to dopamine. Lets compare the expression of these pathways based on metabolic and transcriptomic data:
+
+
+```{r echo=TRUE, results='hide',warning=FALSE, message=FALSE}
+## Select pathways of interest
+selected_pathways <- c("Parkinson's disease pathway", "Parkinson disease", "Dopamine beta-hydroxylase deficiency", "Dopaminergic synapse","Dopamine metabolism", "Dopamine Activation of Neurological Reward System", "Dopamine Neurotransmitter Release Cycle")
+
+ST_results[ST_results$pathway %in% selected_pathways,]
+```
+
+```{r, echo=FALSE}
+df <- ST_results[ST_results$pathway %in% selected_pathways,]
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+```{r, echo=TRUE, results='hide'}
+SM_results[SM_results$pathway %in% selected_pathways,]
+```
+
+```{r, echo=FALSE}
+df <- SM_results[SM_results$pathway %in% selected_pathways,]
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+
+Only some pathways are significant between the two modalities. We can also spatially visualise these pathways, lets pick 3 to view:
+
+```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
+key_pathways <- c("Parkinson disease", "Dopamine beta-hydroxylase deficiency", "Dopamine metabolism")
+
+p1 <- PlotPathwaysSpatially(key_pathways, integrated.data, images = c("slice1"), assay = "SPT_pathway", image.alpha = 0, pt.size.factor = 2.5)
+p2 <- PlotPathwaysSpatially(key_pathways, integrated.data, images = c("slice1"), assay = "SPM_pathway", image.alpha = 0, pt.size.factor = 2.5)
+
+wrap_plots(p1, ncol = 3)+plot_annotation(title = "ST Pathways")
+wrap_plots(p2, ncol = 3)+plot_annotation(title = "SM Pathways")
+```
+
+There are clear differences between the two modalities, most likely due to the incomplete feature lists of each pathway when only using one modality. To solve this we can run multi-modal pathway analysis using the data generated above.
+
+```{r warning=FALSE, message=FALSE}
+## Generate pathway assay from merging SM and ST pathway expression matricies 
+integrated.data <- CreateMergedModalityAssay(integrated.data, assays.to.merge = c("SPT_pathway","SPM_pathway"))
+
+## Format the new pathway assay correctly for running PCA
+DefaultAssay(integrated.data) <- "merged"
+VariableFeatures(integrated.data) <- rownames(integrated.data@assays$merged) # To ensure features from both modalities are included
+
+## Calculate reverse PCA
+integrated.data <- RunPCA(integrated.data, assay = "merged", verbose = FALSE,
+                          rev.pca = TRUE, reduction.name = "pca.rev.merged",
+                          reduction.key="PCRmerged_", npcs = 50)
+
+## Extract the feature loadings as our expression matrix 
+E <- integrated.data@reductions$pca.rev.merged@feature.loadings
+
+## Run geseca-based pathway analysis
+multiomic_results <- RunRAMPgeseca(E, minSize = 3, maxSize = 500, center = FALSE)
+```
+
+```{r echo=TRUE, results='hide',warning=FALSE, message=FALSE}
+multiomic_results[multiomic_results$pathway %in% selected_pathways,]
+```
+
+```{r, echo=FALSE}
+df <- multiomic_results[multiomic_results$pathway %in% selected_pathways,]
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+```
+
+We can see that all 7 selected pathways associated with dopamine display significantly co-regulation with regions across our sample. Lets now visualise the expression of these pathways spatially:
+
+
+
+```{r, fig.width=10, fig.height=8,warning=FALSE, message=FALSE}
+#key_pathways <- c("Parkinson disease", "Dopamine beta-hydroxylase deficiency", "Dopamine metabolism")
+
+p1 <- PlotPathwaysSpatially(selected_pathways, integrated.data, images = c("slice1"), assay = "merged", image.alpha = 0, pt.size.factor = 2.5)
+
+wrap_plots(p1, ncol = 3)
+```
+
+Spatially these pathways show differential expression between the lesioned and intact striatum regions.
 
 
 ```{r}
