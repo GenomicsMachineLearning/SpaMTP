@@ -10,8 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  dpi = 150
+  comment = "#>"
 )
 ```
 
@@ -38,7 +37,7 @@ library(ggplot2)
 
 Here, we will be using the simulated data which has synthetic clustering and cell type names. The gene and metabolite names are also arbitrary, this data is only used to highlight ***SpaMTP's*** functionally with single cell spatial datasets. 
 
-```{r warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 xenium <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"))
 MALDI <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"))
 
@@ -52,13 +51,13 @@ We can visualise the simulated datasets and observe the difference in resolution
 
 First, lets look at our Xenium data:
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 ImageDimPlot(xenium, group.by = "celltype", size = 1)
 ```
 
 Now, lets look at our MALDI data:
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 ImageDimPlot(MALDI, group.by = "clusters", size = 1)
 ```
 
@@ -81,7 +80,7 @@ options(future.globals.maxSize = 16000 * 1024^2) # 16 GB per core
 
 </details> 
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 # Generate a smaller FOV to look at a zoomed in region of the ST data
 cropped.coords.xenium <- Crop(xenium[["segmentations"]], y = c(2000, 3000), x = c(8500, 9500), coords = "tissue")
 xenium[["zoom"]] <- cropped.coords.xenium
@@ -92,7 +91,7 @@ MALDI[["zoom"]] <- cropped.coords.MALDI
 ```
 
 Lets visualise this zoomed area now:
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 # Set the boundary as segmentation for our Xenium data
 DefaultBoundary(xenium[["zoom"]]) <- "segmentation"
 
@@ -105,14 +104,14 @@ Looking at our zoomed in FOV the single cell resolution ST provides much higher 
 
 We want to eventually map our SM data to our single cell resolution ST data, meaning that for each single cell we will have both transcriptomic and metabolic information. First, we can check the alignment of our datasets. 
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 # Set the boundary as segmentation for our Xenium data
 CheckAlignment(ST.data = xenium, SM.data = MALDI, image.slice = "fov") & coord_flip()
 ```
 
 Based on this, we can see our datasets are aligned correctly. Next, we will map our SM and Xenium ST data to generate a *SpaMTP* *Seurat* object containing metabolite and transcriptomic information per individual cell. 
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 # Set the boundary as segmentation for our Xenium data
 MO_data <- MapSpatialOmics(SM.data = MALDI, ST.data = xenium, ST.hires = TRUE, SM.assay = "Spatial",ST.assay = "Xenium", SM.fov = "fov", ST.image = "centroids")
 ```
@@ -143,7 +142,7 @@ df %>%
 
 Next, we can compare the data spatially:
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 # Set the boundary as segmentation for our Xenium data
 DefaultBoundary(MO_data[["zoom"]]) <- "segmentation"
 
@@ -164,13 +163,13 @@ table(MO_data$clusters_SPM, MO_data$celltype)
 Looking at Oligodendrocytes for example, we can identify different subtypes based on their metabolic activity. 
 
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 MO_data$Oligo_states <- ifelse(MO_data$celltype == "Oligodendrocyte", paste0("Oligo State: ", MO_data$clusters_SPM),  "Other")
 
 ImageDimPlot(MO_data, group.by = "Oligo_states", fov = "zoom", dark.background = F, cols = c("grey", "red", "blue", "yellow", "green", "pink"))
 ```
 
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE, dev.args = list(bg = "#ffffff")}
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE, dev.args = list(bg = "#ffffff"), dpi = 150}
 DotPlot(MO_data, group.by = "Oligo_states", features = c(rownames(MO_data[["SPT"]]), "spm_mz-200"))
 ```
 This dotplot may suggest that Oligo State 1 and 2 are different cell subtypes based on their differential expression of gene1/gene2 and mz-200 (Note: this is synthetic data and has no biological context - results only used as example).
@@ -179,7 +178,7 @@ This dotplot may suggest that Oligo State 1 and 2 are different cell subtypes ba
 
 An additional features of having multi-omic data mapped to the same coordinates is that we can visualise the expression of both metabolites and gene expression on a single plot. 
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi = 150}
 
 ImageFeaturePlot(MO_data, features = "mz-200", molecules = c("gene1", "gene2"), fov = "zoom", mols.cols = c("blue", "green"))
 ```
