@@ -409,6 +409,7 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
      0 0 1   
 
 ```{r, include=FALSE}
+gc()
 msi_transformed <- readRDS(url("https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS?download=1"))
 ```    
 
