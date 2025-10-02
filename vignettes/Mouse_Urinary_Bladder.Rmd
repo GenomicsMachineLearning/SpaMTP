@@ -11,7 +11,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
-  dpi = 150
+  fig.width = 7,       # smaller inches
+  fig.height = 4,      # proportionate aspect ratio
+  dpi = 96,            # web standard (looks sharp but not too big)
+  dev.args = list(png = list(compression = 9))  # max compression
 )
 ```
 
@@ -103,7 +106,7 @@ pig206_peaks
 
 Following our processing steps the cleaned dataset contains 687 peaks. Using *Cardinal* we can visualise one of these peaks (m/z 537) below which is abundant in the pig liver. 
 
-```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
 image(pig206_peaks, mz=537.08)
 ```
 
@@ -122,7 +125,7 @@ pig206_ssc <- spatialShrunkenCentroids(pig206_peaks,
     weights="adaptive", r=2, k=8, s=2^(1:6))
 ```
 
-```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
 
 col_palette = list("1" = "#5aa14f",
                    "2" = "#4f79a6",
@@ -177,24 +180,24 @@ df %>%
 Lets also generate some plots to compare:
 
 
-```{r, eval = FALSE, fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE, fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 image(pig206_peaks, mz=537.08)
 title("Cardinal", outer = TRUE)
 ```
 
 
-```{r, eval = FALSE,fig.width=8, fig.height=5,, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE,fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 ImageMZPlot(pig206_spamtp, mzs = 537.106, size = 2.2, dark.background = F) + scale_x_reverse()+coord_flip()+scale_fill_gradientn(colours = viridis(10))+ ggtitle("SpaMTP")
 ```
 
 
-```{r, eval = FALSE,fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE,fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)))
 title("Cardinal", outer = TRUE)
 ```
 
 
-```{r, eval=FALSE, fig.width=8, fig.height=5,, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval=FALSE, fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 ImageDimPlot(pig206_spamtp, group.by = "ssc", size = 2.2, dark.background = F, cols = col_palette) + scale_x_reverse()+coord_flip() + ggtitle("SpaMTP")
 ```
 
@@ -229,7 +232,7 @@ rcc_spamtp
 This dataset contains 10,200 *m/z*-values across 8 different runs which are split into individual FOV's. Each run contains a cancer and normal sample which have been loaded in the metadata. Lets visualise each run in one plot:
 
 
-```{r fig.width=10, fig.height=10, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
 ImageDimPlot(rcc_spamtp, group.by = "diagnosis", dark.background = F, fov = names(rcc_spamtp@images), size = 2, 
              cols = c("red", "blue"),na.value= "white")
 ```
@@ -274,7 +277,7 @@ bladder
 Because *SpaMTP* is built on a *Seurat* Object, we can use useful pre-established *Seurat* and *ggplot2* functions to plot the spatial distribution of the total number of features (m/z's) present per pixel. 
 
 
-```{r, fig.width= 10, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=4, dpi = 96, warning=FALSE, message=FALSE}
 ImageFeaturePlot(bladder, features = "nFeature_Spatial", size = 1) + coord_flip() + scale_x_reverse()
 ```
 
@@ -327,7 +330,7 @@ ImageDimPlot(bladder, group.by = "ssc", cols = col_palette, dark.background = F,
 We can see that our segmentation plot matches [*Cardinal's* previously published results](https://doi.org/10.1038/s41592-023-02070-z). Published in the original paper by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559) we will visualise three m/z values that define organ structures within the urinary bladder. 
 
 
-```{r fig.width=30, fig.height=5, warning=FALSE, message=FALSE}
+```{r fig.width=20, fig.height=3, dpi = 96, warning=FALSE, message=FALSE}
 ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1.5) & coord_flip() & scale_x_reverse()
 ```
 
@@ -353,7 +356,7 @@ Although our data may be normalised and filtered, it still may contains some pix
 
 First we will look at the total number of features and total intensity per pixel between our segments:
 
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, dpi = 96, warning=FALSE, message=FALSE}
 VlnPlot(ROI, features = c("nCount_Spatial", "nFeature_Spatial"),group.by = "ssc",cols = col_palette)+ theme_minimal()
 ```
 
@@ -368,7 +371,7 @@ Another metric to assess is the relative intensity values of each m/z across a s
 
 
 
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, dpi = 96, warning=FALSE, message=FALSE}
 raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1")) 
 
 MZRidgePlot(seurat.obj = raw_bladder, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
@@ -380,7 +383,7 @@ These plots display the intensity of each m/z summed across all pixels per group
 
 Using this function we can also look at the distribution of specific features across groups by providing a feature name. Lets try and visualise the total intensity of "mz-740.471557617188" across each cluster using the box.plot function:
 
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, dpi = 96, warning=FALSE, message=FALSE}
 options(repr.plot.width = 10, repr.plot.height = 5)
 
 MZBoxPlot(seurat.obj = ROI,group.by = "ssc", mzs = "mz-740.471557617188", log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05,cols = col_palette) 
