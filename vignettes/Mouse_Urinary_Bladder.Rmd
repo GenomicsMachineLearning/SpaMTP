@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = FALSE,
-  comment = "##"
+  comment = "##",
+  dpi = 150
 )
 ```
 
@@ -176,36 +177,30 @@ df %>%
 Lets also generate some plots to compare:
 
 
-::::: columns
-::: column
-```{r, fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE, fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 image(pig206_peaks, mz=537.08)
 title("Cardinal", outer = TRUE)
 ```
-:::
 
-::: column
-```{r, fig.width=8, fig.height=5,, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+
+```{r, eval = FALSE,fig.width=8, fig.height=5,, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 ImageMZPlot(pig206_spamtp, mzs = 537.106, size = 2.2, dark.background = F) + scale_x_reverse()+coord_flip()+scale_fill_gradientn(colours = viridis(10))+ ggtitle("SpaMTP")
 ```
-:::
-:::::
 
 
-::::: columns
-::: column
-```{r, fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE,fig.width=10, fig.height=10, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)))
 title("Cardinal", outer = TRUE)
 ```
-:::
 
-::: column
-```{r, fig.width=8, fig.height=5,, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+
+```{r, eval=FALSE, fig.width=8, fig.height=5,, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 ImageDimPlot(pig206_spamtp, group.by = "ssc", size = 2.2, dark.background = F, cols = col_palette) + scale_x_reverse()+coord_flip() + ggtitle("SpaMTP")
 ```
-:::
-:::::
+
+```{r echo=FALSE, fig.align="center", out.width="100%", dpi=150}
+knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/pigImage.png")
+```
 
 We can see the feature and ssc segment plots match between *SpaMTP* and *Cardinal* objects. 
 
