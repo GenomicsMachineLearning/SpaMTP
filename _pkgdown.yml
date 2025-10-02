@@ -39,15 +39,22 @@ authors:
     - fnd
 template:
   bootstrap: 5
-  light-switch: true
+  light-switch: yes
   bootswatch: flatly
   bslib:
     pkgdown-navbar-bg: '#212F3F'
-    body-secondary-color: "#18BC9C"
+    body-secondary-color: '#18BC9C'
 navbar:
   structure:
-    left: [intro, reference, articles]
-    right: [search, github, lightswitch]
+    left:
+    - intro
+    - reference
+    - articles
+    - news
+    right:
+    - search
+    - github
+    - lightswitch
   components:
     github:
       icon: fa-github
@@ -70,19 +77,15 @@ reference:
   contents:
   - LoadSM
   - ReadSM_mtx
-
 - title: Converting Between Data Objects
   desc: Functions that allow the user to convert between SpaMTP Seurat Objects and
     Cardinal Objects
   contents:
   - CardinalToSeurat
   - ConvertSeuratToCardinal
-
 - title: Binning Spatial Metabolomic Data
   desc: Functions that bin m/z values into a lower resolution/wider peak.
-  contents:
-  - BinSpaMTP
-
+  contents: BinSpaMTP
 - title: Annotating m/z Masses
   desc: Functions required for performing and handling m/z annotation using a reference
     metabolic database
@@ -96,30 +99,22 @@ reference:
   - SubsetMZFeatures
   - AnnotateBigData
   - getRefinedAnnotations
-
 - title: Simplify Annotations
   desc: Functions required for simplifying m/z annotation results
   contents:
   - CalculateAnnotationStatistics
   - CalculateSingleAnnotationStatistics
   - CreatePathwayObject
-
 - title: Simplifying Lipid Nomenclature
   desc: Function used to simplify lipid names into general lipid categories, classes,
     and more
-  contents:
-  - RefineLipids
-
+  contents: RefineLipids
 - title: Analysis of Differentially Expressed Peaks
   desc: Functions required for performing pseudo-bulking differential expression analysis
-  contents:
-  - FindAllDEMs
-
+  contents: FindAllDEMs
 - title: Visualising DEPs Analysis
   desc: Functions used to generate a heatmap from DEP results
-  contents:
-  - DEMsHeatmap
-
+  contents: DEMsHeatmap
 - title: Metabolic and Transcriptomic Pathway Analysis
   desc: Functions used to perform pathway analysis, both PCA and metabolite/gene set-based
     (GSEA)
@@ -128,7 +123,6 @@ reference:
   - FindRegionalPathways
   - RunRAMPgeseca
   - CreatePathwayAssay
-
 - title: Metabolic and Transcriptomic Pathway Visualisation
   desc: Functions used to visualise pathway analysis results
   contents:
@@ -136,12 +130,9 @@ reference:
   - PlotRegionalPathways
   - PlotPathways
   - PlotPathwaysSpatially
-
 - title: Pathway Network Plotting
   desc: Functions used to generate network plots for specified patheays
-  contents:
-  - PathwayNetworkPlots
-
+  contents: PathwayNetworkPlots
 - title: Dimentionality Reduction Analysis
   desc: Functions that are used for calculating PCA embeddings and projections based
     on SM and/or ST data
@@ -149,7 +140,6 @@ reference:
   - RunMetabolicPCA
   - RunSpatialGraphPCA
   - GetKmeanClusters
-
 - title: SpaMTP Metabolic Data Visualisation
   desc: Functions that can be used to visualize data from SpaMTP object
   contents:
@@ -161,19 +151,16 @@ reference:
   - MassIntensityPlot
   - DensityMap
   - CheckAlignment
-
 - title: Interactive Spatial Binning Visualisation
   desc: Interactive plot that displays spatial changes to m/z intensity values based
     on changes to bin size.
   contents: InteractiveSpatialPlot
-
 - title: Additional SpaMTP Functions
   desc: Functions that can be used to find the closest metabolite and bin the expression
     of multiple metabolites into one
   contents:
   - FindNearestMZ
   - BinMetabolites
-
 - title: Spatial Analysis of Metabolomic Data
   desc: Functions used to identify spatially correlated features (metabolites/genes)
   contents:
@@ -181,7 +168,6 @@ reference:
   - FindSpatiallyVariableMetabolites
   - GetSpatiallyVariableMetabolites
   - RowVar
-
 - title: Multi-Omic Data Integration
   desc: Functions used to Align, Map and Integrate Spatial Metabolomic and Transcriptomic
     data
@@ -190,17 +176,12 @@ reference:
   - AlignSpatialOmics
   - MultiOmicIntegration
   - CreateMergedModalityAssay
-
 - title: Adding Image Data
   desc: Functions used to align and add an image to a spatial metabolic SpaMTP object.
-  contents:
-  - AddSMImage
-
+  contents: AddSMImage
 - title: ROI Selection
   desc: Functions used subset or select specific spatial regions of interest.
-  contents:
-  - SelectROIs
-
+  contents: SelectROIs
 - title: Pre-Processing SpaMTP Metabolic Data
   desc: Functions for normalising and visualising the pre-processing of SpaMTP datasets
   contents:
@@ -209,12 +190,10 @@ reference:
   - MZRidgePlot
   - MZVlnPlot
   - MZBoxPlot
-
 - title: Exporting SpaMTP Data
   desc: Function to export SpaMTP data in .mtx, barcodes.csv, features.csv, metadata.csv,
     and feature.metadata.csv files
   contents: SaveSpaMTPData
-
 - title: Reference Metabolite Datasets
   desc: Metabolite datasets used for annotating m/z masses
   contents:
@@ -223,7 +202,6 @@ reference:
   - Chebi_db
   - GNPS_db
   - filtered_fmp10
-
 - title: Metabolic Pathway Datasets
   desc: Various datasets required for pathway analysis
   contents:
@@ -233,7 +211,6 @@ reference:
   - chem_props
   - pathway
   - source_df
-
 - title: Pathway Network Datasets
   desc: Various datasets required for generated pathway network plots
   contents:
@@ -242,18 +219,15 @@ reference:
   - RAMP_kegg
   - RAMP_wikipathway
   - reaction_type
-
 - title: Cardinal Wrapper Functions
   desc: Functions used to alter Cardinal Objects.
   contents: add_ssc_annotation
-
 - title: Additional Worker Functions
   desc: Various helper functions used by SpaMTP
   contents:
   - verbose_message
   - subset_SPM
   - check_cardinal_version
-
 - title: Utility Functions
 - subtitle: Binning Helper Functions
   desc: Helper functions for binning m/z intensity spectra for SpaMTP objects
@@ -314,5 +288,5 @@ reference:
   - combine.tr
 - subtitle: Pre-Processing Helper Functions
   desc: Helper functions for generating pre-processing plots
-  contents:
-    - statPlot
+  contents: statPlot
+
