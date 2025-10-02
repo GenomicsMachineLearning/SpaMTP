@@ -37,6 +37,10 @@ library(ggplot2)
 
 Here, we will be using the simulated data which has synthetic clustering and cell type names. The gene and metabolite names are also arbitrary, this data is only used to highlight ***SpaMTP's*** functionally with single cell spatial datasets. 
 
+```{r, include=FALSE}
+options(timeout = 600)
+```
+
 ```{r, warning=FALSE, message=FALSE}
 xenium <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"))
 MALDI <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"))
@@ -191,4 +195,7 @@ Analysing this spatial plot, there is a clear correlation between 'mz-100' and '
 sessionInfo()
 ```
 
-
+```{r, include=FALSE}
+gc()
+rm(list = ls())
+```

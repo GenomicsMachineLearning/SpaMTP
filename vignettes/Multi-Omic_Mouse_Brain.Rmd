@@ -1311,3 +1311,9 @@ Spatially these pathways show differential expression between the lesioned and i
 ```{r}
 sessionInfo()
 ```
+
+
+```{r, include=FALSE}
+gc()
+rm(list = ls())
+```

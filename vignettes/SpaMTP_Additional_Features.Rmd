@@ -406,8 +406,10 @@ sessionInfo()
 ```
 
 
-
-
+```{r, include=FALSE}
+gc()
+rm(list = ls())
+```
 
 
 
