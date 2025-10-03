@@ -256,7 +256,7 @@ This function will activate an interactive window where you can change the MSI c
 
 Here is an example of what the alignment GUI looks like, and also the perimeters we used to align the H&E image:
 
-```{r echo=FALSE, fig.align="center", out.width="100%", dpi=96}
+```{r echo=FALSE, fig.align="center", out.width="80%", dpi=72}
 knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment.png")
 ```
 
@@ -274,7 +274,7 @@ bladder_HE@images
 
 Lets now visualise this:
 
-```{r fig.width=10, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
+```{r fig.width=7, fig.height=7, warning=FALSE, message=FALSE, dpi=72}
 (ImageDimPlot(bladder_HE, group.by = "ssc", fov = "fov", size = 1) & scale_y_reverse() )/ 
   (SpatialDimPlot(bladder_HE, group.by = "ssc", images = "slice1", pt.size.factor = 3) &theme_void())
 ```
@@ -282,14 +282,17 @@ Lets now visualise this:
 
 This also means that we can now visualise our data using the *Plot3D()* function with a H&E image:
 
-```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
+```{r, warning=FALSE, message=FALSE}
 ### Identified the m/z values that are to be plot
 mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = bladder_annotated, target_mz = x)))
 ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
+```
 
+```{r, eval=FALSE, fig.width=10, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
 Plot3DFeature(ROI_HE, features = mzs, show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 700, downscale.image = 2)
 ```
 
+<iframe src="vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot1.html" width="100%" height="600px"></iframe>
 
 This function is designed for plotting two features simultaneously. If we only want to visualise one of the features, we can use a work around to only show a single trace, where trace 1 = feature1, trace 2 = feature2 and trace 3 = image. Here, we just provide one feature to plot. To stop this one feature being replicated, we can add an additional line of code shown below:
 
