@@ -12,7 +12,8 @@ runtime: shiny
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
-  dpi = 150
+  dpi = 96,           
+  dev.args = list(png = list(compression = 9)) 
 )
 ```
 
@@ -141,7 +142,7 @@ An important part of any analysis pipeline is to generate informative and clear 
 
 Plotting in ***SpaMTP*** builds on *ggplot2* allowing for easy organisation and plot manipulation. Below, we will plot the expression of the m/z 741.530578613281 using *Seurat's* plotting function *ImageFeaturePlot()*. Below we use ggplot helper functions to orientate the image correctly.  
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi=96}
 ImageFeaturePlot(bladder_annotated, features = "mz-741.530578613281", size = 2) & coord_flip() & scale_x_reverse()
 ```
 
@@ -151,7 +152,7 @@ Comparatively, the ***SpaMTP*** function *ImageMZPlot()* provides more SM-based 
 * Plotting the combined expression of &#177; the mz value in ppm
 * Plotting the spots as either circles (*ST*) or pixels (*SM*)
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE, dpi=96}
 ImageMZPlot(bladder_annotated, mz = 741.53057, plusminus = 1, size = 1, plot.pixel = TRUE) & coord_flip() & scale_x_reverse()
 ```
 
@@ -172,13 +173,13 @@ mb
 
 Lets plot them individually:
 
-```{r, fig.width=22, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=22, fig.height=5, warning=FALSE, message=FALSE, dpi=96}
 ImageMZAnnotationPlot(bladder_annotated, metabolites = c("(3'-sulfo)Galbeta-Cer(d18:1/22:0(2OH))", "(3'-sulfo)Galbeta-Cer(d18:1/24:0(2OH))"), slot = "counts", plot.exact = FALSE, size = 1.5) & coord_flip() & scale_x_reverse()
 ```
 
 Lets plot them combined:
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE, dpi=96}
 ImageMZAnnotationPlot(bladder_annotated, metabolites = "Galbeta-Cer", slot = "counts", plot.exact = FALSE, size = 1.5) & coord_flip() & 
   scale_x_reverse()
 ```
@@ -191,22 +192,23 @@ There are equivalent functions for ***SpaMTP*** *Seurat* objects that contain im
 Often we are interested in different patterns of metabolite expression between groups such as clusters. Mass intensity plots can be useful at displaying the overall patters of each tissue region. ***SpaMTP*** provides functionality to generate these plots and also label peaks with selected metabolites. 
 
 
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE, dpi=96}
 ROI <- subset(bladder_annotated, subset = ssc %in% c("2", "5", "6")) 
 
-MassIntensityPlot(ROI, group.by = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
+MassIntensityPlot(ROI, group.by = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple",labelAdj = 0,
+  labelOffset = 1)
 ```
 
 Based on this plot, we can see that our metabolite "PC(34:1)" has been annotated on the plot. The plot looks quite crowded though. We can either change the mass range to only show the specific region on the spectrum, or we could generate individual plots for each cluster. We will show both approaches below:
 
 Change the mass range:
-```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE}
-MassIntensityPlot(ROI, group.by = "ssc", mass.range = c(750, 850), label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
+```{r, fig.width=20, fig.height=5, warning=FALSE, message=FALSE, dpi=96}
+MassIntensityPlot(ROI, group.by = "ssc", mass.range = c(750, 850), label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple",labelAdj = 0, labelOffset = 1)
 ```
 
 Generate individual plots per cluster:
-```{r, fig.width=20, fig.height=10, warning=FALSE, message=FALSE}
-MassIntensityPlot(ROI, split.by  = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple")
+```{r, fig.width=20, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
+MassIntensityPlot(ROI, split.by  = "ssc", label.annotations = TRUE, metabolite.labels = c("PC(34:1)"), annotation.column = "Species.Name.Simple",labelAdj = 2, labelOffset = 0,labelCex = 3)
 ```
 
 Now we can clearly see that this metabolite is highly expressed by cluster 6!
@@ -236,7 +238,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
 
 We can see the expression values have been stored in the `@meta.data` column "Binnde_GPs". Now lets plot the results:
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE, dpi=96}
 ImageFeaturePlot(bladder_annotated, features = "Binned_GPs", size = 2) & coord_flip() & scale_x_reverse() & scale_fill_gradientn(colors = viridis::viridis(100))
 ```
 
@@ -254,7 +256,7 @@ This function will activate an interactive window where you can change the MSI c
 
 Here is an example of what the alignment GUI looks like, and also the perimeters we used to align the H&E image:
 
-```{r echo=FALSE, fig.align="center", out.width="100%", dpi=1000}
+```{r echo=FALSE, fig.align="center", out.width="100%", dpi=300}
 knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment.png")
 ```
 
@@ -272,7 +274,7 @@ bladder_HE@images
 
 Lets now visualise this:
 
-```{r fig.width=20, fig.height=10, warning=FALSE, message=FALSE}
+```{r fig.width=20, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
 (ImageDimPlot(bladder_HE, group.by = "ssc", fov = "fov", size = 1) & scale_y_reverse() )/ 
   (SpatialDimPlot(bladder_HE, group.by = "ssc", images = "slice1", pt.size.factor = 3) &theme_void())
 ```
@@ -280,7 +282,7 @@ Lets now visualise this:
 
 This also means that we can now visualise our data using the *Plot3D()* function with a H&E image:
 
-```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
 ### Identified the m/z values that are to be plot
 mzs <- unlist(lapply(c(798.5411, 741.5306), function(x) FindNearestMZ(data = bladder_annotated, target_mz = x)))
 ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
