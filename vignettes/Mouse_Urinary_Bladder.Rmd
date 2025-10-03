@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   comment = "##",
   fig.width = 7,       # smaller inches
   fig.height = 4,      # proportionate aspect ratio
-  dpi = 96,            # web standard (looks sharp but not too big)
+  dpi = 72,            # web standard (looks sharp but not too big)
   dev.args = list(png = list(compression = 9))  # max compression
 )
 ```
@@ -106,7 +106,7 @@ pig206_peaks
 
 Following our processing steps the cleaned dataset contains 687 peaks. Using *Cardinal* we can visualise one of these peaks (m/z 537) below which is abundant in the pig liver. 
 
-```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
 image(pig206_peaks, mz=537.08)
 ```
 
@@ -125,7 +125,7 @@ pig206_ssc <- spatialShrunkenCentroids(pig206_peaks,
     weights="adaptive", r=2, k=8, s=2^(1:6))
 ```
 
-```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
 
 col_palette = list("1" = "#5aa14f",
                    "2" = "#4f79a6",
@@ -180,24 +180,24 @@ df %>%
 Lets also generate some plots to compare:
 
 
-```{r, eval = FALSE, fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE, fig.width=7, fig.height=4, dpi = 72, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 image(pig206_peaks, mz=537.08)
 title("Cardinal", outer = TRUE)
 ```
 
 
-```{r, eval = FALSE,fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE,fig.width=7, fig.height=4, dpi = 72, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 ImageMZPlot(pig206_spamtp, mzs = 537.106, size = 2.2, dark.background = F) + scale_x_reverse()+coord_flip()+scale_fill_gradientn(colours = viridis(10))+ ggtitle("SpaMTP")
 ```
 
 
-```{r, eval = FALSE,fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval = FALSE,fig.width=7, fig.height=4, dpi = 72, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)))
 title("Cardinal", outer = TRUE)
 ```
 
 
-```{r, eval=FALSE, fig.width=7, fig.height=4, dpi = 96, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
+```{r, eval=FALSE, fig.width=7, fig.height=4, dpi = 72, dev.args=list(bg="#ffffff"), warning=FALSE, message=FALSE}
 ImageDimPlot(pig206_spamtp, group.by = "ssc", size = 2.2, dark.background = F, cols = col_palette) + scale_x_reverse()+coord_flip() + ggtitle("SpaMTP")
 ```
 
@@ -232,7 +232,7 @@ rcc_spamtp
 This dataset contains 10,200 *m/z*-values across 8 different runs which are split into individual FOV's. Each run contains a cancer and normal sample which have been loaded in the metadata. Lets visualise each run in one plot:
 
 
-```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
 ImageDimPlot(rcc_spamtp, group.by = "diagnosis", dark.background = F, fov = names(rcc_spamtp@images), size = 2, 
              cols = c("red", "blue"),na.value= "white")
 ```
@@ -277,7 +277,7 @@ bladder
 Because *SpaMTP* is built on a *Seurat* Object, we can use useful pre-established *Seurat* and *ggplot2* functions to plot the spatial distribution of the total number of features (m/z's) present per pixel. 
 
 
-```{r, fig.width=7, fig.height=4, dpi = 96, warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=4, dpi = 72, warning=FALSE, message=FALSE}
 ImageFeaturePlot(bladder, features = "nFeature_Spatial", size = 1) + coord_flip() + scale_x_reverse()
 ```
 
@@ -312,7 +312,7 @@ bladder$ssc <- factor(bladder$ssc) # Required format for some Seurat functions
 
 Lets visualise the ssc segmentations added:
 
-```{r fig.width=7, fig.height=4, dpi = 96, dev.args = list(bg = "#ffffff")}
+```{r fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
 col_palette = list("1" = "#9FBEAC", 
                    "2" = "#C2B03B",
                    "3" = "#F99D1D",
@@ -330,7 +330,7 @@ ImageDimPlot(bladder, group.by = "ssc", cols = col_palette, dark.background = F,
 We can see that our segmentation plot matches [*Cardinal's* previously published results](https://doi.org/10.1038/s41592-023-02070-z). Published in the original paper by [Römpp et al.(2010)](https://doi.org/10.1002/anie.200905559) we will visualise three m/z values that define organ structures within the urinary bladder. 
 
 
-```{r fig.width=20, fig.height=3, dpi = 96, warning=FALSE, message=FALSE}
+```{r fig.width=20, fig.height=3, dpi = 72, warning=FALSE, message=FALSE}
 ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1.5) & coord_flip() & scale_x_reverse()
 ```
 
@@ -356,7 +356,7 @@ Although our data may be normalised and filtered, it still may contains some pix
 
 First we will look at the total number of features and total intensity per pixel between our segments:
 
-```{r, fig.width=20, fig.height=5, dpi = 96, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
 VlnPlot(ROI, features = c("nCount_Spatial", "nFeature_Spatial"),group.by = "ssc",cols = col_palette)+ theme_minimal()
 ```
 
@@ -371,7 +371,7 @@ Another metric to assess is the relative intensity values of each m/z across a s
 
 
 
-```{r, fig.width=20, fig.height=5, dpi = 96, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
 raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1")) 
 
 MZRidgePlot(seurat.obj = raw_bladder, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
@@ -383,7 +383,7 @@ These plots display the intensity of each m/z summed across all pixels per group
 
 Using this function we can also look at the distribution of specific features across groups by providing a feature name. Lets try and visualise the total intensity of "mz-740.471557617188" across each cluster using the box.plot function:
 
-```{r, fig.width=20, fig.height=5, dpi = 96, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
 options(repr.plot.width = 10, repr.plot.height = 5)
 
 MZBoxPlot(seurat.obj = ROI,group.by = "ssc", mzs = "mz-740.471557617188", log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05,cols = col_palette) 
@@ -573,7 +573,7 @@ For plotting we will use our subset ROI object.
 ROI <- subset(bladder_annotated, subset = ssc %in% c("2", "5", "6"))
 ```
 
-```{r, fig.width=20, fig.height=5,dpi=96, warning=FALSE, message=FALSE}
+```{r, fig.width=20, fig.height=5,dpi=72, warning=FALSE, message=FALSE}
 ImageMZAnnotationPlot(ROI, metabolites = c("SM(34:1)", "PC(34:1)"), size = 1, column.name = "Species.Name.Simple", plot.exact = F, dark.background = F, plot.pixel = T) & coord_flip() & scale_x_reverse()  & scale_colour_gradientn(colors = viridis(100)) 
 ```
 
@@ -629,7 +629,7 @@ cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 
 Lets observe the top 10 DE metabolites for each cluster in a heatmap:
 
 
-```{r, fig.width=15, fig.height=10, dpi=96, dev.args = list(bg = "#ffffff")}
+```{r, fig.width=15, fig.height=10, dpi=72, dev.args = list(bg = "#ffffff")}
 DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
             n = 10, save_to_path = NULL
@@ -640,7 +640,7 @@ DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
 We can also observe the spatial expression patterns of some top DE metabolites. 
 
 
-```{r, fig.width=33, fig.height=10, dpi=96, warning=FALSE, message=FALSE}
+```{r, fig.width=33, fig.height=10, dpi=72, warning=FALSE, message=FALSE}
 (ImageDimPlot(ROI, group.by = "ssc", split.by = "ssc", size = 2, cols = col_palette)/
 ImageMZAnnotationPlot(ROI, metabolites = c("LacCer(d18:1/12:0)","SM(d18:0/16:0)","Bastimolide B"), size = 2)) & coord_flip() & scale_x_reverse()
 ```
@@ -712,7 +712,7 @@ volc_plot <- EnhancedVolcano::EnhancedVolcano( urothelium,
 ```
 
 
-```{r, fig.width=10, fig.height=10, dpi=96}
+```{r, fig.width=10, fig.height=10, dpi=72}
 volc_plot
 ```
 
@@ -728,7 +728,7 @@ cluster_DEMs$DEMs <- RefineLipids(cluster_DEMs$DEMs, annotation.column = "annota
 ```
 
 
-```{r, fig.width=7, fig.height=5, dpi=96,warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=5, dpi=72,warning=FALSE, message=FALSE}
 # lets look at the Differenitally expressed Lipids groups
 UP <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$regulate == "Up",] # lets get the upregulated lipids for each cluster
 
@@ -759,7 +759,7 @@ The results displayed in the bar graph above demonstrate the number of different
 Lets now look at the different lipid classes that were differentially expressed by each cluster.
 
 
-```{r, fig.width=15, fig.height=5,dpi=96, warning=FALSE, message=FALSE}
+```{r, fig.width=15, fig.height=5,dpi=72, warning=FALSE, message=FALSE}
 # Compute counts of Lipid Maps Categories for 'Up' and 'Down' entries
 category_counts <- UP %>%
   group_by(cluster, Lipid.Maps.Main.Class) %>%
@@ -876,7 +876,7 @@ df %>%
 
 
 
-```{r, fig.width = 10, fig.height = 5,dpi=96, warning=FALSE, message=FALSE}
+```{r, fig.width = 10, fig.height = 5,dpi=72, warning=FALSE, message=FALSE}
 ImageFeaturePlot(ROI, features = c("GPs"), size = 2, dark.background = F) & coord_flip() & scale_x_reverse()
 ```
 
@@ -1014,11 +1014,11 @@ Now, lets visualise these results.We will first plot the results generated based
 VisualisePathways(ROI,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
-```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30,dpi=96, dev.args = list(bg = "#ffffff")}
+```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, fig.width=10, fig.height=30,dpi=72, dev.args = list(bg = "#ffffff")}
 p <- VisualisePathways(ROI,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
 ```
 
-```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10,dpi=96, dev.args = list(bg = "#ffffff")}
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, fig.width=30, fig.height=10,dpi=72, dev.args = list(bg = "#ffffff")}
 p
 ```
 
@@ -1030,11 +1030,11 @@ VisualisePathways(bladder_annotated,pathway_df = cluster_6_mz_pathways,p_val_thr
 
 
 
-```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, dpi=96,fig.width=10, fig.height=30, dev.args = list(bg = "#ffffff")}
+```{r echo=FALSE, results='hide',warning=FALSE, message=FALSE, dpi=72,fig.width=10, fig.height=30, dev.args = list(bg = "#ffffff")}
 p <- VisualisePathways(bladder_annotated,pathway_df = cluster_6_mz_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts", verbose = F)
 ```
 
-```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, dpi=96,fig.width=30, fig.height=10, dev.args = list(bg = "#ffffff")}
+```{r echo=FALSE, results='asis',warning=FALSE, message=FALSE, dpi=72,fig.width=30, fig.height=10, dev.args = list(bg = "#ffffff")}
 p
 ```
 
@@ -1105,7 +1105,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c"
 We can see that we now have many more differentially expressed pathways! Lets plot these results:
 
 
-```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10,dpi=96}
+```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10,dpi=72}
 PlotRegionalPathways(regpathway = DE_pathways)
 ```
 
@@ -1130,7 +1130,7 @@ ROI <- FindClusters(ROI, resolution = 0.3, cluster.name = "clusters", verbose = 
 
 Now, lets plot the results:
 
-```{r warning=FALSE, message=FALSE,dpi=96, fig.width=30, fig.height=8}
+```{r warning=FALSE, message=FALSE,dpi=72, fig.width=30, fig.height=8}
 ## Custom palette for SpaMTP/Seurat Clustering
 SpaMTP_palette = list("0" = "#0074B0", 
                       "1" = "#008E87", 
@@ -1164,7 +1164,7 @@ correlated_features <- FindCorrelatedFeatures(ROI, ident = "clusters", SM.assay 
 Because we are interested in the lamina propria, lets focus on the top correlated metabolites with cluster 5:
 
 
-```{r, warning=FALSE, message=FALSE, fig.width=8, dpi=96,fig.height=5}
+```{r, warning=FALSE, message=FALSE, fig.width=8, dpi=72,fig.height=5}
 df <- correlated_features[correlated_features$ident == "5",] # subsets to only include results from cluster 5
 df$mz_name <- paste0("mz-",round(df$mz, digits = 6)) # simplifies the m/z names for the plot
 
@@ -1178,7 +1178,7 @@ We can see that our top hit is m/z = 734.5467, which is described in *Cardinal's
 We can check by looking at the spatial expression of this m/z:
 
 
-```{r warning=FALSE, message=FALSE, fig.width=30,dpi=96, fig.height=10}
+```{r warning=FALSE, message=FALSE, fig.width=30,dpi=72, fig.height=10}
 ## Formats Plots 
 plots <- list()
 for (i in c("0", "2", "3", "4", "5")){
@@ -1195,7 +1195,7 @@ patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse
 
 In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is done using Moran's I scores to determine the most spatially variable features.
 
-```{r fig.width=30, fig.height=10, dpi=96,warning=FALSE, message=FALSE}
+```{r fig.width=30, fig.height=10, dpi=72,warning=FALSE, message=FALSE}
 ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
 
 ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
@@ -1226,7 +1226,7 @@ bladder_cardinal
 
 We can see that the Object layout is correct and we have 79 annotated m/z values and our seurat metadata has also been stored in the `pixelData` slot. Next we can generate a plot using Cardinal:
 
-```{r, fig.width=8, fig.height=5 ,dpi=96, dev.args = list(bg = "#ffffff")}
+```{r, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
 
 image(bladder_cardinal, mz=c(798.5410, 741.5307, 743.5482),
         main="Mouse urinary bladder",
@@ -1269,13 +1269,13 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
 
 Below, we will visualise the top 5 pathways differentially expressed between clusters:
 
-```{r warning=FALSE, message=FALSE,dpi=96, fig.width=15, fig.height=10}
+```{r warning=FALSE, message=FALSE,dpi=72, fig.width=15, fig.height=10}
 PlotRegionalPathways(regpathway = DE_pathways, num_display = 4)
 ```
 
 We can also plots some key pathways of interest that were also upregulated in our dataset.
 
-```{r warning=FALSE, message=FALSE, dpi=96, fig.width=15, fig.height=10}
+```{r warning=FALSE, message=FALSE, dpi=72, fig.width=15, fig.height=10}
 key_pathways <- c("Biochemical pathways: part I","G alpha (i) signalling events","Metabolism of carbohydrates","Sphingolipid metabolism: integrated pathway",
                   "Sensory perception of sweet, bitter, and umami (glutamate) taste", "Sensory perception of taste",
                   "G alpha (i) signaling events")

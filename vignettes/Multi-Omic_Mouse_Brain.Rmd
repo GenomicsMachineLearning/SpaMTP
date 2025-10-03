@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
-  dpi = 96,            # web standard (looks sharp but not too big)
+  dpi = 72,            # web standard (looks sharp but not too big)
   dev.args = list(png = list(compression = 9)) 
 )
 ```
@@ -139,7 +139,7 @@ We can see that our pixel names are a combination of x and y coordinates. We als
 Lets have a look at the sample spatially. We will just visualise the number of m/z's per pixel.
 
 
-```{r fig.width=7,dpi=96, fig.height=5}
+```{r fig.width=7,dpi=72, fig.height=5}
 ImageFeaturePlot(msi, "nFeature_Spatial", size = 2, dark.background = FALSE) 
 ```
 
@@ -147,7 +147,7 @@ ImageFeaturePlot(msi, "nFeature_Spatial", size = 2, dark.background = FALSE)
 We have some pixels which do not contain any SM data, thus we will remove them first before starting any analysis.
 
 
-```{r, warning=FALSE, message=FALSE, dpi=96,fig.width=10, fig.height=6}
+```{r, warning=FALSE, message=FALSE, dpi=72,fig.width=10, fig.height=6}
 msi <- subset(msi, subset = nCount_Spatial > 0)
 
 ImageFeaturePlot(msi, "nCount_Spatial", size = 1.3, dark.background = FALSE) | ImageFeaturePlot(msi, "nFeature_Spatial", size = 1.3, dark.background = FALSE)
@@ -187,7 +187,7 @@ vis
 The ST data has 32,285 genes and 3,120 spots. Next, we will visualise the sample and compare to the MSI image above.
 
 
-```{r fig.width=10, dpi=96,fig.height=6}
+```{r fig.width=10, dpi=72,fig.height=6}
 SpatialFeaturePlot(vis, features = c("nCount_Spatial", "nFeature_Spatial"), pt.size.factor = 2)
 ```
 
@@ -231,7 +231,7 @@ df %>%
 Now, we can plot the results. We can use this information later for tissue alignment and removing poor quality spots sitting outside the tissue section. 
 
 
-```{r,dpi=96, fig.width=20, fig.height=6}
+```{r,dpi=72, fig.width=20, fig.height=6}
 SpatialDimPlot(vis, group.by = c("lesion","region", "RegionLoupe"))
 ```
 
@@ -339,7 +339,7 @@ We can see that based on the FMP10-tagged value, we are able to annotated some o
 Dopamine plays a critical part in Parkinson's disease, so lets visualise this annotation spatially!
 
 
-```{r, fig.width=7,dpi=96, fig.height=4}
+```{r, fig.width=7,dpi=72, fig.height=4}
 ImageMZAnnotationPlot(msi_annotated, "Dopamine (double derivatized)", slot = "counts", dark.background = FALSE, size = 1.5)
 ```
 
@@ -353,7 +353,7 @@ There is a strong localisation of dopamine in the non-lesioned hemisphere.
 Although we have two -omic datasets from the same sample, the coordinates are not aligned in their current format. We can see this in the first plot below. 
 
 
-```{r, fig.width=15, fig.height=8 ,dpi=96}
+```{r, fig.width=15, fig.height=8 ,dpi=72}
 df1 <- GetTissueCoordinates(vis)
 df1$sample <- "RNA"
     
@@ -450,7 +450,7 @@ df %>%
 
 We can see that the values have been up-scaled to matched with the visium coordinates.
 
-```{r, fig.width=10, fig.height=8, dev.args = list(bg = "#ffffff"),dpi=96}
+```{r, fig.width=10, fig.height=8, dev.args = list(bg = "#ffffff"),dpi=72}
 CheckAlignment(msi_transformed, vis, image.res = NULL, size = 0.8)
 ```
 
@@ -458,7 +458,7 @@ CheckAlignment(msi_transformed, vis, image.res = NULL, size = 0.8)
 We can also check that our SM coordinates haven't been distorted by plotting a m/z value. Let's compare the before vs after.
 
 
-```{r, fig.width=15, fig.height=7,dpi=96, warning=FALSE, message=FALSE}
+```{r, fig.width=15, fig.height=7,dpi=72, warning=FALSE, message=FALSE}
 ImageMZPlot(msi_annotated, mzs = 674.28, size = 2, slot = "counts") | 
   ImageMZPlot(msi_transformed, mzs = 674.28, size = 2, slot = "counts")
 ```
@@ -503,7 +503,7 @@ combined.data <- MapSpatialOmics(SM.data = msi_transformed, ST.data = vis, overl
 Lets visualise how the mapping went and compare it to our original SM data object:
 
 
-```{r, fig.width=15,fig.height=7,dpi=96,warning=FALSE,message=FALSE}
+```{r, fig.width=15,fig.height=7,dpi=72,warning=FALSE,message=FALSE}
 ImageMZPlot(msi_transformed, mzs = 674.28, size = 2, slot = "counts") | 
   SpatialMZPlot(combined.data, mzs = 674.28, assay = "SPM", slot = "counts", pt.size.factor = 2.2)
 ```
@@ -520,7 +520,7 @@ combined.data <- subset(combined.data, subset = RegionLoupe == "", invert = T)
 ```
 
 
-```{r, fig.width=20, fig.height=6, ,dpi=96}
+```{r, fig.width=20, fig.height=6, ,dpi=72}
 SpatialDimPlot(combined.data, group.by = c("lesion", "RegionLoupe"), pt.size.factor = 2)
 ```
 
@@ -583,7 +583,7 @@ combined.data <- FindClusters(combined.data, resolution = 0.5, cluster.name = "S
 ```
 
 
-```{r, fig.width=20, fig.height=8,dpi=96 }
+```{r, fig.width=20, fig.height=8,dpi=72 }
 DimPlot(combined.data, group.by = "ST_clusters", reduction = "spt.umap", cols = ST_palette) | 
   SpatialDimPlot(combined.data, group.by = "ST_clusters", pt.size.factor = 2.1, cols = ST_palette)
 ```
@@ -592,7 +592,7 @@ DimPlot(combined.data, group.by = "ST_clusters", reduction = "spt.umap", cols = 
 The clustering results demonstrate clear groups of cells. Lets compare them to the provided annotations:
 
 
-```{r, warning=FALSE, message=FALSE, fig.width=15, fig.height=5,dpi=96}
+```{r, warning=FALSE, message=FALSE, fig.width=15, fig.height=5,dpi=72}
 striatum <- subset(combined.data, subset = region == "striatum")
 
 SpatialDimPlot(striatum, group.by = "ST_clusters", label = F, pt.size.factor = 2.4, cols = ST_palette) | 
@@ -632,7 +632,7 @@ df %>%
 Looking at the top 5 most over-expressed genes in cluster 0, we can see some key genes that define the Striatum. These are plot below:
 
 
-```{r, fig.width=15, fig.height=5,dpi=96}
+```{r, fig.width=15, fig.height=5,dpi=72}
 SpatialFeaturePlot(combined.data, features = c("Ppp1r1b", "Gpr88", "Rgs9"), pt.size.factor = 2) 
 ```
 
@@ -661,7 +661,7 @@ combined.data <- FindClusters(combined.data, resolution = 0.5,  cluster.name = "
 ```
 
 
-```{r, fig.width=25, fig.height=8,dpi=96}
+```{r, fig.width=25, fig.height=8,dpi=72}
 DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = SM_palette) |
   SpatialDimPlot(combined.data, group.by = "SM_clusters", pt.size.factor = 2.1, cols = SM_palette) | 
   SpatialDimPlot(combined.data, group.by = "lesion", pt.size.factor = 2.1)
@@ -671,7 +671,7 @@ DimPlot(combined.data, group.by = "SM_clusters", reduction = "spm.umap", cols = 
 Looking at the clustering results above we can clearly see <span style="color: #b3dff2">**(cluster 3)**</span> defines the cells of the intact Striatum which still produce dopamine. In addition, the spatial distribution of cluster 3 matches the expression pattern of dopamine displayed below:
 
 
-```{r, fig.width=7, fig.height=4,dpi=96}
+```{r, fig.width=7, fig.height=4,dpi=72}
 dopamine_mzs <- SearchAnnotations(combined.data, "Dopamine", assay = "SPM")
 combined.data <- BinMetabolites(combined.data, mzs = dopamine_mzs$mz_names, slot = "counts", assay = "SPM",  bin_name = "Dopamine")
 
@@ -697,7 +697,7 @@ combined.data <- GetKmeanClusters(combined.data, cluster.name = "gpca_SPT", clus
 ```
 
 
-```{r fig.width=10, fig.height=8,dpi=96}
+```{r fig.width=10, fig.height=8,dpi=72}
 # Non-Spatial Plots
 p1 <- SpatialDimPlot(combined.data, group.by = "ST_clusters", cols = ST_palette, pt.size.factor =2.5, image.alpha = 0.8)
 p2 <- SpatialDimPlot(combined.data, group.by = "SM_clusters", cols = SM_palette, pt.size.factor =2.5, image.alpha = 0.8)
@@ -732,7 +732,7 @@ integrated.data <- FindClusters(integrated.data, graph.name = "wsnn", algorithm 
 ```
 
 
-```{r, fig.width=20, fig.height=8,dpi=96}
+```{r, fig.width=20, fig.height=8,dpi=72}
 DimPlot(integrated.data, group.by = "integrated_clusters",  reduction = 'wnn.umap', label = F, cols = intergrated_palette, pt.size = 1.5) | 
   SpatialDimPlot(integrated.data, group.by = "integrated_clusters",  label = F, pt.size.factor = 2.2, cols = intergrated_palette, image.alpha =  1) 
 ```
@@ -742,7 +742,7 @@ Looking at the results above, we can see the integrative analysis identifies a d
 
 We can also compare the difference between ST only, SM only and integrated clustering:
 
-```{r fig.width=10, fig.height=8,dpi=96}
+```{r fig.width=10, fig.height=8,dpi=72}
 (SpatialDimPlot(integrated.data, group.by = "annotations", pt.size.factor = 2.5, cols = annotation_palette, image.alpha = 0.8)| 
 SpatialDimPlot(integrated.data, group.by = "gpca_SPM", pt.size.factor = 2.5, cols = spatial_SM_palette, image.alpha = 0.8))/
 (SpatialDimPlot(integrated.data, group.by = "gpca_SPT", pt.size.factor = 2.5, cols = spatial_ST_palette, image.alpha = 0.8)| 
@@ -819,7 +819,7 @@ cluster_DEMs <- FindAllDEMs(data = integrated.data, ident = "integrated_clusters
     Starting condition: 10
     Starting condition: 11
     
-```{r, fig.width=7, fig.height=7, message=FALSE, warning=FALSE, ,dpi=96}
+```{r, fig.width=7, fig.height=7, message=FALSE, warning=FALSE, ,dpi=72}
 results <- cluster_DEMs$DEMs[cluster_DEMs$DEMs$cluster == "2",]
 
 metabolites <- c("Dopamine (double derivatized)", "Dopamine (single derivatized)")
@@ -891,7 +891,7 @@ df %>%
 Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 2 (in-tact striatum cells).
 
 
-```{r, fig.width=7, fig.height=4, message=FALSE, warning=FALSE,dpi=96}
+```{r, fig.width=7, fig.height=4, message=FALSE, warning=FALSE,dpi=72}
 SpatialFeaturePlot(integrated.data, features = "Pcp4", pt.size.factor = 2)
 ```
 
@@ -960,7 +960,7 @@ selected_pathways <- c("Epinephrine Action Pathway",
                        "Apoptosis")
 ```
 
-```{r, fig.width=15, fig.height=10, warning=FALSE, message=FALSE,dpi=96}
+```{r, fig.width=15, fig.height=10, warning=FALSE, message=FALSE,dpi=72}
 PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathways)
 ```
 
@@ -1022,7 +1022,7 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 
 
 This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
-```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=96}
+```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=72}
 striatum.dhb.data <- readRDS(url("https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"))
 
 SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
@@ -1049,7 +1049,7 @@ regpathway = FindRegionalPathways(
 
 We will select some important pathways associated with Parkinson's disease to plot
 
-```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10,dpi=96}
+```{r warning=FALSE, message=FALSE, fig.width=15, fig.height=10,dpi=72}
 selected_pathways = c(
   "Dopamine beta-hydroxylase deficiency",
   "Tryptophan metabolism",
@@ -1082,7 +1082,7 @@ PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathw
 
 One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP***, we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:
 
-```{r, fig.width=7, fig.height=4,warning=FALSE, message=FALSE,dpi=96}
+```{r, fig.width=7, fig.height=4,warning=FALSE, message=FALSE,dpi=72}
 SpatialMZPlot(striatum.dhb.data, mz= 400.14659,plusminus = 0.05, assay = "SPM", pt.size.factor = 2.5, slot = "data") + theme(legend.position = "right")
 ```
 
@@ -1100,7 +1100,7 @@ striatum.dhb.data <- BinMetabolites(striatum.dhb.data, mzs, slot = "data", bin_n
 ```
 
 
-```{r, fig.width=7, fig.height=4,warning=FALSE, message=FALSE,dpi=96}
+```{r, fig.width=7, fig.height=4,warning=FALSE, message=FALSE,dpi=72}
 SpatialFeaturePlot(striatum.dhb.data, features = "Dopamine_pathway", pt.size.factor = 2.5) & theme(legend.position = "right") 
 ```
 
@@ -1159,7 +1159,7 @@ df %>%
 
 Lets plot these:
 
-```{r, fig.width=10, fig.height=5,warning=FALSE, message=FALSE,dpi=96}
+```{r, fig.width=10, fig.height=5,warning=FALSE, message=FALSE,dpi=72}
 ## Get top 6 pathways
 topPathways <- ST_results[, pathway] |> head(6)
 
@@ -1248,7 +1248,7 @@ df %>%
 
 Only some pathways are significant between the two modalities. We can also spatially visualise these pathways, lets pick 3 to view:
 
-```{r, fig.width=10, fig.height=4,dpi=96,warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=4,dpi=72,warning=FALSE, message=FALSE}
 key_pathways <- c("Parkinson disease", "Dopamine beta-hydroxylase deficiency", "Dopamine metabolism")
 
 p1 <- PlotPathwaysSpatially(key_pathways, integrated.data, images = c("slice1"), assay = "SPT_pathway", image.alpha = 0, pt.size.factor = 2.5)
@@ -1299,7 +1299,7 @@ We can see that all 7 selected pathways associated with dopamine display signifi
 
 
 
-```{r, fig.width=10, fig.height=8,dpi=96,warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=8,dpi=72,warning=FALSE, message=FALSE}
 #key_pathways <- c("Parkinson disease", "Dopamine beta-hydroxylase deficiency", "Dopamine metabolism")
 
 p1 <- PlotPathwaysSpatially(selected_pathways, integrated.data, images = c("slice1"), assay = "merged", image.alpha = 0, pt.size.factor = 2.5)

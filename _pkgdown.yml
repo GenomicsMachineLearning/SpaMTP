@@ -290,3 +290,8 @@ reference:
   desc: Helper functions for generating pre-processing plots
   contents: statPlot
 
+extra_files:
+  - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot1.html
+  - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot2.html
+  - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot3.html
+  - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot4.html

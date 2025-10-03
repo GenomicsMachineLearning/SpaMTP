@@ -142,7 +142,7 @@ An important part of any analysis pipeline is to generate informative and clear 
 
 Plotting in ***SpaMTP*** builds on *ggplot2* allowing for easy organisation and plot manipulation. Below, we will plot the expression of the m/z 741.530578613281 using *Seurat's* plotting function *ImageFeaturePlot()*. Below we use ggplot helper functions to orientate the image correctly.  
 
-```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi=96}
+```{r, fig.width=11, fig.height=5, warning=FALSE, message=FALSE, dpi=72}
 ImageFeaturePlot(bladder_annotated, features = "mz-741.530578613281", size = 2) & coord_flip() & scale_x_reverse()
 ```
 
@@ -152,7 +152,7 @@ Comparatively, the ***SpaMTP*** function *ImageMZPlot()* provides more SM-based 
 * Plotting the combined expression of &#177; the mz value in ppm
 * Plotting the spots as either circles (*ST*) or pixels (*SM*)
 
-```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE, dpi=96}
+```{r, fig.width=7, fig.height=3, warning=FALSE, message=FALSE,out.width="80%", dpi=72}
 ImageMZPlot(bladder_annotated, mz = 741.53057, plusminus = 1, size = 1, plot.pixel = TRUE) & coord_flip() & scale_x_reverse()
 ```
 
@@ -179,7 +179,7 @@ ImageMZAnnotationPlot(bladder_annotated, metabolites = c("(3'-sulfo)Galbeta-Cer(
 
 Lets plot them combined:
 
-```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE, dpi=96}
+```{r, fig.width=7, fig.height=3, out.width="80%",warning=FALSE, message=FALSE, dpi=96}
 ImageMZAnnotationPlot(bladder_annotated, metabolites = "Galbeta-Cer", slot = "counts", plot.exact = FALSE, size = 1.5) & coord_flip() & 
   scale_x_reverse()
 ```
@@ -238,7 +238,7 @@ knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
 
 We can see the expression values have been stored in the `@meta.data` column "Binnde_GPs". Now lets plot the results:
 
-```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE, dpi=96}
+```{r, fig.width=7, fig.height=3, out.width="80%",warning=FALSE, message=FALSE, dpi=72}
 ImageFeaturePlot(bladder_annotated, features = "Binned_GPs", size = 2) & coord_flip() & scale_x_reverse() & scale_fill_gradientn(colors = viridis::viridis(100))
 ```
 
@@ -274,7 +274,7 @@ bladder_HE@images
 
 Lets now visualise this:
 
-```{r fig.width=7, fig.height=7, warning=FALSE, message=FALSE, dpi=72}
+```{r fig.width=7, fig.height=7, warning=FALSE, message=FALSE, out.width="80%", dpi=72}
 (ImageDimPlot(bladder_HE, group.by = "ssc", fov = "fov", size = 1) & scale_y_reverse() )/ 
   (SpatialDimPlot(bladder_HE, group.by = "ssc", images = "slice1", pt.size.factor = 3) &theme_void())
 ```
@@ -292,21 +292,24 @@ ROI_HE <- subset(bladder_HE, subset = ssc %in% c("2", "5", "6"))
 Plot3DFeature(ROI_HE, features = mzs, show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("PC(34:1)","SM(34:1)"), plot.height = 400, plot.width = 700, downscale.image = 2)
 ```
 
-<iframe src="vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot1.html" width="100%" height="600px"></iframe>
+<iframe src="vignette_data_files/Mouse_Urinary_Bladder/3d_plot1.html" width="100%" height="400px"></iframe>
 
 This function is designed for plotting two features simultaneously. If we only want to visualise one of the features, we can use a work around to only show a single trace, where trace 1 = feature1, trace 2 = feature2 and trace 3 = image. Here, we just provide one feature to plot. To stop this one feature being replicated, we can add an additional line of code shown below:
 
-```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+```{r, eval=FALSE,fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
 p <- Plot3DFeature(ROI_HE, features = mzs[2], show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("SM(34:1)", "SM(34:1)"), plot.height = 400, plot.width = 700, downscale.image = 2)
 
 plotly::style(p, visible = FALSE, traces = 1)
 ```
 
+<iframe src="vignette_data_files/Mouse_Urinary_Bladder/3d_plot2.html" width="100%" height="400px"></iframe>
+
+
 ## 3D Ploting of features and metadata
 
 Although the Plot3DFeatures function is mainly used for plotting features from different modalities (i.e. genes and metabolites). It can also be used to plot metadata with feature or metadata between modalities. Lets visualise this below:
 
-```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+```{r, eval=FALSE,fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
 # Plot3DFeatures can either take in a colour palette (i.e. "Reds", "Blues", etc.) or a list of RGB values
 # In this case we want our feature to be plotted using "Reds" and our clustering results to be coloured in categorical colours 
 
@@ -322,6 +325,9 @@ col.palette <- list(
 
 Plot3DFeature(ROI_HE, features = c(mzs[2], "ssc"), show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("Metabolite", "Clusters"), plot.height = 400, plot.width = 700, downscale.image = 2, col.palette = col.palette)
 ```
+
+<iframe src="vignette_data_files/Mouse_Urinary_Bladder/3d_plot3.html" width="100%" height="400px"></iframe>
+
 
 If we want to specify the exact colours for our clusters we can use the code below to convert colours/hex values to RGB:
 ```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
@@ -346,6 +352,9 @@ custom_colorscale <- lapply(seq_along(values), function(i) {
 
 Plot3DFeature(ROI_HE, features = c(mzs[2], "ssc"), show.image = "slice1", assays = "Spatial", between.layer.height = 300, names = c("Metabolite", "Clusters"), plot.height = 400, plot.width = 700, downscale.image = 2, col.palette = list("Reds", custom_colorscale))
 ```
+
+<iframe src="vignette_data_files/Mouse_Urinary_Bladder/3d_plot4.html" width="100%" height="400px"></iframe>
+
 
 ## Selecting Data Bin Size
 
