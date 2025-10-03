@@ -256,7 +256,7 @@ This function will activate an interactive window where you can change the MSI c
 
 Here is an example of what the alignment GUI looks like, and also the perimeters we used to align the H&E image:
 
-```{r echo=FALSE, fig.align="center", out.width="100%", dpi=300}
+```{r echo=FALSE, fig.align="center", out.width="100%", dpi=96}
 knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment.png")
 ```
 
@@ -268,13 +268,13 @@ bladder_HE <- readRDS(url("https://zenodo.org/records/17246684/files/bladder_HE.
 bladder_HE <- UpdateSeuratObject(bladder_HE) # Only Required if SeuratObjects => 5.0.2
 ```  
 
-```{r fig.width=30, fig.height=5, warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 bladder_HE@images
 ```
 
 Lets now visualise this:
 
-```{r fig.width=20, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
+```{r fig.width=10, fig.height=10, warning=FALSE, message=FALSE, dpi=96}
 (ImageDimPlot(bladder_HE, group.by = "ssc", fov = "fov", size = 1) & scale_y_reverse() )/ 
   (SpatialDimPlot(bladder_HE, group.by = "ssc", images = "slice1", pt.size.factor = 3) &theme_void())
 ```
