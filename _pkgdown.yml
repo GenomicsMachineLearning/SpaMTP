@@ -50,7 +50,8 @@ navbar:
     - intro
     - reference
     - articles
-    - news
+    - text: "Updates"
+      href: news/index.html
     right:
     - search
     - github
@@ -104,6 +105,7 @@ reference:
   contents:
   - CalculateAnnotationStatistics
   - CalculateSingleAnnotationStatistics
+  - Pseudo_msms
   - CreatePathwayObject
 - title: Simplifying Lipid Nomenclature
   desc: Function used to simplify lipid names into general lipid categories, classes,
@@ -295,3 +297,6 @@ extra_files:
   - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot2.html
   - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot3.html
   - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot4.html
+
+search:
+  exclude: ['news/index.html']

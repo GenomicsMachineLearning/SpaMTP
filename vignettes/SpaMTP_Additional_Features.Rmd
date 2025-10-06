@@ -12,7 +12,8 @@ runtime: shiny
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
-  dpi = 96,           
+  dpi = 72,
+  fig.align = 'center',
   dev.args = list(png = list(compression = 9)) 
 )
 ```

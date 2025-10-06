@@ -11,7 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
-  dpi = 72,            # web standard (looks sharp but not too big)
+  dpi = 72,
+  fig.align = 'center',
   dev.args = list(png = list(compression = 9)) 
 )
 ```
