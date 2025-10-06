@@ -1,6 +1,6 @@
 # SpaMTP 1.1.0
 
-*Updated SpaMTP Release (Oct 2025)*
+***Updated SpaMTP Release (Oct 2025)***
 
 Additional Features:
 
