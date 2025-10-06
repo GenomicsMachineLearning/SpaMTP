@@ -50,13 +50,15 @@ navbar:
     - intro
     - reference
     - articles
-    - text: "Updates"
-      href: news/index.html
+    - news
     right:
     - search
     - github
     - lightswitch
   components:
+    news:
+      - text: "Updates"
+        href: news/index.html
     github:
       icon: fa-github
       href: https://github.com/GenomicsMachineLearning/SpaMTP
