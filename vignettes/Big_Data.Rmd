@@ -117,13 +117,11 @@ We can then use these m/z values to subset our results and then generate our Spa
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
 ## Subset cardinal object
 spotted_small <- Cardinal::subset(spotted_large, mz %in% results$observed_mz)
-```
 
-
-```{r, eval=FALSE, warning=FALSE, message=FALSE}
 ## Convert Cardinal object to SpaMTP object
 spotted_small <- CardinalToSeurat(spotted_small)
 ```
+
 
 ## Region of Interest Selection
 
