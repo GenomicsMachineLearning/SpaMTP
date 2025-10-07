@@ -6,7 +6,7 @@ install.packages("remotes", dependencies = FALSE)
 install.packages("tiff", upgrade = FALSE, dependencies = FALSE)
 install.packages("fftwtools", upgrade = FALSE, dependencies = FALSE)
 
-remotes::install_github("aoles/EBImage@RELEASE_3_16", upgrade = FALSE, dependencies = FALSE)
+remotes::install_github("aoles/EBImage@RELEASE_4_48", upgrade = FALSE, dependencies = FALSE)
 
 remotes::install_github("kuwisdelu/matter@v2.8.0", upgrade = FALSE, dependencies = FALSE)
 remotes::install_github("kuwisdelu/CardinalIO@v1.4.0", upgrade = FALSE, dependencies = FALSE)
