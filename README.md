@@ -40,11 +40,11 @@ For tutorials and more information please visit the [SpaMTP website](https://gen
 
 To download the image:
 ```
-wget -c https://downloads.gmllab.com/SpaMTP/spamtp.sif
+wget -c https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif
 ```
 Verify it download correctly:
 ```
-wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp.sif.md5 | md5sum -c -
+wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif.md5 | md5sum -c -
 ```
 
 Or to create an Apptainer image from scratch (you need the environment-linux.yml, dependencies.R and spamtp.def files):
