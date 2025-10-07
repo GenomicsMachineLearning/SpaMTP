@@ -74,6 +74,8 @@ navbar:
         href: articles/SpaMTP_Additional_Features.html
       - text: Simulated Single Cell Multi-Omics Analysis
         href: articles/Single_Cell_MultiOmics.html
+      - text: Handeling Big Datasets
+        href: articles/Big_Data.html
 reference:
 - title: Loading Spatial Metabolic Data into a SpaMTP Seurat Object
   desc: Functions that allow the user to load in SM data in different formats
@@ -299,6 +301,7 @@ extra_files:
   - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot2.html
   - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot3.html
   - vignettes/vignette_data_files/Mouse_Urinary_Bladder/3d_plot4.html
+  - vignettes/vignette_data_files/Spotted_Liver/SelectROI_Expample.png
 
 search:
   exclude: ['news/index.html']

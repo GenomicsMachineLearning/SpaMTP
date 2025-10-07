@@ -103,7 +103,7 @@ head(results, n = 5)
 ```
 
 ```{r, echo=FALSE}
-df <- read.csv()
+df <- read.csv("https://zenodo.org/records/17288700/files/results_spotted.csv?download=1", row.names = 1)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -112,7 +112,7 @@ df %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
-We can then use these m/z values to subset our results and then generate our SpaMTP seurat object.
+We can then use these m/z values to subset our results and then generate our SpaMTP Seurat object.
 
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
 ## Subset cardinal object
@@ -132,7 +132,6 @@ Now we have our filtered SpaMTP data object lets plot it.
 options(timeout = 600)
 spotted_small <- readRDS(url("https://zenodo.org/records/17288700/files/spotted_small_ROI.RDS?download=1"))
 ```
-
 
 
 ```{r, warning=FALSE, message=FALSE}
