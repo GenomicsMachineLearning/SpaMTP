@@ -72,6 +72,17 @@ Below we will use a public mouse liver dataset with spotted chemicals standards 
 ```
 
 
+## 2) Lipid Nomenchlature Refinement 
+
+To come!
+
+## 3) Pseudo MS/MS-Based Refinement
+
+To come!
+
+## 4) Refinement with Paired Targeted Metabolic Data
+
+To come!
 
 
 
