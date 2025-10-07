@@ -2,12 +2,14 @@ pandoc: '3.4'
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
+  Annotation_Refinement: Annotation_Refinement.html
+  Big_Data: Big_Data.html
   Mouse_Urinary_Bladder: Mouse_Urinary_Bladder.html
   Multi-Omic_Mouse_Brain: Multi-Omic_Mouse_Brain.html
   Single_Cell_MultiOmics: Single_Cell_MultiOmics.html
   SpaMTP_Additional_Features: SpaMTP_Additional_Features.html
   SpaMTP: SpaMTP.html
-last_built: 2025-10-06T15:22Z
+last_built: 2025-10-07T17:50Z
 urls:
   reference: https://genomicsmachinelearning.github.io/SpaMTP/reference
   article: https://genomicsmachinelearning.github.io/SpaMTP/articles
