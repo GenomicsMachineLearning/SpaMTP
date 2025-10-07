@@ -65,7 +65,7 @@ conda install --no-update-deps -c bioconda bioconductor-BiocGenerics bioconducto
 conda install --no-update-deps -c bioconda bioconductor-protgenerics bioconductor-s4vectors bioconductor-biobase --y
 conda install --no-update-deps -c bioconda bioconductor-edger bioconductor-fgsea bioconductor-limma bioconductor-scater bioconductor-singlecellexperiment --y
 conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioconductor-hdf5array bioconductor-rhdf5 bioconductor-rhdf5lib --y
-conda install --no-update-deps -c bioconda bioconductor-ebimage==4.48.0-0 --y
+conda install --no-update-deps -c bioconda bioconductor-msnbase bioconductor-ebimage==4.48.0-0 --y
 Rscript dependencies.R
 ```
 
