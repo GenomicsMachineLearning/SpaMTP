@@ -1,0 +1,79 @@
+---
+title: "SpaMTP: Refinning Metabolite Annotations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Annotation_Refinement}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  comment = "##",
+  fig.width = 7,       # smaller inches
+  fig.height = 4,      # proportionate aspect ratio
+  dpi = 72,
+  fig.align = 'center',
+  dev.args = list(png = list(compression = 9))  # max compression
+)
+```
+
+
+# Refinning m/z Metabolite Annotations with SpaMTP
+
+This tutorial highlights how to use *SpaMTP* to refine m/z annotated with multiple metabolites. *SpaMTP* implements this in 4 different ways, with these functions:
+
+1) CalculateAnnotationStatistics
+2) RefineLipids
+3) Pseudo_msms
+4) Compare_msms
+
+We will visit each in detail below.
+
+Author: Andrew Causer
+
+<br>
+
+
+## Install and Import *R* Libraries
+
+First we need to import the required libraries for this analysis.
+
+```{r load_packages, warning=FALSE, message=FALSE}
+## Install SpaMTP if not previously installed
+if (!require("SpaMTP"))
+    devtools::install_github("GenomicsMachineLearning/SpaMTP")
+
+#General Libraries
+library(SpaMTP)
+library(Cardinal)
+library(Seurat)
+library(dplyr)
+
+#For plotting + DE plots
+library(ggplot2)
+library(EnhancedVolcano)
+library(viridis)
+```
+
+
+
+## 1) Pathway-Based Refinement: `CalculateAnnotationStatistics`
+
+This function uses correlations in pathway expression (Metabolite only, Gene only or Multi Omic based pathway information) to refine metabolite annotation. Specifically, for each annotated metabolite, the expression profiles for all known pathways associated with this metabolite are calculated. Based on spatial colocalisation between relative pathways and the given m/z mass, each metabolite is then ranked based on Pearson correlation values and the number of significant pathways associated with that metabolite.
+
+Below we will use a public mouse liver dataset with spotted chemicals standards to demonstrate this:
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+

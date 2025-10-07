@@ -121,6 +121,10 @@ For a general introduction in importing data, annotating metabolites and running
 make_vignette_card_section(vdat = vdat)
 ```
 
+## SpaMTP Public Datasets
+
+To access and download all our datasets used in the vignettes you can vist the [*SpaMTP* zenodo page](https://zenodo.org/communities/spamtp/records).  
+
 
 ## Installation
 
