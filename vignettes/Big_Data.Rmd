@@ -87,7 +87,7 @@ mzs <- data.frame(Cardinal::featureData(spotted_large))$mz
 results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative") 
 ```
 
-```{r}
+```{r, eval=FALSE}
 dim(results)[1]
 ```
 
