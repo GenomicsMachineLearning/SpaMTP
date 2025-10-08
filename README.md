@@ -40,11 +40,11 @@ For tutorials and more information please visit the [SpaMTP website](https://gen
 
 To download the image:
 ```
-wget -c https://downloads.gmllab.com/SpaMTP/spamtp.sif
+wget -c https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif
 ```
 Verify it download correctly:
 ```
-wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp.sif.md5 | md5sum -c -
+wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif.md5 | md5sum -c -
 ```
 
 Or to create an Apptainer image from scratch (you need the environment-linux.yml, dependencies.R and spamtp.def files):
@@ -65,6 +65,7 @@ conda install --no-update-deps -c bioconda bioconductor-BiocGenerics bioconducto
 conda install --no-update-deps -c bioconda bioconductor-protgenerics bioconductor-s4vectors bioconductor-biobase --y
 conda install --no-update-deps -c bioconda bioconductor-edger bioconductor-fgsea bioconductor-limma bioconductor-scater bioconductor-singlecellexperiment --y
 conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioconductor-hdf5array bioconductor-rhdf5 bioconductor-rhdf5lib --y
+conda install --no-update-deps -c bioconda bioconductor-msnbase bioconductor-ebimage==4.48.0-0 --y
 Rscript dependencies.R
 ```
 
