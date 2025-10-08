@@ -168,6 +168,9 @@ We can see like the *Cardinal* object, the converted *SpaMTP* object also contai
 head(pig206_spamtp@meta.data, n = 5)
 ```
 
+<div style="margin-left: auto;
+            margin-right: auto">
+            
 ```{r, echo=FALSE}
 df <- head(pig206_spamtp@meta.data, n = 5)[,c(1:3,5:8)]
 df %>%
@@ -177,6 +180,8 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
+
+</div>
 
 Lets also generate some plots to compare:
 
@@ -868,11 +873,14 @@ head(ROI, n = 3)
 ```{r, echo=FALSE}
 df <- head(ROI, n = 3)
 df %>%
-    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-                  full_width = F, position = "center") %>%
-    kableExtra::row_spec(0, bold = TRUE)%>%
-  kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+  knitr::kable(format = "html", align = "c") %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE
+  ) %>%
+  kableExtra::row_spec(0, bold = TRUE) %>%
+  kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;") %>%
+  kableExtra::as_image()
 ```
 
 

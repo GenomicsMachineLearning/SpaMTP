@@ -1,6 +1,11 @@
 ---
-title: "SpaMTP: Handeling Big Datasets"
-output: rmarkdown::html_vignette
+title: "SpaMTP: Handling Big Datasets"
+output:
+  rmarkdown::html_document:
+    df_print: paged
+knitr:
+  opts_chunk:
+    results: 'asis'
 vignette: >
   %\VignetteIndexEntry{Big_Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -98,10 +103,13 @@ We can now see we successfully annotated 67,060 different m/z values which will 
 
 Lets look at the annoated results:
 
+
 ```{r, echo=TRUE, eval=FALSE}
 head(results, n = 5)
 ```
 
+<div style="margin-left: auto;
+            margin-right: auto">
 ```{r, echo=FALSE}
 df <- read.csv("https://zenodo.org/records/17288700/files/results_spotted.csv?download=1", row.names = 1)
 df %>%
@@ -111,6 +119,7 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
+</div>
 
 We can then use these m/z values to subset our results and then generate our SpaMTP Seurat object.
 
@@ -159,11 +168,25 @@ knitr::include_graphics("vignette_data_files/Spotted_Liver/SelectROI_Expample.pn
 head(spotted_small) %>% select(tail(names(.), 3))
 ```
 
-```{r, echo=FALSE}
+<div style="margin-left: 30%;
+            margin-right: 30%">
+
+```{r, echo=FALSE,results='asis', warning=FALSE, message=FALSE}
+library(knitr)
+library(kableExtra)
+
 df <- head(spotted_small) %>% select(tail(names(.), 3))
-knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+
+head(df) %>%
+  kbl() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE,
+    position = "center"
+  )
 ```
 
+</div>
 
 Looking at the last 3 columns we can see our saved ROI selection area. Lets plot it visually:
 
