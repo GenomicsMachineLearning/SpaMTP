@@ -205,7 +205,7 @@ CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assa
 #' - Identifying pathways associated with each possible annotated metabolite
 #' - Calculating colocalisation score between the m/z intensity and the expression of each corresponding pathway
 #' - Ranking annotations by a combined z-score based on correlation strength and number of supporting significant pathways
-#' - NOTE: this function requires `CreatePathwayAssay` and `CreatePathwayObject` to be run first
+#' - NOTE: this function requires `CreatePathwayAssay` to be run first
 #'
 #' @param mz Character or numeric. The target m/z feature. If numeric, the closest matching m/z in the dataset will be selected.
 #' @param data A SpaMTP Seurat object containing both metabolite and RAMP_ID assays generated from `CreatePathwayAssay`.

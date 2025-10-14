@@ -50,6 +50,7 @@ library(SpaMTP)
 library(Cardinal)
 library(Seurat)
 library(dplyr)
+library(tidyr)
 
 #For plotting + DE plots
 library(ggplot2)
@@ -65,16 +66,122 @@ This function uses correlations in pathway expression (Metabolite only, Gene onl
 
 Below we will use a public mouse liver dataset with spotted chemicals standards to demonstrate this:
 
-
+```{r eval=FALSE, warning=FALSE, message=FALSE}
+spotted <- readRDS(url("https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"))
+```
 
 ```{r}
-
+spotted
 ```
+
+
+Here we have a SpaMTP Seurat object that is already processed, with m/z annotated. Meaning we have 1303 annotated m/z values. This dataset includes certain chemical compounds which were 'spiked-in' at known locations. We will plot these below: 
+
+```{r fig.width=7, fig.height=4, dpi = 72, warning=FALSE, message=FALSE}
+metabolite_colors <- list("ATP" = "azure","ADP" = "green","Adenosine" = "yellow", "Guanine" = "red","Glutamic Acid" = "turquoise1", "Glutamine" = "chocolate1","Glutathione" = "deeppink","liver" = "black")
+
+ImageDimPlot(spotted, group.by = "clusters", cols = metabolite_colors, dark.background = F)
+```
+
+The plot highlights the location of each known metabolite. However, due to the inherent issue of mass spectrometry imaging data one m/z mass may be associated with multiple possible metabolites. For example *adenosine triphosphate* or ATP was spiked-in to the second set of wells within the liver (green). When we look at the annotation of ATP, we can see for `m/z-505.988470137` there are 4 different annotations, one of which is ATP. 
+
+```{r, warning=FALSE, message=FALSE}
+SearchAnnotations(spotted, metabolite = "Adenosine triphosphate", search.exact = T)
+```
+
+Plotting this m/z value spatially, it localises completely within the ATP spiked-in region. 
+
+```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+ImageDimPlot(spotted, group.by = "clusters", cols = setNames(
+  ifelse(names(metabolite_colors) == "ATP", "azure", "darkgrey"),names(metabolite_colors)
+))+ ggtitle("ATP")| ImageMZPlot(spotted, mzs = 505.9885)
+```
+
+This confirms that the correct annotation of `mz-505.988470137` is only 'ATP'. This is the case with all other spiked-in chemicals. To refine the annotations based on pathway correlation we can run SpaMTP's `CalculateAnnotationStatistics`:
+
+```{r, eval=FALSE}
+## Step 1: Create a pathway assay - This can be done using only metabolites, or can be merged to include genes if applicable
+spotted <- CreatePathwayAssay(spotted, analyte_type = "metabolites", assay = "Spatial", new_assay = "SPM_pathway", verbose = T)
+
+## Step 2: Format Pathway Assay
+DefaultAssay(spotted) <- "SPM_pathway"
+spotted <- NormalizeData(spotted)
+spotted <- ScaleData(spotted)
+
+## Step 3: Run CalculateAnnotationStatistics
+output <- CalculateAnnotationStatistics(data = spotted, mz.assay = "Spatial",pathway.assay="SPM_pathway", mz.slot = "counts", return.top = FALSE)
+```
+
+After running `CalculateAnnotationStatistics` the output will be a dataframe containing the most likely annotation for each m/z value based on correlations with pathway expression. Lets subset this output to look at our spiked-in metabolites:
+
+```{r, include=FALSE, warning=FALSE, message=FALSE}
+output <- readRDS(url("https://zenodo.org/records/17352749/files/annotation_zscore_output.RDS?download=1"))
+```
+
+```{r, warning=FALSE, message=FALSE}
+output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
+```
+
+We can see for each spiked-in metabolite the predicted metabolite with the highest significance in each case corresponded to the spike-in. This method gives the user higher confidence that the annotations of m/z value are correct and biologically significant. Note: For large datasets this function can take a while to run, the function `CalculateSingleAnnotationStatistics` can be used instead to calculate refined annotations for a single m/z value. Please visit the [documentation](https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateSingleAnnotationStatistics.html) for more information.
 
 
 ## 2) Lipid Nomenchlature Refinement 
 
-To come!
+As described previously in the [`Spatial Metabolomics Analysis`](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html) tutorial, because many different kinds of lipids can share the same molecular weight, this may results in some m/z values possessing many possible annotations. The SpaMTP function `RefineLipids` can be used to simplify the lipid nomenclature into common lipid categories and classes, giving more simplified annotations to a level that most SM datasets are capable of identifying. 
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+### Runs lipid nomenclature simplification on annotations
+refined_lipid_annotations <- RefineLipids(spotted@assays$Spatial@meta.data, annotation.column = "all_IsomerNames", lipid_info = "simple")
+```
+
+We can count the number of metabolites assigned for each m/z before and after refining the lipid annotations.
+```{r, message=FALSE, warning=FALSE}
+## Count original number of annotations per m/z 
+refined_lipid_annotations <- refined_lipid_annotations %>%
+  mutate(base_count = sapply(strsplit(all_IsomerNames, ";\\s*"), length))
+
+## Count number of annotations per m/z following lipid simplification
+refined_lipid_annotations <- refined_lipid_annotations %>%
+  mutate(
+    refined_count = ifelse(
+      is.na(Lipid.Maps.Category),
+      base_count,
+      sapply(strsplit(Lipid.Maps.Category, ";\\s*"), length)
+    )
+  )
+```
+
+The maximum reduction in annotations was from 161 to 1. This is quite a significant simplification which can help in processing large datasets. Lets visualise the difference between each m/z value below: 
+
+```{r, fig.width=7, fig.height=4, dpi = 72, warning=FALSE, message=FALSE}
+# reshape to long format
+df_long <- refined_lipid_annotations %>%
+  select(raw_mz, refined_count, base_count) %>%
+  pivot_longer(cols = c(refined_count, base_count),
+               names_to = "Type", values_to = "Count")
+
+# plot
+ggplot(df_long, aes(x = raw_mz, y = Count, color = Type)) +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, size = 1.2) +
+  scale_color_manual(values = c("refined_count" = "red",
+                                "base_count" = "blue"),
+                     labels = c("Base annotations", "Refined annotations")) +
+  labs(
+    x = expression(italic("m/z")),
+    y = "Number of annotations",
+    color = ""
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    axis.title = element_text(face = "bold")
+  )
+```
+
+We can see the larger m/z values, which correspond mostly to lipids, display the biggest differences following annotation refinement. 
+
 
 ## 3) Pseudo MS/MS-Based Refinement
 

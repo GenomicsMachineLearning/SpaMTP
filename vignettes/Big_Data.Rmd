@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 ```
 
 
-# Handeling Large SM Datasets
+# Handling Large SM Datasets
 
 SpaMTP is suitable for datasets of all sizes. However, extra large datasets may need special handling to speed up the analysis process. To demonstrate some helpful functions for processing large datasets we will use a public mouse liver dataset with spotted chemicals standards published [here]( https://doi.org/10.1101/2024.10.14.618269).
 

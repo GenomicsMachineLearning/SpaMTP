@@ -331,7 +331,7 @@ Plot3DFeature(ROI_HE, features = c(mzs[2], "ssc"), show.image = "slice1", assays
 
 
 If we want to specify the exact colours for our clusters we can use the code below to convert colours/hex values to RGB:
-```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
 # We will use the same colour palette as used in the "Mouse Urinary Bladder" tutorial
 # Make sure that you only include values that are present in your plot
 hex_list = list("2" = "#C2B03B",

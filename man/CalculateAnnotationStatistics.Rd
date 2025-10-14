@@ -46,7 +46,7 @@ This function evaluates the potential biological relevance of an annotation for 
 \item Identifying pathways associated with each possible annotated metabolite
 \item Calculating colocalisation score between the m/z intensity and the expression of each corresponding pathway
 \item Ranking annotations by a combined z-score based on correlation strength and number of supporting significant pathways
-\item NOTE: this function requires \code{CreatePathwayAssay} and \code{CreatePathwayObject} to be run first
+\item NOTE: this function requires \code{CreatePathwayAssay} to be run first
 }
 }
 \examples{
