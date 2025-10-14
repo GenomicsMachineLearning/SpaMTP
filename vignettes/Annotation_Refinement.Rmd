@@ -66,7 +66,11 @@ This function uses correlations in pathway expression (Metabolite only, Gene onl
 
 Below we will use a public mouse liver dataset with spotted chemicals standards to demonstrate this:
 
-```{r eval=FALSE, warning=FALSE, message=FALSE}
+```{r, include=FALSE}
+options(timeout = 600)
+```
+
+```{r warning=FALSE, message=FALSE}
 spotted <- readRDS(url("https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"))
 ```
 
