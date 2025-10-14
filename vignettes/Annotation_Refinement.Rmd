@@ -64,7 +64,7 @@ library(viridis)
 
 This function uses correlations in pathway expression (Metabolite only, Gene only or Multi Omic based pathway information) to refine metabolite annotation. Specifically, for each annotated metabolite, the expression profiles for all known pathways associated with this metabolite are calculated. Based on spatial colocalisation between relative pathways and the given m/z mass, each metabolite is then ranked based on Pearson correlation values and the number of significant pathways associated with that metabolite.
 
-Below we will use a public mouse liver dataset with spotted chemicals standards to demonstrate this:
+Below we will use a [public mouse liver dataset with spotted chemicals standards](https://zenodo.org/records/17289187) to demonstrate this:
 
 ```{r, include=FALSE}
 options(timeout = 600)
@@ -95,7 +95,7 @@ SearchAnnotations(spotted, metabolite = "Adenosine triphosphate", search.exact =
 
 Plotting this m/z value spatially, it localises completely within the ATP spiked-in region. 
 
-```{r, fig.width=10, fig.height=10, warning=FALSE, message=FALSE}
+```{r, fig.width=10, fig.height=5, warning=FALSE, message=FALSE}
 ImageDimPlot(spotted, group.by = "clusters", cols = setNames(
   ifelse(names(metabolite_colors) == "ATP", "azure", "darkgrey"),names(metabolite_colors)
 ))+ ggtitle("ATP")| ImageMZPlot(spotted, mzs = 505.9885)
@@ -122,8 +122,19 @@ After running `CalculateAnnotationStatistics` the output will be a dataframe con
 output <- readRDS(url("https://zenodo.org/records/17352749/files/annotation_zscore_output.RDS?download=1"))
 ```
 
-```{r, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
 output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
+```
+
+```{r, echo=FALSE}
+df <- output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
+
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "cccccccccc") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 We can see for each spiked-in metabolite the predicted metabolite with the highest significance in each case corresponded to the spike-in. This method gives the user higher confidence that the annotations of m/z value are correct and biologically significant. Note: For large datasets this function can take a while to run, the function `CalculateSingleAnnotationStatistics` can be used instead to calculate refined annotations for a single m/z value. Please visit the [documentation](https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateSingleAnnotationStatistics.html) for more information.
@@ -157,7 +168,7 @@ refined_lipid_annotations <- refined_lipid_annotations %>%
 
 The maximum reduction in annotations was from 161 to 1. This is quite a significant simplification which can help in processing large datasets. Lets visualise the difference between each m/z value below: 
 
-```{r, fig.width=7, fig.height=4, dpi = 72, warning=FALSE, message=FALSE}
+```{r, fig.width=7, fig.height=7, dpi = 72, warning=FALSE, message=FALSE}
 # reshape to long format
 df_long <- refined_lipid_annotations %>%
   select(raw_mz, refined_count, base_count) %>%
