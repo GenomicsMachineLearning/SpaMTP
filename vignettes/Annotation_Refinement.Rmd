@@ -89,9 +89,15 @@ ImageDimPlot(spotted, group.by = "clusters", cols = metabolite_colors, dark.back
 
 The plot highlights the location of each known metabolite. However, due to the inherent issue of mass spectrometry imaging data one m/z mass may be associated with multiple possible metabolites. For example *adenosine triphosphate* or ATP was spiked-in to the second set of wells within the liver (green). When we look at the annotation of ATP, we can see for `m/z-505.988470137` there are 4 different annotations, one of which is ATP. 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
 SearchAnnotations(spotted, metabolite = "Adenosine triphosphate", search.exact = T)
 ```
+
+```{r, echo=FALSE}
+df <- SearchAnnotations(spotted, metabolite = "Adenosine triphosphate", search.exact = T)
+knitr::kable(df, format = "html", table.attr = "class='dataframe'", align = "c")
+```
+
 
 Plotting this m/z value spatially, it localises completely within the ATP spiked-in region. 
 

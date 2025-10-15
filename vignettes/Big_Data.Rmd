@@ -168,8 +168,6 @@ knitr::include_graphics("vignette_data_files/Spotted_Liver/SelectROI_Expample.pn
 head(spotted_small) %>% select(tail(names(.), 3))
 ```
 
-<div style="margin-left: 30%;
-            margin-right: 30%">
 
 ```{r, echo=FALSE,results='asis', warning=FALSE, message=FALSE}
 library(knitr)
@@ -186,7 +184,6 @@ head(df) %>%
   )
 ```
 
-</div>
 
 Looking at the last 3 columns we can see our saved ROI selection area. Lets plot it visually:
 
