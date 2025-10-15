@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
     <li><a class="dropdown-item" href="../articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated Single Cell Multi-Omics Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/Big_Data.html">Handeling Big Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
   </ul>
 </li>
@@ -71,7 +71,7 @@
 
 
 
-
+<script src="Annotation_Refinement_files/kePrint-0.0.1/kePrint.js"></script><link href="Annotation_Refinement_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Refinning Metabolite Annotations</h1>
@@ -112,6 +112,7 @@ annotated with multiple metabolites. <em>SpaMTP</em> implements this in
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.cardinalmsi.org" class="external-link">Cardinal</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#For plotting + DE plots</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -130,13 +131,624 @@ metabolite are calculated. Based on spatial colocalisation between
 relative pathways and the given m/z mass, each metabolite is then ranked
 based on Pearson correlation values and the number of significant
 pathways associated with that metabolite.</p>
-<p>Below we will use a public mouse liver dataset with spotted chemicals
-standards to demonstrate this:</p>
+<p>Below we will use a <a href="https://zenodo.org/records/17289187" class="external-link">public mouse liver dataset
+with spotted chemicals standards</a> to demonstrate this:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spotted</span></span></code></pre></div>
+<pre><code><span><span class="co">## An object of class Seurat </span></span>
+<span><span class="co">## 1303 features across 109390 samples within 1 assay </span></span>
+<span><span class="co">## Active assay: Spatial (1303 features, 0 variable features)</span></span>
+<span><span class="co">##  1 layer present: counts</span></span>
+<span><span class="co">##  1 spatial field of view present: fov</span></span></code></pre>
+<p>Here we have a SpaMTP Seurat object that is already processed, with
+m/z annotated. Meaning we have 1303 annotated m/z values. This dataset
+includes certain chemical compounds which were ‘spiked-in’ at known
+locations. We will plot these below:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metabolite_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ATP"</span> <span class="op">=</span> <span class="st">"azure"</span>,<span class="st">"ADP"</span> <span class="op">=</span> <span class="st">"green"</span>,<span class="st">"Adenosine"</span> <span class="op">=</span> <span class="st">"yellow"</span>, <span class="st">"Guanine"</span> <span class="op">=</span> <span class="st">"red"</span>,<span class="st">"Glutamic Acid"</span> <span class="op">=</span> <span class="st">"turquoise1"</span>, <span class="st">"Glutamine"</span> <span class="op">=</span> <span class="st">"chocolate1"</span>,<span class="st">"Glutathione"</span> <span class="op">=</span> <span class="st">"deeppink"</span>,<span class="st">"liver"</span> <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">spotted</span>, group.by <span class="op">=</span> <span class="st">"clusters"</span>, cols <span class="op">=</span> <span class="va">metabolite_colors</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Annotation_Refinement_files/figure-html/unnamed-chunk-5-1.png" width="504" style="display: block; margin: auto;"></p>
+<p>The plot highlights the location of each known metabolite. However,
+due to the inherent issue of mass spectrometry imaging data one m/z mass
+may be associated with multiple possible metabolites. For example
+<em>adenosine triphosphate</em> or ATP was spiked-in to the second set
+of wells within the liver (green). When we look at the annotation of
+ATP, we can see for <code>m/z-505.988470137</code> there are 4 different
+annotations, one of which is ATP.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SearchAnnotations.html">SearchAnnotations</a></span><span class="op">(</span><span class="va">spotted</span>, metabolite <span class="op">=</span> <span class="st">"Adenosine triphosphate"</span>, search.exact <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##        raw_mz         mz_names observed_mz</span></span>
+<span><span class="co">## 1162 505.9885 mz-505.988470137    505.9885</span></span>
+<span><span class="co">##                                                                                                                                                     all_IsomerNames</span></span>
+<span><span class="co">## 1162 Adenosine triphosphate; dGTP; 2-hydroxy-dATP; [[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl] phosphono hydrogen phosphate</span></span>
+<span><span class="co">##                                             all_Isomers</span></span>
+<span><span class="co">## 1162 HMDB0000538; HMDB0001440; HMDB0059593; HMDB0257997</span></span>
+<span><span class="co">##                                                             all_Isomers_IDs</span></span>
+<span><span class="co">## 1162 hmdb:HMDB0000538; hmdb:HMDB0001440; hmdb:HMDB0059593; hmdb:HMDB0257997</span></span>
+<span><span class="co">##      all_Adducts  all_Formulas all_Errors</span></span>
+<span><span class="co">## 1162         M-H C10H16N5O13P3     0.0019</span></span></code></pre>
+<p>Plotting this m/z value spatially, it localises completely within the
+ATP spiked-in region.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">spotted</span>, group.by <span class="op">=</span> <span class="st">"clusters"</span>, cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">metabolite_colors</span><span class="op">)</span> <span class="op">==</span> <span class="st">"ATP"</span>, <span class="st">"azure"</span>, <span class="st">"darkgrey"</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">metabolite_colors</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"ATP"</span><span class="op">)</span><span class="op">|</span> <span class="fu"><a href="../reference/ImageMZPlot.html">ImageMZPlot</a></span><span class="op">(</span><span class="va">spotted</span>, mzs <span class="op">=</span> <span class="fl">505.9885</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Annotation_Refinement_files/figure-html/unnamed-chunk-7-1.png" width="720" style="display: block; margin: auto;"></p>
+<p>This confirms that the correct annotation of
+<code>mz-505.988470137</code> is only ‘ATP’. This is the case with all
+other spiked-in chemicals. To refine the annotations based on pathway
+correlation we can run SpaMTP’s
+<code>CalculateAnnotationStatistics</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Step 1: Create a pathway assay - This can be done using only metabolites, or can be merged to include genes if applicable</span></span>
+<span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CreatePathwayAssay.html">CreatePathwayAssay</a></span><span class="op">(</span><span class="va">spotted</span>, analyte_type <span class="op">=</span> <span class="st">"metabolites"</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, new_assay <span class="op">=</span> <span class="st">"SPM_pathway"</span>, verbose <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Step 2: Format Pathway Assay</span></span>
+<span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">spotted</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"SPM_pathway"</span></span>
+<span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">spotted</span><span class="op">)</span></span>
+<span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">spotted</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Step 3: Run CalculateAnnotationStatistics</span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CalculateAnnotationStatistics.html">CalculateAnnotationStatistics</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">spotted</span>, mz.assay <span class="op">=</span> <span class="st">"Spatial"</span>,pathway.assay<span class="op">=</span><span class="st">"SPM_pathway"</span>, mz.slot <span class="op">=</span> <span class="st">"counts"</span>, return.top <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>After running <code>CalculateAnnotationStatistics</code> the output
+will be a dataframe containing the most likely annotation for each m/z
+value based on correlations with pathway expression. Lets subset this
+output to look at our spiked-in metabolites:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1162</span>,<span class="fl">1053</span>,<span class="fl">501</span>,<span class="fl">626</span>,<span class="fl">126</span>,<span class="fl">117</span>,<span class="fl">251</span>,<span class="fl">113</span>,<span class="fl">248</span>,<span class="fl">637</span>,<span class="fl">638</span>,<span class="fl">835</span>,<span class="fl">836</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
+<table class="table dataframe table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead><tr>
+<th style="text-align:left;font-weight: bold;">
+</th>
+<th style="text-align:center;font-weight: bold;">
+raw_mz
+</th>
+<th style="text-align:center;font-weight: bold;">
+mz_names
+</th>
+<th style="text-align:center;font-weight: bold;">
+metabolite
+</th>
+<th style="text-align:center;font-weight: bold;">
+n_sig_path
+</th>
+<th style="text-align:center;font-weight: bold;">
+max_cor
+</th>
+<th style="text-align:center;font-weight: bold;">
+z_score
+</th>
+<th style="text-align:center;font-weight: bold;">
+pval
+</th>
+<th style="text-align:center;font-weight: bold;">
+pval_adj
+</th>
+<th style="text-align:center;font-weight: bold;">
+original_annotations
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1162
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+505.9885
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-505.988470137
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Adenosine triphosphate
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+2381
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.8374779
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1.731981
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0416385
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.1249154
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Adenosine triphosphate; dGTP; 2-hydroxy-dATP;
+[[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl]
+phosphono hydrogen phosphate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1053
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+426.0221
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-426.022139245
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+ADP
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3579
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.8985871
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+2.541858
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0055132
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0275662
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Adenosine 3’,5’-diphosphate; dGDP; ADP;
+[(2S,3R,4R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methyl
+phosphono hydrogen phosphate; Zidovudine diphosphate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+501
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+266.0895
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-266.089477461
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Adenosine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+104
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.9071216
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3.756311
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000862
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0006897
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine; Adenosine;
+Deoxyguanosine; Vidarabine; Zidovudine; 9-Arabinofuranosyladenine;
+Formycin A
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+626
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+302.0662
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-302.066155193
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Adenosine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+104
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.8019030
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.117214
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000192
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001726
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Hpmpa; 3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine;
+Adenosine; Deoxyguanosine; Vidarabine; Zidovudine;
+9-Arabinofuranosyladenine; Formycin A
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+126
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+150.0421
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-150.042133345
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Guanine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+42
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.6453926
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3.000000
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0013499
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0053996
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+8-Oxo-7,8-dihydrodeoxyguanine; Guanine; 2-Hydroxyadenine;
+8-Hydroxyadenine
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+117
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+146.0459
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-146.045881333
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+L-Glutamic acid
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+373
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.8193504
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.792862
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000008
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000099
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+N-lactoyl-Glycine; 5-Hydroxy-4-oxo-L-norvaline; Alanine acetate;
+N-Methyl-DL-aspartic acid; L-Glutamic acid; N-Methyl-D-aspartic acid;
+N-Acetylserine; O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate
+semialdehyde; 3-(Carboxymethylamino)propanoic acid; DL-Glutamate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+251
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+182.0226
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-182.022559065
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+L-Glutamic acid
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+343
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.2866179
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+5.439546
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000000
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000004
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Fosmidomycin; 2-Amino-4-phosphonobutyric acid; N-lactoyl-Glycine;
+5-Hydroxy-4-oxo-L-norvaline; Alanine acetate; N-Methyl-DL-aspartic acid;
+L-Glutamic acid; N-Methyl-D-aspartic acid; N-Acetylserine;
+O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate semialdehyde;
+3-(Carboxymethylamino)propanoic acid; DL-Glutamate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+113
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+145.0619
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-145.061865745
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+L-Glutamine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+137
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.5805269
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.103823
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000203
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001626
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl
+glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
+3-ureido-isobutyrate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+248
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+181.0385
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-181.038543477
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+L-Glutamine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+137
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.5005050
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.126675
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000184
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001472
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl
+glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
+3-ureido-isobutyrate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+637
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+306.0765
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-306.076529999
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Glutathione
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+175
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.7969612
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.082483
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000223
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001337
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Glutathione; Glutathionate(1-); Methyl
+2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
+Aristolodione; zaprinast
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+638
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+306.0772
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-306.077181461
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Glutathione
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+175
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.7969960
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.082483
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000223
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001337
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Glutathione; Glutathionate(1-); Methyl
+2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
+Aristolodione; zaprinast
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+835
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+342.0532
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-342.053207731
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Glutathione
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+175
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.5391956
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.082483
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000223
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001337
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl
+2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
+Aristolodione
+</td>
+</tr>
+<tr>
+<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+836
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+342.0539
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+mz-342.053859193
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Glutathione
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+175
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.5441561
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4.082483
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0000223
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+0.0001337
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl
+2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
+Aristolodione
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can see for each spiked-in metabolite the predicted metabolite
+with the highest significance in each case corresponded to the spike-in.
+This method gives the user higher confidence that the annotations of m/z
+value are correct and biologically significant. Note: For large datasets
+this function can take a while to run, the function
+<code>CalculateSingleAnnotationStatistics</code> can be used instead to
+calculate refined annotations for a single m/z value. Please visit the
+<a href="https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateSingleAnnotationStatistics.html">documentation</a>
+for more information.</p>
 </div>
 <div class="section level3">
 <h3 id="lipid-nomenchlature-refinement">2) Lipid Nomenchlature Refinement<a class="anchor" aria-label="anchor" href="#lipid-nomenchlature-refinement"></a>
 </h3>
-<p>To come!</p>
+<p>As described previously in the <a href="https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html"><code>Spatial Metabolomics Analysis</code></a>
+tutorial, because many different kinds of lipids can share the same
+molecular weight, this may results in some m/z values possessing many
+possible annotations. The SpaMTP function <code>RefineLipids</code> can
+be used to simplify the lipid nomenclature into common lipid categories
+and classes, giving more simplified annotations to a level that most SM
+datasets are capable of identifying.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### Runs lipid nomenclature simplification on annotations</span></span>
+<span><span class="va">refined_lipid_annotations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RefineLipids.html">RefineLipids</a></span><span class="op">(</span><span class="va">spotted</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">Spatial</span><span class="op">@</span><span class="va">meta.data</span>, annotation.column <span class="op">=</span> <span class="st">"all_IsomerNames"</span>, lipid_info <span class="op">=</span> <span class="st">"simple"</span><span class="op">)</span></span></code></pre></div>
+<p>We can count the number of metabolites assigned for each m/z before
+and after refining the lipid annotations.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Count original number of annotations per m/z </span></span>
+<span><span class="va">refined_lipid_annotations</span> <span class="op">&lt;-</span> <span class="va">refined_lipid_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>base_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">all_IsomerNames</span>, <span class="st">";\\s*"</span><span class="op">)</span>, <span class="va">length</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Count number of annotations per m/z following lipid simplification</span></span>
+<span><span class="va">refined_lipid_annotations</span> <span class="op">&lt;-</span> <span class="va">refined_lipid_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    refined_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Lipid.Maps.Category</span><span class="op">)</span>,</span>
+<span>      <span class="va">base_count</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">Lipid.Maps.Category</span>, <span class="st">";\\s*"</span><span class="op">)</span>, <span class="va">length</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>The maximum reduction in annotations was from 161 to 1. This is quite
+a significant simplification which can help in processing large
+datasets. Lets visualise the difference between each m/z value
+below:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># reshape to long format</span></span>
+<span><span class="va">df_long</span> <span class="op">&lt;-</span> <span class="va">refined_lipid_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">raw_mz</span>, <span class="va">refined_count</span>, <span class="va">base_count</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">refined_count</span>, <span class="va">base_count</span><span class="op">)</span>,</span>
+<span>               names_to <span class="op">=</span> <span class="st">"Type"</span>, values_to <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># plot</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df_long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">raw_mz</span>, y <span class="op">=</span> <span class="va">Count</span>, color <span class="op">=</span> <span class="va">Type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>, se <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refined_count"</span> <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>                                <span class="st">"base_count"</span> <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span>,</span>
+<span>                     labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Base annotations"</span>, <span class="st">"Refined annotations"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu">italic</span><span class="op">(</span><span class="st">"m/z"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Number of annotations"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">""</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    legend.position <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>    panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="Annotation_Refinement_files/figure-html/unnamed-chunk-14-1.png" width="504" style="display: block; margin: auto;"></p>
+<p>We can see the larger m/z values, which correspond mostly to lipids,
+display the biggest differences following annotation refinement.</p>
 </div>
 <div class="section level3">
 <h3 id="pseudo-msms-based-refinement">3) Pseudo MS/MS-Based Refinement<a class="anchor" aria-label="anchor" href="#pseudo-msms-based-refinement"></a>

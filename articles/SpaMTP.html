@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
     <li><a class="dropdown-item" href="../articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated Single Cell Multi-Omics Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/Big_Data.html">Handeling Big Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
   </ul>
 </li>
@@ -187,6 +187,17 @@ zenodo page</a>.</p>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span></code></pre></div>
 <p><br></p>
 <div class="section level3">
+<h3 id="installing-with-apptainer">Installing with <em>Apptainer</em><a class="anchor" aria-label="anchor" href="#installing-with-apptainer"></a>
+</h3>
+<p>To download the image:</p>
+<pre class="console"><code>wget -c https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif</code></pre>
+<p>Verify it download correctly:</p>
+<pre class="console"><code>wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif.md5 | md5sum -c -</code></pre>
+<p>Or to create an Apptainer image from scratch (you need the
+environment-linux.yml, dependencies.R and spamtp.def files):</p>
+<pre class="console"><code>apptainer build spamtp.sif spamtp.def</code></pre>
+</div>
+<div class="section level3">
 <h3 id="installing-with-conda-environment">Installing with <em>conda</em> environment<a class="anchor" aria-label="anchor" href="#installing-with-conda-environment"></a>
 </h3>
 <p>Below is an example of how to set up SpaMTP using a conda
@@ -195,7 +206,7 @@ environment:</p>
 conda activate SpaMTP</code></pre>
 <p>Within the SpaMTP environment open <em>R</em> and install
 <strong><em>SpaMTP</em></strong>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Install Seurat version 5.3.0</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"satijalab/seurat"</span>, <span class="st">"seurat5"</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -221,7 +232,7 @@ ERROR: configuration failed for package ‘Cairo’</code></pre>
 <p>Check these libraries exist:</p>
 <pre class="console"><code>conda install conda-forge::r-cairo</code></pre>
 <p>This should resolve any issues. Rerun:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"scater"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -245,7 +256,7 @@ conda install r-fftwtools</code></pre>
 <pre class="console"><code>conda install bioconda::r-fftwtools
 conda install conda-forge::fftw</code></pre>
 <p>Try in <em>R</em>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="co">#Check if BiocManager is installed</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
@@ -261,7 +272,7 @@ conda install conda-forge::fftw</code></pre>
 </h4>
 <p>If rgoslin fails to install please head to their <a href="https://github.com/lifs-tools/rgoslin" class="external-link">github</a>. Alternative,
 you can try installing through BiocManager or mamba shown below:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"rgoslin"</span><span class="op">)</span></span></code></pre></div>
 <p>or</p>
 <pre class="console"><code>mamba install bioconductor-rgoslin</code></pre>
@@ -273,7 +284,7 @@ you can try installing through BiocManager or mamba shown below:</p>
 <p>If the <em>Matrix</em> package version installed is not compatible
 with <em>Seurat</em> then try installing a different version and
 re-installing <em>Seurat</em></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Install Correct version of Matrix package</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_version.html" class="external-link">install_version</a></span><span class="op">(</span><span class="st">"Matrix"</span>, version <span class="op">=</span> <span class="st">"1.6-4"</span>, repos <span class="op">=</span> <span class="st">"https://cran.r-project.org"</span><span class="op">)</span></span>
 <span></span>

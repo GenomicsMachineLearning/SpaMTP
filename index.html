@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
     <li><a class="dropdown-item" href="articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="articles/Single_Cell_MultiOmics.html">Simulated Single Cell Multi-Omics Analysis</a></li>
-    <li><a class="dropdown-item" href="articles/Big_Data.html">Handeling Big Datasets</a></li>
+    <li><a class="dropdown-item" href="articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
   </ul>
 </li>
@@ -104,9 +104,9 @@
 <h3 id="apptainer">Apptainer<a class="anchor" aria-label="anchor" href="#apptainer"></a>
 </h3>
 <p>To download the image:</p>
-<pre><code>wget -c https://downloads.gmllab.com/SpaMTP/spamtp.sif</code></pre>
+<pre><code>wget -c https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif</code></pre>
 <p>Verify it download correctly:</p>
-<pre><code>wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp.sif.md5 | md5sum -c -</code></pre>
+<pre><code>wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif.md5 | md5sum -c -</code></pre>
 <p>Or to create an Apptainer image from scratch (you need the environment-linux.yml, dependencies.R and spamtp.def files):</p>
 <pre><code>apptainer build spamtp.sif spamtp.def</code></pre>
 </div>
@@ -123,6 +123,7 @@ conda install --no-update-deps -c bioconda bioconductor-BiocGenerics bioconducto
 conda install --no-update-deps -c bioconda bioconductor-protgenerics bioconductor-s4vectors bioconductor-biobase --y
 conda install --no-update-deps -c bioconda bioconductor-edger bioconductor-fgsea bioconductor-limma bioconductor-scater bioconductor-singlecellexperiment --y
 conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioconductor-hdf5array bioconductor-rhdf5 bioconductor-rhdf5lib --y
+conda install --no-update-deps -c bioconda bioconductor-msnbase bioconductor-ebimage==4.48.0-0 --y
 Rscript dependencies.R</code></pre>
 </div>
 </div>

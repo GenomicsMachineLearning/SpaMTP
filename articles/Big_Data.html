@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>SpaMTP: Handeling Big Datasets • SpaMTP</title>
+<title>SpaMTP: Handling Big Datasets • SpaMTP</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SpaMTP: Handeling Big Datasets">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SpaMTP: Handling Big Datasets">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
     <li><a class="dropdown-item" href="../articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated Single Cell Multi-Omics Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/Big_Data.html">Handeling Big Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
   </ul>
 </li>
@@ -74,7 +74,7 @@
 <script src="Big_Data_files/kePrint-0.0.1/kePrint.js"></script><link href="Big_Data_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Handeling Big Datasets</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Handling Big Datasets</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/vignettes/Big_Data.Rmd" class="external-link"><code>vignettes/Big_Data.Rmd</code></a></small>
@@ -84,7 +84,7 @@
     
     
 <div class="section level2">
-<h2 id="handeling-large-sm-datasets">Handeling Large SM Datasets<a class="anchor" aria-label="anchor" href="#handeling-large-sm-datasets"></a>
+<h2 id="handling-large-sm-datasets">Handling Large SM Datasets<a class="anchor" aria-label="anchor" href="#handling-large-sm-datasets"></a>
 </h2>
 <p>SpaMTP is suitable for datasets of all sizes. However, extra large
 datasets may need special handling to speed up the analysis process. To
@@ -153,6 +153,8 @@ which will reduce our dataset size by up to ~11.5x.</p>
 <p>Lets look at the annoated results:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<div style="margin-left: auto;
+            margin-right: auto">
 <table class="table dataframe table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;">
@@ -331,6 +333,7 @@ TRUE
 </tr>
 </tbody>
 </table>
+</div>
 <p>We can then use these m/z values to subset our results and then
 generate our SpaMTP Seurat object.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -362,17 +365,17 @@ the region we wish to analyses.</p>
 <p><img src="vignette_data_files/Spotted_Liver/SelectROI_Expample.png" width="80%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spotted_small</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table dataframe">
+<table class="table table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:left;">
 </th>
-<th style="text-align:center;">
+<th style="text-align:right;">
 x_coord
 </th>
-<th style="text-align:center;">
+<th style="text-align:right;">
 y_coord
 </th>
-<th style="text-align:center;">
+<th style="text-align:right;">
 ROI_1
 </th>
 </tr></thead>
@@ -381,13 +384,13 @@ ROI_1
 <td style="text-align:left;">
 1_1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 0
 </td>
 </tr>
@@ -395,13 +398,13 @@ ROI_1
 <td style="text-align:left;">
 2_1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 2
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 0
 </td>
 </tr>
@@ -409,13 +412,13 @@ ROI_1
 <td style="text-align:left;">
 3_1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 3
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 0
 </td>
 </tr>
@@ -423,13 +426,13 @@ ROI_1
 <td style="text-align:left;">
 4_1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 4
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 0
 </td>
 </tr>
@@ -437,13 +440,13 @@ ROI_1
 <td style="text-align:left;">
 5_1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 5
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 0
 </td>
 </tr>
@@ -451,69 +454,13 @@ ROI_1
 <td style="text-align:left;">
 6_1
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 6
 </td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 1
 </td>
-<td style="text-align:center;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-7_1
-</td>
-<td style="text-align:center;">
-7
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-8_1
-</td>
-<td style="text-align:center;">
-8
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-9_1
-</td>
-<td style="text-align:center;">
-9
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-10_1
-</td>
-<td style="text-align:center;">
-10
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
+<td style="text-align:right;">
 0
 </td>
 </tr>
@@ -555,11 +502,12 @@ area. Lets plot it visually:</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] viridis_0.6.5          viridisLite_0.4.2      EnhancedVolcano_1.24.0</span></span>
-<span><span class="co">##  [4] ggrepel_0.9.6          ggplot2_4.0.0          dplyr_1.1.4           </span></span>
-<span><span class="co">##  [7] Seurat_5.3.0           SeuratObject_5.2.0     sp_2.2-0              </span></span>
-<span><span class="co">## [10] Cardinal_3.8.3         S4Vectors_0.44.0       ProtGenerics_1.38.0   </span></span>
-<span><span class="co">## [13] BiocGenerics_0.52.0    BiocParallel_1.40.2    SpaMTP_1.0.0          </span></span>
+<span><span class="co">##  [1] kableExtra_1.4.0       knitr_1.50             viridis_0.6.5         </span></span>
+<span><span class="co">##  [4] viridisLite_0.4.2      EnhancedVolcano_1.24.0 ggrepel_0.9.6         </span></span>
+<span><span class="co">##  [7] ggplot2_4.0.0          dplyr_1.1.4            Seurat_5.3.0          </span></span>
+<span><span class="co">## [10] SeuratObject_5.2.0     sp_2.2-0               Cardinal_3.8.3        </span></span>
+<span><span class="co">## [13] S4Vectors_0.44.0       ProtGenerics_1.38.0    BiocGenerics_0.52.0   </span></span>
+<span><span class="co">## [16] BiocParallel_1.40.2    SpaMTP_1.0.0          </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] RColorBrewer_1.1-3     rstudioapi_0.17.1      jsonlite_2.0.0        </span></span>
@@ -594,21 +542,20 @@ area. Lets plot it visually:</p>
 <span><span class="co">##  [88] later_1.4.4            splines_4.4.1          lattice_0.22-7        </span></span>
 <span><span class="co">##  [91] survival_3.8-3         deldir_2.0-4           tidyselect_1.2.1      </span></span>
 <span><span class="co">##  [94] CardinalIO_1.4.0       locfit_1.5-9.12        miniUI_0.1.2          </span></span>
-<span><span class="co">##  [97] pbapply_1.7-4          knitr_1.50             gridExtra_2.3         </span></span>
-<span><span class="co">## [100] matter_2.8.0           svglite_2.2.1          scattermore_1.2       </span></span>
-<span><span class="co">## [103] xfun_0.53              Biobase_2.66.0         statmod_1.5.0         </span></span>
-<span><span class="co">## [106] matrixStats_1.5.0      fftwtools_0.9-11       stringi_1.8.7         </span></span>
-<span><span class="co">## [109] lazyeval_0.2.2         yaml_2.3.10            kableExtra_1.4.0      </span></span>
-<span><span class="co">## [112] evaluate_1.0.5         codetools_0.2-20       tibble_3.3.0          </span></span>
-<span><span class="co">## [115] cli_3.6.5              ontologyIndex_2.12     uwot_0.2.3            </span></span>
-<span><span class="co">## [118] xtable_1.8-4           reticulate_1.43.0      systemfonts_1.2.3     </span></span>
-<span><span class="co">## [121] jquerylib_0.1.4        Rcpp_1.1.0             globals_0.18.0        </span></span>
-<span><span class="co">## [124] spatstat.random_3.4-2  zeallot_0.2.0          png_0.1-8             </span></span>
-<span><span class="co">## [127] spatstat.univar_3.1-4  parallel_4.4.1         pkgdown_2.1.3         </span></span>
-<span><span class="co">## [130] dotCall64_1.2          jpeg_0.1-11            bitops_1.0-9          </span></span>
-<span><span class="co">## [133] listenv_0.9.1          e1071_1.7-16           scales_1.4.0          </span></span>
-<span><span class="co">## [136] ggridges_0.5.7         purrr_1.1.0            rlang_1.1.6           </span></span>
-<span><span class="co">## [139] cowplot_1.2.0          shinyjs_2.1.0</span></span></code></pre>
+<span><span class="co">##  [97] pbapply_1.7-4          gridExtra_2.3          matter_2.8.0          </span></span>
+<span><span class="co">## [100] svglite_2.2.1          scattermore_1.2        xfun_0.53             </span></span>
+<span><span class="co">## [103] Biobase_2.66.0         statmod_1.5.0          matrixStats_1.5.0     </span></span>
+<span><span class="co">## [106] fftwtools_0.9-11       stringi_1.8.7          lazyeval_0.2.2        </span></span>
+<span><span class="co">## [109] yaml_2.3.10            evaluate_1.0.5         codetools_0.2-20      </span></span>
+<span><span class="co">## [112] tibble_3.3.0           cli_3.6.5              ontologyIndex_2.12    </span></span>
+<span><span class="co">## [115] uwot_0.2.3             xtable_1.8-4           reticulate_1.43.0     </span></span>
+<span><span class="co">## [118] systemfonts_1.2.3      jquerylib_0.1.4        Rcpp_1.1.0            </span></span>
+<span><span class="co">## [121] globals_0.18.0         spatstat.random_3.4-2  zeallot_0.2.0         </span></span>
+<span><span class="co">## [124] png_0.1-8              spatstat.univar_3.1-4  parallel_4.4.1        </span></span>
+<span><span class="co">## [127] pkgdown_2.1.3          dotCall64_1.2          jpeg_0.1-11           </span></span>
+<span><span class="co">## [130] bitops_1.0-9           listenv_0.9.1          e1071_1.7-16          </span></span>
+<span><span class="co">## [133] scales_1.4.0           ggridges_0.5.7         purrr_1.1.0           </span></span>
+<span><span class="co">## [136] rlang_1.1.6            cowplot_1.2.0          shinyjs_2.1.0</span></span></code></pre>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
