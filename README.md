@@ -14,7 +14,7 @@
 
 SpaMTP is an R package designed for the integrative analysis of spatial metabolomics and spatial transcriptomics data. SpaMTP inherits functionalities from two well established R packages (Cardinal and Seurat) to present a user-friendly platform for integrative spatial-omics analysis. Build on the foundation of a [*Seurat Class Object*](https://satijalab.org/seurat/), this package has three major functionalities which include; (1) mass-to-charge ratio (m/z) metabolite annotation, (2) various downstream statistical analysis including differential metabolite expression and pathway analysis, and (3) integrative spatial-omics analysis. In addition, this package includes various functions for data visualisation and data import/export, permitting flexible usage with other established R and Python  packages.   
 
-Please head to the [**SpaMTP Website**](https://genomicsmachinelearning.github.io/SpaMTP/) for all tutorials, documentation and additional information. For a detailed explanation and to cite *SpaMTP*, please visit our pre-print available [here](https://www.biorxiv.org/content/10.1101/2024.10.31.621429v1).
+Please head to the [**SpaMTP Website**](https://genomicsmachinelearning.github.io/SpaMTP/) for all **tutorials, documentation and additional information**. For a detailed explanation and to cite *SpaMTP*, please visit our pre-print available [here](https://www.biorxiv.org/content/10.1101/2024.10.31.621429v1).
 
 <br>
 
