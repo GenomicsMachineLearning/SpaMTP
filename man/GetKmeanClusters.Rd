@@ -23,6 +23,8 @@ GetKmeanClusters(
 
 \item{cluster.name}{Character string of the name of the metadata column to store the cluster labels (default = "spatial_clusters").}
 
+\item{clusters}{Integer defining the number of clusters to form (default = 8).}
+
 \item{iter.max}{Integer defining the maximum number of iterations allowed (default = 10).}
 
 \item{nstart}{Integer stating the number of random sets to choose (default = 1).}
@@ -32,8 +34,6 @@ GetKmeanClusters(
 \item{trace}{Logical boolean indicating whether to produce tracing information on the progress of the algorithm (default = FALSE).}
 
 \item{seed}{Integer of the random seed to use for reproducibility (default = 888).}
-
-\item{centers}{Integer defining the number of clusters to form (default = 8).}
 }
 \value{
 A SpaMTP Seurat object with a new metadata column containing the K-means cluster assignments.

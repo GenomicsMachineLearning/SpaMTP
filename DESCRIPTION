@@ -55,6 +55,7 @@ Imports:
     ggridges,
     grDevices,
     grid,
+    httr,
     igraph,
     jsonlite,
     limma,

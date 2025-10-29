@@ -431,7 +431,7 @@ kneighbors_graph <- function(location, n_neighbors, platform, include_self = FAL
 #' @param data A SpaMTP Seurat object containing the results from `RunSpatialGraphPCA()`.
 #' @param reduction Character string stating the name of the reduction slot to use (default = "SpatialPCA").
 #' @param cluster.name Character string of the name of the metadata column to store the cluster labels (default = "spatial_clusters").
-#' @param centers Integer defining the number of clusters to form (default = 8).
+#' @param clusters Integer defining the number of clusters to form (default = 8).
 #' @param iter.max Integer defining the maximum number of iterations allowed (default = 10).
 #' @param nstart Integer stating the number of random sets to choose (default = 1).
 #' @param algorithm Character string defining the K-means algorithm to use. One of `"Hartigan-Wong"`, `"Lloyd"`, `"Forgy"`, or `"MacQueen"` (default = "Hartigan-Wong").

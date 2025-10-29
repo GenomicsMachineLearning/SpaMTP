@@ -233,7 +233,7 @@ rcc_spamtp
 This dataset contains 10,200 *m/z*-values across 8 different runs which are split into individual FOV's. Each run contains a cancer and normal sample which have been loaded in the metadata. Lets visualise each run in one plot:
 
 
-```{r fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
+```{r warning=FALSE, message=FALSE,fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
 ImageDimPlot(rcc_spamtp, group.by = "diagnosis", dark.background = F, fov = names(rcc_spamtp@images), size = 2, 
              cols = c("red", "blue"),na.value= "white")
 ```
@@ -385,8 +385,6 @@ These plots display the intensity of each m/z summed across all pixels per group
 Using this function we can also look at the distribution of specific features across groups by providing a feature name. Lets try and visualise the total intensity of "mz-740.471557617188" across each cluster using the box.plot function:
 
 ```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
-options(repr.plot.width = 10, repr.plot.height = 5)
-
 MZBoxPlot(seurat.obj = ROI,group.by = "ssc", mzs = "mz-740.471557617188", log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05,cols = col_palette) 
 ```
 
@@ -713,7 +711,7 @@ volc_plot <- EnhancedVolcano::EnhancedVolcano( urothelium,
 ```
 
 
-```{r, fig.width=10, fig.height=10, dpi=72}
+```{r, warning=FALSE,message=FALSE,fig.width=10, fig.height=10, dpi=72}
 volc_plot
 ```
 
@@ -781,6 +779,8 @@ ggplot(category_counts, aes(x = Lipid.Maps.Main.Class, y = count, fill = cluster
   scale_fill_manual(values = col_palette) 
 ```
 
+<details>
+  <summary>*Code used to generate the cirlce plot in the SpaMTP publication (Fig2E)*</summary>
 
 ```{r, include = FALSE}
 ## The below code was used to generate the cirlce plot in the SpaMTP publication
@@ -827,11 +827,6 @@ ggplot(category_counts, aes(x = Lipid.Maps.Main.Class, y = count, fill = cluster
 #   dplyr::rowwise() %>% 
 #   mutate(title=mean(c(start, end)))
 
-
-
-# options(repr.plot.width = 10, repr.plot.height = 10)
-
-
 # p <- ggplot(category_counts,aes(fill=cluster, y=count, x=id))+ 
 #     geom_bar(stat = "identity")+
 #    xlim(0,dim(category_counts)[1])+ylim(-10,10)+geom_text(data=label_data, aes(x=id, y = count+1,label=Lipid.Maps.Main.Class),size = 4, angle = label_data$angle)+ 
@@ -842,7 +837,7 @@ ggplot(category_counts, aes(x = Lipid.Maps.Main.Class, y = count, fill = cluster
 
 # p
 ```
-
+</details> 
 <br>
 
 ## Metabolite Expression Visualisation
@@ -896,7 +891,13 @@ Plot3DFeature(ROI, features = mzs, assays = "Spatial", between.layer.height = 10
 ```
 
 
-SpaMTP also includes a useful density plot function that generates a [HTML](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/vignettes/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html) which allows the user to simultaneously visualise any m/z peak and it's relative metabolite annotation spatially. Users have access to a mass intensity plot where they can select any m/z peak, which will then be plotted and all possible metabolite annotations will be listed. Lets demonstrate below:
+Based on our analysis above the lipid 'PC(30:2)' was enriched in the uroepithelum cluster (cluster 6). This lipid was not mentioned in the original paper, but may be biologically relevant to the uroepithelum. To check this we can generate some key visualisations:
+
+```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE}
+ImageMZAnnotationPlot(bladder_annotated, metabolites = "PC(30:2)", column.name = "Species.Name.Simple", size = 2) & coord_flip() & scale_x_reverse()
+```
+
+SpaMTP also includes a useful density plot function that generates a [HTML](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/vignettes/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html) which allows the user to simultaneously visualise any m/z peak and it's relative metabolite annotation spatially. Users have access to a mass intensity plot where they can select any m/z peak, which will then be plotted and all possible metabolite annotations will be listed. Lets demonstrate below, try visualising "mz-740.471557617188" which matches the plot for 'PC(30:2)' above:
 
 ```{r, eval=FALSE}
 DensityMap(object = ROI, assay = "Spatial", slot = "counts", folder = "vignette_data_files/Mouse_Urinary_Bladder/")

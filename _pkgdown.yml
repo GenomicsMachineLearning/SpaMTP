@@ -84,6 +84,7 @@ reference:
   contents:
   - LoadSM
   - ReadSM_mtx
+  - Load_METASPACE
 - title: Converting Between Data Objects
   desc: Functions that allow the user to convert between SpaMTP Seurat Objects and
     Cardinal Objects
@@ -264,6 +265,12 @@ reference:
   - ppm_error
   - ppm_range_match
   - proc_db
+- subtitle: METASPACE Loader helper functions
+  desc: Helper functions required for running 'Load_METASPACE()'
+  contents:
+  - metaspace_client
+  - get_metaspace
+  - metaspace_to_feature_matrix
 - subtitle: Differential Abundance Helper Functions
   desc: Helper functions for calculating and plotting differentially expressed metabolites
   contents:
