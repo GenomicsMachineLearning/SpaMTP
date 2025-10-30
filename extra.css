@@ -1,40 +1,33 @@
+/* ==========================================
+   Centering for tables and images in vignettes
+   ========================================== */
 
-That assigns the class `centered-chunk` **only to the output div**, which is what pkgdown renders as `<div class="output centered-chunk">...</div>`.
-
----
-
-## ✅ 2. Add this to your `extra.css`
-
-This CSS covers both **pkgdown vignettes** and **standalone HTML** output.
-
-```css
-/* ---- Centering for custom output chunks ---- */
-
-/* Works in normal R Markdown (no pkgdown) */
+/* Base: for R Markdown (non-pkgdown) */
 .centered-chunk {
   text-align: center;
 }
 
-/* Ensure tables and images are centered */
-.centered-chunk table {
+.centered-chunk table,
+.centered-chunk img {
   margin-left: auto !important;
   margin-right: auto !important;
 }
 
-.centered-chunk img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Works in pkgdown vignette rendering */
-div.output.centered-chunk {
+/* For pkgdown vignettes (nested in .output) */
+div.output .centered-chunk {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-div.output.centered-chunk table,
-div.output.centered-chunk img {
+div.output .centered-chunk table,
+div.output .centered-chunk img {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Override Bootstrap's table alignment rules */
+.table {
   margin-left: auto !important;
   margin-right: auto !important;
 }
