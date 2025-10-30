@@ -1,5 +1,12 @@
-.center-output {
-  display: flex;
-  justify-content: center;
+.centered-chunk {
   text-align: center;
+}
+.centered-chunk table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.centered-chunk img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
