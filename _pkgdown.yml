@@ -45,7 +45,7 @@ template:
     pkgdown-navbar-bg: '#212F3F'
     body-secondary-color: '#18BC9C'
   params:
-    extra_css: extra.css
+    css: extra.css
 navbar:
   structure:
     left:
