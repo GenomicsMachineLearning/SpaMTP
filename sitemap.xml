@@ -56,6 +56,7 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/InteractiveSpatialPlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Lipidmaps_db.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/LoadSM.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Load_METASPACE.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZBoxPlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZRidgePlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZVlnPlot.html</loc></url>
@@ -108,6 +109,7 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/formula_filter.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/getRefinedAnnotations.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_analytes_db.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_metaspace.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/get_square_coordinates.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/hiresMapping.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/index.html</loc></url>
@@ -116,6 +118,8 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/labels_to_show.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/list_to_pprcomp.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/lowresMapping.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/metaspace_client.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/metaspace_to_feature_matrix.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/mirror.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pathway.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/pixelPlot.html</loc></url>

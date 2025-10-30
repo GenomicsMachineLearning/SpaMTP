@@ -15,7 +15,8 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SpaMTP: Refinning Metabolite Annotations">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="SpaMTP: Refinning Metabolite Annotations">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -71,7 +72,7 @@
 
 
 
-<script src="Annotation_Refinement_files/kePrint-0.0.1/kePrint.js"></script><link href="Annotation_Refinement_files/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Refinning Metabolite Annotations</h1>
@@ -160,29 +161,86 @@ ATP, we can see for <code>m/z-505.988470137</code> there are 4 different
 annotations, one of which is ATP.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/SearchAnnotations.html">SearchAnnotations</a></span><span class="op">(</span><span class="va">spotted</span>, metabolite <span class="op">=</span> <span class="st">"Adenosine triphosphate"</span>, search.exact <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##        raw_mz         mz_names observed_mz</span></span>
-<span><span class="co">## 1162 505.9885 mz-505.988470137    505.9885</span></span>
-<span><span class="co">##                                                                                                                                                     all_IsomerNames</span></span>
-<span><span class="co">## 1162 Adenosine triphosphate; dGTP; 2-hydroxy-dATP; [[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl] phosphono hydrogen phosphate</span></span>
-<span><span class="co">##                                             all_Isomers</span></span>
-<span><span class="co">## 1162 HMDB0000538; HMDB0001440; HMDB0059593; HMDB0257997</span></span>
-<span><span class="co">##                                                             all_Isomers_IDs</span></span>
-<span><span class="co">## 1162 hmdb:HMDB0000538; hmdb:HMDB0001440; hmdb:HMDB0059593; hmdb:HMDB0257997</span></span>
-<span><span class="co">##      all_Adducts  all_Formulas all_Errors</span></span>
-<span><span class="co">## 1162         M-H C10H16N5O13P3     0.0019</span></span></code></pre>
+<table class="table dataframe">
+<thead><tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:center;">
+raw_mz
+</th>
+<th style="text-align:center;">
+mz_names
+</th>
+<th style="text-align:center;">
+observed_mz
+</th>
+<th style="text-align:center;">
+all_IsomerNames
+</th>
+<th style="text-align:center;">
+all_Isomers
+</th>
+<th style="text-align:center;">
+all_Isomers_IDs
+</th>
+<th style="text-align:center;">
+all_Adducts
+</th>
+<th style="text-align:center;">
+all_Formulas
+</th>
+<th style="text-align:center;">
+all_Errors
+</th>
+</tr></thead>
+<tbody><tr>
+<td style="text-align:left;">
+1162
+</td>
+<td style="text-align:center;">
+505.9885
+</td>
+<td style="text-align:center;">
+mz-505.988470137
+</td>
+<td style="text-align:center;">
+505.9885
+</td>
+<td style="text-align:center;">
+Adenosine triphosphate; dGTP; 2-hydroxy-dATP;
+[[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl]
+phosphono hydrogen phosphate
+</td>
+<td style="text-align:center;">
+HMDB0000538; HMDB0001440; HMDB0059593; HMDB0257997
+</td>
+<td style="text-align:center;">
+hmdb:HMDB0000538; hmdb:HMDB0001440; hmdb:HMDB0059593; hmdb:HMDB0257997
+</td>
+<td style="text-align:center;">
+M-H
+</td>
+<td style="text-align:center;">
+C10H16N5O13P3
+</td>
+<td style="text-align:center;">
+0.0019
+</td>
+</tr></tbody>
+</table>
 <p>Plotting this m/z value spatially, it localises completely within the
 ATP spiked-in region.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">spotted</span>, group.by <span class="op">=</span> <span class="st">"clusters"</span>, cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">metabolite_colors</span><span class="op">)</span> <span class="op">==</span> <span class="st">"ATP"</span>, <span class="st">"azure"</span>, <span class="st">"darkgrey"</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">metabolite_colors</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"ATP"</span><span class="op">)</span><span class="op">|</span> <span class="fu"><a href="../reference/ImageMZPlot.html">ImageMZPlot</a></span><span class="op">(</span><span class="va">spotted</span>, mzs <span class="op">=</span> <span class="fl">505.9885</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Annotation_Refinement_files/figure-html/unnamed-chunk-7-1.png" width="720" style="display: block; margin: auto;"></p>
+<p><img src="Annotation_Refinement_files/figure-html/unnamed-chunk-8-1.png" width="720" style="display: block; margin: auto;"></p>
 <p>This confirms that the correct annotation of
 <code>mz-505.988470137</code> is only ‘ATP’. This is the case with all
 other spiked-in chemicals. To refine the annotations based on pathway
 correlation we can run SpaMTP’s
 <code>CalculateAnnotationStatistics</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Step 1: Create a pathway assay - This can be done using only metabolites, or can be merged to include genes if applicable</span></span>
 <span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CreatePathwayAssay.html">CreatePathwayAssay</a></span><span class="op">(</span><span class="va">spotted</span>, analyte_type <span class="op">=</span> <span class="st">"metabolites"</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, new_assay <span class="op">=</span> <span class="st">"SPM_pathway"</span>, verbose <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span></span>
@@ -197,487 +255,165 @@ correlation we can run SpaMTP’s
 will be a dataframe containing the most likely annotation for each m/z
 value based on correlations with pathway expression. Lets subset this
 output to look at our spiked-in metabolites:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1162</span>,<span class="fl">1053</span>,<span class="fl">501</span>,<span class="fl">626</span>,<span class="fl">126</span>,<span class="fl">117</span>,<span class="fl">251</span>,<span class="fl">113</span>,<span class="fl">248</span>,<span class="fl">637</span>,<span class="fl">638</span>,<span class="fl">835</span>,<span class="fl">836</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
-<table class="table dataframe table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<thead><tr>
-<th style="text-align:left;font-weight: bold;">
-</th>
-<th style="text-align:center;font-weight: bold;">
-raw_mz
-</th>
-<th style="text-align:center;font-weight: bold;">
-mz_names
-</th>
-<th style="text-align:center;font-weight: bold;">
-metabolite
-</th>
-<th style="text-align:center;font-weight: bold;">
-n_sig_path
-</th>
-<th style="text-align:center;font-weight: bold;">
-max_cor
-</th>
-<th style="text-align:center;font-weight: bold;">
-z_score
-</th>
-<th style="text-align:center;font-weight: bold;">
-pval
-</th>
-<th style="text-align:center;font-weight: bold;">
-pval_adj
-</th>
-<th style="text-align:center;font-weight: bold;">
-original_annotations
-</th>
+<div style="text-align: center;">
+<table class="table">
+<colgroup>
+<col width="22%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="14%">
+</colgroup>
+<thead><tr class="header">
+<th align="center">n_sig_path</th>
+<th align="center">max_cor</th>
+<th align="center">z_score</th>
+<th align="center">pval</th>
+<th align="center">pval_adj</th>
+<th align="left">original_annotations</th>
 </tr></thead>
 <tbody>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-1162
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-505.9885
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-505.988470137
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Adenosine triphosphate
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-2381
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.8374779
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-1.731981
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0416385
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.1249154
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Adenosine triphosphate; dGTP; 2-hydroxy-dATP;
+<tr class="odd">
+<td align="center">1162</td>
+<td align="center">505.9885</td>
+<td align="center">mz-505.988470137</td>
+<td align="center">0.0416385</td>
+<td align="center">0.1249154</td>
+<td align="left">Adenosine triphosphate; dGTP; 2-hydroxy-dATP;
 [[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl]
-phosphono hydrogen phosphate
-</td>
+phosphono hydrogen phosphate</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-1053
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-426.0221
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-426.022139245
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-ADP
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-3579
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.8985871
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-2.541858
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0055132
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0275662
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Adenosine 3’,5’-diphosphate; dGDP; ADP;
+<tr class="even">
+<td align="center">1053</td>
+<td align="center">426.0221</td>
+<td align="center">mz-426.022139245</td>
+<td align="center">0.0055132</td>
+<td align="center">0.0275662</td>
+<td align="left">Adenosine 3’,5’-diphosphate; dGDP; ADP;
 [(2S,3R,4R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methyl
-phosphono hydrogen phosphate; Zidovudine diphosphate
-</td>
+phosphono hydrogen phosphate; Zidovudine diphosphate</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-501
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-266.0895
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-266.089477461
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Adenosine
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-104
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.9071216
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-3.756311
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000862
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0006897
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine; Adenosine;
-Deoxyguanosine; Vidarabine; Zidovudine; 9-Arabinofuranosyladenine;
-Formycin A
-</td>
+<tr class="odd">
+<td align="center">501</td>
+<td align="center">266.0895</td>
+<td align="center">mz-266.089477461</td>
+<td align="center">0.0000862</td>
+<td align="center">0.0006897</td>
+<td align="left">3’-Azido-3’-deoxythymidine, 98%;
+8-Oxo-2’-deoxyadenosine; Adenosine; Deoxyguanosine; Vidarabine;
+Zidovudine; 9-Arabinofuranosyladenine; Formycin A</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-626
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-302.0662
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-302.066155193
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Adenosine
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-104
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.8019030
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.117214
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000192
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001726
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Hpmpa; 3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine;
-Adenosine; Deoxyguanosine; Vidarabine; Zidovudine;
-9-Arabinofuranosyladenine; Formycin A
-</td>
+<tr class="even">
+<td align="center">626</td>
+<td align="center">302.0662</td>
+<td align="center">mz-302.066155193</td>
+<td align="center">0.0000192</td>
+<td align="center">0.0001726</td>
+<td align="left">Hpmpa; 3’-Azido-3’-deoxythymidine, 98%;
+8-Oxo-2’-deoxyadenosine; Adenosine; Deoxyguanosine; Vidarabine;
+Zidovudine; 9-Arabinofuranosyladenine; Formycin A</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-126
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-150.0421
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-150.042133345
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Guanine
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-42
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.6453926
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-3.000000
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0013499
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0053996
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-8-Oxo-7,8-dihydrodeoxyguanine; Guanine; 2-Hydroxyadenine;
-8-Hydroxyadenine
-</td>
+<tr class="odd">
+<td align="center">126</td>
+<td align="center">150.0421</td>
+<td align="center">mz-150.042133345</td>
+<td align="center">0.0013499</td>
+<td align="center">0.0053996</td>
+<td align="left">8-Oxo-7,8-dihydrodeoxyguanine; Guanine;
+2-Hydroxyadenine; 8-Hydroxyadenine</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-117
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-146.0459
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-146.045881333
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-L-Glutamic acid
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-373
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.8193504
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.792862
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000008
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000099
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+<tr class="even">
+<td align="center">117</td>
+<td align="center">146.0459</td>
+<td align="center">mz-146.045881333</td>
+<td align="center">0.0000008</td>
+<td align="center">0.0000099</td>
+<td align="left">N-lactoyl-Glycine; 5-Hydroxy-4-oxo-L-norvaline; Alanine
+acetate; N-Methyl-DL-aspartic acid; L-Glutamic acid; N-Methyl-D-aspartic
+acid; N-Acetylserine; O-Acetylserine; D-Glutamic acid;
+L-4-Hydroxyglutamate semialdehyde; 3-(Carboxymethylamino)propanoic acid;
+DL-Glutamate</td>
+</tr>
+<tr class="odd">
+<td align="center">251</td>
+<td align="center">182.0226</td>
+<td align="center">mz-182.022559065</td>
+<td align="center">0.0000000</td>
+<td align="center">0.0000004</td>
+<td align="left">Fosmidomycin; 2-Amino-4-phosphonobutyric acid;
 N-lactoyl-Glycine; 5-Hydroxy-4-oxo-L-norvaline; Alanine acetate;
 N-Methyl-DL-aspartic acid; L-Glutamic acid; N-Methyl-D-aspartic acid;
 N-Acetylserine; O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate
-semialdehyde; 3-(Carboxymethylamino)propanoic acid; DL-Glutamate
-</td>
+semialdehyde; 3-(Carboxymethylamino)propanoic acid; DL-Glutamate</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-251
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-182.0226
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-182.022559065
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-L-Glutamic acid
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-343
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.2866179
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-5.439546
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000000
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000004
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Fosmidomycin; 2-Amino-4-phosphonobutyric acid; N-lactoyl-Glycine;
-5-Hydroxy-4-oxo-L-norvaline; Alanine acetate; N-Methyl-DL-aspartic acid;
-L-Glutamic acid; N-Methyl-D-aspartic acid; N-Acetylserine;
-O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate semialdehyde;
-3-(Carboxymethylamino)propanoic acid; DL-Glutamate
-</td>
+<tr class="even">
+<td align="center">113</td>
+<td align="center">145.0619</td>
+<td align="center">mz-145.061865745</td>
+<td align="center">0.0000203</td>
+<td align="center">0.0001626</td>
+<td align="left">Alanylglycine; Cyclic Urea; Glycyl-D-Alanine;
+Glycylsarcosine; D-Alanyl glycine; L-Glutamine; Ureidoisobutyric acid;
+D-Glutamine; 3-ureido-isobutyrate</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-113
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-145.0619
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-145.061865745
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-L-Glutamine
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-137
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.5805269
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.103823
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000203
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001626
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl
-glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
-3-ureido-isobutyrate
-</td>
+<tr class="odd">
+<td align="center">248</td>
+<td align="center">181.0385</td>
+<td align="center">mz-181.038543477</td>
+<td align="center">0.0000184</td>
+<td align="center">0.0001472</td>
+<td align="left">Alanylglycine; Cyclic Urea; Glycyl-D-Alanine;
+Glycylsarcosine; D-Alanyl glycine; L-Glutamine; Ureidoisobutyric acid;
+D-Glutamine; 3-ureido-isobutyrate</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-248
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-181.0385
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-181.038543477
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-L-Glutamine
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-137
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.5005050
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.126675
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000184
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001472
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl
-glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
-3-ureido-isobutyrate
-</td>
-</tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-637
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-306.0765
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-306.076529999
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Glutathione
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-175
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.7969612
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.082483
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000223
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001337
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Glutathione; Glutathionate(1-); Methyl
+<tr class="even">
+<td align="center">637</td>
+<td align="center">306.0765</td>
+<td align="center">mz-306.076529999</td>
+<td align="center">0.0000223</td>
+<td align="center">0.0001337</td>
+<td align="left">Glutathione; Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
-Aristolodione; zaprinast
-</td>
+Aristolodione; zaprinast</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-638
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-306.0772
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-306.077181461
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Glutathione
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-175
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.7969960
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.082483
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000223
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001337
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Glutathione; Glutathionate(1-); Methyl
+<tr class="odd">
+<td align="center">638</td>
+<td align="center">306.0772</td>
+<td align="center">mz-306.077181461</td>
+<td align="center">0.0000223</td>
+<td align="center">0.0001337</td>
+<td align="left">Glutathione; Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
-Aristolodione; zaprinast
-</td>
+Aristolodione; zaprinast</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-835
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-342.0532
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-342.053207731
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Glutathione
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-175
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.5391956
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.082483
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000223
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001337
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl
+<tr class="even">
+<td align="center">835</td>
+<td align="center">342.0532</td>
+<td align="center">mz-342.053207731</td>
+<td align="center">0.0000223</td>
+<td align="center">0.0001337</td>
+<td align="left">O-Desmethylindomethacin; Glutathione;
+Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
-Aristolodione
-</td>
+Aristolodione</td>
 </tr>
-<tr>
-<td style="text-align:left;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-836
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-342.0539
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-mz-342.053859193
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-Glutathione
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-175
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.5441561
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-4.082483
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0000223
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-0.0001337
-</td>
-<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
-O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl
+<tr class="odd">
+<td align="center">836</td>
+<td align="center">342.0539</td>
+<td align="center">mz-342.053859193</td>
+<td align="center">0.0000223</td>
+<td align="center">0.0001337</td>
+<td align="left">O-Desmethylindomethacin; Glutathione;
+Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
-Aristolodione
-</td>
+Aristolodione</td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>We can see for each spiked-in metabolite the predicted metabolite
 with the highest significance in each case corresponded to the spike-in.
 This method gives the user higher confidence that the annotations of m/z
@@ -698,12 +434,12 @@ possible annotations. The SpaMTP function <code>RefineLipids</code> can
 be used to simplify the lipid nomenclature into common lipid categories
 and classes, giving more simplified annotations to a level that most SM
 datasets are capable of identifying.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### Runs lipid nomenclature simplification on annotations</span></span>
 <span><span class="va">refined_lipid_annotations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RefineLipids.html">RefineLipids</a></span><span class="op">(</span><span class="va">spotted</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">Spatial</span><span class="op">@</span><span class="va">meta.data</span>, annotation.column <span class="op">=</span> <span class="st">"all_IsomerNames"</span>, lipid_info <span class="op">=</span> <span class="st">"simple"</span><span class="op">)</span></span></code></pre></div>
 <p>We can count the number of metabolites assigned for each m/z before
 and after refining the lipid annotations.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Count original number of annotations per m/z </span></span>
 <span><span class="va">refined_lipid_annotations</span> <span class="op">&lt;-</span> <span class="va">refined_lipid_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>base_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">all_IsomerNames</span>, <span class="st">";\\s*"</span><span class="op">)</span>, <span class="va">length</span><span class="op">)</span><span class="op">)</span></span>
@@ -721,11 +457,11 @@ and after refining the lipid annotations.</p>
 a significant simplification which can help in processing large
 datasets. Lets visualise the difference between each m/z value
 below:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># reshape to long format</span></span>
 <span><span class="va">df_long</span> <span class="op">&lt;-</span> <span class="va">refined_lipid_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">raw_mz</span>, <span class="va">refined_count</span>, <span class="va">base_count</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">refined_count</span>, <span class="va">base_count</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tidyr/man/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">refined_count</span>, <span class="va">base_count</span><span class="op">)</span>,</span>
 <span>               names_to <span class="op">=</span> <span class="st">"Type"</span>, values_to <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># plot</span></span>
