@@ -169,12 +169,11 @@ head(spotted_small) %>% select(tail(names(.), 3))
 ```
 
 
-```{r, echo=FALSE,results='asis', warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(knitr)
 library(kableExtra)
 
 df <- head(spotted_small) %>% select(tail(names(.), 3))
-
 head(df) %>%
   kbl() %>%
   kable_styling(

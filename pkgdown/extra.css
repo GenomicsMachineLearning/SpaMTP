@@ -1,0 +1,18 @@
+/* ------------------------------------------------------------------
+   Center every kable table inside a code chunk (pkgdown)
+   ------------------------------------------------------------------ */
+.sourceCode {
+    float: none !important;      /* kill the left-float */
+    text-align: center !important; /* center children */
+}
+
+.sourceCode > * {
+    display: inline-block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Optional: keep the code block itself centered */
+.sourceCode pre {
+    text-align: left;
+}

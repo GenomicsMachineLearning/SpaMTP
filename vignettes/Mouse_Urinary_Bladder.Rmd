@@ -126,6 +126,7 @@ pig206_ssc <- spatialShrunkenCentroids(pig206_peaks,
     weights="adaptive", r=2, k=8, s=2^(1:6))
 ```
 
+
 ```{r fig.width=7, fig.height=4, dpi = 72, dev.args = list(bg = "#ffffff")}
 
 col_palette = list("1" = "#5aa14f",
@@ -170,12 +171,20 @@ head(pig206_spamtp@meta.data, n = 5)
 
 ```{r, echo=FALSE}
 df <- head(pig206_spamtp@meta.data, n = 5)[,c(1:3,5:8)]
-df %>%
-    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-              full_width = FALSE, position = "center") %>%
-    kableExtra::row_spec(0, bold = TRUE)%>%
-    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+#htmltools::div(
+#  style = "margin-left:auto; margin-right:auto; display:table;",
+  df %>%
+    knitr::kable(format = "html",
+                 table.attr = "class='dataframe'",
+                 align = "c") %>%
+    kableExtra::kable_styling(
+      bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+      full_width = FALSE
+    ) %>%
+    kableExtra::row_spec(0, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df),
+                         extra_css = "border-bottom:1px solid #ddd; border-top:1px solid #ddd;")
+#)
 ```
 
 Lets also generate some plots to compare:
