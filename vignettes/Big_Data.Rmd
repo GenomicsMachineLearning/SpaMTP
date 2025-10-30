@@ -3,6 +3,7 @@ title: "SpaMTP: Handling Big Datasets"
 output:
   rmarkdown::html_document:
     df_print: paged
+    css: extra.css
 knitr:
   opts_chunk:
     results: 'asis'
@@ -169,12 +170,12 @@ head(spotted_small) %>% select(tail(names(.), 3))
 ```
 
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r center-output, echo=FALSE, warning=FALSE, message=FALSE, class.output='centered-chunk'}
 library(knitr)
 library(kableExtra)
 
 df <- head(spotted_small) %>% select(tail(names(.), 3))
-head(df) %>%
+df %>%
   kbl() %>%
   kable_styling(
     bootstrap_options = c("striped", "hover"),
