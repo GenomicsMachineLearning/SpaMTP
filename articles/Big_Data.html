@@ -465,19 +465,75 @@ ROI_1
 0
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+7_1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+8_1
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+9_1
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+10_1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
 </tbody>
 </table>
 <p>Looking at the last 3 columns we can see our saved ROI selection
 area. Lets plot it visually:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">spotted_small</span>, group.by <span class="op">=</span> <span class="st">"ROI_1"</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Big_Data_files/figure-html/unnamed-chunk-15-1.png" width="504" style="display: block; margin: auto;"></p>
+<p><img src="Big_Data_files/figure-html/unnamed-chunk-14-1.png" width="504" style="display: block; margin: auto;"></p>
 <p>Now we can simply subset our dataset:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spotted_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">spotted_small</span>, subset <span class="op">=</span> <span class="va">ROI_1</span> <span class="op">==</span> <span class="st">"1"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">spotted_small</span>, features <span class="op">=</span> <span class="st">"nCount_Spatial"</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">400000</span><span class="op">)</span>, na.value <span class="op">=</span> <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">[</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Big_Data_files/figure-html/unnamed-chunk-16-1.png" width="504" style="display: block; margin: auto;"></p>
+<p><img src="Big_Data_files/figure-html/unnamed-chunk-15-1.png" width="504" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
