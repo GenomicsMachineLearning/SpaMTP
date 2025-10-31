@@ -71,7 +71,7 @@
 
 
 
-
+<script src="SpaMTP_Additional_Features_files/kePrint-0.0.1/kePrint.js"></script><link href="SpaMTP_Additional_Features_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Additional Analysis Features</h1>
@@ -102,7 +102,8 @@ analysed extensively <a href="https://genomicsmachinelearning.github.io/SpaMTP/a
 <span></span>
 <span><span class="co">#For plotting + DE plots</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kevinblighe/EnhancedVolcano" class="external-link">EnhancedVolcano</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kevinblighe/EnhancedVolcano" class="external-link">EnhancedVolcano</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level5">
 <h5 id="section-load-processed-data">Load Processed Data<a class="anchor" aria-label="anchor" href="#section-load-processed-data"></a>
 </h5>
@@ -1319,9 +1320,261 @@ files:</p>
 <span id="section-cb38-6"><a href="#section-cb38-6" tabindex="-1"></a>adata <span class="op">=</span> sc.read_10x_mtx(path <span class="op">=</span> <span class="st">"../Documents/SpaMTP_Output/"</span>)</span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="section-loading-directly-from-metaspace">Loading Directly from METASPACE<a class="anchor" aria-label="anchor" href="#section-loading-directly-from-metaspace"></a>
+</h2>
+<p>SpaMTP has implemented a similar method to the metaspace.py python
+package, where users can directly load their chosen METASPACE dataset by
+simply providing the dataset id, fdr threshold and annotation database
+(the user may also provide their API key to access private
+datasets).</p>
+<p>Below we will demonstrate how to load the public <a href="https://metaspace2020.org/annotations?db_id=38&amp;ds=2020-12-07_03h16m14s" class="external-link">moues
+liver with spotted chemical standards dataset</a>.</p>
+<div class="sourceCode" id="section-cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metaspace</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Load_METASPACE.html">Load_METASPACE</a></span><span class="op">(</span>dataset_id <span class="op">=</span> <span class="st">"2020-12-07_03h16m14s"</span>, fdr <span class="op">=</span> <span class="fl">0.05</span>, database<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HMDB"</span>, <span class="st">"v4"</span><span class="op">)</span>, relative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Downloading dataset [2020-12-07_03h16m14s] from METASPACE... 
+Downloading 52 ion images (full matrices) …
+  |=====================================================================================| 100%
+Gathering metabolite intensity values per pixel ...
+Combining 52 annotations into a feature matrix...
+Conversion complete. Matrix dimensions: 52 rows x 168750 columns
+Generating Seurat Barcode Labels from Pixel Coordinates .... 
+Constructing Seurat Object ....
+Warning: Data is of class matrix. Coercing to dgCMatrix.
+Adding Pixel Metadata ....
+Creating Centroids for Spatial Seurat Object ....</code></pre>
+<div class="sourceCode" id="section-cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metaspace</span></span></code></pre></div>
+<pre><code><span><span class="co">## An object of class Seurat </span></span>
+<span><span class="co">## 52 features across 168750 samples within 1 assay </span></span>
+<span><span class="co">## Active assay: Spatial (52 features, 0 variable features)</span></span>
+<span><span class="co">##  1 layer present: counts</span></span>
+<span><span class="co">##  1 spatial field of view present: fov</span></span></code></pre>
+<div class="sourceCode" id="section-cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metaspace</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">Spatial</span><span class="op">@</span><span class="va">meta.data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">msm</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<table class="table table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead><tr>
+<th style="text-align:right;">
+raw_mz
+</th>
+<th style="text-align:left;">
+mz_names
+</th>
+<th style="text-align:left;">
+formula
+</th>
+<th style="text-align:left;">
+adduct
+</th>
+<th style="text-align:right;">
+mz
+</th>
+<th style="text-align:right;">
+msm
+</th>
+<th style="text-align:right;">
+fdr
+</th>
+<th style="text-align:right;">
+rhoSpatial
+</th>
+<th style="text-align:right;">
+rhoSpectral
+</th>
+<th style="text-align:right;">
+moc
+</th>
+<th style="text-align:left;">
+offSample
+</th>
+<th style="text-align:right;">
+intensity
+</th>
+<th style="text-align:left;">
+moleculeNames
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+155.0615
+</td>
+<td style="text-align:left;">
+mz-155.06147
+</td>
+<td style="text-align:left;">
+C10H8N2
+</td>
+<td style="text-align:left;">
+-H
+</td>
+<td style="text-align:right;">
+155.0615
+</td>
+<td style="text-align:right;">
+0.9812486
+</td>
+<td style="text-align:right;">
+0.05
+</td>
+<td style="text-align:right;">
+0.9840959
+</td>
+<td style="text-align:right;">
+0.9979303
+</td>
+<td style="text-align:right;">
+0.9991746
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+103223.88
+</td>
+<td style="text-align:left;">
+3-Indoleacetonitrile
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+306.0765
+</td>
+<td style="text-align:left;">
+mz-306.07653
+</td>
+<td style="text-align:left;">
+C10H17N3O6S
+</td>
+<td style="text-align:left;">
+-H
+</td>
+<td style="text-align:right;">
+306.0765
+</td>
+<td style="text-align:right;">
+0.9643888
+</td>
+<td style="text-align:right;">
+0.05
+</td>
+<td style="text-align:right;">
+0.9773234
+</td>
+<td style="text-align:right;">
+0.9868961
+</td>
+<td style="text-align:right;">
+0.9998675
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+87420.93
+</td>
+<td style="text-align:left;">
+Glutathione
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+134.0472
+</td>
+<td style="text-align:left;">
+mz-134.04722
+</td>
+<td style="text-align:left;">
+C5H5N5
+</td>
+<td style="text-align:left;">
+-H
+</td>
+<td style="text-align:right;">
+134.0472
+</td>
+<td style="text-align:right;">
+0.9561787
+</td>
+<td style="text-align:right;">
+0.05
+</td>
+<td style="text-align:right;">
+0.9622022
+</td>
+<td style="text-align:right;">
+0.9938640
+</td>
+<td style="text-align:right;">
+0.9998750
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+59714.48
+</td>
+<td style="text-align:left;">
+Adenine
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+145.0619
+</td>
+<td style="text-align:left;">
+mz-145.06187
+</td>
+<td style="text-align:left;">
+C5H10N2O3
+</td>
+<td style="text-align:left;">
+-H
+</td>
+<td style="text-align:right;">
+145.0619
+</td>
+<td style="text-align:right;">
+0.9528979
+</td>
+<td style="text-align:right;">
+0.05
+</td>
+<td style="text-align:right;">
+0.9582900
+</td>
+<td style="text-align:right;">
+0.9944670
+</td>
+<td style="text-align:right;">
+0.9999055
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+76438.52
+</td>
+<td style="text-align:left;">
+L-Glutamine; Ureidoisobutyric acid; D-Glutamine; Alanylglycine
+</td>
+</tr>
+</tbody>
+</table>
+<p>Based on the fdr limit of 5% we can import all relevant peaks. Lets
+visualise <code>Glutathione</code>:</p>
+<div class="sourceCode" id="section-cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">metaspace</span>, metabolites <span class="op">=</span> <span class="st">"Glutathione"</span>,column.name <span class="op">=</span> <span class="st">"moleculeNames"</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colours <span class="op">=</span> <span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.5</span><span class="op">)</span>, na.value <span class="op">=</span> <span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-45-1.png" width="360" style="display: block; margin: auto;"></p>
+<p>We can compare these results to the actual METASPACE page below</p>
+<iframe src="https://metaspace2020.org/annotations?db_id=38&amp;ds=2020-12-07_03h16m14s" width="100%" height="600px">
+</iframe>
+</div>
+<div class="section level2">
 <h2 id="section-session-info">Session Info<a class="anchor" aria-label="anchor" href="#section-session-info"></a>
 </h2>
-<div class="sourceCode" id="section-cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="section-cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
@@ -1342,60 +1595,61 @@ files:</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] EnhancedVolcano_1.24.0 ggrepel_0.9.6          ggplot2_4.0.0         </span></span>
-<span><span class="co">##  [4] dplyr_1.1.4            Seurat_5.3.0           SeuratObject_5.2.0    </span></span>
-<span><span class="co">##  [7] sp_2.2-0               Cardinal_3.8.3         S4Vectors_0.44.0      </span></span>
-<span><span class="co">## [10] ProtGenerics_1.38.0    BiocGenerics_0.52.0    BiocParallel_1.40.2   </span></span>
-<span><span class="co">## [13] SpaMTP_1.1.0          </span></span>
+<span><span class="co">##  [1] kableExtra_1.4.0       knitr_1.50             viridis_0.6.5         </span></span>
+<span><span class="co">##  [4] viridisLite_0.4.2      EnhancedVolcano_1.24.0 ggrepel_0.9.6         </span></span>
+<span><span class="co">##  [7] ggplot2_4.0.0          dplyr_1.1.4            Seurat_5.3.0          </span></span>
+<span><span class="co">## [10] SeuratObject_5.2.0     sp_2.2-0               Cardinal_3.8.3        </span></span>
+<span><span class="co">## [13] S4Vectors_0.44.0       ProtGenerics_1.38.0    BiocGenerics_0.52.0   </span></span>
+<span><span class="co">## [16] BiocParallel_1.40.2    SpaMTP_1.1.0          </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] RColorBrewer_1.1-3     rstudioapi_0.17.1      jsonlite_2.0.0        </span></span>
-<span><span class="co">##   [4] magrittr_2.0.4         spatstat.utils_3.2-0   farver_2.1.2          </span></span>
-<span><span class="co">##   [7] rmarkdown_2.29         fs_1.6.6               ragg_1.5.0            </span></span>
-<span><span class="co">##  [10] vctrs_0.6.5            ROCR_1.0-11            spatstat.explore_3.5-3</span></span>
-<span><span class="co">##  [13] RCurl_1.98-1.17        htmltools_0.5.8.1      sass_0.4.10           </span></span>
-<span><span class="co">##  [16] sctransform_0.4.2      parallelly_1.45.1      KernSmooth_2.23-26    </span></span>
-<span><span class="co">##  [19] bslib_0.9.0            htmlwidgets_1.6.4      desc_1.4.3            </span></span>
-<span><span class="co">##  [22] ica_1.0-3              plyr_1.8.9             plotly_4.11.0         </span></span>
-<span><span class="co">##  [25] zoo_1.8-14             cachem_1.1.0           igraph_2.1.4          </span></span>
-<span><span class="co">##  [28] mime_0.13              lifecycle_1.0.4        pkgconfig_2.0.3       </span></span>
-<span><span class="co">##  [31] Matrix_1.7-4           R6_2.6.1               fastmap_1.2.0         </span></span>
-<span><span class="co">##  [34] fitdistrplus_1.2-4     future_1.67.0          shiny_1.11.1          </span></span>
-<span><span class="co">##  [37] digest_0.6.37          patchwork_1.3.2        tensor_1.5.1          </span></span>
-<span><span class="co">##  [40] RSpectra_0.16-2        irlba_2.3.5.1          textshaping_1.0.3     </span></span>
-<span><span class="co">##  [43] labeling_0.4.3         progressr_0.16.0       spatstat.sparse_3.1-0 </span></span>
-<span><span class="co">##  [46] httr_1.4.7             polyclip_1.10-7        abind_1.4-8           </span></span>
-<span><span class="co">##  [49] compiler_4.4.1         proxy_0.4-27           withr_3.0.2           </span></span>
-<span><span class="co">##  [52] S7_0.2.0               tiff_0.1-12            viridis_0.6.5         </span></span>
-<span><span class="co">##  [55] DBI_1.2.3              fastDummies_1.7.5      MASS_7.3-65           </span></span>
-<span><span class="co">##  [58] classInt_0.4-11        units_0.8-7            tools_4.4.1           </span></span>
-<span><span class="co">##  [61] lmtest_0.9-40          httpuv_1.6.16          future.apply_1.20.0   </span></span>
-<span><span class="co">##  [64] goftest_1.2-3          glue_1.8.0             nlme_3.1-168          </span></span>
-<span><span class="co">##  [67] EBImage_4.48.0         promises_1.3.3         sf_1.0-21             </span></span>
-<span><span class="co">##  [70] grid_4.4.1             Rtsne_0.17             cluster_2.1.8.1       </span></span>
-<span><span class="co">##  [73] reshape2_1.4.4         generics_0.1.4         gtable_0.3.6          </span></span>
-<span><span class="co">##  [76] spatstat.data_3.1-8    class_7.3-23           tidyr_1.3.1           </span></span>
-<span><span class="co">##  [79] data.table_1.17.8      spatstat.geom_3.6-0    RcppAnnoy_0.0.22      </span></span>
-<span><span class="co">##  [82] RANN_2.6.2             pillar_1.11.1          stringr_1.5.2         </span></span>
-<span><span class="co">##  [85] spam_2.11-1            RcppHNSW_0.6.0         limma_3.62.2          </span></span>
-<span><span class="co">##  [88] later_1.4.4            splines_4.4.1          lattice_0.22-7        </span></span>
-<span><span class="co">##  [91] survival_3.8-3         deldir_2.0-4           tidyselect_1.2.1      </span></span>
-<span><span class="co">##  [94] CardinalIO_1.4.0       locfit_1.5-9.12        miniUI_0.1.2          </span></span>
-<span><span class="co">##  [97] pbapply_1.7-4          knitr_1.50             gridExtra_2.3         </span></span>
-<span><span class="co">## [100] matter_2.8.0           scattermore_1.2        xfun_0.53             </span></span>
-<span><span class="co">## [103] Biobase_2.66.0         statmod_1.5.0          matrixStats_1.5.0     </span></span>
-<span><span class="co">## [106] fftwtools_0.9-11       stringi_1.8.7          lazyeval_0.2.2        </span></span>
-<span><span class="co">## [109] yaml_2.3.10            evaluate_1.0.5         codetools_0.2-20      </span></span>
-<span><span class="co">## [112] tibble_3.3.0           cli_3.6.5              ontologyIndex_2.12    </span></span>
-<span><span class="co">## [115] uwot_0.2.3             xtable_1.8-4           reticulate_1.43.0     </span></span>
-<span><span class="co">## [118] systemfonts_1.2.3      jquerylib_0.1.4        Rcpp_1.1.0            </span></span>
-<span><span class="co">## [121] globals_0.18.0         spatstat.random_3.4-2  zeallot_0.2.0         </span></span>
-<span><span class="co">## [124] png_0.1-8              spatstat.univar_3.1-4  parallel_4.4.1        </span></span>
-<span><span class="co">## [127] pkgdown_2.1.3          dotCall64_1.2          jpeg_0.1-11           </span></span>
-<span><span class="co">## [130] bitops_1.0-9           listenv_0.9.1          viridisLite_0.4.2     </span></span>
-<span><span class="co">## [133] e1071_1.7-16           scales_1.4.0           ggridges_0.5.7        </span></span>
-<span><span class="co">## [136] purrr_1.1.0            rlang_1.1.6            cowplot_1.2.0         </span></span>
-<span><span class="co">## [139] shinyjs_2.1.0</span></span></code></pre>
+<span><span class="co">##   [1] RcppAnnoy_0.0.22       splines_4.4.1          later_1.4.4           </span></span>
+<span><span class="co">##   [4] bitops_1.0-9           tibble_3.3.0           polyclip_1.10-7       </span></span>
+<span><span class="co">##   [7] fastDummies_1.7.5      lifecycle_1.0.4        sf_1.0-21             </span></span>
+<span><span class="co">##  [10] globals_0.18.0         lattice_0.22-7         MASS_7.3-65           </span></span>
+<span><span class="co">##  [13] magrittr_2.0.4         limma_3.62.2           plotly_4.11.0         </span></span>
+<span><span class="co">##  [16] sass_0.4.10            rmarkdown_2.29         jquerylib_0.1.4       </span></span>
+<span><span class="co">##  [19] yaml_2.3.10            httpuv_1.6.16          sctransform_0.4.2     </span></span>
+<span><span class="co">##  [22] spam_2.11-1            spatstat.sparse_3.1-0  reticulate_1.43.0     </span></span>
+<span><span class="co">##  [25] cowplot_1.2.0          pbapply_1.7-4          DBI_1.2.3             </span></span>
+<span><span class="co">##  [28] RColorBrewer_1.1-3     abind_1.4-8            Rtsne_0.17            </span></span>
+<span><span class="co">##  [31] purrr_1.1.0            RCurl_1.98-1.17        irlba_2.3.5.1         </span></span>
+<span><span class="co">##  [34] listenv_0.9.1          spatstat.utils_3.2-0   units_0.8-7           </span></span>
+<span><span class="co">##  [37] goftest_1.2-3          RSpectra_0.16-2        spatstat.random_3.4-2 </span></span>
+<span><span class="co">##  [40] matter_2.8.0           fitdistrplus_1.2-4     parallelly_1.45.1     </span></span>
+<span><span class="co">##  [43] pkgdown_2.1.3          svglite_2.2.1          codetools_0.2-20      </span></span>
+<span><span class="co">##  [46] xml2_1.4.0             tidyselect_1.2.1       farver_2.1.2          </span></span>
+<span><span class="co">##  [49] matrixStats_1.5.0      spatstat.explore_3.5-3 jsonlite_2.0.0        </span></span>
+<span><span class="co">##  [52] CardinalIO_1.4.0       e1071_1.7-16           progressr_0.16.0      </span></span>
+<span><span class="co">##  [55] ggridges_0.5.7         survival_3.8-3         systemfonts_1.2.3     </span></span>
+<span><span class="co">##  [58] tools_4.4.1            ragg_1.5.0             ica_1.0-3             </span></span>
+<span><span class="co">##  [61] Rcpp_1.1.0             glue_1.8.0             gridExtra_2.3         </span></span>
+<span><span class="co">##  [64] xfun_0.53              EBImage_4.48.0         withr_3.0.2           </span></span>
+<span><span class="co">##  [67] fastmap_1.2.0          shinyjs_2.1.0          digest_0.6.37         </span></span>
+<span><span class="co">##  [70] R6_2.6.1               mime_0.13              textshaping_1.0.3     </span></span>
+<span><span class="co">##  [73] scattermore_1.2        tensor_1.5.1           jpeg_0.1-11           </span></span>
+<span><span class="co">##  [76] spatstat.data_3.1-8    tidyr_1.3.1            generics_0.1.4        </span></span>
+<span><span class="co">##  [79] data.table_1.17.8      class_7.3-23           httr_1.4.7            </span></span>
+<span><span class="co">##  [82] htmlwidgets_1.6.4      ontologyIndex_2.12     uwot_0.2.3            </span></span>
+<span><span class="co">##  [85] pkgconfig_2.0.3        gtable_0.3.6           lmtest_0.9-40         </span></span>
+<span><span class="co">##  [88] S7_0.2.0               htmltools_0.5.8.1      dotCall64_1.2         </span></span>
+<span><span class="co">##  [91] fftwtools_0.9-11       scales_1.4.0           Biobase_2.66.0        </span></span>
+<span><span class="co">##  [94] png_0.1-8              spatstat.univar_3.1-4  rstudioapi_0.17.1     </span></span>
+<span><span class="co">##  [97] reshape2_1.4.4         nlme_3.1-168           curl_7.0.0            </span></span>
+<span><span class="co">## [100] proxy_0.4-27           cachem_1.1.0           zoo_1.8-14            </span></span>
+<span><span class="co">## [103] stringr_1.5.2          KernSmooth_2.23-26     parallel_4.4.1        </span></span>
+<span><span class="co">## [106] miniUI_0.1.2           desc_1.4.3             pillar_1.11.1         </span></span>
+<span><span class="co">## [109] grid_4.4.1             vctrs_0.6.5            RANN_2.6.2            </span></span>
+<span><span class="co">## [112] promises_1.3.3         xtable_1.8-4           cluster_2.1.8.1       </span></span>
+<span><span class="co">## [115] evaluate_1.0.5         zeallot_0.2.0          cli_3.6.5             </span></span>
+<span><span class="co">## [118] locfit_1.5-9.12        compiler_4.4.1         rlang_1.1.6           </span></span>
+<span><span class="co">## [121] future.apply_1.20.0    labeling_0.4.3         classInt_0.4-11       </span></span>
+<span><span class="co">## [124] plyr_1.8.9             fs_1.6.6               stringi_1.8.7         </span></span>
+<span><span class="co">## [127] deldir_2.0-4           lazyeval_0.2.2         tiff_0.1-12           </span></span>
+<span><span class="co">## [130] spatstat.geom_3.6-0    Matrix_1.7-4           RcppHNSW_0.6.0        </span></span>
+<span><span class="co">## [133] patchwork_1.3.2        future_1.67.0          statmod_1.5.0         </span></span>
+<span><span class="co">## [136] shiny_1.11.1           ROCR_1.0-11            igraph_2.1.4          </span></span>
+<span><span class="co">## [139] bslib_0.9.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
