@@ -71,7 +71,7 @@
 
 
 
-<script src="Annotation_Refinement_files/kePrint-0.0.1/kePrint.js"></script><link href="Annotation_Refinement_files/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Refinning Metabolite Annotations</h1>
@@ -256,36 +256,35 @@ value based on correlations with pathway expression. Lets subset this
 output to look at our spiked-in metabolites:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1162</span>,<span class="fl">1053</span>,<span class="fl">501</span>,<span class="fl">626</span>,<span class="fl">126</span>,<span class="fl">117</span>,<span class="fl">251</span>,<span class="fl">113</span>,<span class="fl">248</span>,<span class="fl">637</span>,<span class="fl">638</span>,<span class="fl">835</span>,<span class="fl">836</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
-<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">
-<table class="table table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table style="font-size: 12px; width: 100%;" class="table dataframe">
 <thead><tr>
 <th style="text-align:left;">
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 raw_mz
 </th>
-<th style="text-align:left;">
+<th style="text-align:center;">
 mz_names
 </th>
-<th style="text-align:left;">
+<th style="text-align:center;">
 metabolite
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 n_sig_path
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 max_cor
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 z_score
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 pval
 </th>
-<th style="text-align:right;">
+<th style="text-align:center;">
 pval_adj
 </th>
-<th style="text-align:left;">
+<th style="text-align:center;">
 original_annotations
 </th>
 </tr></thead>
@@ -294,31 +293,31 @@ original_annotations
 <td style="text-align:left;">
 1162
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 505.9885
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-505.988470137
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Adenosine triphosphate
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 2381
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.8374779
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 1.731981
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0416385
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.1249154
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Adenosine triphosphate; dGTP; 2-hydroxy-dATP;
 [[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl]
 phosphono hydrogen phosphate
@@ -328,31 +327,31 @@ phosphono hydrogen phosphate
 <td style="text-align:left;">
 1053
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 426.0221
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-426.022139245
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 ADP
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 3579
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.8985871
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 2.541858
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0055132
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0275662
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Adenosine 3’,5’-diphosphate; dGDP; ADP;
 [(2S,3R,4R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methyl
 phosphono hydrogen phosphate; Zidovudine diphosphate
@@ -362,31 +361,31 @@ phosphono hydrogen phosphate; Zidovudine diphosphate
 <td style="text-align:left;">
 501
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 266.0895
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-266.089477461
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Adenosine
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 104
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.9071216
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 3.756311
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000862
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0006897
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine; Adenosine;
 Deoxyguanosine; Vidarabine; Zidovudine; 9-Arabinofuranosyladenine;
 Formycin A
@@ -396,31 +395,31 @@ Formycin A
 <td style="text-align:left;">
 626
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 302.0662
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-302.066155193
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Adenosine
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 104
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.8019030
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.117214
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000192
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001726
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Hpmpa; 3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine;
 Adenosine; Deoxyguanosine; Vidarabine; Zidovudine;
 9-Arabinofuranosyladenine; Formycin A
@@ -430,31 +429,31 @@ Adenosine; Deoxyguanosine; Vidarabine; Zidovudine;
 <td style="text-align:left;">
 126
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 150.0421
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-150.042133345
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Guanine
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 42
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.6453926
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 3.000000
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0013499
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0053996
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 8-Oxo-7,8-dihydrodeoxyguanine; Guanine; 2-Hydroxyadenine;
 8-Hydroxyadenine
 </td>
@@ -463,31 +462,31 @@ Guanine
 <td style="text-align:left;">
 117
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 146.0459
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-146.045881333
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 L-Glutamic acid
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 373
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.8193504
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.792862
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000008
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000099
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 N-lactoyl-Glycine; 5-Hydroxy-4-oxo-L-norvaline; Alanine acetate;
 N-Methyl-DL-aspartic acid; L-Glutamic acid; N-Methyl-D-aspartic acid;
 N-Acetylserine; O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate
@@ -498,31 +497,31 @@ semialdehyde; 3-(Carboxymethylamino)propanoic acid; DL-Glutamate
 <td style="text-align:left;">
 251
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 182.0226
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-182.022559065
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 L-Glutamic acid
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 343
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.2866179
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 5.439546
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000000
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000004
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Fosmidomycin; 2-Amino-4-phosphonobutyric acid; N-lactoyl-Glycine;
 5-Hydroxy-4-oxo-L-norvaline; Alanine acetate; N-Methyl-DL-aspartic acid;
 L-Glutamic acid; N-Methyl-D-aspartic acid; N-Acetylserine;
@@ -534,31 +533,31 @@ O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate semialdehyde;
 <td style="text-align:left;">
 113
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 145.0619
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-145.061865745
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 L-Glutamine
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 137
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.5805269
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.103823
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000203
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001626
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl
 glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
 3-ureido-isobutyrate
@@ -568,31 +567,31 @@ glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
 <td style="text-align:left;">
 248
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 181.0385
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-181.038543477
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 L-Glutamine
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 137
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.5005050
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.126675
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000184
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001472
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl
 glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
 3-ureido-isobutyrate
@@ -602,31 +601,31 @@ glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine;
 <td style="text-align:left;">
 637
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 306.0765
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-306.076529999
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Glutathione
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 175
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.7969612
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.082483
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000223
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001337
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Glutathione; Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
 Aristolodione; zaprinast
@@ -636,31 +635,31 @@ Aristolodione; zaprinast
 <td style="text-align:left;">
 638
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 306.0772
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-306.077181461
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Glutathione
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 175
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.7969960
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.082483
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000223
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001337
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Glutathione; Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
 Aristolodione; zaprinast
@@ -670,31 +669,31 @@ Aristolodione; zaprinast
 <td style="text-align:left;">
 835
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 342.0532
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-342.053207731
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Glutathione
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 175
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.5391956
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.082483
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000223
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001337
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
 Aristolodione
@@ -704,31 +703,31 @@ Aristolodione
 <td style="text-align:left;">
 836
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 342.0539
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 mz-342.053859193
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 Glutathione
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 175
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.5441561
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 4.082483
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0000223
 </td>
-<td style="text-align:right;">
+<td style="text-align:center;">
 0.0001337
 </td>
-<td style="text-align:left;">
+<td style="text-align:center;">
 O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl
 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone;
 Aristolodione
@@ -736,7 +735,6 @@ Aristolodione
 </tr>
 </tbody>
 </table>
-</div>
 <p>We can see for each spiked-in metabolite the predicted metabolite
 with the highest significance in each case corresponded to the spike-in.
 This method gives the user higher confidence that the annotations of m/z
