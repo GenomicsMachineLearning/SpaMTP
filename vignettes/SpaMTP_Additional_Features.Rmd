@@ -448,32 +448,34 @@ metaspace@assays$Spatial@meta.data %>%
   slice_head(n = 4)
 ```
 
-```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(knitr)
+library(kableExtra)
+
 df <- metaspace@assays$Spatial@meta.data %>%
   arrange(desc(msm)) %>%
   slice_head(n = 4) %>% 
   select(-chemMod, -neutralLoss)
-  df %>%
-    knitr::kable(format = "html",
-                 table.attr = "class='dataframe'",
-                 align = "c") %>%
-    kableExtra::kable_styling(
-      bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-      full_width = FALSE
-    ) %>%
-    kableExtra::row_spec(0, bold = TRUE) %>%
-    kableExtra::row_spec(1:nrow(df),
-                         extra_css = "border-bottom:1px solid #ddd; border-top:1px solid #ddd;")
-cat('</div>')
+
+df %>%
+  kbl() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE,
+    position = "center"
+  )
 ```
 
 Based on the fdr limit of 5% we can import all relevant peaks. Lets visualise `Glutathione`: 
 
-```{r, eval=FALSE, fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+```{r, fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
 ImageMZAnnotationPlot(object = metaspace, metabolites = "Glutathione",column.name = "moleculeNames", dark.background = F) + scale_fill_gradientn(colours = viridis(10), limits = c(0,0.5), na.value = viridis(10)[10]) + coord_flip() + scale_x_reverse()
 ```
 
+We can compare these results to the actual METASPACE page below
+
+<iframe src="https://metaspace2020.org/annotations?db_id=38&ds=2020-12-07_03h16m14s" width="100%" height="600px"></iframe>
 
 
 ## Session Info
