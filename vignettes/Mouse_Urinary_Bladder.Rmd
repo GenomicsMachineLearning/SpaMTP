@@ -1074,11 +1074,17 @@ DE_pathways
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(knitr)
+library(kableExtra)
 
 df <- DE_pathways
 df %>%
-    knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
-
+  kbl() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE,
+    position = "center"
+  )
 ```
 
 Based on this, we can see that there is only one significant differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include `M+H` and `M+K` analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis.
