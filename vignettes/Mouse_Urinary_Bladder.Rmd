@@ -1118,7 +1118,13 @@ DE_pathways
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 df <- DE_pathways
-knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
 We can see that we now have many more differentially expressed pathways! Lets plot these results:

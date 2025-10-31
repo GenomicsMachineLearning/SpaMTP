@@ -171,22 +171,21 @@ head(spotted_small) %>% select(tail(names(.), 3))
 
 ```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
-
-library(knitr)
-library(kableExtra)
-
 df <- head(spotted_small) %>% select(tail(names(.), 3))
-
-df %>%
-  kbl() %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover"),
-    full_width = FALSE,
-    position = "center"
-  )
-
+  df %>%
+    knitr::kable(format = "html",
+                 table.attr = "class='dataframe'",
+                 align = "c") %>%
+    kableExtra::kable_styling(
+      bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+      full_width = FALSE
+    ) %>%
+    kableExtra::row_spec(0, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df),
+                         extra_css = "border-bottom:1px solid #ddd; border-top:1px solid #ddd;")
 cat('</div>')
 ```
+
 
 Looking at the last 3 columns we can see our saved ROI selection area. Lets plot it visually:
 

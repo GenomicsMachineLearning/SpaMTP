@@ -38,6 +38,7 @@ library(dplyr)
 #For plotting + DE plots
 library(ggplot2)
 library(EnhancedVolcano)
+library(viridis)
 ```
 
 
@@ -413,6 +414,67 @@ import numpy as np
 
 adata = sc.read_10x_mtx(path = "../Documents/SpaMTP_Output/")
 ```
+
+## Loading Directly from METASPACE
+
+SpaMTP has implemented a similar method to the metaspace.py python package, where users can directly load their chosen METASPACE dataset by simply providing the dataset id, fdr threshold and annotation database (the user may also provide their API key to access private datasets).
+
+
+Below we will demonstrate how to load the public [moues liver with spotted chemical standards dataset](https://metaspace2020.org/annotations?db_id=38&ds=2020-12-07_03h16m14s).
+```{r, results='hide', warning= FALSE, message=FALSE}
+metaspace <- Load_METASPACE(dataset_id = "2020-12-07_03h16m14s", fdr = 0.05, database= c("HMDB", "v4"), relative = TRUE)
+```
+
+    Downloading dataset [2020-12-07_03h16m14s] from METASPACE... 
+    Downloading 52 ion images (full matrices) …
+      |=====================================================================================| 100%
+    Gathering metabolite intensity values per pixel ...
+    Combining 52 annotations into a feature matrix...
+    Conversion complete. Matrix dimensions: 52 rows x 168750 columns
+    Generating Seurat Barcode Labels from Pixel Coordinates .... 
+    Constructing Seurat Object ....
+    Warning: Data is of class matrix. Coercing to dgCMatrix.
+    Adding Pixel Metadata ....
+    Creating Centroids for Spatial Seurat Object ....
+
+```{r}
+metaspace
+```
+
+
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+metaspace@assays$Spatial@meta.data %>%
+  arrange(desc(msm)) %>%
+  slice_head(n = 4)
+```
+
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+df <- metaspace@assays$Spatial@meta.data %>%
+  arrange(desc(msm)) %>%
+  slice_head(n = 4) %>% 
+  select(-chemMod, -neutralLoss)
+  df %>%
+    knitr::kable(format = "html",
+                 table.attr = "class='dataframe'",
+                 align = "c") %>%
+    kableExtra::kable_styling(
+      bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+      full_width = FALSE
+    ) %>%
+    kableExtra::row_spec(0, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df),
+                         extra_css = "border-bottom:1px solid #ddd; border-top:1px solid #ddd;")
+cat('</div>')
+```
+
+Based on the fdr limit of 5% we can import all relevant peaks. Lets visualise `Glutathione`: 
+
+```{r, eval=FALSE, fig.width=5, fig.height=5, warning=FALSE, message=FALSE}
+ImageMZAnnotationPlot(object = metaspace, metabolites = "Glutathione",column.name = "moleculeNames", dark.background = F) + scale_fill_gradientn(colours = viridis(10), limits = c(0,0.5), na.value = viridis(10)[10]) + coord_flip() + scale_x_reverse()
+```
+
+
 
 ## Session Info
 

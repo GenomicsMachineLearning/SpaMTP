@@ -49,6 +49,8 @@ Imports:
     fgsea,
     fields,
     FNN,
+    future,
+    future.apply,
     ggdendro,
     ggnewscale,
     ggplot2,

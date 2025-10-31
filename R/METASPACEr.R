@@ -10,8 +10,9 @@
 #'
 #' @return A list containing functions for querying METASPACE data.
 #'
-#' @importFrom httr add_headers POST
+#' @importFrom httr add_headers POST GET status_code content
 #' @importFrom jsonlite toJSON
+#' @importFrom rlang %||%
 #'
 #' @export
 #'
@@ -293,7 +294,10 @@ metaspace_client <- function(host = "https://metaspace2020.org", api_key = NULL)
 #' @return A list with two elements: \code{annotations} (data.frame) and \code{images} (list of 2D matrices).
 #'
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#'
+#' @importFrom httr HEAD status_code
+#' @importFrom future plan multisession
+#' @importFrom future.apply future_lapply
+#' @importFrom dplyr select
 #' @export
 #'
 #' @examples
@@ -442,6 +446,8 @@ metaspace_to_feature_matrix <- function(metaspace_data, transform = FALSE, verbo
 #' @importFrom SeuratObject CreateCentroids CreateFOV
 #' @importFrom Seurat CreateSeuratObject AddMetaData
 #' @importFrom matter as.matrix
+#' @importFrom png readPNG
+#' @importFrom dplyr %>% select
 #'
 #' @export
 #'
