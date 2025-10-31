@@ -136,20 +136,13 @@ output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
 library(knitr)
 library(kableExtra)
 
-cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
-
 df <- output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
-
-df %>%
-  kbl() %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover"),
-    full_width = FALSE,
-    position = "center"
-  )
-
-
-cat('</div>')
+knitr::kable(
+  df,
+  format = "html",
+  table.attr = "style='font-size: 12px; width: 100%;' class='dataframe'",
+  align = "c"
+)
 ```
 
 
