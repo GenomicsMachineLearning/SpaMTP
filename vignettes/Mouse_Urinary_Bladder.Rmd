@@ -169,7 +169,8 @@ We can see like the *Cardinal* object, the converted *SpaMTP* object also contai
 head(pig206_spamtp@meta.data, n = 5)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
 df <- head(pig206_spamtp@meta.data, n = 5)[,c(1:3,5:8)]
 #htmltools::div(
 #  style = "margin-left:auto; margin-right:auto; display:table;",
@@ -184,7 +185,7 @@ df <- head(pig206_spamtp@meta.data, n = 5)[,c(1:3,5:8)]
     kableExtra::row_spec(0, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df),
                          extra_css = "border-bottom:1px solid #ddd; border-top:1px solid #ddd;")
-#)
+cat('</div>')
 ```
 
 Lets also generate some plots to compare:
@@ -303,7 +304,9 @@ bladder_metadata <- read.csv(url(metadata_url), row.names = 1)
 head(bladder_metadata, n = 5)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- head(bladder_metadata, n = 5)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "cccccccccc") %>%
@@ -311,6 +314,8 @@ df %>%
                   full_width = F, position = "center") %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
+cat('</div>')
 ```
 
 
@@ -1068,7 +1073,9 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
 DE_pathways
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- DE_pathways
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -1077,6 +1084,9 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
+cat('</div>')
+
 ```
 
 Based on this, we can see that there is only one significant differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include `M+H` and `M+K` analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis.

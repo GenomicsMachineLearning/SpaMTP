@@ -169,12 +169,14 @@ knitr::include_graphics("vignette_data_files/Spotted_Liver/SelectROI_Expample.pn
 head(spotted_small) %>% select(tail(names(.), 3))
 ```
 
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
 
-```{r center-output, echo=FALSE, warning=FALSE, message=FALSE, class.output='centered-chunk'}
 library(knitr)
 library(kableExtra)
 
 df <- head(spotted_small) %>% select(tail(names(.), 3))
+
 df %>%
   kbl() %>%
   kable_styling(
@@ -182,8 +184,9 @@ df %>%
     full_width = FALSE,
     position = "center"
   )
-```
 
+cat('</div>')
+```
 
 Looking at the last 3 columns we can see our saved ROI selection area. Lets plot it visually:
 
