@@ -132,25 +132,25 @@ output <- readRDS(url("https://zenodo.org/records/17352749/files/annotation_zsco
 output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
 ```
 
-<div style="text-align: center;">
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+library(knitr)
+library(kableExtra)
 
-| n_sig_path | max_cor | z_score | pval | pval_adj | original_annotations |
-| :---------: | :------: | :------: | :------: | :------: | :------ |
-| 1162 | 505.9885 | mz-505.988470137 | 0.0416385 | 0.1249154 | Adenosine triphosphate; dGTP; 2-hydroxy-dATP; [[(2R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methoxy-hydroxyphosphoryl] phosphono hydrogen phosphate |
-| 1053 | 426.0221 | mz-426.022139245 | 0.0055132 | 0.0275662 | Adenosine 3’,5’-diphosphate; dGDP; ADP; [(2S,3R,4R,5R)-5-(6-Aminopurin-9-yl)-3,4-dihydroxyoxolan-2-yl]methyl phosphono hydrogen phosphate; Zidovudine diphosphate |
-| 501 | 266.0895 | mz-266.089477461 | 0.0000862 | 0.0006897 | 3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine; Adenosine; Deoxyguanosine; Vidarabine; Zidovudine; 9-Arabinofuranosyladenine; Formycin A |
-| 626 | 302.0662 | mz-302.066155193 | 0.0000192 | 0.0001726 | Hpmpa; 3’-Azido-3’-deoxythymidine, 98%; 8-Oxo-2’-deoxyadenosine; Adenosine; Deoxyguanosine; Vidarabine; Zidovudine; 9-Arabinofuranosyladenine; Formycin A |
-| 126 | 150.0421 | mz-150.042133345 | 0.0013499 | 0.0053996 | 8-Oxo-7,8-dihydrodeoxyguanine; Guanine; 2-Hydroxyadenine; 8-Hydroxyadenine |
-| 117 | 146.0459 | mz-146.045881333 | 0.0000008 | 0.0000099 | N-lactoyl-Glycine; 5-Hydroxy-4-oxo-L-norvaline; Alanine acetate; N-Methyl-DL-aspartic acid; L-Glutamic acid; N-Methyl-D-aspartic acid; N-Acetylserine; O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate semialdehyde; 3-(Carboxymethylamino)propanoic acid; DL-Glutamate |
-| 251 | 182.0226 | mz-182.022559065 | 0.0000000 | 0.0000004 | Fosmidomycin; 2-Amino-4-phosphonobutyric acid; N-lactoyl-Glycine; 5-Hydroxy-4-oxo-L-norvaline; Alanine acetate; N-Methyl-DL-aspartic acid; L-Glutamic acid; N-Methyl-D-aspartic acid; N-Acetylserine; O-Acetylserine; D-Glutamic acid; L-4-Hydroxyglutamate semialdehyde; 3-(Carboxymethylamino)propanoic acid; DL-Glutamate |
-| 113 | 145.0619 | mz-145.061865745 | 0.0000203 | 0.0001626 | Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine; 3-ureido-isobutyrate |
-| 248 | 181.0385 | mz-181.038543477 | 0.0000184 | 0.0001472 | Alanylglycine; Cyclic Urea; Glycyl-D-Alanine; Glycylsarcosine; D-Alanyl glycine; L-Glutamine; Ureidoisobutyric acid; D-Glutamine; 3-ureido-isobutyrate |
-| 637 | 306.0765 | mz-306.076529999 | 0.0000223 | 0.0001337 | Glutathione; Glutathionate(1-); Methyl 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone; Aristolodione; zaprinast |
-| 638 | 306.0772 | mz-306.077181461 | 0.0000223 | 0.0001337 | Glutathione; Glutathionate(1-); Methyl 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone; Aristolodione; zaprinast |
-| 835 | 342.0532 | mz-342.053207731 | 0.0000223 | 0.0001337 | O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone; Aristolodione |
-| 836 | 342.0539 | mz-342.053859193 | 0.0000223 | 0.0001337 | O-Desmethylindomethacin; Glutathione; Glutathionate(1-); Methyl 2-((3,4-dihydro-3,4-dioxo-1-naphthalenyl)amino)benzoate; Hallacridone; Aristolodione |
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
 
-</div>
+df <- output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
+
+df %>%
+  kbl() %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+
+cat('</div>')
+```
 
 
 We can see for each spiked-in metabolite the predicted metabolite with the highest significance in each case corresponded to the spike-in. This method gives the user higher confidence that the annotations of m/z value are correct and biologically significant. Note: For large datasets this function can take a while to run, the function `CalculateSingleAnnotationStatistics` can be used instead to calculate refined annotations for a single m/z value. Please visit the [documentation](https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateSingleAnnotationStatistics.html) for more information.

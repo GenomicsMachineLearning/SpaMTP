@@ -76,7 +76,7 @@ set.seed(888)
 
 As mentioned above, the format of our SM data is in a mtx format. This is different to .ibd and .imzML files that were used in the [Spatial Metabolomics Analysis: Mouse Bladder Vignette](https://github.com/BiomedicalMachineLearning/SpaMTP/blob/master/vignettes/Mouse_Bladder_Vignette.html). The layout of this dataset is demonstrated below:
 
-<div style="text-align: center;">
+<div style="display: table; margin: auto;">
 
 |  x  | y  | mz_1| mz_2| mz_3| ... | mz_n|         
 | :--:| :---:|:---:|:---:|:---:|:---:|:---:|
@@ -122,7 +122,9 @@ Lets look at what we have in our metadata!
 head(msi@meta.data)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- head(msi@meta.data)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -131,7 +133,7 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
-
+cat('</div>')
 ```
 
 
@@ -284,7 +286,8 @@ custom_panel <- fmp10_metabolites[c("mass", "annotation")]
 custom_panel
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
 df <- custom_panel
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -292,6 +295,8 @@ df %>%
                   full_width = F, position = "center") %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
+cat('</div>')
 ```
 
 
@@ -421,7 +426,9 @@ Lets observe the change to the coordinates, comparing between the original x and
 head(msi_transformed)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- head(msi_transformed, n = 4)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -430,6 +437,8 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+
+cat('</div>')
 ```
 
 
@@ -437,7 +446,9 @@ df %>%
 head(GetTissueCoordinates(msi_transformed))
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- head(GetTissueCoordinates(msi_transformed))
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -446,7 +457,7 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
-
+cat('</div>')
 ```
 
 We can see that the values have been up-scaled to matched with the visium coordinates.
@@ -617,7 +628,9 @@ DE <- FindAllMarkers(combined.data, only.pos = T)
 head(DE[DE$cluster == 0,] , n =5 )
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- head(DE[DE$cluster == 0,] , n =5 )
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -626,6 +639,7 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+cat('</div>')
 ```
 
 
@@ -877,8 +891,10 @@ striatum_DEGs <- FindAllMarkers(striatum, only.pos = T)
 head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 4)
 ```
 
-```{r, echo=FALSE}
-df <- head(striatum_DEGs[striatum_DEGs$cluster == "4",], n = 4)
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
+df <- head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 4)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -886,6 +902,7 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+cat('</div>')
 ```
 
 
@@ -1147,7 +1164,9 @@ We can visualise the top 6 most significant pathways:
 head(ST_results)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+
 df <- head(ST_results)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
@@ -1156,6 +1175,7 @@ df %>%
     kableExtra::row_spec(0, bold = TRUE)%>%
   kableExtra::column_spec(1, bold = TRUE) %>%
     kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+cat('</div>')
 ```
 
 Lets plot these:

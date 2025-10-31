@@ -253,7 +253,7 @@ ImageDimPlot(rcc_spamtp, group.by = "diagnosis", dark.background = F, fov = name
 
 The final method of loading SM data into a *SpaMTP* object is through an intensity matrix stored in a `.csv` file. This is different to .ibd and .imzML files that were used above, the layout of this dataset is demonstrated below:
 
-<div style="text-align: center;">
+<div style="display: table; margin: auto;">
 
 |  x  | y  | mz_1| mz_2| mz_3| ... | mz_n|         
 | :--:| :---:|:---:|:---:|:---:|:---:|:---:|
@@ -1073,19 +1073,11 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
 DE_pathways
 ```
 
-```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 df <- DE_pathways
 df %>%
-    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-                  full_width = F, position = "center") %>%
-    kableExtra::row_spec(0, bold = TRUE)%>%
-  kableExtra::column_spec(1, bold = TRUE) %>%
-    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
-
-cat('</div>')
+    knitr::kable(df, format = "html", table.attr = "class='dataframe'",  align = "c")
 
 ```
 
