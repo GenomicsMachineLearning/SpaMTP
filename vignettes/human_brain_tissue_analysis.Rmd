@@ -21,7 +21,9 @@ knitr::opts_chunk$set(
 # Proteomics + Spatial Metabolomics Integration
 
 This tutorial demonstrates how to explore protein intensities alongside spatial
-metabolomics and transcriptomics within a single *SpaMTP* object. The workflow
+metabolomics and transcriptomics within a single *SpaMTP* object. The dataset is
+derived from a patient with low-grade glioma (LGG), with tissue curated to retain
+a clear distinction between the leading edge and tumour regions. The workflow
 covers QC maps, metabolite annotation, multi-panel spatial plots, and pathway
 scores that combine metabolite and RNA signals.
 
@@ -52,8 +54,8 @@ library(patchwork)
 ## Load the integrated object
 
 ```{r load_data, message = FALSE, warning = FALSE}
-data_path <- "~/VENTURE/2025-07-03VENTURE2_integrated.rds"
-pathway_path <- "~/VENTURE/2025-07-08VENTURE2_combined_pathways.rds"
+data_path <- "./vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds"
+pathway_path <- "./vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds"
 
 stopifnot(file.exists(data_path), file.exists(pathway_path))
 
