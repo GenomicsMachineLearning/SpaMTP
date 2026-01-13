@@ -196,6 +196,10 @@ ImageDimPlot(spotted_small, group.by = "ROI_1", dark.background = F)
 Now we can simply subset our dataset:
 
 ```{r, warning=FALSE, message=FALSE}
+if (inherits(spotted_small, "Seurat")) {
+  spotted_small <- SeuratObject::UpdateSeuratObject(spotted_small, verbose = FALSE)
+}
+
 spotted_small <- subset(spotted_small, subset = ROI_1 == "1")
 
 ImageFeaturePlot(spotted_small, features = "nCount_Spatial", dark.background = F)& scale_fill_gradientn(colors = viridis::viridis(100), limits = c(0, 400000), na.value = viridis::viridis(100)[100])
@@ -207,4 +211,3 @@ ImageFeaturePlot(spotted_small, features = "nCount_Spatial", dark.background = F
 ```{r}
 sessionInfo()
 ```
-
