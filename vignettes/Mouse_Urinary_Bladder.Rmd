@@ -428,6 +428,9 @@ if (!file.exists(raw_bladder_path)) {
   )
 }
 raw_bladder <- readRDS(raw_bladder_path) 
+if (inherits(raw_bladder, "Seurat")) {
+  raw_bladder <- SeuratObject::UpdateSeuratObject(raw_bladder)
+}
 
 MZRidgePlot(seurat.obj = raw_bladder, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
 MZRidgePlot(seurat.obj = ROI, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank())
@@ -1365,7 +1368,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 
