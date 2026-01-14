@@ -84,7 +84,10 @@ pig206_url <- "https://zenodo.org/records/17246555/files/pig206.RDS?download=1"
 pig206_path <- "vignette_data_files/Mouse_Urinary_Bladder/pig206.RDS"
 if (!file.exists(pig206_path)) {
   dir.create(dirname(pig206_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(pig206_url, pig206_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(pig206_url, pig206_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 pig206 <- readRDS(pig206_path)
 ```
@@ -240,7 +243,10 @@ rcc_url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
 rcc_path <- "vignette_data_files/Mouse_Urinary_Bladder/rcc.RDS"
 if (!file.exists(rcc_path)) {
   dir.create(dirname(rcc_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(rcc_url, rcc_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(rcc_url, rcc_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 rcc_spamtp <- readRDS(rcc_path)
 ```
@@ -290,7 +296,10 @@ bladder_url <- "https://zenodo.org/records/17246684/files/bladder_csv.csv?downlo
 bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_csv.csv"
 if (!file.exists(bladder_path)) {
   dir.create(dirname(bladder_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(bladder_url, bladder_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(bladder_url, bladder_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 bladder <- ReadSM_mtx(mtx.file = bladder_path, mz.prefix = "mz-", feature.start.column = 2)
 ```
@@ -314,7 +323,10 @@ metadata_url <- "https://zenodo.org/records/17246684/files/bladder_metadata.csv?
 metadata_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_metadata.csv"
 if (!file.exists(metadata_path)) {
   dir.create(dirname(metadata_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(metadata_url, metadata_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(metadata_url, metadata_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 bladder_metadata <- read.csv(metadata_path, row.names = 1)
 ```
@@ -410,7 +422,10 @@ raw_bladder_url <- "https://zenodo.org/records/17246684/files/raw_bladder.RDS?do
 raw_bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/raw_bladder.RDS"
 if (!file.exists(raw_bladder_path)) {
   dir.create(dirname(raw_bladder_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(raw_bladder_url, raw_bladder_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(raw_bladder_url, raw_bladder_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 raw_bladder <- readRDS(raw_bladder_path) 
 
@@ -1350,7 +1365,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 

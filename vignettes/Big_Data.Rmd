@@ -116,7 +116,10 @@ results_url <- "https://zenodo.org/records/17288700/files/results_spotted.csv?do
 results_path <- "vignette_data_files/Spotted_Liver/results_spotted.csv"
 if (!file.exists(results_path)) {
   dir.create(dirname(results_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(results_url, results_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(results_url, results_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 df <- read.csv(results_path, row.names = 1)
 df %>%

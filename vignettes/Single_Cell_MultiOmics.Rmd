@@ -51,11 +51,17 @@ xenium_path <- "vignette_data_files/Simulated_data/Sim_Xenium.RDS"
 maldi_path <- "vignette_data_files/Simulated_data/Sim_MALDI.RDS"
 if (!file.exists(xenium_path)) {
   dir.create(dirname(xenium_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(xenium_url, xenium_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(xenium_url, xenium_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 if (!file.exists(maldi_path)) {
   dir.create(dirname(maldi_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(maldi_url, maldi_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(maldi_url, maldi_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 xenium <- readRDS(xenium_path)
 MALDI <- readRDS(maldi_path)

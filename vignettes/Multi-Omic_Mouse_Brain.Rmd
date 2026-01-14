@@ -181,7 +181,10 @@ vis_url <- "https://zenodo.org/records/17246900/files/visium.RDS?download=1"
 vis_path <- "vignette_data_files/Mouse_Brain/ST_data/visium.RDS"
 if (!file.exists(vis_path)) {
   dir.create(dirname(vis_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(vis_url, vis_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(vis_url, vis_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 vis <- readRDS(vis_path)
 ```
@@ -262,7 +265,10 @@ fmp10_url <- "https://zenodo.org/records/17246900/files/Public_data_FMP10_Annota
 fmp10_path <- "vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv"
 if (!file.exists(fmp10_path)) {
   dir.create(dirname(fmp10_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(fmp10_url, fmp10_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(fmp10_url, fmp10_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 fmp10_metabolites <- read.csv(fmp10_path, row.names = 1)
 ```
@@ -432,7 +438,10 @@ msi_url <- "https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS
 msi_path <- "vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS"
 if (!file.exists(msi_path)) {
   dir.create(dirname(msi_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(msi_url, msi_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(msi_url, msi_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 msi_transformed <- readRDS(msi_path)
 ```    
@@ -1062,7 +1071,10 @@ striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS
 striatum_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS"
 if (!file.exists(striatum_path)) {
   dir.create(dirname(striatum_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(striatum_url, striatum_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(striatum_url, striatum_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
 striatum.dhb.data <- readRDS(striatum_path)
 
