@@ -209,7 +209,7 @@ Now we can simply subset our dataset:
 
 ```{r, warning=FALSE, message=FALSE}
 if (inherits(spotted_small, "Seurat")) {
-  spotted_small <- SeuratObject::UpdateSeuratObject(spotted_small, verbose = FALSE)
+  spotted_small <- SeuratObject::UpdateSeuratObject(spotted_small)
 }
 
 spotted_small <- subset(spotted_small, subset = ROI_1 == "1")
