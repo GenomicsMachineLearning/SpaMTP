@@ -148,14 +148,22 @@ spotted_url <- "https://zenodo.org/records/17288700/files/spotted_small_ROI.RDS?
 spotted_path <- "vignette_data_files/Spotted_Liver/spotted_small_ROI.RDS"
 if (!file.exists(spotted_path)) {
   dir.create(dirname(spotted_path), recursive = TRUE, showWarnings = FALSE)
-  download.file(spotted_url, spotted_path, mode = "wb", quiet = TRUE)
+  tryCatch(
+    download.file(spotted_url, spotted_path, mode = "wb", quiet = TRUE, method = "libcurl"),
+    error = function(e) message("Download failed: ", conditionMessage(e))
+  )
 }
-spotted_small <- readRDS(spotted_path)
+spotted_small <- if (file.exists(spotted_path)) readRDS(spotted_path) else NULL
 ```
 
 
 ```{r, warning=FALSE, message=FALSE}
-ImageFeaturePlot(spotted_small, features = "nCount_Spatial", dark.background = F)& scale_fill_gradientn(colors = viridis::viridis(100), limits = c(0, 400000), na.value = viridis::viridis(100)[100])
+if (!is.null(spotted_small)) {
+  ImageFeaturePlot(spotted_small, features = "nCount_Spatial", dark.background = F) &
+    scale_fill_gradientn(colors = viridis::viridis(100), limits = c(0, 400000), na.value = viridis::viridis(100)[100])
+} else {
+  message("Skipping plot: spotted_small_ROI.RDS not available.")
+}
 ```
 
 We can see that there are alot of pixels outside the tissue section that are clearly noise with high intensity values. We could remove these using filtering methods, but for the purpose of demonstrating the built-in ROI selection tool, we can also use SpaMTP to manually select the region we wish to analyses.

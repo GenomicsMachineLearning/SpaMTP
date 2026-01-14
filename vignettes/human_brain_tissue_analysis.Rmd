@@ -2,7 +2,7 @@
 title: "SpaMTP: Human Brain Tissue Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Human Brain Tissue Analysis}
+  %\VignetteIndexEntry{SpaMTP: Human Brain Tissue Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -85,7 +85,7 @@ mz_df <- data.frame(
   mz = mz_vals
 )
 
-annoresult <- annotateTable(mz_df, db = rbind(HMDB_db, Chebi_db))
+annoresult <- SpaMTP:::annotateTable(mz_df, db = rbind(HMDB_db, Chebi_db))
 head(annoresult)
 ```
 
