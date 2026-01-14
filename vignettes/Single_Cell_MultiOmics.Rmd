@@ -45,8 +45,20 @@ options(timeout = 600)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-xenium <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"))
-MALDI <- readRDS(url("https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"))
+xenium_url <- "https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"
+maldi_url <- "https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"
+xenium_path <- "vignette_data_files/Simulated_data/Sim_Xenium.RDS"
+maldi_path <- "vignette_data_files/Simulated_data/Sim_MALDI.RDS"
+if (!file.exists(xenium_path)) {
+  dir.create(dirname(xenium_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(xenium_url, xenium_path, mode = "wb", quiet = TRUE)
+}
+if (!file.exists(maldi_path)) {
+  dir.create(dirname(maldi_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(maldi_url, maldi_path, mode = "wb", quiet = TRUE)
+}
+xenium <- readRDS(xenium_path)
+MALDI <- readRDS(maldi_path)
 
 MALDI <- UpdateSeuratObject(MALDI) # Only Required if SeuratObjects => 5.0.2
 ```  

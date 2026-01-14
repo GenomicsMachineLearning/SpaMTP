@@ -81,7 +81,12 @@ The first method is to convert a already loaded *Cardinal* object directly to a 
 
 # Load directly from URL
 pig206_url <- "https://zenodo.org/records/17246555/files/pig206.RDS?download=1"
-pig206 <- readRDS(file = url(pig206_url))
+pig206_path <- "vignette_data_files/Mouse_Urinary_Bladder/pig206.RDS"
+if (!file.exists(pig206_path)) {
+  dir.create(dirname(pig206_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(pig206_url, pig206_path, mode = "wb", quiet = TRUE)
+}
+pig206 <- readRDS(pig206_path)
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -231,9 +236,13 @@ rcc_spamtp <- LoadSM(file = "./rcc-files/rcc", mass.range = c(150, 1000), multi.
 
 ```{r, include=FALSE}
 options(timeout = 600)
-url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
-#download.file(url, destfile = "rcc.RDS", mode = "wb")
-rcc_spamtp <- readRDS(url(url))
+rcc_url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
+rcc_path <- "vignette_data_files/Mouse_Urinary_Bladder/rcc.RDS"
+if (!file.exists(rcc_path)) {
+  dir.create(dirname(rcc_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(rcc_url, rcc_path, mode = "wb", quiet = TRUE)
+}
+rcc_spamtp <- readRDS(rcc_path)
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -278,7 +287,12 @@ This dataset will be used for the remainder of the tutorial.
 
 # Load directly from URL
 bladder_url <- "https://zenodo.org/records/17246684/files/bladder_csv.csv?download=1"
-bladder <- ReadSM_mtx(mtx.file = bladder_url, mz.prefix = "mz-", feature.start.column = 2)
+bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_csv.csv"
+if (!file.exists(bladder_path)) {
+  dir.create(dirname(bladder_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(bladder_url, bladder_path, mode = "wb", quiet = TRUE)
+}
+bladder <- ReadSM_mtx(mtx.file = bladder_path, mz.prefix = "mz-", feature.start.column = 2)
 ```
 
 
@@ -297,7 +311,12 @@ In addition we can also add metadata such as tissue segmentation results from ss
 
 ```{r warning=FALSE, message=FALSE}
 metadata_url <- "https://zenodo.org/records/17246684/files/bladder_metadata.csv?download=1"
-bladder_metadata <- read.csv(url(metadata_url), row.names = 1)
+metadata_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_metadata.csv"
+if (!file.exists(metadata_path)) {
+  dir.create(dirname(metadata_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(metadata_url, metadata_path, mode = "wb", quiet = TRUE)
+}
+bladder_metadata <- read.csv(metadata_path, row.names = 1)
 ```
 
 ```{r, echo=TRUE, results='hide'}
@@ -387,7 +406,13 @@ Another metric to assess is the relative intensity values of each m/z across a s
 
 
 ```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
-raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1")) 
+raw_bladder_url <- "https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1"
+raw_bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/raw_bladder.RDS"
+if (!file.exists(raw_bladder_path)) {
+  dir.create(dirname(raw_bladder_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(raw_bladder_url, raw_bladder_path, mode = "wb", quiet = TRUE)
+}
+raw_bladder <- readRDS(raw_bladder_path) 
 
 MZRidgePlot(seurat.obj = raw_bladder, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
 MZRidgePlot(seurat.obj = ROI, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank())
@@ -1325,7 +1350,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 

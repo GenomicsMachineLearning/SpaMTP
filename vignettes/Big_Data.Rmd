@@ -112,7 +112,13 @@ head(results, n = 5)
 <div style="margin-left: auto;
             margin-right: auto">
 ```{r, echo=FALSE}
-df <- read.csv("https://zenodo.org/records/17288700/files/results_spotted.csv?download=1", row.names = 1)
+results_url <- "https://zenodo.org/records/17288700/files/results_spotted.csv?download=1"
+results_path <- "vignette_data_files/Spotted_Liver/results_spotted.csv"
+if (!file.exists(results_path)) {
+  dir.create(dirname(results_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(results_url, results_path, mode = "wb", quiet = TRUE)
+}
+df <- read.csv(results_path, row.names = 1)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -138,7 +144,13 @@ spotted_small <- CardinalToSeurat(spotted_small)
 Now we have our filtered SpaMTP data object lets plot it.
 ```{r, include=FALSE}
 options(timeout = 600)
-spotted_small <- readRDS(url("https://zenodo.org/records/17288700/files/spotted_small_ROI.RDS?download=1"))
+spotted_url <- "https://zenodo.org/records/17288700/files/spotted_small_ROI.RDS?download=1"
+spotted_path <- "vignette_data_files/Spotted_Liver/spotted_small_ROI.RDS"
+if (!file.exists(spotted_path)) {
+  dir.create(dirname(spotted_path), recursive = TRUE, showWarnings = FALSE)
+  download.file(spotted_url, spotted_path, mode = "wb", quiet = TRUE)
+}
+spotted_small <- readRDS(spotted_path)
 ```
 
 
