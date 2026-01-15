@@ -2,7 +2,7 @@
 title: "SpaMTP: Spatial Metabolomics Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mouse Urinary Bladder}
+  %\VignetteIndexEntry{SpaMTP: Spatial Metabolomics Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -1264,9 +1264,18 @@ patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse
 In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is done using Moran's I scores to determine the most spatially variable features.
 
 ```{r fig.width=30, fig.height=10, dpi=72,warning=FALSE, message=FALSE}
-ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
+ROI <- tryCatch(
+  FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov"),
+  error = function(e) {
+    message("Skipping spatially variable metabolites: ", conditionMessage(e))
+    ROI
+  }
+)
 
-ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
+if (inherits(ROI, "Seurat")) {
+  ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1) &
+    coord_flip() & scale_x_reverse()
+}
 ```
 
 
@@ -1368,7 +1377,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 
