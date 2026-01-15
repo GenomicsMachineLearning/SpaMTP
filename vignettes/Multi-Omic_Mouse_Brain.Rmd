@@ -177,14 +177,29 @@ vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
 
 ```{r, include=FALSE}
 options(timeout = 600)
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
+
 vis_url <- "https://zenodo.org/records/17246900/files/visium.RDS?download=1"
 vis_path <- "vignette_data_files/Mouse_Brain/ST_data/visium.RDS"
 if (!file.exists(vis_path)) {
   dir.create(dirname(vis_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(vis_url, vis_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(vis_url, vis_path)
 }
 vis <- readRDS(vis_path)
 ```
@@ -265,10 +280,7 @@ fmp10_url <- "https://zenodo.org/records/17246900/files/Public_data_FMP10_Annota
 fmp10_path <- "vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv"
 if (!file.exists(fmp10_path)) {
   dir.create(dirname(fmp10_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(fmp10_url, fmp10_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(fmp10_url, fmp10_path)
 }
 fmp10_metabolites <- read.csv(fmp10_path, row.names = 1)
 ```
@@ -438,10 +450,7 @@ msi_url <- "https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS
 msi_path <- "vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS"
 if (!file.exists(msi_path)) {
   dir.create(dirname(msi_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(msi_url, msi_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(msi_url, msi_path)
 }
 msi_transformed <- readRDS(msi_path)
 ```    
@@ -1071,10 +1080,7 @@ striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS
 striatum_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS"
 if (!file.exists(striatum_path)) {
   dir.create(dirname(striatum_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(striatum_url, striatum_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(striatum_url, striatum_path)
 }
 striatum.dhb.data <- readRDS(striatum_path)
 

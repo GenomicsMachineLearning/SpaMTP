@@ -112,14 +112,29 @@ head(results, n = 5)
 <div style="margin-left: auto;
             margin-right: auto">
 ```{r, echo=FALSE}
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
+
 results_url <- "https://zenodo.org/records/17288700/files/results_spotted.csv?download=1"
 results_path <- "vignette_data_files/Spotted_Liver/results_spotted.csv"
 if (!file.exists(results_path)) {
   dir.create(dirname(results_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(results_url, results_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(results_url, results_path)
 }
 df <- read.csv(results_path, row.names = 1)
 df %>%
@@ -151,22 +166,15 @@ spotted_url <- "https://zenodo.org/records/17288700/files/spotted_small_ROI.RDS?
 spotted_path <- "vignette_data_files/Spotted_Liver/spotted_small_ROI.RDS"
 if (!file.exists(spotted_path)) {
   dir.create(dirname(spotted_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(spotted_url, spotted_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(spotted_url, spotted_path)
 }
-spotted_small <- if (file.exists(spotted_path)) readRDS(spotted_path) else NULL
+spotted_small <- readRDS(spotted_path)
 ```
 
 
 ```{r, warning=FALSE, message=FALSE}
-if (!is.null(spotted_small)) {
-  ImageFeaturePlot(spotted_small, features = "nCount_Spatial", dark.background = F) &
-    scale_fill_gradientn(colors = viridis::viridis(100), limits = c(0, 400000), na.value = viridis::viridis(100)[100])
-} else {
-  message("Skipping plot: spotted_small_ROI.RDS not available.")
-}
+ImageFeaturePlot(spotted_small, features = "nCount_Spatial", dark.background = F) &
+  scale_fill_gradientn(colors = viridis::viridis(100), limits = c(0, 400000), na.value = viridis::viridis(100)[100])
 ```
 
 We can see that there are alot of pixels outside the tissue section that are clearly noise with high intensity values. We could remove these using filtering methods, but for the purpose of demonstrating the built-in ROI selection tool, we can also use SpaMTP to manually select the region we wish to analyses.

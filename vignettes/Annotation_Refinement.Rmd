@@ -2,7 +2,7 @@
 title: "SpaMTP: Refinning Metabolite Annotations"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Annotation_Refinement}
+  %\VignetteIndexEntry{SpaMTP: Refinning Metabolite Annotations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -68,6 +68,23 @@ Below we will use a [public mouse liver dataset with spotted chemicals standards
 
 ```{r, include=FALSE}
 options(timeout = 600)
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -75,10 +92,7 @@ spotted_url <- "https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl
 spotted_path <- "vignette_data_files/Annotation_Refinement/spotted_Annotated_H_Cl_Adducts.RDS"
 if (!file.exists(spotted_path)) {
   dir.create(dirname(spotted_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(spotted_url, spotted_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(spotted_url, spotted_path)
 }
 spotted <- readRDS(spotted_path)
 ```
@@ -138,10 +152,7 @@ output_url <- "https://zenodo.org/records/17352749/files/annotation_zscore_outpu
 output_path <- "vignette_data_files/Annotation_Refinement/annotation_zscore_output.RDS"
 if (!file.exists(output_path)) {
   dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(output_url, output_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(output_url, output_path)
 }
 output <- readRDS(output_path)
 ```
@@ -232,6 +243,4 @@ To come!
 ## 4) Refinement with Paired Targeted Metabolic Data
 
 To come!
-
-
 

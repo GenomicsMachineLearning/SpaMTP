@@ -18,6 +18,27 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r, include=FALSE}
+options(timeout = 600)
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
+```
+
 <br>
 
 This vignette will highlights some additional features of [***SpaMTP***](https://github.com/GenomicsMachineLearning/SpaMTP) that can be useful for analysing and visualising your SM data. This vignette will again use the public mouse urinary bladder dataset analysed extensively [here](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html).
@@ -51,10 +72,7 @@ bladder_url <- "https://zenodo.org/records/17246684/files/bladder_annotated.RDS?
 bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_annotated.RDS"
 if (!file.exists(bladder_path)) {
   dir.create(dirname(bladder_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(bladder_url, bladder_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(bladder_url, bladder_path)
 }
 bladder_annotated <- readRDS(bladder_path)
 
@@ -278,10 +296,7 @@ bladder_he_url <- "https://zenodo.org/records/17246684/files/bladder_HE.RDS?down
 bladder_he_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_HE.RDS"
 if (!file.exists(bladder_he_path)) {
   dir.create(dirname(bladder_he_path), recursive = TRUE, showWarnings = FALSE)
-  tryCatch(
-    download.file(bladder_he_url, bladder_he_path, mode = "wb", quiet = TRUE, method = "libcurl"),
-    error = function(e) message("Download failed: ", conditionMessage(e))
-  )
+  retry_download(bladder_he_url, bladder_he_path)
 }
 bladder_HE <- readRDS(bladder_he_path)
 
@@ -507,7 +522,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 
