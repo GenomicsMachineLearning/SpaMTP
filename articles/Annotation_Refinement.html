@@ -41,10 +41,11 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/Mouse_Urinary_Bladder.html">Spatial Metabolomics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/human_brain_tissue_analysis.html">Single Cell Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
-    <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated Single Cell Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
+    <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Updates</a></li>
@@ -134,7 +135,9 @@ pathways associated with that metabolite.</p>
 <p>Below we will use a <a href="https://zenodo.org/records/17289187" class="external-link">public mouse liver dataset
 with spotted chemicals standards</a> to demonstrate this:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">spotted_url</span> <span class="op">&lt;-</span> <span class="st">"https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"</span></span>
+<span></span>
+<span><span class="va">spotted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="va">spotted_url</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spotted</span></span></code></pre></div>
 <pre><code><span><span class="co">## An object of class Seurat </span></span>

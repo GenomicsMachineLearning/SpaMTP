@@ -41,10 +41,11 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/Mouse_Urinary_Bladder.html">Spatial Metabolomics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/human_brain_tissue_analysis.html">Single Cell Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
-    <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated Single Cell Multi-Omics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
+    <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Updates</a></li>
@@ -829,7 +830,7 @@ Below, we will plot the expression of the m/z 741.530578613281 using
 we use ggplot helper functions to orientate the image correctly.</p>
 <div class="sourceCode" id="section-cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, features <span class="op">=</span> <span class="st">"mz-741.530578613281"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-15-1.png" width="792" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-16-1.png" width="792" style="display: block; margin: auto;"></p>
 <p>Comparatively, the <strong><em>SpaMTP</em></strong> function
 <em>ImageMZPlot()</em> provides more SM-based functionality,
 including:</p>
@@ -841,7 +842,7 @@ including:</p>
 </ul>
 <div class="sourceCode" id="section-cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZPlot.html">ImageMZPlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, mz <span class="op">=</span> <span class="fl">741.53057</span>, plusminus <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">1</span>, plot.pixel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="section-plotting-a-metabolite-name">Plotting a Metabolite Name<a class="anchor" aria-label="anchor" href="#section-plotting-a-metabolite-name"></a>
@@ -866,12 +867,12 @@ name (as described above using plot.exact = <code>FALSE</code>).</li>
 <p>Lets plot them individually:</p>
 <div class="sourceCode" id="section-cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, metabolites <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(3'-sulfo)Galbeta-Cer(d18:1/22:0(2OH))"</span>, <span class="st">"(3'-sulfo)Galbeta-Cer(d18:1/24:0(2OH))"</span><span class="op">)</span>, slot <span class="op">=</span> <span class="st">"counts"</span>, plot.exact <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-18-1.png" width="2112" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-19-1.png" width="2112" style="display: block; margin: auto;"></p>
 <p>Lets plot them combined:</p>
 <div class="sourceCode" id="section-cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, metabolites <span class="op">=</span> <span class="st">"Galbeta-Cer"</span>, slot <span class="op">=</span> <span class="st">"counts"</span>, plot.exact <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>There are equivalent functions for <strong><em>SpaMTP</em></strong>
 <em>Seurat</em> objects that contain images these being
 <em>SpatialMZPlot()</em> and <em>SpatialMZAnnotationPlot()</em>.
@@ -890,7 +891,7 @@ these plots and also label peaks with selected metabolites.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/MassIntensityPlot.html">MassIntensityPlot</a></span><span class="op">(</span><span class="va">ROI</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, label.annotations <span class="op">=</span> <span class="cn">TRUE</span>, metabolite.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC(34:1)"</span><span class="op">)</span>, annotation.column <span class="op">=</span> <span class="st">"Species.Name.Simple"</span>,labelAdj <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  labelOffset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-20-1.png" width="1920" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-21-1.png" width="1920" style="display: block; margin: auto;"></p>
 <p>Based on this plot, we can see that our metabolite “PC(34:1)” has
 been annotated on the plot. The plot looks quite crowded though. We can
 either change the mass range to only show the specific region on the
@@ -899,11 +900,11 @@ will show both approaches below:</p>
 <p>Change the mass range:</p>
 <div class="sourceCode" id="section-cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/MassIntensityPlot.html">MassIntensityPlot</a></span><span class="op">(</span><span class="va">ROI</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, mass.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">750</span>, <span class="fl">850</span><span class="op">)</span>, label.annotations <span class="op">=</span> <span class="cn">TRUE</span>, metabolite.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC(34:1)"</span><span class="op">)</span>, annotation.column <span class="op">=</span> <span class="st">"Species.Name.Simple"</span>,labelAdj <span class="op">=</span> <span class="fl">0</span>, labelOffset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-21-1.png" width="1920" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-22-1.png" width="1920" style="display: block; margin: auto;"></p>
 <p>Generate individual plots per cluster:</p>
 <div class="sourceCode" id="section-cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/MassIntensityPlot.html">MassIntensityPlot</a></span><span class="op">(</span><span class="va">ROI</span>, split.by  <span class="op">=</span> <span class="st">"ssc"</span>, label.annotations <span class="op">=</span> <span class="cn">TRUE</span>, metabolite.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC(34:1)"</span><span class="op">)</span>, annotation.column <span class="op">=</span> <span class="st">"Species.Name.Simple"</span>,labelAdj <span class="op">=</span> <span class="fl">2</span>, labelOffset <span class="op">=</span> <span class="fl">0</span>,labelCex <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-22-1.png" width="1920" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-23-1.png" width="1920" style="display: block; margin: auto;"></p>
 <p>Now we can clearly see that this metabolite is highly expressed by
 cluster 6!</p>
 <p>There are various additional visualisation techniques such as 3D
@@ -1143,7 +1144,7 @@ mouse-bladder-peaks
 results:</p>
 <div class="sourceCode" id="section-cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, features <span class="op">=</span> <span class="st">"Binned_GPs"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>We can see that there is high expression of GP’s in the urothelium
 and adventitia layers of the bladder. This feature is especially useful
 to combine metabolites that are all up expressed in a specific
@@ -1190,7 +1191,7 @@ adjusted coordinates to match the H&amp;E image.</p>
 <div class="sourceCode" id="section-cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">bladder_HE</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, fov <span class="op">=</span> <span class="st">"fov"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_reverse</a></span><span class="op">(</span><span class="op">)</span> <span class="op">)</span><span class="op">/</span> </span>
 <span>  <span class="op">(</span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialDimPlot</a></span><span class="op">(</span><span class="va">bladder_HE</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, images <span class="op">=</span> <span class="st">"slice1"</span>, pt.size.factor <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">&amp;</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>This also means that we can now visualise our data using the
 <em>Plot3D()</em> function with a H&amp;E image:</p>
 <div class="sourceCode" id="section-cb29"><pre class="downlit sourceCode r">
@@ -1566,7 +1567,7 @@ L-Glutamine; Ureidoisobutyric acid; D-Glutamine; Alanylglycine
 visualise <code>Glutathione</code>:</p>
 <div class="sourceCode" id="section-cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">metaspace</span>, metabolites <span class="op">=</span> <span class="st">"Glutathione"</span>,column.name <span class="op">=</span> <span class="st">"moleculeNames"</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colours <span class="op">=</span> <span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.5</span><span class="op">)</span>, na.value <span class="op">=</span> <span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-45-1.png" width="360" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-46-1.png" width="360" style="display: block; margin: auto;"></p>
 <p>We can compare these results to the actual METASPACE page below</p>
 <iframe src="https://metaspace2020.org/annotations?db_id=38&amp;ds=2020-12-07_03h16m14s" width="100%" height="600px">
 </iframe>
@@ -1587,7 +1588,7 @@ visualise <code>Glutathione</code>:</p>
 <span><span class="co">## locale:</span></span>
 <span><span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## time zone: Europe/Dublin</span></span>
+<span><span class="co">## time zone: Europe/Zurich</span></span>
 <span><span class="co">## tzcode source: internal</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## attached base packages:</span></span>
