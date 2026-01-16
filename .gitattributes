@@ -1,1 +1,2 @@
 *.html linguist-vendored
+vignettes/vignette_data_files/human_brain_tissue_analysis/*.rds filter=lfs diff=lfs merge=lfs -text

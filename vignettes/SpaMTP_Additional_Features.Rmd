@@ -18,6 +18,27 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r, include=FALSE}
+options(timeout = 600)
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
+```
+
 <br>
 
 This vignette will highlights some additional features of [***SpaMTP***](https://github.com/GenomicsMachineLearning/SpaMTP) that can be useful for analysing and visualising your SM data. This vignette will again use the public mouse urinary bladder dataset analysed extensively [here](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html).
@@ -47,7 +68,13 @@ library(viridis)
 Here, we will be using already processed, clustered (via spatially-aware Shrunken Centroid) and annotated data. For more information about how the data was processed, please visit [here](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html).
 
 ```{r warning=FALSE, message=FALSE}
-bladder_annotated <- readRDS(url("https://zenodo.org/records/17246684/files/bladder_annotated.RDS?download=1"))
+bladder_url <- "https://zenodo.org/records/17246684/files/bladder_annotated.RDS?download=1"
+bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_annotated.RDS"
+if (!file.exists(bladder_path)) {
+  dir.create(dirname(bladder_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(bladder_url, bladder_path)
+}
+bladder_annotated <- readRDS(bladder_path)
 
 bladder_annotated <- UpdateSeuratObject(bladder_annotated) # Only Required if SeuratObjects => 5.0.2
 ```    
@@ -265,7 +292,13 @@ knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment
 After clicking the return aligned data button a ***SpaMTP*** *Seurat* object with the H&E image added to the `@image$slice1` slot will be returned. Here "fov" is the original SM plotting coordinates and "slice1" has the adjusted coordinates to match the H&E image.
 
 ```{r, include=FALSE}
-bladder_HE <- readRDS(url("https://zenodo.org/records/17246684/files/bladder_HE.RDS?download=1"))
+bladder_he_url <- "https://zenodo.org/records/17246684/files/bladder_HE.RDS?download=1"
+bladder_he_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_HE.RDS"
+if (!file.exists(bladder_he_path)) {
+  dir.create(dirname(bladder_he_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(bladder_he_url, bladder_he_path)
+}
+bladder_HE <- readRDS(bladder_he_path)
 
 bladder_HE <- UpdateSeuratObject(bladder_HE) # Only Required if SeuratObjects => 5.0.2
 ```  
@@ -489,9 +522,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
-
-
 
 
 

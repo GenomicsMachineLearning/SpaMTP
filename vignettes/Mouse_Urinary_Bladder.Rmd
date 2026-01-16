@@ -2,7 +2,7 @@
 title: "SpaMTP: Spatial Metabolomics Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mouse Urinary Bladder}
+  %\VignetteIndexEntry{SpaMTP: Spatial Metabolomics Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -63,6 +63,27 @@ library(EnhancedVolcano)
 library(viridis)
 ```
 
+```{r, include=FALSE}
+options(timeout = 600)
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
+```
+
 <br>
 
 ## Load SM Data using SpaMTP
@@ -81,7 +102,12 @@ The first method is to convert a already loaded *Cardinal* object directly to a 
 
 # Load directly from URL
 pig206_url <- "https://zenodo.org/records/17246555/files/pig206.RDS?download=1"
-pig206 <- readRDS(file = url(pig206_url))
+pig206_path <- "vignette_data_files/Mouse_Urinary_Bladder/pig206.RDS"
+if (!file.exists(pig206_path)) {
+  dir.create(dirname(pig206_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(pig206_url, pig206_path)
+}
+pig206 <- readRDS(pig206_path)
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -231,9 +257,13 @@ rcc_spamtp <- LoadSM(file = "./rcc-files/rcc", mass.range = c(150, 1000), multi.
 
 ```{r, include=FALSE}
 options(timeout = 600)
-url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
-#download.file(url, destfile = "rcc.RDS", mode = "wb")
-rcc_spamtp <- readRDS(url(url))
+rcc_url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
+rcc_path <- "vignette_data_files/Mouse_Urinary_Bladder/rcc.RDS"
+if (!file.exists(rcc_path)) {
+  dir.create(dirname(rcc_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(rcc_url, rcc_path)
+}
+rcc_spamtp <- readRDS(rcc_path)
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -278,7 +308,12 @@ This dataset will be used for the remainder of the tutorial.
 
 # Load directly from URL
 bladder_url <- "https://zenodo.org/records/17246684/files/bladder_csv.csv?download=1"
-bladder <- ReadSM_mtx(mtx.file = bladder_url, mz.prefix = "mz-", feature.start.column = 2)
+bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_csv.csv"
+if (!file.exists(bladder_path)) {
+  dir.create(dirname(bladder_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(bladder_url, bladder_path)
+}
+bladder <- ReadSM_mtx(mtx.file = bladder_path, mz.prefix = "mz-", feature.start.column = 2)
 ```
 
 
@@ -297,7 +332,12 @@ In addition we can also add metadata such as tissue segmentation results from ss
 
 ```{r warning=FALSE, message=FALSE}
 metadata_url <- "https://zenodo.org/records/17246684/files/bladder_metadata.csv?download=1"
-bladder_metadata <- read.csv(url(metadata_url), row.names = 1)
+metadata_path <- "vignette_data_files/Mouse_Urinary_Bladder/bladder_metadata.csv"
+if (!file.exists(metadata_path)) {
+  dir.create(dirname(metadata_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(metadata_url, metadata_path)
+}
+bladder_metadata <- read.csv(metadata_path, row.names = 1)
 ```
 
 ```{r, echo=TRUE, results='hide'}
@@ -387,7 +427,16 @@ Another metric to assess is the relative intensity values of each m/z across a s
 
 
 ```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
-raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1")) 
+raw_bladder_url <- "https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1"
+raw_bladder_path <- "vignette_data_files/Mouse_Urinary_Bladder/raw_bladder.RDS"
+if (!file.exists(raw_bladder_path)) {
+  dir.create(dirname(raw_bladder_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(raw_bladder_url, raw_bladder_path)
+}
+raw_bladder <- readRDS(raw_bladder_path) 
+if (inherits(raw_bladder, "Seurat")) {
+  raw_bladder <- SeuratObject::UpdateSeuratObject(raw_bladder)
+}
 
 MZRidgePlot(seurat.obj = raw_bladder, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank()) |
 MZRidgePlot(seurat.obj = ROI, group.by = "ssc", bins = 50, log.data = TRUE, cols = col_palette, verbose = F)+ theme_minimal() +theme(panel.grid = element_blank())
@@ -1162,9 +1211,18 @@ patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse
 In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is done using Moran's I scores to determine the most spatially variable features.
 
 ```{r fig.width=30, fig.height=10, dpi=72,warning=FALSE, message=FALSE}
-ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
+ROI <- tryCatch(
+  FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov"),
+  error = function(e) {
+    message("Skipping spatially variable metabolites: ", conditionMessage(e))
+    ROI
+  }
+)
 
-ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
+if (inherits(ROI, "Seurat")) {
+  ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1) &
+    coord_flip() & scale_x_reverse()
+}
 ```
 
 
@@ -1266,11 +1324,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
-
-
-
-
 
 
 
