@@ -48,8 +48,8 @@ options(timeout = 600)
 xenium_url <- "https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"
 maldi_url <- "https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"
 
-xenium <- readRDS(url(xenium_path))
-MALDI <- readRDS(url(maldi_path))
+xenium <- readRDS(url(xenium_url))
+MALDI <- readRDS(url(maldi_url))
 
 MALDI <- UpdateSeuratObject(MALDI) # Only Required if SeuratObjects => 5.0.2
 ```  

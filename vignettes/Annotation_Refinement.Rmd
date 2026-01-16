@@ -68,33 +68,12 @@ Below we will use a [public mouse liver dataset with spotted chemicals standards
 
 ```{r, include=FALSE}
 options(timeout = 600)
-retry_download <- function(url, dest, attempts = 3) {
-  for (i in seq_len(attempts)) {
-    ok <- tryCatch({
-      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
-      TRUE
-    }, error = function(e) {
-      message("Download failed (attempt ", i, "): ", conditionMessage(e))
-      if (file.exists(dest)) {
-        unlink(dest)
-      }
-      FALSE
-    })
-    if (ok) return(invisible(TRUE))
-    Sys.sleep(i * 2)
-  }
-  stop("Download failed after ", attempts, " attempts: ", url)
-}
 ```
 
 ```{r warning=FALSE, message=FALSE}
 spotted_url <- "https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"
-spotted_path <- "vignette_data_files/Annotation_Refinement/spotted_Annotated_H_Cl_Adducts.RDS"
-if (!file.exists(spotted_path)) {
-  dir.create(dirname(spotted_path), recursive = TRUE, showWarnings = FALSE)
-  retry_download(spotted_url, spotted_path)
-}
-spotted <- readRDS(spotted_path)
+
+spotted <- readRDS(url(spotted_url))
 ```
 
 ```{r}
@@ -148,13 +127,7 @@ output <- CalculateAnnotationStatistics(data = spotted, mz.assay = "Spatial",pat
 After running `CalculateAnnotationStatistics` the output will be a dataframe containing the most likely annotation for each m/z value based on correlations with pathway expression. Lets subset this output to look at our spiked-in metabolites:
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
-output_url <- "https://zenodo.org/records/17352749/files/annotation_zscore_output.RDS?download=1"
-output_path <- "vignette_data_files/Annotation_Refinement/annotation_zscore_output.RDS"
-if (!file.exists(output_path)) {
-  dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
-  retry_download(output_url, output_path)
-}
-output <- readRDS(output_path)
+output <- readRDS(url("https://zenodo.org/records/17352749/files/annotation_zscore_output.RDS?download=1"))
 ```
 
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
