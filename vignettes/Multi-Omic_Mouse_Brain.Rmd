@@ -177,8 +177,31 @@ vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
 
 ```{r, include=FALSE}
 options(timeout = 600)
-url <- "https://zenodo.org/records/17246900/files/visium.RDS?download=1"
-vis <- readRDS(url(url))
+retry_download <- function(url, dest, attempts = 3) {
+  for (i in seq_len(attempts)) {
+    ok <- tryCatch({
+      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
+      TRUE
+    }, error = function(e) {
+      message("Download failed (attempt ", i, "): ", conditionMessage(e))
+      if (file.exists(dest)) {
+        unlink(dest)
+      }
+      FALSE
+    })
+    if (ok) return(invisible(TRUE))
+    Sys.sleep(i * 2)
+  }
+  stop("Download failed after ", attempts, " attempts: ", url)
+}
+
+vis_url <- "https://zenodo.org/records/17246900/files/visium.RDS?download=1"
+vis_path <- "vignette_data_files/Mouse_Brain/ST_data/visium.RDS"
+if (!file.exists(vis_path)) {
+  dir.create(dirname(vis_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(vis_url, vis_path)
+}
+vis <- readRDS(vis_path)
 ```
 
 
@@ -253,7 +276,13 @@ Parkinson's is heavily associated with dopamine regulation, and thus we will als
 First, we will need to load this additional data.frame containing the custom annotations:
 
 ```{r}
-fmp10_metabolites <- read.csv(url("https://zenodo.org/records/17246900/files/Public_data_FMP10_Annotations.csv?download=1"), row.names = 1)
+fmp10_url <- "https://zenodo.org/records/17246900/files/Public_data_FMP10_Annotations.csv?download=1"
+fmp10_path <- "vignette_data_files/Mouse_Brain/SM_data/Public_data_FMP10_Annotations.csv"
+if (!file.exists(fmp10_path)) {
+  dir.create(dirname(fmp10_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(fmp10_url, fmp10_path)
+}
+fmp10_metabolites <- read.csv(fmp10_path, row.names = 1)
 ```
 
 
@@ -417,7 +446,13 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 
 ```{r, include=FALSE}
 gc()
-msi_transformed <- readRDS(url("https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS?download=1"))
+msi_url <- "https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS?download=1"
+msi_path <- "vignette_data_files/Mouse_Brain/SM_data/SpaMTP_msi_transformed.RDS"
+if (!file.exists(msi_path)) {
+  dir.create(dirname(msi_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(msi_url, msi_path)
+}
+msi_transformed <- readRDS(msi_path)
 ```    
 
 Lets observe the change to the coordinates, comparing between the original x and y coordinates stored in our meta.data and our updated pixel coordinates stored in the `@image$fov` slot:
@@ -1041,7 +1076,13 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 
 This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=72}
-striatum.dhb.data <- readRDS(url("https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"))
+striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"
+striatum_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS"
+if (!file.exists(striatum_path)) {
+  dir.create(dirname(striatum_path), recursive = TRUE, showWarnings = FALSE)
+  retry_download(striatum_url, striatum_path)
+}
+striatum.dhb.data <- readRDS(striatum_path)
 
 SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
 ```
