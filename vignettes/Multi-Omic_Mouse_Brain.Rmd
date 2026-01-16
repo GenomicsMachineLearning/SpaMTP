@@ -1077,12 +1077,7 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
 ```{r, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=72}
 striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"
-striatum_path <- "vignette_data_files/Mouse_Brain/DHB_data/striatum.dhb.data.RDS"
-if (!file.exists(striatum_path)) {
-  dir.create(dirname(striatum_path), recursive = TRUE, showWarnings = FALSE)
-  retry_download(striatum_url, striatum_path)
-}
-striatum.dhb.data <- readRDS(striatum_path)
+striatum.dhb.data <- readRDS(url(striatum_url))
 
 SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
 ```

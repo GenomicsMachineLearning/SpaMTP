@@ -70,14 +70,16 @@ navbar:
         href: articles/Mouse_Urinary_Bladder.html
       - text: Spatial Multi-Omics Analysis
         href: articles/Multi-Omic_Mouse_Brain.html
+      - text: Single Cell Multi-Omics Analysis
+        href: articles/human_brain_tissue_analysis.html
       - text: Additional SpaMTP Features
         href: articles/SpaMTP_Additional_Features.html
-      - text: Simulated Single Cell Multi-Omics Analysis
-        href: articles/Single_Cell_MultiOmics.html
       - text: Handling Big Datasets
         href: articles/Big_Data.html
       - text: Refinning Metabolite Annotations
         href: articles/Annotation_Refinement.html
+      - text: Simulated scMulti-Omics Analysis
+        href: articles/Single_Cell_MultiOmics.html
 reference:
 - title: Loading Spatial Metabolic Data into a SpaMTP Seurat Object
   desc: Functions that allow the user to load in SM data in different formats
