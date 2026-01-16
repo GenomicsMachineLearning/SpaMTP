@@ -1,0 +1,32 @@
+---
+title: "Fig2B_script"
+author: "Andrew Causer"
+date: "2025-12-07"
+output: html_document
+---
+
+# Fig2B
+
+Using an object generated in the ['Spatial Metabolic Analysis'](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html#:~:text=subset%20ROI%20object.-,ROI,-%3C%2D%20subset) and ['Additional SpaMTP Features'](https://genomicsmachinelearning.github.io/SpaMTP/articles/SpaMTP_Additional_Features.html#section-adding-he-image-to-spatial-metabolomic-data).
+
+
+
+```{r}
+#General Libraries
+library(Cardinal)
+library(Seurat)
+library(SpaMTP)
+
+#For plotting + DE plots
+library(ggplot2)
+library(dplyr)
+
+# This is using an object generated in the 'Spatial Metabolic Analysis' and 'Additional SpaMTP Features'
+bladder <- readRDS("./bladder_HE.RDS")
+bladder <- subset(bladder, subset = ssc %in% c("2", "5", "6"))
+
+A <- SpatialDimPlot(bladder,group.by = "ssc", images = "slice1", pt.size.factor = 0)
+B <- SpatialDimPlot(bladder,group.by = "ssc", images = "slice1", pt.size.factor = 5)
+C <- SpatialMZPlot(bladder,mz = 798.5411, images = "slice1", pt.size.factor = 7)+scale_fill_gradientn(colors = viridis::magma(10))
+D <- SpatialMZPlot(bladder,mz = 741.5306, images = "slice1", pt.size.factor = 7)+scale_fill_gradientn(colors = viridis::magma(10))
+```

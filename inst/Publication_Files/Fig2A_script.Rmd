@@ -1,0 +1,240 @@
+---
+title: "Fig2A_script"
+author: "Andrew Causer"
+date: "2025-12-07"
+output: html_document
+---
+
+# Fig2A
+```{r}
+#General Libraries
+library(Cardinal)
+library(Seurat)
+library(SpaMTP)
+
+#For plotting + DE plots
+library(ggplot2)
+library(dplyr)
+library(ggplot2)
+library(EnhancedVolcano)
+
+
+data <- loadSM(file = "./Test_Data/20201130_jl_lungmap_hpmc_agarose_1", mass.range=c(300,1000), resolution=3, units="ppm")
+
+ImageFeaturePlot(data, features = "nCount_Spatial", size = 1)
+```
+
+### HMDB_db results
+```{r}
+meta.data <- read.csv("./Test_Data/metaspace_annotations_HMDB.csv", skip =2)
+
+HMDB_list <- list()
+difference <- list()
+
+suppressWarnings({
+    for (adduct_n in unique(meta.data$adduct)){
+    
+        SpaMTP_Annoated <- AnnotateSM(data, db = HMDB_db, polarity = "pos", test_add_pos = c(adduct_n), ppm_error = 3)
+        difference[[adduct_n]] <- dim(SpaMTP_Annoated)[1]
+        meta.data.adduct <- meta.data[meta.data$adduct %in% adduct_n,]
+        meta.data.adduct <- meta.data.adduct[meta.data.adduct$fdr != "0.5",]
+    
+        mzs <- c()
+        for (i in meta.data.adduct$mz) {
+            mz <- FindNearestMZ(SpaMTP_Annoated, i)
+            mzs <- c(mzs, mz)
+        }
+        
+        annotated_data <- SubsetMZFeatures(SpaMTP_Annoated, features = mzs)
+        
+        df <- data.frame(METASPACE_MZ = meta.data.adduct$mz, SpaMTP_MZ = mzs)
+    
+        lst <- lapply(df$SpaMTP_MZ, function(x){
+            met <- annotated_data@assays$Spatial@meta.data[annotated_data@assays$Spatial@meta.data$mz_names == x,]
+            list(SpaMTP_Annotation = met$all_IsomerNames,
+                 SpaMTP_HMDB = met$all_Isomers,
+                 SpaMTP_Adduct = met$all_Adducts,
+                SpaMTP_Error = met$all_Errors)
+        })
+        
+        annotations <- c()
+        hmdb_ids <- c()
+        adduct_ids <- c()
+        error_ids <- c()
+        
+        # Iterate over each inner list
+        for (entry in lst) {
+          annotations <- c(annotations, entry$SpaMTP_Annotation)
+          hmdb_ids <- c(hmdb_ids, entry$SpaMTP_HMDB)
+          adduct_ids <- c(adduct_ids, entry$SpaMTP_Adduct)
+          error_ids <- c(error_ids, entry$SpaMTP_Error)
+        }
+        
+        lst <- lapply(df$METASPACE_MZ, function(x){
+            met <- meta.data.adduct[meta.data.adduct$mz == x,]
+            list(METASPACE_Annotation = met$moleculeNames,
+                 METASPACE_HMDB = met$moleculeIds,
+                METASPACE_Adduct = met$adduct)
+        })
+        
+        annotations2 <- c()
+        hmdb_ids2 <- c()
+        adduct_ids2 <- c()
+        error_ids2 <- c()
+        
+        # Iterate over each inner list
+        for (entry in lst) {
+          annotations2 <- c(annotations2, entry$METASPACE_Annotation)
+          hmdb_ids2 <- c(hmdb_ids2, entry$METASPACE_HMDB)
+          adduct_ids2 <- c(adduct_ids2, entry$METASPACE_Adduct)
+        }
+        
+        
+        
+        df$SpaMTP_Annotation <- annotations
+        df$METASPACE_Annotation <- annotations2
+        df$SpaMTP_HMDB <- hmdb_ids
+        df$METASPACE_HMDB <- hmdb_ids2
+        df$SpaMTP_Adduct <- adduct_ids
+        df$METASPACE_Adduct <- adduct_ids2  
+        df$SpaMTP_Error <- error_ids
+    
+    
+        spamt_words <- strsplit(df$SpaMTP_Annotation, "; ")
+        metaspace_words <- strsplit(df$METASPACE_Annotation, ", ")
+        
+        # Function to check if any word in metaspace_words exists in spamt_words
+        check_overlap <- function(spamt_words, metaspace_words) {
+          any(sapply(spamt_words, function(spamt_word) any(sapply(metaspace_words, function(metaspace_word) spamt_word %in% metaspace_word))))
+        }
+        
+        # Apply the function row-wise
+        df$Annotation_Overlap <- mapply(check_overlap, spamt_words, metaspace_words)
+    
+                                                                  
+        HMDB_list[[adduct_n]] <- df                                
+    }
+})
+    
+matches <- lapply(names(HMDB_list), function(x){table(HMDB_list[[x]]$Annotation_Overlap)})
+names(matches) <- names(HMDB_list)
+
+HMDB_result <- do.call(rbind, lapply(names(matches), function(name) {
+  tbl <- matches[[name]]
+   df <- data.frame(adduct = name, Different = tbl["FALSE"], Match = tbl["TRUE"], SpaMTP_Identified = (difference[[name]] - sum(tbl)))
+}))
+
+rownames(HMDB_result) <- HMDB_result$adduct
+HMDB_result$adduct <- NULL
+
+```
+
+
+### LipidMaps Results
+
+```{r}
+meta.data <- read.csv("./Test_Data/metaspace_annotations_lipidmaps.csv", skip =2)
+
+lipidmaps_list <- list()
+difference <- list()
+suppressWarnings({
+    for (adduct_n in unique(meta.data$adduct)){
+    
+        SpaMTP_Annoated <- AnnotateSM(data, db = Lipidmaps_db, polarity = "pos", test_add_pos = c(adduct_n), ppm_error = 3)
+        difference[[adduct_n]] <- dim(SpaMTP_Annoated)[1]
+        meta.data.adduct <- meta.data[meta.data$adduct %in% adduct_n,]
+        meta.data.adduct <- meta.data.adduct[meta.data.adduct$fdr != "0.5",]
+    
+        mzs <- c()
+        for (i in meta.data.adduct$mz) {
+            mz <- FindNearestMZ(SpaMTP_Annoated, i)
+            mzs <- c(mzs, mz)
+        }
+        
+        annotated_data <- SubsetMZFeatures(SpaMTP_Annoated, features = mzs)
+        
+        df <- data.frame(METASPACE_MZ = meta.data.adduct$mz, SpaMTP_MZ = mzs)
+    
+        lst <- lapply(df$SpaMTP_MZ, function(x){
+            met <- annotated_data@assays$Spatial@meta.data[annotated_data@assays$Spatial@meta.data$mz_names == x,]
+            list(SpaMTP_Annotation = met$all_IsomerNames,
+                 SpaMTP_HMDB = met$all_Isomers,
+                 SpaMTP_Adduct = met$all_Adducts
+                SpaMTP_Error = met$all_Errors)
+        })
+        
+        annotations <- c()
+        hmdb_ids <- c()
+        adduct_ids <- c()
+        
+        # Iterate over each inner list
+        for (entry in lst) {
+          annotations <- c(annotations, entry$SpaMTP_Annotation)
+          hmdb_ids <- c(hmdb_ids, entry$SpaMTP_HMDB)
+          adduct_ids <- c(adduct_ids, entry$SpaMTP_Adduct)
+        }
+        
+        lst <- lapply(df$METASPACE_MZ, function(x){
+            met <- meta.data.adduct[meta.data.adduct$mz == x,]
+            list(METASPACE_Annotation = met$moleculeNames,
+                 METASPACE_HMDB = met$moleculeIds,
+                METASPACE_Adduct = met$adduct)
+        })
+        
+        annotations2 <- c()
+        hmdb_ids2 <- c()
+        adduct_ids2 <- c()
+        error_ids <- c()
+        
+        # Iterate over each inner list
+        for (entry in lst) {
+          annotations2 <- c(annotations2, entry$METASPACE_Annotation)
+          hmdb_ids2 <- c(hmdb_ids2, entry$METASPACE_HMDB)
+          adduct_ids2 <- c(adduct_ids2, entry$METASPACE_Adduct)
+        }
+        
+        
+        
+        df$SpaMTP_Annotation <- annotations
+        df$METASPACE_Annotation <- annotations2
+        df$SpaMTP_HMDB <- hmdb_ids
+        df$METASPACE_HMDB <- hmdb_ids2
+        df$SpaMTP_Adduct <- adduct_ids
+        df$METASPACE_Adduct <- adduct_ids2  
+        df$SpaMTP_Error <- error_ids
+    
+        spamt_words <- strsplit(df$SpaMTP_Annotation, "; ")
+        metaspace_words <- strsplit(df$METASPACE_Annotation, ", ")
+        
+        # Function to check if any word in metaspace_words exists in spamt_words
+        check_overlap <- function(spamt_words, metaspace_words) {
+          any(sapply(spamt_words, function(spamt_word) any(sapply(metaspace_words, function(metaspace_word) spamt_word %in% metaspace_word))))
+        }
+        
+        # Apply the function row-wise
+        df$Annotation_Overlap <- mapply(check_overlap, spamt_words, metaspace_words)
+    
+                                                                  
+        lipidmaps_list[[adduct_n]] <- df                                
+    }
+})
+    
+matches <- lapply(names(lipidmaps_list), function(x){table(lipidmaps_list[[x]]$Annotation_Overlap)})
+names(matches) <- names(lipidmaps_list)
+
+lipidmaps_result <- do.call(rbind, lapply(names(matches), function(name) {
+  tbl <- matches[[name]]
+  df <- data.frame(adduct = name, Different = tbl["FALSE"], Match = tbl["TRUE"], SpaMTP_Identified = (difference[[name]] - sum(tbl)))
+}))
+
+rownames(lipidmaps_result) <- lipidmaps_result$adduct
+lipidmaps_result$adduct <- NULL
+```
+
+```{r}
+rbind("HMDB" = colSums(HMDB_result),"LipidMaps" = colSums(lipidmaps_result))
+merged_df <- bind_rows(lipidmaps_list)
+merged_df <- bind_rows(HMDB_list)
+write.csv(merged_df, "lipidmap_metaspace_comp.csv")
+merged_df[merged_df$Annotation_Overlap == "FALSE",]
+```
