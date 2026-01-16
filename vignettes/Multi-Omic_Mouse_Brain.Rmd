@@ -89,6 +89,9 @@ As mentioned above, the format of our SM data is in a mtx format. This is differ
 </div>
 
 Based on this, we can read in the `.csv` file that contains our intensity and pixel coordinate values.
+```{r, include=FALSE}
+options(timeout = 600)
+```
 
 ```{r, warning=FALSE, message=FALSE}
 # Load directly from file
