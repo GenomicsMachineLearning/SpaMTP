@@ -55,17 +55,33 @@ library(patchwork)
 data_path <- "./vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds"
 pathway_path <- "./vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds"
 
-stopifnot(file.exists(data_path), file.exists(pathway_path))
-
 data <- readRDS(data_path)
 cregpathway <- readRDS(pathway_path)
 ```
 
-```{r qc_plots, message = FALSE, warning = FALSE}
+Below we can see the structure of our integrated data object
+
+```{r, results=FALSE}
+data
+```
+
+  An object of class Seurat 
+  913 features across 37886 samples within 2 assays 
+  Active assay: SPM (574 features, 574 variable features)
+   3 layers present: counts, data, scale.data
+   1 other assay present: SPT
+   7 dimensional reductions calculated: PCA, UMAP, spt.pca, spt.umap, spm.pca, spm.umap, wnn.umap
+   2 images present: slice1, image
+
+
+```{r qc_plots, message = FALSE, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
 SpatialFeaturePlot(
   data,
   features = c("nCount_originalexp", "nFeature_originalexp"),
   pt.size.factor = 2
+)& theme(
+  legend.position = "right",
+  legend.direction = "vertical"
 )
 ```
 
@@ -73,7 +89,8 @@ SpatialFeaturePlot(
 
 We extract m/z values from the `SPM` assay and run a basic annotation lookup.
 
-```{r annotate_mz, message = FALSE, warning = FALSE}
+
+```{r, echo=TRUE, results='hide', message = FALSE, warning = FALSE}
 spm <- data[["SPM"]]
 mz_vals <- as.numeric(sub("^mz-", "", rownames(spm)))
 
@@ -89,78 +106,29 @@ annoresult <- SpaMTP:::annotateTable(mz_df, db = rbind(HMDB_db, Chebi_db))
 head(annoresult)
 ```
 
-## Multi-panel spatial maps (cell type, gene, protein, metabolite)
-
-Pick a metabolite m/z, a gene, and a protein feature available in your object.
-
-```{r panel_setup, message = FALSE, warning = FALSE}
-mz_target <- 146.1651
-protein_feature <- "GFAP_intensity"
-gene_target <- "AQP4"
-celltype_col <- "Anno4.1"
-
-x_coord <- data@meta.data[["x_centroid"]]
-y_coord <- data@meta.data[["y_centroid"]]
-
-metabo <- data[["SPM"]]@data[which.min(abs(mz_vals - mz_target)), ]
-
-get_gene_counts <- function(obj, gene) {
-  counts <- obj[["SPT"]]@counts
-  if (!gene %in% rownames(counts)) {
-    warning("Gene not found in SPT counts: ", gene)
-    return(rep(0, ncol(counts)))
-  }
-  as.numeric(counts[gene, ])
-}
-
-gene_counts <- get_gene_counts(data, gene_target)
-prot_vals <- data@meta.data[[protein_feature]]
-cell_anno <- data@meta.data[[celltype_col]]
+```{r, echo=FALSE}
+df <- head(annoresult)
+df %>%
+    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "center") %>%
+    kableExtra::row_spec(0, bold = TRUE)%>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
 ```
 
-```{r panel_plot, message = FALSE, warning = FALSE}
-plot_df <- data.frame(
-  x = x_coord,
-  y = y_coord,
-  cell_anno = factor(cell_anno),
-  gene_counts = gene_counts,
-  prot_vals = prot_vals,
-  metabo = metabo
-)
 
-num_panel <- function(var, title, low = "lightgrey") {
-  df_ord <- plot_df[order(plot_df[[var]]), ]
-  ggplot(df_ord, aes(x, y, colour = .data[[var]])) +
-    geom_point(size = 0.25) +
-    coord_equal() +
-    scale_colour_viridis_c(option = "magma", na.value = low) +
-    guides(colour = guide_colourbar(barheight = unit(40, "mm"))) +
-    labs(title = title, colour = NULL) +
-    theme_void(base_size = 10) +
-    theme(
-      legend.key.height = unit(1.1, "cm"),
-      plot.title = element_text(hjust = 0.5, face = "bold")
-    )
-}
+## Multi-panel spatial maps (cell type, gene, protein, metabolite)
 
-p_cell <- ggplot(plot_df, aes(x, y, colour = cell_anno)) +
-  geom_point(size = 0.25) +
-  coord_equal() +
-  scale_colour_viridis_d(option = "turbo") +
-  guides(colour = guide_legend(override.aes = list(size = 2))) +
-  labs(title = "Cell type") +
-  theme_void(base_size = 10) +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+Pick a metabolite m/z, a gene, and a protein feature available in your object. We will use the protein GFAP as an example. The corresponding gene and mz values are `AQP4` and `mz-146.1651` respectfully. 
 
-p_gene <- num_panel("gene_counts", paste0(gene_target, "\n(gene counts)"))
+```{r, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
+p1 <- SpatialDimPlot(data, group.by = "Anno4.1", images = "image", pt.size.factor = 2.5) +scale_fill_viridis_d(option = "turbo")+guides(fill = guide_legend(ncol = 2))
+p2 <- SpatialFeaturePlot(data, features = "AQP4", slot = "counts",images = "image",pt.size.factor = 2.5)+ scale_fill_viridis_c(option = "magma", na.value = "lightgrey")
+p3 <- SpatialFeaturePlot(data, features = "GFAP_intensity", images = "image",pt.size.factor = 2.5)+ scale_fill_viridis_c(option = "magma")
+p4 <- SpatialMZPlot(data, mzs = 146.1651, images = "image",pt.size.factor = 2.5, assay = "SPM", slot = "data")+ scale_fill_viridis_c(option = "magma")
 
-p_prot <- num_panel("prot_vals", paste0(protein_feature, "\n(intensity)"))
-
-p_met <- num_panel("metabo", paste0("m/z ", mz_target))
-
-(p_cell | p_gene) / (p_prot | p_met) +
-  plot_annotation(title = "Spatial maps") &
-  theme(legend.box = "vertical")
+(p1|p2)/(p3|p4) & coord_flip() & scale_y_reverse()
 ```
 
 ## Pathway-level metabolite, RNA, and combined scores
@@ -217,16 +185,18 @@ score_pathway <- function(obj, pathway_df, pathway_name, type = "wiki", weight =
 }
 ```
 
-```{r pathway_glucose, message = FALSE, warning = FALSE}
+```{r pathway_glucose, message = FALSE, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
 pathway_name <- "Glucose metabolism"
 pathway_type <- "wiki"
 
 res <- score_pathway(data, cregpathway, pathway_name, type = pathway_type)
 data <- res$obj
 
-SpatialFeaturePlot(data, features = paste0(pathway_name, "_met"), pt.size.factor = 2.5)
-SpatialFeaturePlot(data, features = paste0(pathway_name, "_rna"), pt.size.factor = 2.5)
-SpatialFeaturePlot(data, features = paste0(pathway_name, "_combined"), pt.size.factor = 2.5)
+p1 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_met"), pt.size.factor = 2.5)
+p2 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_rna"), pt.size.factor = 2.5)
+p3 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_combined"), pt.size.factor = 2.5)
+
+p1/p2/p3 & theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 ```{r pathway_neuronal, message = FALSE, warning = FALSE}
@@ -236,9 +206,11 @@ pathway_type <- "Reactome"
 res <- score_pathway(data, cregpathway, pathway_name, type = pathway_type)
 data <- res$obj
 
-SpatialFeaturePlot(data, features = paste0(pathway_name, "_met"), pt.size.factor = 2.5)
-SpatialFeaturePlot(data, features = paste0(pathway_name, "_rna"), pt.size.factor = 2.5)
-SpatialFeaturePlot(data, features = paste0(pathway_name, "_combined"), pt.size.factor = 2.5)
+p1 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_met"), pt.size.factor = 2.5)
+p2 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_rna"), pt.size.factor = 2.5)
+p3 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_combined"), pt.size.factor = 2.5)
+
+p1/p2/p3 & theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 
