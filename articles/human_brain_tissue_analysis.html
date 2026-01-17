@@ -41,7 +41,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/Mouse_Urinary_Bladder.html">Spatial Metabolomics Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/Multi-Omic_Mouse_Brain.html">Spatial Multi-Omics Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/human_brain_tissue_analysis.html">Single Cell Multi-Omics Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/human_brain_tissue_analysis.html">Single Cell Multi-Omics Analysis (MTP)</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
@@ -72,7 +72,7 @@
 
 
 
-
+<script src="human_brain_tissue_analysis_files/kePrint-0.0.1/kePrint.js"></script><link href="human_brain_tissue_analysis_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Human Brain Tissue Analysis</h1>
@@ -125,27 +125,30 @@ pathway scores that combine metabolite and RNA signals.</p>
 <h3 id="load-the-integrated-object">Load the integrated object<a class="anchor" aria-label="anchor" href="#load-the-integrated-object"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data_path</span> <span class="op">&lt;-</span> <span class="st">"./vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds"</span></span>
-<span><span class="va">pathway_path</span> <span class="op">&lt;-</span> <span class="st">"./vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds"</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">data_path</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">pathway_path</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">data_path</span><span class="op">)</span></span>
-<span><span class="va">cregpathway</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">pathway_path</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/records/18282678/files/brain_tumour_integrated.rds?download=1"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cregpathway</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/records/18282678/files/brain_tumour_combined_pathways.rds?download=1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Below we can see the structure of our integrated data object</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data</span></span></code></pre></div>
+<p>An object of class Seurat 913 features across 37886 samples within 2
+assays Active assay: SPM (574 features, 574 variable features) 3 layers
+present: counts, data, scale.data 1 other assay present: SPT 7
+dimensional reductions calculated: PCA, UMAP, spt.pca, spt.umap,
+spm.pca, spm.umap, wnn.umap 2 images present: slice1, image</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nCount_originalexp"</span>, <span class="st">"nFeature_originalexp"</span><span class="op">)</span>,</span>
 <span>  pt.size.factor <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/qc_plots-1.png" width="1050" style="display: block; margin: auto;"></p>
+<span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="human_brain_tissue_analysis_files/figure-html/qc_plots-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="annotate-mz-features-optional">Annotate m/z features (optional)<a class="anchor" aria-label="anchor" href="#annotate-mz-features-optional"></a>
 </h3>
 <p>We extract m/z values from the <code>SPM</code> assay and run a basic
 annotation lookup.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spm</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="st">"SPM"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">mz_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"^mz-"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spm</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -159,114 +162,332 @@ annotation lookup.</p>
 <span></span>
 <span><span class="va">annoresult</span> <span class="op">&lt;-</span> <span class="fu">SpaMTP</span><span class="fu">:::</span><span class="fu"><a href="../reference/annotateTable.html">annotateTable</a></span><span class="op">(</span><span class="va">mz_df</span>, db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">HMDB_db</span>, <span class="va">Chebi_db</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">annoresult</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       ID Match observed_mz Reference_mz    Error Adduct Formula Exactmass</span></span>
-<span><span class="co">## M+H.1  1  TRUE    71.07229     71.07241 1.653058    M+H   C4H8N  70.06513</span></span>
-<span><span class="co">## M+H.2  3  TRUE    72.08015     72.08078 8.613587    M+H   C4H9N  71.07350</span></span>
-<span><span class="co">## M+H.3  3  TRUE    72.08015     72.08078 8.613601    M+H   C4H9N  71.07350</span></span>
-<span><span class="co">## M+H.4  3  TRUE    72.08015     72.08078 8.623396    M+H   C4H9N  71.07350</span></span>
-<span><span class="co">## M+H.5  4  TRUE    74.09586     74.09643 7.687876    M+H  C4H11N  73.08915</span></span>
-<span><span class="co">## M+H.6  4  TRUE    74.09586     74.09643 7.687889    M+H  C4H11N  73.08915</span></span>
-<span><span class="co">##                                                  Isomers</span></span>
-<span><span class="co">## M+H.1                                        CHEBI:36781</span></span>
-<span><span class="co">## M+H.2                                        HMDB0031641</span></span>
-<span><span class="co">## M+H.3                                        HMDB0243874</span></span>
-<span><span class="co">## M+H.4                           CHEBI:31108; CHEBI:33135</span></span>
-<span><span class="co">## M+H.5 HMDB0031321; HMDB0032179; HMDB0034198; HMDB0041878</span></span>
-<span><span class="co">## M+H.6                                        HMDB0255263</span></span>
-<span><span class="co">##                                                                                                                InchiKeys</span></span>
-<span><span class="co">## M+H.1                                                                                        ZVJHJDDKYZXRJI-UHFFFAOYSA-O</span></span>
-<span><span class="co">## M+H.2                                                                                        RWRDLPDLKQPQOW-UHFFFAOYSA-N</span></span>
-<span><span class="co">## M+H.3                                                                                        UJGVUACWGCQEAO-UHFFFAOYSA-N</span></span>
-<span><span class="co">## M+H.4                                                           ASVKKRLMJCWVQF-UHFFFAOYSA-N; RWRDLPDLKQPQOW-UHFFFAOYSA-N</span></span>
-<span><span class="co">## M+H.5 HQABUPZFAYXKJW-UHFFFAOYSA-N; BHRZNVHARXXAHW-UHFFFAOYSA-N; KDSNLYIMUZNERS-UHFFFAOYSA-N; HPNMFZURTQLUMO-UHFFFAOYSA-N</span></span>
-<span><span class="co">## M+H.6                                                                                        DAZXVJBJRMWXJP-UHFFFAOYSA-N</span></span>
-<span><span class="co">##                                                              IsomerNames</span></span>
-<span><span class="co">## M+H.1                                                      1-pyrrolinium</span></span>
-<span><span class="co">## M+H.2                                                        Pyrrolidine</span></span>
-<span><span class="co">## M+H.3                                                   1-Ethylaziridine</span></span>
-<span><span class="co">## M+H.4                                       3-buten-1-amine; pyrrolidine</span></span>
-<span><span class="co">## M+H.5 1-Butylamine; sec-Butylamine; 2-Methyl-1-propylamine; Diethylamine</span></span>
-<span><span class="co">## M+H.6                                             N,N-DIMETHYLETHYLAMINE</span></span>
-<span><span class="co">##                                                                  Isomers_IDs</span></span>
-<span><span class="co">## M+H.1                                                            chebi:36781</span></span>
-<span><span class="co">## M+H.2                                                       hmdb:HMDB0031641</span></span>
-<span><span class="co">## M+H.3                                                       hmdb:HMDB0243874</span></span>
-<span><span class="co">## M+H.4                                               chebi:31108; chebi:33135</span></span>
-<span><span class="co">## M+H.5 hmdb:HMDB0031321; hmdb:HMDB0032179; hmdb:HMDB0034198; hmdb:HMDB0041878</span></span>
-<span><span class="co">## M+H.6                                                       hmdb:HMDB0255263</span></span></code></pre>
+<table class="table dataframe table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead><tr>
+<th style="text-align:left;font-weight: bold;">
+</th>
+<th style="text-align:center;font-weight: bold;">
+ID
+</th>
+<th style="text-align:center;font-weight: bold;">
+Match
+</th>
+<th style="text-align:center;font-weight: bold;">
+observed_mz
+</th>
+<th style="text-align:center;font-weight: bold;">
+Reference_mz
+</th>
+<th style="text-align:center;font-weight: bold;">
+Error
+</th>
+<th style="text-align:center;font-weight: bold;">
+Adduct
+</th>
+<th style="text-align:center;font-weight: bold;">
+Formula
+</th>
+<th style="text-align:center;font-weight: bold;">
+Exactmass
+</th>
+<th style="text-align:center;font-weight: bold;">
+Isomers
+</th>
+<th style="text-align:center;font-weight: bold;">
+InchiKeys
+</th>
+<th style="text-align:center;font-weight: bold;">
+IsomerNames
+</th>
+<th style="text-align:center;font-weight: bold;">
+Isomers_IDs
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H.1
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+TRUE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+71.07229
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+71.07241
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1.653058
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+C4H8N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+70.06513
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+CHEBI:36781
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+ZVJHJDDKYZXRJI-UHFFFAOYSA-O
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1-pyrrolinium
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+chebi:36781
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H.2
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+TRUE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+72.08015
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+72.08078
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+8.613587
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+C4H9N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+71.07350
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+HMDB0031641
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+RWRDLPDLKQPQOW-UHFFFAOYSA-N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+Pyrrolidine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+hmdb:HMDB0031641
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H.3
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+TRUE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+72.08015
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+72.08078
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+8.613601
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+C4H9N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+71.07350
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+HMDB0243874
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+UJGVUACWGCQEAO-UHFFFAOYSA-N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1-Ethylaziridine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+hmdb:HMDB0243874
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H.4
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+TRUE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+72.08015
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+72.08078
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+8.623396
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+C4H9N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+71.07350
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+CHEBI:31108; CHEBI:33135
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+ASVKKRLMJCWVQF-UHFFFAOYSA-N; RWRDLPDLKQPQOW-UHFFFAOYSA-N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+3-buten-1-amine; pyrrolidine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+chebi:31108; chebi:33135
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H.5
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+TRUE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+74.09586
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+74.09643
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+7.687876
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+C4H11N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+73.08915
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+HMDB0031321; HMDB0032179; HMDB0034198; HMDB0041878
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+HQABUPZFAYXKJW-UHFFFAOYSA-N; BHRZNVHARXXAHW-UHFFFAOYSA-N;
+KDSNLYIMUZNERS-UHFFFAOYSA-N; HPNMFZURTQLUMO-UHFFFAOYSA-N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+1-Butylamine; sec-Butylamine; 2-Methyl-1-propylamine; Diethylamine
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+hmdb:HMDB0031321; hmdb:HMDB0032179; hmdb:HMDB0034198; hmdb:HMDB0041878
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H.6
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+4
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+TRUE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+74.09586
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+74.09643
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+7.687889
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+M+H
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+C4H11N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+73.08915
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+HMDB0255263
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+DAZXVJBJRMWXJP-UHFFFAOYSA-N
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+N,N-DIMETHYLETHYLAMINE
+</td>
+<td style="text-align:center;border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;">
+hmdb:HMDB0255263
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="multi-panel-spatial-maps-cell-type-gene-protein-metabolite">Multi-panel spatial maps (cell type, gene, protein, metabolite)<a class="anchor" aria-label="anchor" href="#multi-panel-spatial-maps-cell-type-gene-protein-metabolite"></a>
 </h3>
 <p>Pick a metabolite m/z, a gene, and a protein feature available in
-your object.</p>
+your object. We will use the protein GFAP as an example. The
+corresponding gene and mz values are <code>AQP4</code> and
+<code>mz-146.1651</code> respectfully.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mz_target</span> <span class="op">&lt;-</span> <span class="fl">146.1651</span></span>
-<span><span class="va">protein_feature</span> <span class="op">&lt;-</span> <span class="st">"GFAP_intensity"</span></span>
-<span><span class="va">gene_target</span> <span class="op">&lt;-</span> <span class="st">"AQP4"</span></span>
-<span><span class="va">celltype_col</span> <span class="op">&lt;-</span> <span class="st">"Anno4.1"</span></span>
-<span></span>
-<span><span class="va">x_coord</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"x_centroid"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">y_coord</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"y_centroid"</span><span class="op">]</span><span class="op">]</span></span>
-<span></span>
-<span><span class="va">metabo</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="st">"SPM"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.min.html" class="external-link">which.min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">mz_vals</span> <span class="op">-</span> <span class="va">mz_target</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span></span>
-<span></span>
-<span><span class="va">get_gene_counts</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">obj</span>, <span class="va">gene</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">counts</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">[[</span><span class="st">"SPT"</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">counts</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">gene</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></span><span class="op">(</span><span class="st">"Gene not found in SPT counts: "</span>, <span class="va">gene</span><span class="op">)</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">counts</span><span class="op">[</span><span class="va">gene</span>, <span class="op">]</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">gene_counts</span> <span class="op">&lt;-</span> <span class="fu">get_gene_counts</span><span class="op">(</span><span class="va">data</span>, <span class="va">gene_target</span><span class="op">)</span></span>
-<span><span class="va">prot_vals</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="va">protein_feature</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">cell_anno</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="va">celltype_col</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  x <span class="op">=</span> <span class="va">x_coord</span>,</span>
-<span>  y <span class="op">=</span> <span class="va">y_coord</span>,</span>
-<span>  cell_anno <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cell_anno</span><span class="op">)</span>,</span>
-<span>  gene_counts <span class="op">=</span> <span class="va">gene_counts</span>,</span>
-<span>  prot_vals <span class="op">=</span> <span class="va">prot_vals</span>,</span>
-<span>  metabo <span class="op">=</span> <span class="va">metabo</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">num_panel</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">var</span>, <span class="va">title</span>, <span class="va">low</span> <span class="op">=</span> <span class="st">"lightgrey"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">df_ord</span> <span class="op">&lt;-</span> <span class="va">plot_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">plot_df</span><span class="op">[[</span><span class="va">var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="op">]</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">df_ord</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, colour <span class="op">=</span> <span class="va">.data</span><span class="op">[[</span><span class="va">var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_equal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, na.value <span class="op">=</span> <span class="va">low</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_colourbar.html" class="external-link">guide_colourbar</a></span><span class="op">(</span>barheight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">40</span>, <span class="st">"mm"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="va">title</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>      legend.key.height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="st">"cm"</span><span class="op">)</span>,</span>
-<span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">p_cell</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plot_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, colour <span class="op">=</span> <span class="va">cell_anno</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_equal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_colour_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"turbo"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cell type"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_gene</span> <span class="op">&lt;-</span> <span class="fu">num_panel</span><span class="op">(</span><span class="st">"gene_counts"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">gene_target</span>, <span class="st">"\n(gene counts)"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_prot</span> <span class="op">&lt;-</span> <span class="fu">num_panel</span><span class="op">(</span><span class="st">"prot_vals"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">protein_feature</span>, <span class="st">"\n(intensity)"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">p_met</span> <span class="op">&lt;-</span> <span class="fu">num_panel</span><span class="op">(</span><span class="st">"metabo"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"m/z "</span>, <span class="va">mz_target</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="op">(</span><span class="va">p_cell</span> <span class="op">|</span> <span class="va">p_gene</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">p_prot</span> <span class="op">|</span> <span class="va">p_met</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Spatial maps"</span><span class="op">)</span> <span class="op">&amp;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.box <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/panel_plot-1.png" width="1050" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialDimPlot</a></span><span class="op">(</span><span class="va">data</span>, group.by <span class="op">=</span> <span class="st">"Anno4.1"</span>, images <span class="op">=</span> <span class="st">"image"</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"turbo"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
+<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="st">"AQP4"</span>, slot <span class="op">=</span> <span class="st">"counts"</span>,images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, na.value <span class="op">=</span> <span class="st">"lightgrey"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
+<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="st">"GFAP_intensity"</span>, images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
+<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialMZPlot.html">SpatialMZPlot</a></span><span class="op">(</span><span class="va">data</span>, mzs <span class="op">=</span> <span class="fl">146.1651</span>, images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span>, assay <span class="op">=</span> <span class="st">"SPM"</span>, slot <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
+<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">p1</span><span class="op">|</span><span class="va">p2</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">p3</span><span class="op">|</span><span class="va">p4</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Coordinate system already present.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span>
+<span><span class="co">## Coordinate system already present.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span>
+<span><span class="co">## Coordinate system already present.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span>
+<span><span class="co">## Coordinate system already present.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
+<p><img src="human_brain_tissue_analysis_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="pathway-level-metabolite-rna-and-combined-scores">Pathway-level metabolite, RNA, and combined scores<a class="anchor" aria-label="anchor" href="#pathway-level-metabolite-rna-and-combined-scores"></a>
@@ -274,7 +495,7 @@ your object.</p>
 <p>We compute pathway scores for selected pathways by binning m/z
 features and summing leading-edge genes, then combine the two
 modalities.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">min_max</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">rng</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.infinite</a></span><span class="op">(</span><span class="va">rng</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">||</span> <span class="va">rng</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">rng</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span>
@@ -321,44 +542,43 @@ modalities.</p>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">obj</span>, genes <span class="op">=</span> <span class="va">genes</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathway_name</span> <span class="op">&lt;-</span> <span class="st">"Glucose metabolism"</span></span>
 <span><span class="va">pathway_type</span> <span class="op">&lt;-</span> <span class="st">"wiki"</span></span>
 <span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">score_pathway</span><span class="op">(</span><span class="va">data</span>, <span class="va">cregpathway</span>, <span class="va">pathway_name</span>, type <span class="op">=</span> <span class="va">pathway_type</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">obj</span></span>
 <span></span>
-<span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_met"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_glucose-1.png" width="1050" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_rna"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_glucose-2.png" width="1050" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_combined"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_glucose-3.png" width="1050" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_met"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_rna"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_combined"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p1</span><span class="op">/</span><span class="va">p2</span><span class="op">/</span><span class="va">p3</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_glucose-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathway_name</span> <span class="op">&lt;-</span> <span class="st">"Neuronal System"</span></span>
 <span><span class="va">pathway_type</span> <span class="op">&lt;-</span> <span class="st">"Reactome"</span></span>
 <span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">score_pathway</span><span class="op">(</span><span class="va">data</span>, <span class="va">cregpathway</span>, <span class="va">pathway_name</span>, type <span class="op">=</span> <span class="va">pathway_type</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">obj</span></span>
 <span></span>
-<span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_met"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_met"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_rna"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_combined"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p1</span><span class="op">/</span><span class="va">p2</span><span class="op">/</span><span class="va">p3</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="human_brain_tissue_analysis_files/figure-html/pathway_neuronal-1.png" width="1050" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_rna"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_neuronal-2.png" width="1050" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_combined"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_neuronal-3.png" width="1050" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="optional-plot-immunofluorescence-channels">Optional: plot immunofluorescence channels<a class="anchor" aria-label="anchor" href="#optional-plot-immunofluorescence-channels"></a>
 </h3>
 <p>If your metadata includes separate intensity channels and an RGB
 composite, you can map them as additional spatial panels.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">required_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GFAP_intensity"</span>, <span class="st">"Phalloidin_intensity"</span>, <span class="st">"DAPI_intensity"</span>, <span class="st">"color"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x_coord</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"x_centroid"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">y_coord</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"y_centroid"</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">required_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GFAP_intensity"</span>, <span class="st">"Phalloidin_intensity"</span>, <span class="st">"DAPI_intensity"</span>, <span class="st">"color"</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">required_cols</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">parse_rgb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">txt</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">txt</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">{</span></span>
