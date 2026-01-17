@@ -66,17 +66,9 @@ cregpathway <- readRDS(pathway_path)
 
 Below we can see the structure of our integrated data object
 
-```{r, results=FALSE}
+```{r}
 data
 ```
-
-  An object of class Seurat 
-  913 features across 37886 samples within 2 assays 
-  Active assay: SPM (574 features, 574 variable features)
-   3 layers present: counts, data, scale.data
-   1 other assay present: SPT
-   7 dimensional reductions calculated: PCA, UMAP, spt.pca, spt.umap, spm.pca, spm.umap, wnn.umap
-   2 images present: slice1, image
 
 
 ```{r qc_plots, message = FALSE, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
@@ -123,13 +115,13 @@ df %>%
 
 Pick a metabolite m/z, a gene, and a protein feature available in your object. We will use the protein GFAP as an example. The corresponding gene and mz values are `AQP4` and `mz-146.1651` respectfully. 
 
-```{r, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
+```{r, message = FALSE, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
 p1 <- SpatialDimPlot(data, group.by = "Anno4.1", images = "image", pt.size.factor = 2.5) +scale_fill_viridis_d(option = "turbo")+guides(fill = guide_legend(ncol = 2))
-p2 <- SpatialFeaturePlot(data, features = "AQP4", slot = "counts",images = "image",pt.size.factor = 2.5)+ scale_fill_viridis_c(option = "magma", na.value = "lightgrey")
+p2 <- SpatialFeaturePlot(data, features = "AQP4", slot = "data",images = "image",pt.size.factor = 2.5)+ scale_fill_viridis_c(option = "magma", na.value = "lightgrey")
 p3 <- SpatialFeaturePlot(data, features = "GFAP_intensity", images = "image",pt.size.factor = 2.5)+ scale_fill_viridis_c(option = "magma")
 p4 <- SpatialMZPlot(data, mzs = 146.1651, images = "image",pt.size.factor = 2.5, assay = "SPM", slot = "data")+ scale_fill_viridis_c(option = "magma")
 
-(p1|p2)/(p3|p4) & coord_flip() & scale_y_reverse()
+(p1|p2)/(p3|p4) & coord_flip() & scale_y_reverse() & theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 ## Pathway-level metabolite, RNA, and combined scores
@@ -200,7 +192,7 @@ p3 <- SpatialFeaturePlot(data, features = paste0(pathway_name, "_combined"), pt.
 p1/p2/p3 & theme(legend.position = "right",legend.direction = "vertical")
 ```
 
-```{r pathway_neuronal, message = FALSE, warning = FALSE}
+```{r pathway_neuronal, message = FALSE, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
 pathway_name <- "Neuronal System"
 pathway_type <- "Reactome"
 
@@ -220,7 +212,7 @@ p1/p2/p3 & theme(legend.position = "right",legend.direction = "vertical")
 If your metadata includes separate intensity channels and an RGB composite, you
 can map them as additional spatial panels.
 
-```{r protein_channels, message = FALSE, warning = FALSE}
+```{r protein_channels, message = FALSE, warning = FALSE, fig.width=8, fig.height=5 ,dpi=72, dev.args = list(bg = "#ffffff")}
 
 x_coord <- data@meta.data[["x_centroid"]]
 y_coord <- data@meta.data[["y_centroid"]]
