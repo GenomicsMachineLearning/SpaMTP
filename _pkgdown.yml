@@ -70,7 +70,7 @@ navbar:
         href: articles/Mouse_Urinary_Bladder.html
       - text: Spatial Multi-Omics Analysis
         href: articles/Multi-Omic_Mouse_Brain.html
-      - text: Single Cell Multi-Omics Analysis
+      - text: Single Cell Multi-Omics Analysis (MTP)
         href: articles/human_brain_tissue_analysis.html
       - text: Additional SpaMTP Features
         href: articles/SpaMTP_Additional_Features.html
