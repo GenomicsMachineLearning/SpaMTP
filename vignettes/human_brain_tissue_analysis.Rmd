@@ -84,10 +84,7 @@ SpatialFeaturePlot(
   data,
   features = c("nCount_originalexp", "nFeature_originalexp"),
   pt.size.factor = 2
-)& theme(
-  legend.position = "right",
-  legend.direction = "vertical"
-)
+) & theme(legend.position = "right",legend.direction = "vertical")
 ```
 
 ## Annotate m/z features (optional)
