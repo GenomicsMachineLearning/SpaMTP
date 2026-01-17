@@ -51,7 +51,12 @@ library(patchwork)
 
 ## Load the integrated object
 
-```{r load_data, message = FALSE, warning = FALSE}
+```{r eval=FALSE}
+data <- readRDS(url("https://zenodo.org/records/18282678/files/brain_tumour_integrated.rds?download=1"))
+cregpathway <- readRDS(url("https://zenodo.org/records/18282678/files/brain_tumour_combined_pathways.rds?download=1"))
+```
+
+```{r load_data, include=FALSE, message = FALSE, warning = FALSE}
 data_path <- "./vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds"
 pathway_path <- "./vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds"
 
