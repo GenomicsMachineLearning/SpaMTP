@@ -94,7 +94,6 @@ SpatialFeaturePlot(
 
 We extract m/z values from the `SPM` assay and run a basic annotation lookup.
 
-
 ```{r, echo=TRUE, results='hide', message = FALSE, warning = FALSE}
 spm <- data[["SPM"]]
 mz_vals <- as.numeric(sub("^mz-", "", rownames(spm)))
@@ -225,6 +224,10 @@ If your metadata includes separate intensity channels and an RGB composite, you
 can map them as additional spatial panels.
 
 ```{r protein_channels, message = FALSE, warning = FALSE}
+
+x_coord <- data@meta.data[["x_centroid"]]
+y_coord <- data@meta.data[["y_centroid"]]
+
 required_cols <- c("GFAP_intensity", "Phalloidin_intensity", "DAPI_intensity", "color")
 if (all(required_cols %in% colnames(data@meta.data))) {
   parse_rgb <- function(txt) {
