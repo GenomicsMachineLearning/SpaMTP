@@ -1,0 +1,723 @@
+---
+title: "FigS1_script"
+author: "Andrew Causer"
+date: "2025-12-07"
+output: html_document
+---
+
+
+```{r}
+#General Libraries
+library(Cardinal)
+library(Seurat)
+library(SpaMTP)
+
+#For plotting + DE plots
+library(ggplot2)
+library(dplyr)
+library(EnhancedVolcano)
+library(patchwork)
+library(stringr)
+library(tidyr)
+library(ggbreak)
+library(tibble)
+library(fmsb)
+```
+
+```{r}
+spotted_url <- "https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"
+data <- readRDS(url(spotted_url))
+metaspace <- read.csv("vignettes/vignette_data_files/Spotted_Liver/metaspace_annotations_HMDB.csv",  skip = 2, header = TRUE, stringsAsFactors = FALSE)
+```
+
+```{r}
+## 1.
+cardinal <- readImzML("./Test_Data/Spotted/2020-12-05_ME_X190_L1_Spotted_20umss_375x450_33at_DAN_Neg")
+
+## 2.
+ref_mz <- sort(unique(metaspace$mz))
+cardinal <- bin(x = cardinal,ref = ref_mz, tolerance = 3, units = "ppm")
+
+## 3.
+mzs <- data.frame(Cardinal::featureData(cardinal))$mz
+
+## 4.
+results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative") 
+
+## 5.
+cardinal_subset <- Cardinal::subset(cardinal, mz %in% results$observed_mz)
+
+## 6. 
+gc()
+rm(results)
+rm(cardinal)
+rm(mzs)
+rm(ref_mz)
+
+data <- CardinalToSeurat(cardinal_subset)
+data <- AnnotateSM(data, db = HMDB_db, ppm_error = 3, , adducts = c("M-H", "M+Cl"), polarity = "negative")
+
+```
+
+```{r}
+metaspace$mz_names <- paste0("mz-",metaspace$mz)
+
+common_ids <- intersect(metaspace$mz_names, data@assays$Spatial@meta.data$mz_names)
+
+metaspace_filtered <- metaspace %>% filter(mz_names %in% common_ids)
+
+#metaspace_filtered <- metaspace_filtered[c("mz", "adduct", "fdr", "moleculeNames", "moleculeIds")]
+
+
+metaspace_filtered <- metaspace_filtered %>%
+  group_by(mz) %>%
+  summarise(
+    moleculeNames = paste(moleculeNames, collapse = ", "),
+    moleculeIds = paste(moleculeIds, collapse = ", "),
+    adduct = paste(adduct, collapse = ", "),
+    fdr = paste(fdr, collapse = ", "),
+    mz_names = paste(mz_names, collapse = ", ")
+  ) %>%
+  ungroup()
+
+spamtp_filtered <- data@assays$Spatial@meta.data %>% filter(mz_names %in% common_ids)
+
+
+df1 <- metaspace_filtered
+df2 <- spamtp_filtered
+
+# Define bin breaks
+mz_bins <- seq(0, 1000, by = 50)
+
+# Prepare df1
+df1_binned <- df1 %>%
+  mutate(
+    n_annotations = str_count(moleculeIds, ",") + 1,
+    bin = cut(mz, breaks = mz_bins, include.lowest = TRUE, right = FALSE)
+  ) %>%
+  group_by(bin) %>%
+  summarise(mean_annotations = mean(n_annotations, na.rm = TRUE)) %>%
+  mutate(source = "df1")
+
+# Prepare df2
+df2_binned <- df2 %>%
+  mutate(
+    n_annotations = str_count(all_Isomers, ";") + 1,
+    bin = cut(raw_mz, breaks = mz_bins, include.lowest = TRUE, right = FALSE)
+  ) %>%
+  group_by(bin) %>%
+  summarise(mean_annotations = mean(n_annotations, na.rm = TRUE)) %>%
+  mutate(source = "df2")
+
+# Combine and compute bin midpoints
+binned_data <- bind_rows(df1_binned, df2_binned) %>%
+  mutate(
+    bin_mid = as.numeric(str_extract(bin, "\\d+")),
+    bin_mid = bin_mid + 50  # center of bin
+  )
+
+# Get consistent x-axis range
+x_min <- floor(min(c(df1$mz, df2$raw_mz), na.rm = TRUE) / 50) * 50
+x_max <- ceiling(max(c(df1$mz, df2$raw_mz), na.rm = TRUE) / 50) * 50
+x_breaks <- seq(x_min, x_max, by = 50)
+
+
+fake_entries <- expand.grid(
+  bin_mid = c(0, 50, 100, 1050),
+  source = c("df1", "df2"),
+  stringsAsFactors = FALSE
+) %>%
+  dplyr::mutate(
+    mean_annotations = 0,
+    bin = factor(paste0("[", bin_mid - 25, ",", bin_mid + 25, ")"))  # fabricate a bin label
+  )
+
+# Combine with the original data
+binned_data_padded <- dplyr::bind_rows(binned_data, fake_entries)
+
+# Bar plot with matching x-axis
+bar_plot <- ggplot(binned_data_padded, aes(x = factor(bin_mid), y = mean_annotations, fill = source)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7, alpha = 0.8) +
+  scale_fill_manual(values = c("df1" = "blue", "df2" = "red")) +
+  labs(x = "m/z bin midpoint", y = "Mean annotations", fill = "Dataset") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+
+# Dot plot with same x-axis
+dot_plot <- ggplot() +
+  geom_point(data = df1 %>% mutate(n_annotations = str_count(moleculeIds, ",") + 1),
+             aes(x = mz, y = n_annotations),
+             color = "blue", alpha = 0.6, size = 2) +
+  geom_point(data = df2 %>% mutate(n_annotations = str_count(all_Isomers, ";") + 1),
+             aes(x = raw_mz, y = n_annotations),
+             color = "red", alpha = 0.6, size = 2) +
+  geom_smooth(data = df1 %>% mutate(n_annotations = str_count(moleculeIds, ",") + 1),
+              aes(x = mz, y = n_annotations),
+              color = "blue", method = "loess", se = FALSE) +
+  geom_smooth(data = df2 %>% mutate(n_annotations = str_count(all_Isomers, ";") + 1),
+              aes(x = raw_mz, y = n_annotations),
+              color = "red", method = "loess", se = FALSE) +
+  scale_x_continuous(limits = c(0, 1000), breaks = c(0, 250, 500, 750, 1000)) +
+  labs(x = "m/z", y = "Number of annotations") +
+  theme_minimal()
+
+
+p <- bar_plot / dot_plot + plot_layout(heights = c(1, 2))
+p
+
+```
+
+
+# FigS1 A
+```{r}
+metabolite_names <- c("ATP", "ADP",   "Adenosine",  "Guanine", "Glutamic Acid", "Glutamine", "Glutathione")
+metabolite_hmdb_ids <- c("HMDB0000538", "HMDB0001341", "HMDB0000050", "HMDB0000132", "HMDB0000148", "HMDB0000641", "HMDB0000125")
+cols <- c("azure", "green", "yellow", "red", "turquoise1", "chocolate1", "deeppink")
+
+df <- data.frame(
+  name      = metabolite_names,
+  hmdb_id   = metabolite_hmdb_ids,
+  color     = cols,
+  stringsAsFactors = FALSE
+)
+
+spamtp_annot <- data@assays$Spatial@meta.data
+idx <- unlist(lapply(metabolite_hmdb_ids, function(x){
+    which(grepl(pattern = x, x = spamtp_annot$all_Isomers))}))
+
+spamtp_annot <- spamtp_annot[idx,]
+spamtp_annot <- spamtp_annot[c("raw_mz", "all_Adducts", "all_Errors", "all_IsomerNames", "all_Isomers", "mz_names")]
+
+
+idx <- unlist(lapply(metabolite_hmdb_ids, function(x){
+    which(grepl(pattern = x, x = metaspace$moleculeIds))}))
+metaspace_annot <- metaspace[idx,]
+metaspace_annot <- metaspace_annot[c("mz", "adduct", "fdr", "moleculeNames", "moleculeIds")]
+
+idx <- which(as.character(metaspace$mz) %in% as.character(unique(spamtp_annot$raw_mz)))
+
+metaspace_all_annot <- metaspace[idx,]
+metaspace_all_annot <- metaspace_all_annot[c("mz", "adduct", "fdr", "moleculeNames", "moleculeIds")]
+
+
+metaspace_all_annot <- metaspace_all_annot %>%
+  group_by(mz) %>%
+  summarise(
+    moleculeNames = paste(moleculeNames, collapse = ", "),
+    moleculeIds = paste(moleculeIds, collapse = ", "),
+    adduct = paste(adduct, collapse = ", "),
+    fdr = paste(fdr, collapse = ", ")
+  ) %>%
+  ungroup()
+
+spamtp_matching_annotations <- lapply(1:length(metabolite_hmdb_ids), function(i){
+    x <- metabolite_hmdb_ids[i]
+    idx <- which(grepl(pattern = x, x = spamtp_annot$all_Isomers))
+    spamtp_annot[idx,]$mz_names})
+
+names(spamtp_matching_annotations) <- metabolite_hmdb_ids
+
+
+mz_list <- spamtp_matching_annotations
+hmdb_to_name <- setNames(metabolite_names, metabolite_hmdb_ids)
+
+# Convert list to data frame
+df <- data.frame(
+  mz = character(),
+  chemical = character(),
+  id = character(),
+  stringsAsFactors = FALSE
+)
+
+# Process each element in the list
+for (name in names(mz_list)) {
+  # Extract HMDB ID from the name (remove the $ prefix)
+  hmdb_id <- gsub("^\\$", "", name)
+  
+  # Get chemical name
+  if (hmdb_id == "Other") {
+    chemical_name <- "Other"
+    id_value <- "Other"
+  } else {
+    chemical_name <- hmdb_to_name[hmdb_id]
+    id_value <- hmdb_id
+  }
+  
+  # Get mz values for this chemical
+  mz_values <- mz_list[[name]]
+  
+  # Create rows for each mz value
+  for (mz_val in mz_values) {
+    # Remove "mz-" prefix from mz value
+    clean_mz <- gsub("^mz-", "", mz_val)
+    
+    df <- rbind(df, data.frame(
+      mz = clean_mz,
+      chemical = chemical_name,
+      id = id_value,
+      stringsAsFactors = FALSE
+    ))
+  }
+}
+
+# If you want to convert mz to numeric
+df$mz <- as.numeric(df$mz)
+rownames(df) <- df$mz
+df
+```
+
+# Fig S1 B
+```{r}
+datax <- NormalizeData(data)
+intensity_values <- rowMeans(datax@assays$Spatial$data[paste0("mz-",rownames(df)),])
+mz_list <- spamtp_matching_annotations
+dfx<- enframe(mz_list, name = "HMDB_ID", value = "mz_list") %>%
+  unnest_longer(mz_list) %>%
+  mutate(
+    mz_numeric = as.numeric(gsub("mz-", "", mz_list)),
+    intensity = intensity_values[mz_list]
+  ) %>%
+  arrange(mz_numeric)
+
+dfx <- dfx %>% arrange(mz_numeric)
+
+# Step 2: Identify overlapping groups
+threshold <- 0.1
+group <- 1
+group_ids <- numeric(nrow(dfx))
+group_ids[1] <- group
+
+for (i in 2:nrow(dfx)) {
+  if (abs(dfx$mz_numeric[i] - dfx$mz_numeric[i - 1]) < threshold) {
+    group_ids[i] <- group
+  } else {
+    group <- group + 1
+    group_ids[i] <- group
+  }
+}
+
+dfx$group_id <- group_ids
+
+# Step 3: Alternate intensity direction within each group
+dfx <- dfx %>%
+  group_by(group_id) %>%
+  mutate(order_in_group = row_number(),
+         adjusted_intensity = ifelse(order_in_group %% 2 == 1, intensity, -intensity)) %>%
+  ungroup()
+
+dfx <- dfx %>%
+  mutate(log_intensity = sign(adjusted_intensity) * log10(abs(adjusted_intensity) + 1))  # +1 to avoid log(0)
+
+# Your custom named vector of colors
+id_cols <- c("azure", "green", "yellow", "red", "turquoise1", "chocolate1", "deeppink")
+names(id_cols) <- metabolite_hmdb_ids  # make sure this vector matches levels in HMDB_ID
+
+ p <- ggplot(dfx, aes(x = mz_numeric, y = log_intensity)) +
+  geom_segment(
+    aes(xend = mz_numeric, y = 0, yend = log_intensity, colour = HMDB_ID), linewidth = 1
+  ) +
+  scale_alpha_identity() +  # manual alpha
+  scale_color_manual(values = id_cols) +  # use your custom colors
+  scale_x_continuous(name = "m/z") +
+  scale_y_break(c(0.2, 0.6), scales = 1) + 
+  scale_y_break(c(-0.2, -0.6), scales = 10) +
+  labs(
+    title = "Spectral Stick Plot with Highlighted Low-Intensity Peaks",
+    y = "Log(Intensity)",
+    colour = "HMDB ID"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.background = element_rect(fill = "black", colour = NA),
+    plot.background = element_rect(fill = "black", colour = NA),
+    panel.grid.major = element_line(color = "grey30"),  # softer grid lines on dark bg
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(color = "white"),
+    axis.title = element_text(color = "white"),
+    plot.title = element_text(color = "white", face = "bold"),
+    legend.background = element_rect(fill = "black"),
+    legend.key = element_rect(fill = "black"),
+    legend.text = element_text(color = "white"),
+    legend.title = element_text(color = "white"),
+    axis.text.x = element_text(angle = 45, hjust = 1, color = "white"),
+    legend.position = "right"
+  )
+p 
+```
+
+
+# Fig S1 C
+```{r}
+plots <- lapply(1:length(metabolite_hmdb_ids), function(i){
+    x <- metabolite_hmdb_ids[i]
+    idx <- which(grepl(pattern = x, x = spamtp_annot$all_Isomers))
+    plot_ind <-list()
+    for(met in spamtp_annot[idx,]$mz_names){
+        if (metabolite_names[i] == "Guanine"){
+                    plot_ind[[met]] <- ImageFeaturePlot(data, features = met,  cols = c("black", cols[i]), dark.background = F, size = 0.8) & ggtitle(metabolite_names[i]) & scale_fill_gradientn(colors = c("black", cols[i]), limits = c(0, max(data[["Spatial"]]["counts"][met,])*0.3), na.value = cols[i])
+
+        }else{
+        plot_ind[[met]] <- ImageFeaturePlot(data, features = met,  cols = c("black", cols[i]), dark.background = F, size = 0.8) & ggtitle(metabolite_names[i]) & scale_fill_gradientn(colors = c("black", cols[i]), limits = c(0, max(data[["Spatial"]]["counts"][met,])*0.8), na.value = cols[i])
+        }
+    }
+    plot_ind
+})
+#names(plots) <- metabolite_names
+
+wrap_plots(plots[[7]])
+
+```
+```{r}
+molecular_df <- metaspace_all_annot
+
+check_id_present <- function(target_id, molecule_ids_string) {
+  if (target_id == "Other") {
+    return(FALSE)
+  }
+  ids <- trimws(unlist(strsplit(molecule_ids_string, ",")))
+  return(target_id %in% ids)
+}
+
+count_total_ids <- function(molecule_ids_string) {
+  ids <- trimws(unlist(strsplit(molecule_ids_string, ",")))
+  return(length(ids))
+}
+
+# Add the new columns to your df
+df$id_present <- FALSE
+df$total_num_ids <- 0
+df$corresponding_fdr <- NA
+
+# Ensure mz values are treated as character strings
+df$mz <- as.character(df$mz)
+molecular_df$mz <- as.character(molecular_df$mz)
+
+# Match by exact character equality
+for (i in 1:nrow(df)) {
+  matching_row <- which(molecular_df$mz == df$mz[i])
+  
+  if (length(matching_row) > 0) {
+    match_idx <- matching_row[1]
+    
+    df$id_present[i] <- check_id_present(df$id[i], molecular_df$moleculeIds[match_idx])
+    df$total_num_ids[i] <- count_total_ids(molecular_df$moleculeIds[match_idx])
+    df$corresponding_fdr[i] <- molecular_df$fdr[match_idx]
+  }
+}
+
+# Rename columns
+colnames(df)[which(colnames(df) %in% c("id_present", "total_num_ids", "corresponding_fdr"))] <- 
+  c('METASPACE_id_present','METASPACE_total_num_ids','METASPACE_corresponding_fdr')
+
+
+new_df<- spamtp_annot
+new_df$mz <- as.numeric(gsub("mz-", "", new_df$mz_names))
+new_df$moleculeNames <- unlist(lapply(new_df$all_IsomerNames, function(x){
+    gsub(x = x, pattern = "; ", ", ")
+}))
+
+new_df$moleculeIds <- unlist(lapply(new_df$all_Isomers, function(x){
+    gsub(x = x, pattern = "; ", ", ")
+}))
+
+new_df$fdr <- unlist(lapply(new_df$all_Errors, function(x){
+    gsub(x = x, pattern = "; ", ", ")
+}))
+
+new_df$adduct <- unlist(lapply(new_df$all_Adducts, function(x){
+    gsub(x = x, pattern = "; ", ", ")
+}))
+
+molecular_df <- new_df[c("mz", "moleculeNames",	"moleculeIds",	"adduct",	"fdr")]
+
+check_id_present <- function(target_id, molecule_ids_string) {
+  if (target_id == "Other") {
+    return(FALSE)
+  }
+  ids <- trimws(unlist(strsplit(molecule_ids_string, ",")))
+  return(target_id %in% ids)
+}
+
+count_total_ids <- function(molecule_ids_string) {
+  ids <- trimws(unlist(strsplit(molecule_ids_string, ",")))
+  return(length(ids))
+}
+
+# Add the new columns to your df
+df$id_present <- FALSE
+df$total_num_ids <- 0
+df$corresponding_fdr <- NA
+
+# Ensure mz values are treated as character strings
+df$mz <- as.character(df$mz)
+molecular_df$mz <- as.character(molecular_df$mz)
+
+# Match by exact character equality
+for (i in 1:nrow(df)) {
+  matching_row <- which(molecular_df$mz == df$mz[i])
+  
+  if (length(matching_row) > 0) {
+    match_idx <- matching_row[1]
+    
+    df$id_present[i] <- check_id_present(df$id[i], molecular_df$moleculeIds[match_idx])
+    df$total_num_ids[i] <- count_total_ids(molecular_df$moleculeIds[match_idx])
+    df$corresponding_fdr[i] <- molecular_df$fdr[match_idx]
+  }
+}
+colnames(df) <- c('mz','chemical','id','METASPACE_id_present','METASPACE_total_num_ids','METASPACE_corresponding_fdr','SpaMTP_id_present','SpaMTP_total_num_ids','SpaMTP_corresponding_error')
+```
+
+
+# Fig S1 D
+```{r}
+output <- readRDS(url("https://zenodo.org/records/17352749/files/annotation_zscore_output.RDS?download=1"))
+
+#output <- readRDS("~/output_H_Cl_adducts.RDS")
+output <- output[output$mz_names %in% unlist(spamtp_matching_annotations),]
+output <- output %>%
+  mutate(Metabolite = case_when(
+    `metabolite` == "Adenosine triphosphate"~"ATP",
+    `metabolite` ==  "L-Glutamic acid" ~"Glutamic Acid" ,
+    `metabolite` == "L-Glutamine"~"Glutamine" ,
+    TRUE ~ `metabolite`
+  ))
+df$Refined_id_present <-unlist(lapply(1:dim(df)[1], function(i){
+    x <- paste0("mz-",df$mz[i])
+    predicted <- output[output$mz_names == x,]$`Metabolite`
+    c(predicted,df$chemical[i])
+    predicted == df$chemical[i]
+}))
+df$Refined_total_numb_ids <- 1
+
+
+metaspace_df <- df %>%
+  dplyr::select(METASPACE_id_present, METASPACE_total_num_ids)
+
+TP_m <- sum(metaspace_df$METASPACE_id_present)
+FP_m <- sum(ifelse(metaspace_df$METASPACE_id_present, metaspace_df$METASPACE_total_num_ids - 1, 0))
+FN_m <- sum(!metaspace_df$METASPACE_id_present)
+
+Precision_m <- TP_m / (TP_m + FP_m)
+Recall_m <- TP_m / (TP_m + FN_m)
+F1_m <- 2 * (Precision_m * Recall_m) / (Precision_m + Recall_m)
+FDR_m <- FP_m / (TP_m + FP_m)
+Accuracy_m <- TP_m / nrow(metaspace_df)
+
+spamtp_df <- df %>%
+  dplyr::select(SpaMTP_id_present, SpaMTP_total_num_ids)
+
+TP_s <- sum(spamtp_df$SpaMTP_id_present)
+FP_s <- sum(ifelse(spamtp_df$SpaMTP_id_present, spamtp_df$SpaMTP_total_num_ids - 1, 0))
+FN_s <- sum(!spamtp_df$SpaMTP_id_present)
+
+Precision_s <- TP_s / (TP_s + FP_s)
+Recall_s <- TP_s / (TP_s + FN_s)
+F1_s <- 2 * (Precision_s * Recall_s) / (Precision_s + Recall_s)
+FDR_s <- FP_s / (TP_s + FP_s)
+Accuracy_s <- TP_s / nrow(spamtp_df)
+
+# Step 1: Separate rows with multiple FDRs
+df_split <- df %>%
+  separate_rows(METASPACE_corresponding_fdr, sep = ",\\s*") %>%
+  mutate(METASPACE_corresponding_fdr = as.numeric(METASPACE_corresponding_fdr)) %>%
+  group_by(mz) %>%
+  mutate(n_fdr = n(),
+         adjusted_total_ids = pmax(1, floor(METASPACE_total_num_ids / n_fdr))) %>%
+  ungroup()
+# Define FDR groups to evaluate
+fdr_thresholds <- c(0.05, 0.1, 0.2, 0.5)
+
+# Function to compute metrics for each FDR group
+calculate_metrics <- function(data) {
+  TP <- sum(data$METASPACE_id_present)
+  FP <- sum(ifelse(data$METASPACE_id_present, data$adjusted_total_ids - 1, 0))
+  FN <- sum(!data$METASPACE_id_present)
+  
+  precision <- TP / (TP + FP)
+  recall <- TP / (TP + FN)
+  f1 <- 2 * (precision * recall) / (precision + recall)
+  fdr <- FP / (TP + FP)
+  accuracy <- TP / nrow(data)
+  
+  return(data.frame(Precision = precision, Recall = recall, F1 = f1, FDR = fdr, Accuracy = accuracy))
+}
+
+
+# Apply the function for each FDR group
+metaspace_metrics_by_fdr <- lapply(fdr_thresholds, function(thresh) {
+  group_df <- df_split %>% filter(METASPACE_corresponding_fdr == thresh)
+  result <- calculate_metrics(group_df)
+  result$FDR_threshold <- thresh
+  result
+}) %>% bind_rows()
+
+
+
+refined_df <- df %>%
+  dplyr::select(Refined_id_present, Refined_total_numb_ids)
+
+# Calculate metrics
+TP_r <- sum(refined_df$Refined_id_present)
+FP_r <- sum(ifelse(refined_df$Refined_id_present, refined_df$Refined_total_numb_ids - 1, 0))
+FN_r <- sum(!refined_df$Refined_id_present)
+
+Precision_r <- TP_r / (TP_r + FP_r)
+Recall_r <- TP_r / (TP_r + FN_r)
+F1_r <- 2 * (Precision_r * Recall_r) / (Precision_r + Recall_r)
+FDR_r <- FP_r / (TP_r + FP_r)
+Accuracy_r <- TP_r / nrow(refined_df)
+
+
+# SpaMTP already computed (update if needed)
+spamtp_metrics <- data.frame(
+  Precision = Precision_s,
+  Recall = Recall_s,
+  F1 = F1_s,
+  FDR = FDR_s,
+  Accuracy = Accuracy_s,
+  FDR_threshold = "SpaMTP"
+)
+# Combine all
+
+metaspace_metrics_by_fdr$FDR_threshold <- paste0("FDR_", metaspace_metrics_by_fdr$FDR_threshold)
+
+radar_df <- bind_rows(metaspace_metrics_by_fdr, spamtp_metrics)
+radar_df$Method <- radar_df$FDR_threshold
+radar_df$FDR_threshold <- NULL
+# Radar chart needs max/min rows
+radar_data <- radar_df %>%
+  column_to_rownames("Method")
+
+radar_data <- rbind(
+  Max = rep(1, ncol(radar_data)),
+  Min = rep(0, ncol(radar_data)),
+  radar_data
+)
+
+radar_data["SpaMTP_Refined",] <- c(Precision_r,	Recall_r,	F1_r,	FDR_r,	Accuracy_r)
+
+n_fdr <- 4
+
+# Generate 4 shades of blue (from light to dark)
+blue_shades <- colorRampPalette(RColorBrewer::brewer.pal(9, "Blues"))(n_fdr + 1)[2:(n_fdr + 1)]
+
+# Assign red for SpaMTP
+spaMTP_color <- c("#f09595", "#D62728")  # classic bold red
+
+# Combine colours
+colors_border <- c(blue_shades, spaMTP_color)
+colors_fill <- alpha(colors_border, 0.3)
+
+radarchart(radar_data,
+           axistype = 1,
+           pcol = colors_border,
+          # pfcol = colors_fill,
+           plwd = 2,
+           plty = 1,
+           cglcol = "grey",
+           cglty = 1,
+           axislabcol = "grey",
+           caxislabels = seq(0, 1, 0.2),
+           cglwd = 0.8,
+           vlcex = 0.8,
+           title = "Performance by FDR (METASPACE) and SpaMTP")
+
+legend("topright",
+       legend = rownames(radar_data)[-c(1,2)],
+       col = colors_border,
+       lty = 1,
+       lwd = 2,
+       bty = "n",
+       cex = 0.8)
+
+
+metrics_df <- radar_data[c(3:8),]
+metrics_df$Method <- rownames(metrics_df)
+metrics_long <- metrics_df %>%
+  pivot_longer(cols = -Method, names_to = "Metric", values_to = "Value")
+
+# Factor levels to control order
+metrics_long$Method <- factor(metrics_long$Method,
+                              levels = c("FDR_0.05", "FDR_0.1", "FDR_0.2", "FDR_0.5", "SpaMTP", "SpaMTP_Refined"))
+
+# Define custom colours
+fill_cols <- c(
+  "FDR_0.05" = "#c6dbef",
+  "FDR_0.1" = "#9ecae1",
+  "FDR_0.2" = "#6baed6",
+  "FDR_0.5" = "#2171b5",
+  "SpaMTP" = "#f09595",
+  "SpaMTP_Refined" = "#D62728"
+)
+
+# Plot
+p <- ggplot(metrics_long, aes(x = Metric, y = Value, fill = Method)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  scale_fill_manual(values = fill_cols) +
+  labs(title = "Comparison of Methods Across Evaluation Metrics",
+       x = "Metric", y = "Score") +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p
+
+
+
+```
+
+# Fig S1 E
+```{r}
+spotted <- CreatePathwayAssay(data, analyte_type = "metabolites", assay = "Spatial", new_assay = "SPM_pathway", verbose = T)
+
+## Step 2: Format Pathway Assay
+DefaultAssay(spotted) <- "SPM_pathway"
+spotted <- NormalizeData(spotted)
+spotted <- ScaleData(spotted)
+
+## Step 3: Run CalculateAnnotationStatistics
+all_output <- CalculateAnnotationStatistics(data = spotted, mz.assay = "Spatial",pathway.assay="SPM_pathway", mz.slot = "counts", return.top = FALSE)
+
+# Assume your list of data frames is called metabolite_results_list
+metabolite_results_idx <- as.numeric(rownames(output[output$mz_names %in% unlist(spamtp_matching_annotations),]))
+metabolite_results_list <- all_output
+
+# Loop over list and generate plots
+plots <- map(metabolite_results_idx, function(i) {
+  df <- metabolite_results_list[[i]]
+  
+  # Ensure the n_sig_path is numeric
+  df$n_sig_path <- as.numeric(df$n_sig_path)
+  
+  # Remove rows with NA values in n_sig_path or max_cor
+  df <- df %>%
+    filter(!is.na(n_sig_path), !is.na(max_cor), !is.na(pval)) %>%
+    arrange(pval) %>%
+    mutate(metabolite_ranked = factor(metabolite, levels = rev(unique(metabolite))))
+
+  # If df is empty after filtering, return NULL
+  if (nrow(df) == 0) return(NULL)
+  
+  # Create plot
+  ggplot(df, aes(x = max_cor, y = metabolite_ranked, color = n_sig_path)) +
+    geom_point(size = 3) +
+    scale_color_gradient(low = "grey", high = "red") +
+    labs(
+      title = paste("Example", i),
+      x = "Max Correlation",
+      y = "Metabolites (ranked by p-value)",
+      color = "Significant\nPathways"
+    ) +
+    theme_classic() +
+    theme(axis.text.y = element_text(size = 7)) +
+    ggtitle(
+      paste0(
+        names(metabolite_results_list)[i]
+      )
+    )
+})
+```
+
+
+
+
+

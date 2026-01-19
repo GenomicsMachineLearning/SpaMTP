@@ -11,8 +11,11 @@ output: html_document
 Using an object generated in the ['Spatial Metabolic Analysis'](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html#:~:text=by%20each%20cluster.-,%23%20Compute%20counts%20of%20Lipid%20Maps%20Categories%20for%20%27Up%27%20and%20%27Down%27%20entries,-category_counts%20%3C%2D%20UP) the code below was used to generate Figure 2E. 
 
 ```{r, include = FALSE}
-## The below code was used to generate the cirlce plot in the SpaMTP publication
+library(dplyr)
+library(tidyr)
 
+
+## The below code was used to generate the cirlce plot in the SpaMTP publication
 normalize_lipid_class <- function(lipid_class) {
   if (lipid_class %in% c("PC; PE-NMe; PE", "PC; PE; PE-NMe", "PC; PE; PE-NMe2")) {
     return("PC; PE; PE-NMe")
@@ -30,12 +33,36 @@ df <- category_counts %>%
     Lipid.Maps.Category = gsub(";", " or ", Lipid.Maps.Category)
   )
 
-df <- df[c(1:8,11:14),]
-df[8,]$count <- 4
 
-category_counts <- df
-empty_bar <- 2
-to_add <- data.frame(matrix(NA, empty_bar*nlevels(category_counts$cluster), ncol(category_counts)) )
+new_df <- df %>%
+    filter(cluster %in% c(5, 6)) %>%
+    group_by(cluster, Lipid.Maps.Category) %>%
+    summarise(count = sum(count), .groups = "drop") %>%
+    pivot_wider(
+        names_from = cluster,
+        values_from = count,
+        values_fill = 0
+    ) %>%
+    mutate(diff = `5` - `6`) %>%
+    transmute(
+        cluster = 5,
+        Lipid.Maps.Category,
+        count = diff
+    )
+
+df <- new_df %>%   # replace with your object name
+  mutate(
+    cluster = if_else(count < 0, 6L, cluster),
+    count   = abs(count)
+  )
+df <- subset(df, count != 0)
+df <- subset(df, Lipid.Maps.Category != "Non-Lipids")
+
+category_counts <- df %>%
+  mutate(cluster = factor(cluster))
+
+empty_bar <- 1
+to_add <- data.frame(matrix(NA, empty_bar*nlevels(category_counts$cluster), ncol(category_counts)))
 colnames(to_add) <- colnames(category_counts)
 to_add$cluster <- rep(levels(category_counts$cluster), each=empty_bar)
 category_counts <- rbind(category_counts, to_add)
@@ -57,7 +84,7 @@ base_data <- category_counts %>%
 
 p <- ggplot(category_counts,aes(fill=cluster, y=count, x=id))+
     geom_bar(stat = "identity")+
-   xlim(0,dim(category_counts)[1])+ylim(-10,10)+geom_text(data=label_data, aes(x=id, y = count+1,label=Lipid.Maps.Main.Class),size = 4, angle = label_data$angle)+
+   xlim(0,dim(category_counts)[1])+ylim(-10,max(category_counts$count))+geom_text(data=label_data, aes(x=id, y = count+1,label=Lipid.Maps.Category),size = 4, angle = label_data$angle)+
     geom_segment(data=base_data, aes(x = start, y = -3, xend = end+1, yend = -3), alpha=0.8, size=2 , inherit.aes = FALSE)+
     geom_text(data=base_data, aes(x = title, y = -1, label=cluster), alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)+
      coord_polar()+theme_minimal()+

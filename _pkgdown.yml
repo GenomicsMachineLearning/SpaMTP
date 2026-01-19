@@ -76,7 +76,7 @@ navbar:
         href: articles/SpaMTP_Additional_Features.html
       - text: Handling Big Datasets
         href: articles/Big_Data.html
-      - text: Refinning Metabolite Annotations
+      - text: Refining Metabolite Annotations
         href: articles/Annotation_Refinement.html
       - text: Simulated scMulti-Omics Analysis
         href: articles/Single_Cell_MultiOmics.html

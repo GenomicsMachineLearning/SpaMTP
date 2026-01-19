@@ -19,7 +19,6 @@ cardinal <- bin(x = cardinal,ref = ref_mz, tolerance = 3, units = "ppm")
 ## 3.
 mzs <- data.frame(Cardinal::featureData(cardinal))$mz
 
-
 ## 4.
 results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative") 
 

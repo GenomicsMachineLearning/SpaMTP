@@ -1,5 +1,5 @@
 ---
-title: "SpaMTP: Human Brain Tissue Analysis"
+title: "SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics, Transcriptomics, Proteomics)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{SpaMTP: Human Brain Tissue Analysis}
@@ -36,7 +36,7 @@ You will need a *SpaMTP* object that contains:
 - Metadata columns for spatial coordinates (`x_centroid`, `y_centroid`).
 - Optional protein intensity columns (e.g., `GFAP_intensity`).
 
-Update the paths below to match your local files.
+The dataset used in this tutorial consists of aligning SM, ST and SP data on serial section. This was achieved using the python package SMINT. The [alignment script](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/Align_SM_ST_Tutorial.ipynb) and [python-to-SpaMTP script](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/FigS6_script.Rmd) can be found following the respective links.
 
 ## Install and load packages
 

@@ -640,10 +640,12 @@ Lets use SpaMTP's *FindAllDEMs()* function to identify differentially expressed 
 
 
 ```{r, warning=FALSE, message=FALSE}
+ROI <- NormalizeSMData(ROI)
+
 # Performs pooling, pseudo-bulking and edgeR Differential Expression Analysis
-cluster_DEMs <- FindAllDEMs(data = ROI, ident = "ssc", n = 3, logFC_threshold = 1, 
+cluster_DEMs <- FindAllDEMs(data = ROI, slot = "data", ident = "ssc", n = 5, logFC_threshold = 1, 
                             DE_output_dir =NULL, return.individual = FALSE, 
-                            run_name = "FindAllDEMs", annotation.column = "all_IsomerNames" ) # DE results are returned in a data.frame
+                            run_name = "FindAllDEMs", annotation.column = "all_IsomerNames") # DE results are returned in a data.frame
 ```
 
     Pooling one sample into 3 replicates...
@@ -664,7 +666,7 @@ Lets observe the top 10 DE metabolites for each cluster in a heatmap:
 ```{r, fig.width=15, fig.height=10, dpi=72, dev.args = list(bg = "#ffffff")}
 DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             plot_annotations_column = "annotations", nlabels.to.show = 1, 
-            n = 10, save_to_path = NULL
+            n = 15, save_to_path = NULL
             ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("2","5","6")])
 ```
 
