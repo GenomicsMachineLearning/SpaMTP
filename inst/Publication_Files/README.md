@@ -30,7 +30,7 @@ This folder contains scripts and notebooks used to generate figures for the SpaM
 |           | D | [Spatial Multi-Omics Analysis Tutorial](https://genomicsmachinelearning.github.io/SpaMTP/articles/Multi-Omic_Mouse_Brain.html#geseca-based-pathway-analysis) | 
 |           | E-F | To be uploaded soon | 
 | Figure S5 | A-F | [Single Cell Multi-Omic Analysis (MTP)](https://genomicsmachinelearning.github.io/SpaMTP/articles/human_brain_tissue_analysis.html#multi-panel-spatial-maps-cell-type-gene-protein-metabolite) | 
-| Figure S6 | A-F | [Additional script]((https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/FigS6_script.Rmd) and
+| Figure S6 | A-F | [Additional script](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/FigS6_script.Rmd) and
 [Additional Tutorial](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/Align_SM_ST_Tutorial.ipynb) | 
 | Figure S7 | A-D | Representative figure only| 
 | Figure S8 | A-H | Representative figure only| 
