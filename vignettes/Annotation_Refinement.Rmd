@@ -151,49 +151,6 @@ knitr::kable(
 We can see for each spiked-in metabolite the predicted metabolite with the highest significance in each case corresponded to the spike-in. This method gives the user higher confidence that the annotations of m/z value are correct and biologically significant. Note: For large datasets this function can take a while to run, the function `CalculateSingleAnnotationStatistics` can be used instead to calculate refined annotations for a single m/z value. Please visit the [documentation](https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateSingleAnnotationStatistics.html) for more information.
 
 
-```{r}
-metabolite_results_idx <- as.numeric(rownames(output[output$mz_names %in% unlist(spamtp_matching_annotations),]))
-metabolite_results_list <- output
-
-# Loop over list and generate plots
-plots <- map(metabolite_results_idx, function(i) {
-  df <- metabolite_results_list[[i]]
-  
-  # Ensure the n_sig_path is numeric
-  df$n_sig_path <- as.numeric(df$n_sig_path)
-  
-  # Remove rows with NA values in n_sig_path or max_cor
-  df <- df %>%
-    filter(!is.na(n_sig_path), !is.na(max_cor), !is.na(pval)) %>%
-    arrange(pval) %>%
-    mutate(metabolite_ranked = factor(metabolite, levels = rev(unique(metabolite))))
-
-  # If df is empty after filtering, return NULL
-  if (nrow(df) == 0) return(NULL)
-  
-  # Create plot
-  ggplot(df, aes(x = max_cor, y = metabolite_ranked, color = n_sig_path)) +
-    geom_point(size = 3) +
-    scale_color_gradient(low = "grey", high = "red") +
-    labs(
-      title = paste("Example", i),
-      x = "Max Correlation",
-      y = "Metabolites (ranked by p-value)",
-      color = "Significant\nPathways"
-    ) +
-    theme_classic() +
-    theme(axis.text.y = element_text(size = 7)) +
-    ggtitle(
-      paste0(
-        names(metabolite_results_list)[i]
-      )
-    )
-})
-
-```
-
-
-
 ## 2) Lipid Nomenchlature Refinement 
 
 As described previously in the [`Spatial Metabolomics Analysis`](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html) tutorial, because many different kinds of lipids can share the same molecular weight, this may results in some m/z values possessing many possible annotations. The SpaMTP function `RefineLipids` can be used to simplify the lipid nomenclature into common lipid categories and classes, giving more simplified annotations to a level that most SM datasets are capable of identifying. 
