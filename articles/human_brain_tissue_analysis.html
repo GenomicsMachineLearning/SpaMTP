@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>SpaMTP: Human Brain Tissue Analysis • SpaMTP</title>
+<title>SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics, Transcriptomics, Proteomics) • SpaMTP</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SpaMTP: Human Brain Tissue Analysis">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics, Transcriptomics, Proteomics)">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -44,7 +44,7 @@
     <li><a class="dropdown-item" href="../articles/human_brain_tissue_analysis.html">Single Cell Multi-Omics Analysis (MTP)</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
-    <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refinning Metabolite Annotations</a></li>
+    <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul>
 </li>
@@ -75,7 +75,7 @@
 <script src="human_brain_tissue_analysis_files/kePrint-0.0.1/kePrint.js"></script><link href="human_brain_tissue_analysis_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Human Brain Tissue Analysis</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics, Transcriptomics, Proteomics)</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/vignettes/human_brain_tissue_analysis.Rmd" class="external-link"><code>vignettes/human_brain_tissue_analysis.Rmd</code></a></small>
@@ -108,7 +108,11 @@ pathway scores that combine metabolite and RNA signals.</p>
 <li>Optional protein intensity columns (e.g.,
 <code>GFAP_intensity</code>).</li>
 </ul>
-<p>Update the paths below to match your local files.</p>
+<p>The dataset used in this tutorial consists of aligning SM, ST and SP
+data on serial section. This was achieved using the python package
+SMINT. The <a href="https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/Align_SM_ST_Tutorial.ipynb" class="external-link">alignment
+script</a> and <a href="https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/inst/Publication_Files/FigS6_script.Rmd" class="external-link">python-to-SpaMTP
+script</a> can be found following the respective links.</p>
 </div>
 <div class="section level3">
 <h3 id="install-and-load-packages">Install and load packages<a class="anchor" aria-label="anchor" href="#install-and-load-packages"></a>
@@ -130,12 +134,14 @@ pathway scores that combine metabolite and RNA signals.</p>
 <p>Below we can see the structure of our integrated data object</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span></span></code></pre></div>
-<p>An object of class Seurat 913 features across 37886 samples within 2
-assays Active assay: SPM (574 features, 574 variable features) 3 layers
-present: counts, data, scale.data 1 other assay present: SPT 7
-dimensional reductions calculated: PCA, UMAP, spt.pca, spt.umap,
-spm.pca, spm.umap, wnn.umap 2 images present: slice1, image</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## An object of class Seurat </span></span>
+<span><span class="co">## 913 features across 37886 samples within 2 assays </span></span>
+<span><span class="co">## Active assay: SPM (574 features, 574 variable features)</span></span>
+<span><span class="co">##  3 layers present: counts, data, scale.data</span></span>
+<span><span class="co">##  1 other assay present: SPT</span></span>
+<span><span class="co">##  7 dimensional reductions calculated: PCA, UMAP, spt.pca, spt.umap, spm.pca, spm.umap, wnn.umap</span></span>
+<span><span class="co">##  2 images present: slice1, image</span></span></code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nCount_originalexp"</span>, <span class="st">"nFeature_originalexp"</span><span class="op">)</span>,</span>
@@ -148,7 +154,7 @@ spm.pca, spm.umap, wnn.umap 2 images present: slice1, image</p>
 </h3>
 <p>We extract m/z values from the <code>SPM</code> assay and run a basic
 annotation lookup.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spm</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="st">"SPM"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">mz_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"^mz-"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spm</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -461,32 +467,13 @@ hmdb:HMDB0255263
 your object. We will use the protein GFAP as an example. The
 corresponding gene and mz values are <code>AQP4</code> and
 <code>mz-146.1651</code> respectfully.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialDimPlot</a></span><span class="op">(</span><span class="va">data</span>, group.by <span class="op">=</span> <span class="st">"Anno4.1"</span>, images <span class="op">=</span> <span class="st">"image"</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"turbo"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
-<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="st">"AQP4"</span>, slot <span class="op">=</span> <span class="st">"counts"</span>,images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, na.value <span class="op">=</span> <span class="st">"lightgrey"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
-<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="st">"GFAP_intensity"</span>, images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
-<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialMZPlot.html">SpatialMZPlot</a></span><span class="op">(</span><span class="va">data</span>, mzs <span class="op">=</span> <span class="fl">146.1651</span>, images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span>, assay <span class="op">=</span> <span class="st">"SPM"</span>, slot <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Scale for <span style="color: #00BB00;">fill</span> is already present.</span></span>
-<span><span class="co">## Adding another scale for <span style="color: #00BB00;">fill</span>, which will replace the existing scale.</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">p1</span><span class="op">|</span><span class="va">p2</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">p3</span><span class="op">|</span><span class="va">p4</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span>
-<span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span>
-<span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span>
-<span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialDimPlot</a></span><span class="op">(</span><span class="va">data</span>, group.by <span class="op">=</span> <span class="st">"Anno4.1"</span>, images <span class="op">=</span> <span class="st">"image"</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_d</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"turbo"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="st">"AQP4"</span>, slot <span class="op">=</span> <span class="st">"data"</span>,images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, na.value <span class="op">=</span> <span class="st">"lightgrey"</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="st">"GFAP_intensity"</span>, images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span></span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialMZPlot.html">SpatialMZPlot</a></span><span class="op">(</span><span class="va">data</span>, mzs <span class="op">=</span> <span class="fl">146.1651</span>, images <span class="op">=</span> <span class="st">"image"</span>,pt.size.factor <span class="op">=</span> <span class="fl">2.5</span>, assay <span class="op">=</span> <span class="st">"SPM"</span>, slot <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="op">(</span><span class="va">p1</span><span class="op">|</span><span class="va">p2</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">p3</span><span class="op">|</span><span class="va">p4</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_reverse</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="human_brain_tissue_analysis_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -495,7 +482,7 @@ corresponding gene and mz values are <code>AQP4</code> and
 <p>We compute pathway scores for selected pathways by binning m/z
 features and summing leading-edge genes, then combine the two
 modalities.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">min_max</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">rng</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.infinite</a></span><span class="op">(</span><span class="va">rng</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">||</span> <span class="va">rng</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">rng</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span>
@@ -542,7 +529,7 @@ modalities.</p>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">obj</span>, genes <span class="op">=</span> <span class="va">genes</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathway_name</span> <span class="op">&lt;-</span> <span class="st">"Glucose metabolism"</span></span>
 <span><span class="va">pathway_type</span> <span class="op">&lt;-</span> <span class="st">"wiki"</span></span>
 <span></span>
@@ -555,7 +542,7 @@ modalities.</p>
 <span></span>
 <span><span class="va">p1</span><span class="op">/</span><span class="va">p2</span><span class="op">/</span><span class="va">p3</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="human_brain_tissue_analysis_files/figure-html/pathway_glucose-1.png" width="576" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathway_name</span> <span class="op">&lt;-</span> <span class="st">"Neuronal System"</span></span>
 <span><span class="va">pathway_type</span> <span class="op">&lt;-</span> <span class="st">"Reactome"</span></span>
 <span></span>
@@ -567,14 +554,14 @@ modalities.</p>
 <span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">data</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pathway_name</span>, <span class="st">"_combined"</span><span class="op">)</span>, pt.size.factor <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1</span><span class="op">/</span><span class="va">p2</span><span class="op">/</span><span class="va">p3</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span>,legend.direction <span class="op">=</span> <span class="st">"vertical"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_neuronal-1.png" width="1050" style="display: block; margin: auto;"></p>
+<p><img src="human_brain_tissue_analysis_files/figure-html/pathway_neuronal-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="optional-plot-immunofluorescence-channels">Optional: plot immunofluorescence channels<a class="anchor" aria-label="anchor" href="#optional-plot-immunofluorescence-channels"></a>
 </h3>
 <p>If your metadata includes separate intensity channels and an RGB
 composite, you can map them as additional spatial panels.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x_coord</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"x_centroid"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">y_coord</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"y_centroid"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
@@ -635,7 +622,7 @@ composite, you can map them as additional spatial panels.</p>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></span><span class="op">(</span><span class="st">"Missing IF columns: "</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">required_cols</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="human_brain_tissue_analysis_files/figure-html/protein_channels-1.png" width="1050" style="display: block; margin: auto;"></p>
+<p><img src="human_brain_tissue_analysis_files/figure-html/protein_channels-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
