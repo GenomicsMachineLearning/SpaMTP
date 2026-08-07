@@ -9,3 +9,5 @@ inst/figures/$
 ^pkgdown$
 ^\.gitattributes
 ^\.github$
+^\.git
+^data-raw$

@@ -5,12 +5,13 @@
 \alias{source_df}
 \title{source_df: A dataframe containing source information about RAMP_ID analyte used for analysis}
 \format{
-\subsection{A data frame with 810,652 rows and 8 variables:}{
+\subsection{A data frame with 1,051,927 rows and 8 variables:}{
 
 \describe{
-\item{sourceId}{Ramp_DB analyte ID(character)}
-\item{rampId}{Analyte source ID (character)}
-\item{type}{Analyte type (character)}
+\item{sourceId}{Source database analyte ID (character)}
+\item{rampId}{RaMP analyte ID (character)}
+\item{IDtype}{Identifier type (character)}
+\item{geneOrCompound}{Whether the analyte is a gene or compound (character)}
 \item{commonName}{Common name of analyte (character)}
 \item{priorityHMDBStatus}{Priority level of the analyte (character)}
 \item{dataSource}{Relative source databases where analyte is represented (character)}
@@ -22,6 +23,8 @@
 source_df
 }
 \description{
-This object contains a collection of RAMP_DB analytes, their source ID, common name and pathway count
+Pruned from RaMP-DB 3.0.7. This object maps RaMP analytes to source
+identifiers, names, database provenance, and pathway counts.
 }
+\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

@@ -1,3 +1,13 @@
+# SpaMTP (developmental)
+
+* Updated the bundled pruned RaMP snapshot from 2.5.4 to 3.0.7, with explicit
+  upstream/source version metadata and a reproducible `data-raw` build script.
+* Added a chemically validated adduct rule table and reusable sorted m/z index.
+* Added ppm pruning, proton/charge bounds, mass-defect scoring, isotope checks,
+  and contextual adduct-family scoring while retaining the legacy annotation
+  result columns.
+* `chem_props` can now be used directly as a RaMP-backed annotation database.
+
 # SpaMTP 1.1.0
 
 ***Updated SpaMTP Release (Oct 2025)***

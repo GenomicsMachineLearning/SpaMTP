@@ -5,10 +5,10 @@
 \alias{analyte}
 \title{analyte: A dataframe containing ID's of possible RAMP analytes}
 \format{
-\subsection{A data frame with 276,356 rows and 2 variables:}{
+\subsection{A data frame with 463,257 rows and 2 variables:}{
 
 \describe{
-\item{rampId}{Ramp_DB analyte ID/Name (character)}
+\item{rampId}{RaMP-DB analyte ID (character)}
 \item{type}{Analyte type (character)}
 }
 }
@@ -17,6 +17,8 @@
 analyte
 }
 \description{
-This object contains a collection of Ramp_DB analytes, along with an annotation of their analyte type
+Pruned from RaMP-DB 3.0.7. This object contains RaMP analytes and their
+analyte type while omitting the redundant \code{common_name} column.
 }
+\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

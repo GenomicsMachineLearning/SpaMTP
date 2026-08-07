@@ -5,7 +5,7 @@
 \alias{analytehaspathway}
 \title{analytehaspathway: A dataframe containing RAMP_pathway ID's}
 \format{
-\subsection{A data frame with 825,296 rows and 3 variables:}{
+\subsection{A data frame with 1,355,476 rows and 3 variables:}{
 
 \describe{
 \item{rampId}{Ramp_DB analyte ID/Name (character)}
@@ -18,6 +18,8 @@
 analytehaspathway
 }
 \description{
-This object contains a collection of RAMP_DB ID's, Pathway ID's and relative pathway database source
+Pruned from RaMP-DB 3.0.7. This object maps analytes to pathways and records
+the contributing pathway source.
 }
+\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

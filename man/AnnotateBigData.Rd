@@ -6,28 +6,40 @@
 \usage{
 AnnotateBigData(
   mzs,
-  db,
+  db = NULL,
   ppm_error = NULL,
   adducts = NULL,
   polarity = "positive",
   tof_resolution = 30000,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
 \item{mzs}{Vector containing m/z values for annotation.}
 
-\item{db}{Reference metabolite dataset in the form of a Data.Frame. SpaMTP provides 4 pre-cleaned and optimised databases (\code{HMDB_db}, \code{Lipidmaps_db}, \code{Chebi_db}, \code{GNPS_db}).}
+\item{db}{Reference metabolite dataset in the form of a data.frame. SpaMTP
+provides four pre-cleaned databases (\code{HMDB_db}, \code{Lipidmaps_db},
+\code{Chebi_db}, \code{GNPS_db}). May be \code{NULL} when a pre-built
+\code{index} is supplied through \code{...}.}
 
-\item{ppm_error}{Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).}
+\item{ppm_error}{Mass tolerance in ppm. If \code{NULL}, a strict 5 ppm maximum
+is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
+for exact numerical matches.}
 
-\item{adducts}{List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of adducts (default = NULL).}
+\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}.
+If \code{NULL}, all validated rules for the selected polarity are used.}
 
 \item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
 
-\item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]}. This value is used to estimate ppm_error when set to NULL (default = 30000).}
+\item{tof_resolution}{Instrument resolving power retained for compatibility;
+it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{...}{Additional indexed annotation/scoring arguments passed to
+\code{annotateTable()}, such as \code{index}, \code{rules}, or
+\code{ms1_spectrum}.}
 }
 \value{
 A data.frame containing all successfully annotated m/z values, with their corresponding annotation.

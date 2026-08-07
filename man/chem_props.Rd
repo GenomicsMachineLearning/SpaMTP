@@ -5,10 +5,10 @@
 \alias{chem_props}
 \title{chem_props: A database containing the chemical properties and metadata of each RAMP_DB analyte}
 \format{
-\subsection{A data frame with 283,382 rows and 11 variables:}{
+\subsection{A data frame with 289,754 rows and 11 variables:}{
 
 \describe{
-\item{rampId}{Ramp_DB analyte ID/Name (character)}
+\item{ramp_id}{RaMP analyte ID (character)}
 \item{chem_data_source}{Relative source database for the respective analyte (character)}
 \item{chem_source_id}{Relative source database ID for analyste (character)}
 \item{iso_smiles}{Smile structure for relative analyte (character)}
@@ -26,6 +26,9 @@
 chem_props
 }
 \description{
-This object contains a collection of RAMP_DB analytes with their corresponding metadata including chemical structure key (smiles), isotop mass, common name and molecular fomular
+Pruned from RaMP-DB 3.0.7. This object contains chemical structures,
+monoisotopic masses, names, identifiers, and formulae. It can be passed
+directly to \code{BuildMZAnnotationIndex()} or \code{AnnotateMZ()}.
 }
+\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

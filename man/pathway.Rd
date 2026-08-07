@@ -5,13 +5,13 @@
 \alias{pathway}
 \title{pathway: A dataframe containing RAMP_DB pathways and their relative metadata}
 \format{
-\subsection{A data frame with 54,024 rows and 5 variables:}{
+\subsection{A data frame with 122,936 rows and 5 variables:}{
 
 \describe{
-\item{pathwayRampId}{Relative source database ID for analyste (character)}
-\item{rampId}{RAMP_DB pathway ID (character)}
-\item{IDtype}{Relative source database for the respective pathway (character)}
-\item{geneOrCompound}{Catagory grouping of respecitive pathway (character)}
+\item{pathwayRampId}{RaMP pathway ID (character)}
+\item{sourceId}{Source database pathway ID (character)}
+\item{type}{Pathway analyte type (character)}
+\item{pathwayCategory}{Pathway category (character)}
 \item{pathwayName}{Common name of pathway (character)}
 }
 }
@@ -20,6 +20,8 @@
 pathway
 }
 \description{
-This object contains a collection of RAMP_DB pathways, their source ID, pathway catagory and common name
+Pruned from RaMP-DB 3.0.7. This object contains pathways, their source
+identifiers, categories, types, and names.
 }
+\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

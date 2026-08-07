@@ -227,38 +227,44 @@
 
 #' @title analyte: A dataframe containing ID's of possible RAMP analytes
 #'
-#' @description This object contains a collection of Ramp_DB analytes, along with an annotation of their analyte type
+#' @description Pruned from RaMP-DB 3.0.7. This object contains RaMP analytes
+#' and their analyte type while omitting the redundant `common_name` column.
 #'
-#' @format ## A data frame with 276,356 rows and 2 variables:
+#' @format ## A data frame with 463,257 rows and 2 variables:
 #' \describe{
 #'   \item{rampId}{Ramp_DB analyte ID/Name (character)}
 #'   \item{type}{Analyte type (character)}
 #' }
+#' @source <https://github.com/ncats/RaMP-DB>
 #'
 "analyte"
 
 
 #' @title analytehaspathway: A dataframe containing RAMP_pathway ID's
 #'
-#' @description This object contains a collection of RAMP_DB ID's, Pathway ID's and relative pathway database source
+#' @description Pruned from RaMP-DB 3.0.7. This object maps analytes to
+#' pathways and records the contributing pathway source.
 #'
-#' @format ## A data frame with 825,296 rows and 3 variables:
+#' @format ## A data frame with 1,355,476 rows and 3 variables:
 #' \describe{
 #'   \item{rampId}{Ramp_DB analyte ID/Name (character)}
 #'   \item{pathwayRampId}{Ramp_DB pathway ID (character)}
 #'   \item{pathwaySource}{Relative source database for the respective pathway (character)}
 #' }
+#' @source <https://github.com/ncats/RaMP-DB>
 #'
 "analytehaspathway"
 
 
 #' @title chem_props: A database containing the chemical properties and metadata of each RAMP_DB analyte
 #'
-#' @description This object contains a collection of RAMP_DB analytes with their corresponding metadata including chemical structure key (smiles), isotop mass, common name and molecular fomular
+#' @description Pruned from RaMP-DB 3.0.7. This object contains chemical
+#' structures, monoisotopic masses, names, identifiers, and formulae. It can be
+#' passed directly to `BuildMZAnnotationIndex()` or `AnnotateMZ()`.
 #'
-#' @format ## A data frame with 283,382 rows and 11 variables:
+#' @format ## A data frame with 289,754 rows and 11 variables:
 #' \describe{
-#'   \item{rampId}{Ramp_DB analyte ID/Name (character)}
+#'   \item{ramp_id}{RaMP analyte ID (character)}
 #'   \item{chem_data_source}{Relative source database for the respective analyte (character)}
 #'   \item{chem_source_id}{Relative source database ID for analyste (character)}
 #'   \item{iso_smiles}{Smile structure for relative analyte (character)}
@@ -270,22 +276,25 @@
 #'   \item{common_name}{Analytes common name (character)}
 #'   \item{mol_formula}{Analytes simplified molecular fomula (character)}
 #' }
+#' @source <https://github.com/ncats/RaMP-DB>
 #'
 "chem_props"
 
 
 #' @title pathway: A dataframe containing RAMP_DB pathways and their relative metadata
 #'
-#' @description This object contains a collection of RAMP_DB pathways, their source ID, pathway catagory and common name
+#' @description Pruned from RaMP-DB 3.0.7. This object contains pathways,
+#' their source identifiers, categories, types, and names.
 #'
-#' @format ## A data frame with 54,024 rows and 5 variables:
+#' @format ## A data frame with 122,936 rows and 5 variables:
 #' \describe{
-#'   \item{pathwayRampId}{Relative source database ID for analyste (character)}
-#'   \item{rampId}{RAMP_DB pathway ID (character)}
-#'   \item{IDtype}{Relative source database for the respective pathway (character)}
-#'   \item{geneOrCompound}{Catagory grouping of respecitive pathway (character)}
+#'   \item{pathwayRampId}{RaMP pathway ID (character)}
+#'   \item{sourceId}{Source database pathway ID (character)}
+#'   \item{type}{Pathway analyte type (character)}
+#'   \item{pathwayCategory}{Pathway category (character)}
 #'   \item{pathwayName}{Common name of pathway (character)}
 #' }
+#' @source <https://github.com/ncats/RaMP-DB>
 #'
 "pathway"
 
@@ -293,20 +302,37 @@
 
 #' @title source_df: A dataframe containing source information about RAMP_ID analyte used for analysis
 #'
-#' @description This object contains a collection of RAMP_DB analytes, their source ID, common name and pathway count
+#' @description Pruned from RaMP-DB 3.0.7. This object maps RaMP analytes to
+#' source identifiers, names, database provenance, and pathway counts.
 #'
-#' @format ## A data frame with 810,652 rows and 8 variables:
+#' @format ## A data frame with 1,051,927 rows and 8 variables:
 #' \describe{
-#'   \item{sourceId}{Ramp_DB analyte ID(character)}
-#'   \item{rampId}{Analyte source ID (character)}
-#'   \item{type}{Analyte type (character)}
+#'   \item{sourceId}{Source database analyte ID (character)}
+#'   \item{rampId}{RaMP analyte ID (character)}
+#'   \item{IDtype}{Identifier type (character)}
+#'   \item{geneOrCompound}{Whether the analyte is a gene or compound (character)}
 #'   \item{commonName}{Common name of analyte (character)}
 #'   \item{priorityHMDBStatus}{Priority level of the analyte (character)}
 #'   \item{dataSource}{Relative source databases where analyte is represented (character)}
 #'   \item{pathwayCount}{Number of pathways analyte is present in (integer)}
 #' }
+#' @source <https://github.com/ncats/RaMP-DB>
 #'
 "source_df"
+
+
+#' @title Metadata for the bundled pruned RaMP snapshot
+#'
+#' @description Version, source database releases, row counts, and retained
+#' columns for the SpaMTP RaMP-DB 3.0.7 snapshot. The full upstream SQLite
+#' database is not bundled with SpaMTP.
+#'
+#' @format A named list containing `ramp_version`, `load_timestamp`,
+#' `version_notes`, `source_versions`, `snapshot_counts`,
+#' `upstream_repository`, `upstream_database_file`, and `pruning`.
+#' @source <https://github.com/ncats/RaMP-DB>
+#'
+"ramp_db_metadata"
 
 
 
@@ -429,6 +455,5 @@
 #' }
 #'
 "filtered_fmp10"
-
 
 

@@ -48,17 +48,24 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' SpaMTP contains 4 cleaned reference databases to choose from these include HMDB, Lipid Maps, ChEBI and GNPS. These databases can also be combined for increased coverage.
 #'
 #' @param data Seurat Spatial Metabolomic Object containing m/z values for annotation.
-#' @param db Reference metabolite dataset in the form of a Data.Frame.
+#' @param db Reference metabolite dataset in the form of a data.frame. May be
+#'   `NULL` when a pre-built `index` is supplied through `...`.
 #' @param assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
 #' @param raw.mz.column Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
-#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
-#' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
+#' @param ppm_error Mass tolerance in ppm. If `NULL`, a strict 5 ppm maximum
+#'   is used (or a smaller value inferred from `tof_resolution`). Set to zero
+#'   for exact numerical matches.
+#' @param adducts Optional adduct names/notations; see `AdductRules()`. If
+#'   `NULL`, all validated rules for the selected polarity are used.
 #' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
-#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
+#' @param tof_resolution Instrument resolving power retained for compatibility;
+#'   it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.
 #' @param filepath Character string of the directory to store the _annotated_mz_peaks.csv. If set to NULL no dataframe will be saved (default = NULL).
 #' @param return.only.annotated Boolean value indicating if the annotated Seurat Object should only include m/z values that were successfully annotated (default = TRUE).
 #' @param save.intermediate Boolean indicating whether to save an intermediate file in the `@tools` slot of the SpaMTP object required for later analysis functions such as `FindRegionalPathways()` (default = TRUE).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param ... Additional indexed annotation/scoring arguments passed to
+#'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
 #' @returns A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj`[["Spatial"]][[]]`)
 #' @export
@@ -66,7 +73,7 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' @examples
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
-AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, verbose = TRUE){
+AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, verbose = TRUE, ...){
 
   if (is.null(data@assays[[assay]])) {
     stop(paste0("No assay '",assay,"'exists in SpaMTP object! Please check assay name input ..."))
@@ -78,7 +85,7 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
   mz_df$row_id <- seq(1, length(mz_df[[raw.mz.column]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
-  db_3 <- annotateTable(mz_df= mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose)
+  db_3 <- annotateTable(mz_df= mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose, ...)
 
 
   if (save.intermediate){
@@ -101,16 +108,24 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
       all_Isomers_IDs = paste(Isomers_IDs, collapse = "; "),
       all_Adducts = paste(unique(Adduct), collapse = "; "),
       all_Formulas = paste(unique(Formula), collapse = "; "),
-      all_Errors = paste(round(Error,4), collapse = "; ")
+      all_Errors = paste(round(Error,4), collapse = "; "),
+      all_Scores = paste(round(.data$Score,4), collapse = "; "),
+      all_Ramp_IDs = paste(unique(.data$Ramp_IDs[!is.na(.data$Ramp_IDs)]), collapse = "; ")
     )
-  rownames(result_df) <- paste0("mz-",result_df$observed_mz)
+  result_df <- data.frame(result_df)
+  annotated_mz_names <- if (nrow(result_df)) {
+    paste0("mz-", result_df$observed_mz)
+  } else {
+    character()
+  }
+  rownames(result_df) <- annotated_mz_names
 
-  result_df$mz_names <- rownames(result_df)
+  result_df$mz_names <- annotated_mz_names
 
   data[[assay]][["mz_names"]] <- rownames(data[[assay]][[]])
 
 
-  result_df <- result_df %>% dplyr::mutate(present = TRUE)
+  result_df$present <- rep(TRUE, nrow(result_df))
 
 
   # Perform left join and replace NAs with "No Annotation"
@@ -142,17 +157,32 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 
 
 
-#' Annotates m/z values sotred in a data.frame based on reference metabolite dataset
+#' Annotates m/z values stored in a data.frame based on reference metabolite dataset
 #'
-#' Helper function for `AnnotatesSM()` and `FishersPathwayAnalysis()`.
+#' Helper function for `AnnotateSM()` and `FishersPathwayAnalysis()`.
 #'
 #' @param mz_df dataframe containing m/z values for annotation.
-#' @param db Reference metabolite dataset in the form of a Data.Frame.
-#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
-#' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
+#' @param db Reference metabolite dataset in the form of a data.frame. May be
+#'   `NULL` when `index` is supplied.
+#' @param ppm_error Mass tolerance in ppm. If `NULL`, a strict 5 ppm maximum
+#'   is used (or a smaller value inferred from `tof_resolution`). Set to zero
+#'   for exact numerical matches.
+#' @param adducts Optional adduct names/notations; see `AdductRules()`. If
+#'   `NULL`, all validated rules for the selected polarity are used.
 #' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
-#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
+#' @param tof_resolution Instrument resolving power retained for compatibility;
+#'   it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param index Optional reusable index created by `BuildMZAnnotationIndex()`.
+#' @param rules Optional custom adduct rule table; see `AdductRules()`.
+#' @param ms1_spectrum Optional contextual MS1 spectrum with `mz` and `intensity`
+#'   columns for isotope and adduct-family scoring.
+#' @param use_mass_defect Apply the CHO negative mass-defect penalty.
+#' @param check_isotopes Score carbon-13 and halogen isotope evidence when a
+#'   contextual spectrum is supplied.
+#' @param check_adduct_network Downweight complex ions whose base monomer
+#'   family is absent from the contextual spectrum.
+#' @param min_score Minimum final annotation score to retain.
 #'
 #' @returns Generates an intermediate annotated m/z dataframe
 #'
@@ -161,85 +191,130 @@ AnnotateSM <- function(data, db, assay = "Spatial", raw.mz.column = "raw_mz", pp
 #' @examples
 #'
 #' ### HelperFunction
-annotateTable <- function(mz_df, db, ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, verbose = TRUE){
-
-
-  # Uses:
-  # db: db that you want to search against
-
-  # test_add_pos: which adducts you want to search for
-  # Note; "M+NH4","M+Na","M+CH3OH+H","M+K" etc. Look at the formula filter func to get the rest of the possible adducts.
-
-  # ppm_error: the ppm error/threshold for searching
-
-  # Three main steps relates to the three main functions
-  # Steps 1) & 2) are aimed at condensing the databases by applying 1) a filter to only consider the adducts that the user specifies. 2) Filtering the molecular formulas to contain only elements that the user specifies. # Step 3) This last function then does the database matching and searching.
-  # 1) Filter DB by adduct.
-  verbose_message(message_text = paste0("Filtering provided database by ", paste0(adducts, collapse = ", "), " adduct/s"), verbose = verbose)
-
-  if (polarity == "positive") {
-    test_add_pos = adduct_file$adduct_name[which(adduct_file$charge > 0)]
-    test_add_pos <- gsub(" ", "", test_add_pos)
-    test_add_pos = test_add_pos[which(test_add_pos %in% (adducts %||% test_add_pos))]
-    # Using Chris' pipeline for annotation
-    # 1) Filter DB by adduct.
-    db_1 <- db_adduct_filter(db,
-                            test_add_pos,
-                            polarity = "pos",
-                            verbose = verbose)
-  } else if (polarity == "negative") {
-    test_add_neg = adduct_file$adduct_name[which(adduct_file$charge < 0)]
-    test_add_neg <- gsub(" ", "", test_add_neg)
-    test_add_neg = test_add_neg[which(test_add_neg %in% (adducts %||% test_add_neg))]
-    # Using Chris' pipeline for annotation
-    # 1) Filter DB by adduct.
-    db_1 <- db_adduct_filter(db,
-                            test_add_neg,
-                            polarity = "neg",
-                            verbose = verbose)
-  } else if (polarity == "neutral") {
-    # Using Chris' pipeline for annotation
-    # 1) Filter DB by adduct.
-    db_1 <- db %>% mutate("M" = `M-H ` + 1.007276)
-  } else{
+annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
+                          polarity = "positive", tof_resolution = 30000,
+                          verbose = TRUE, index = NULL, rules = NULL,
+                          ms1_spectrum = NULL, use_mass_defect = TRUE,
+                          check_isotopes = TRUE,
+                          check_adduct_network = TRUE, min_score = 0) {
+  if (!is.data.frame(mz_df) || !all(c("row_id", "mz") %in% names(mz_df))) {
+    stop("mz_df must be a data.frame containing row_id and mz columns.")
+  }
+  mz_df$mz <- suppressWarnings(as.numeric(mz_df$mz))
+  if (any(!is.finite(mz_df$mz) | mz_df$mz <= 0)) {
+    stop("mz_df$mz must contain positive finite values.")
+  }
+  if (!polarity %in% c("positive", "negative", "neutral")) {
     stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
   }
 
-
-  # 2) only select natural elements
-  db_2 <- formula_filter(db_1)
-
-  # 3) search db against mz df return results
-  verbose_message(message_text = "Searching database against input m/z's to return annotaiton results", verbose = verbose)
-
-  if (is.null(ppm_error) && is.null(tof_resolution)){
-    stop("ppm_error and tof_resolution cannot both = NULL! Please set one of these variables to calculate the ppm threshold for annotations ... ")
+  # Resolving power is not the same as calibrated mass accuracy. Retain the
+  # legacy argument, but cap an inferred tolerance at the high-resolution
+  # default requested by the annotation engine.
+  if (is.null(ppm_error)) {
+    inferred_ppm <- if (is.null(tof_resolution)) Inf else {
+      1e6 / tof_resolution / sqrt(2 * log(2))
+    }
+    ppm_error <- min(5, inferred_ppm)
+    if (!is.finite(ppm_error)) ppm_error <- 5
   }
 
-  ppm_error = ppm_error %||% (1e6 / tof_resolution / sqrt(2 * log(2)))
+  if (is.null(index)) {
+    if (is.null(db)) {
+      stop("Supply either db or a pre-built index.")
+    }
+    verbose_message(
+      message_text = "Building sorted adduct candidate index ... ",
+      verbose = verbose
+    )
+    index <- BuildMZAnnotationIndex(
+      db = db, polarity = polarity, adducts = adducts, rules = rules
+    )
+  } else if (!inherits(index, "spamtp_mz_index")) {
+    stop("index must be created by BuildMZAnnotationIndex().")
+  } else if (!identical(index$polarity, polarity)) {
+    stop("The supplied index polarity does not match polarity.")
+  }
 
-  db_3 <- proc_db(mz_df, db_2, ppm_error)
+  verbose_message(
+    message_text = paste0("Searching candidate index at ", ppm_error, " ppm ... "),
+    verbose = verbose
+  )
+  candidates <- QueryMZAnnotationIndex(
+    observed_mz = mz_df$mz,
+    index = index,
+    ppm = ppm_error,
+    ms1_spectrum = ms1_spectrum,
+    use_mass_defect = use_mass_defect,
+    check_isotopes = check_isotopes,
+    check_adduct_network = check_adduct_network,
+    min_score = min_score
+  )
 
-  ## Add in database labels
-  db_3 = db_3 %>% dplyr::mutate(entry = stringr::str_split(Isomers, pattern = "; "))
-  input_id = lapply(db_3$entry, function(x) {
-    x = unlist(x)
-    index_hmdb = which(grepl(x, pattern = "HMDB"))
-    x[index_hmdb] = paste0("hmdb:", x[index_hmdb])
-    index_chebi = which(grepl(x, pattern = "CHEBI"))
-    x[index_chebi] = tolower(x[index_chebi])
-    index_lipidm = which(grepl(x, pattern = "^LM"))
-    x[index_lipidm] = paste0("LIPIDMAPS:", x[index_lipidm])
-    return(x)
-  })
-  db_3$entry <- NULL
+  empty_result <- function() {
+    data.frame(
+      ID = mz_df$row_id[0], Match = logical(), observed_mz = numeric(),
+      Reference_mz = numeric(), Error = numeric(), Adduct = character(),
+      Formula = character(), Exactmass = numeric(), Isomers = character(),
+      InchiKeys = character(), IsomerNames = character(),
+      Isomers_IDs = character(), Ramp_IDs = character(), Score = numeric(),
+      MassScore = numeric(), ChemicalScore = numeric(),
+      IsotopeScore = numeric(), AdductNetworkScore = numeric(),
+      stringsAsFactors = FALSE
+    )
+  }
+  if (!nrow(candidates)) return(empty_result())
 
-  db_3$Isomers_IDs <- input_id
+  row_map <- data.frame(ID = mz_df$row_id, observed_mz = mz_df$mz)
+  candidates$.candidate_order <- seq_len(nrow(candidates))
+  matched <- merge(
+    row_map, candidates, by = "observed_mz", all = FALSE, sort = FALSE
+  )
+  matched <- matched[order(matched$ID, matched$.candidate_order), , drop = FALSE]
 
-  db_3 <- db_3 %>%
-    dplyr::mutate(Isomers_IDs = sapply(Isomers_IDs, function(x) stringr::str_c(x, collapse = "; ")))
+  standardise_ids <- function(value) {
+    if (length(value) != 1 || is.na(value) || !nzchar(value)) return("")
+    ids <- trimws(strsplit(value, ";", fixed = TRUE)[[1]])
+    ids <- ids[nzchar(ids)]
+    ids <- vapply(ids, function(id) {
+      if (grepl("^hmdb:", id, ignore.case = TRUE)) {
+        paste0("hmdb:", sub("^[^:]+:", "", id))
+      } else if (grepl("^CHEBI:", id, ignore.case = TRUE)) {
+        paste0("chebi:", sub("^[^:]+:", "", id))
+      } else if (grepl("^LIPIDMAPS:", id, ignore.case = TRUE)) {
+        paste0("LIPIDMAPS:", sub("^[^:]+:", "", id))
+      } else if (grepl("^HMDB", id, ignore.case = TRUE)) {
+        paste0("hmdb:", id)
+      } else if (grepl("^LM", id)) {
+        paste0("LIPIDMAPS:", id)
+      } else {
+        id
+      }
+    }, character(1))
+    paste(unique(ids), collapse = "; ")
+  }
 
-  return(db_3)
+  data.frame(
+    ID = matched$ID,
+    Match = TRUE,
+    observed_mz = matched$observed_mz,
+    Reference_mz = matched$expected_mz,
+    Error = matched$ppm_error,
+    Adduct = matched$adduct,
+    Formula = matched$formula,
+    Exactmass = matched$neutral_mass,
+    Isomers = matched$metabolite_ids,
+    InchiKeys = matched$inchikeys,
+    IsomerNames = matched$metabolite_names,
+    Isomers_IDs = vapply(matched$metabolite_ids, standardise_ids, character(1)),
+    Ramp_IDs = matched$ramp_ids,
+    Score = matched$score,
+    MassScore = matched$mass_score,
+    ChemicalScore = matched$chemical_score,
+    IsotopeScore = matched$isotope_score,
+    AdductNetworkScore = matched$adduct_network_score,
+    stringsAsFactors = FALSE
+  )
 }
 
 
@@ -922,12 +997,21 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #' This function is to be used when dealing with large datasets as a preprocessing step. Users can annotate m/z values first and then subset their data accordinly before loading it into a SpaMTP Seurat Object.
 #'
 #' @param mzs Vector containing m/z values for annotation.
-#' @param db Reference metabolite dataset in the form of a Data.Frame. SpaMTP provides 4 pre-cleaned and optimised databases (`HMDB_db`, `Lipidmaps_db`, `Chebi_db`, `GNPS_db`).
-#' @param ppm_error Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).
-#' @param adducts List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit [here](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305). If NULL will take the full list of adducts (default = NULL).
+#' @param db Reference metabolite dataset in the form of a data.frame. SpaMTP
+#'   provides four pre-cleaned databases (`HMDB_db`, `Lipidmaps_db`,
+#'   `Chebi_db`, `GNPS_db`). May be `NULL` when a pre-built `index` is supplied
+#'   through `...`.
+#' @param ppm_error Mass tolerance in ppm. If `NULL`, a strict 5 ppm maximum
+#'   is used (or a smaller value inferred from `tof_resolution`). Set to zero
+#'   for exact numerical matches.
+#' @param adducts Optional adduct names/notations; see `AdductRules()`. If
+#'   `NULL`, all validated rules for the selected polarity are used.
 #' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
-#' @param tof_resolution is the tof resolution of the instrument used for MALDI run, calculated by ion `[ion mass,m/z]`/`[Full width at half height]`. This value is used to estimate ppm_error when set to NULL (default = 30000).
+#' @param tof_resolution Instrument resolving power retained for compatibility;
+#'   it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param ... Additional indexed annotation/scoring arguments passed to
+#'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
 #' @returns A data.frame containing all successfully annotated m/z values, with their corresponding annotation.
 #' @export
@@ -938,12 +1022,12 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #' #results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative")
 #' #cardinal_subset <- Cardinal::subset(cardinal, mz %in% results$observed_mz)
 #' #SpaMTP_data <- CardinalToSeurat(cardinal_subset)
-AnnotateBigData <- function(mzs, db,  ppm_error = NULL, adducts = NULL,polarity = "positive", tof_resolution = 30000,verbose = TRUE){
+AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, verbose = TRUE, ...){
   mz_df <- data.frame(mz = mzs)
   mz_df$row_id <- seq(1, length(mz_df[["mz"]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
-  annotations <- annotateTable(mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose)
+  annotations <- annotateTable(mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose, ...)
 
   result_df <- annotations %>%
     dplyr::group_by(observed_mz) %>%
@@ -953,14 +1037,19 @@ AnnotateBigData <- function(mzs, db,  ppm_error = NULL, adducts = NULL,polarity 
       all_Isomers_IDs = paste(Isomers_IDs, collapse = "; "),
       all_Adducts = paste(unique(Adduct), collapse = "; "),
       all_Formulas = paste(unique(Formula), collapse = "; "),
-      all_Errors = paste(round(Error,4), collapse = "; ")
+      all_Errors = paste(round(Error,4), collapse = "; "),
+      all_Scores = paste(round(.data$Score,4), collapse = "; "),
+      all_Ramp_IDs = paste(unique(.data$Ramp_IDs[!is.na(.data$Ramp_IDs)]), collapse = "; ")
     )
 
-  rownames(result_df) <- paste0("mz-",result_df$observed_mz)
-  result_df$mz_names <- rownames(result_df)
-  result_df <- result_df %>% dplyr::mutate(present = TRUE)
   result_df <- data.frame(result_df)
-  rownames(result_df) <- 1:length(result_df$observed_mz)
+  result_df$mz_names <- if (nrow(result_df)) {
+    paste0("mz-", result_df$observed_mz)
+  } else {
+    character()
+  }
+  result_df$present <- rep(TRUE, nrow(result_df))
+  rownames(result_df) <- seq_len(nrow(result_df))
   return(result_df)
 }
 

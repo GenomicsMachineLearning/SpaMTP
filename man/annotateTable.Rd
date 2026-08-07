@@ -2,38 +2,68 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{annotateTable}
 \alias{annotateTable}
-\title{Annotates m/z values sotred in a data.frame based on reference metabolite dataset}
+\title{Annotates m/z values stored in a data.frame based on reference metabolite dataset}
 \usage{
 annotateTable(
   mz_df,
-  db,
+  db = NULL,
   ppm_error = NULL,
   adducts = NULL,
   polarity = "positive",
   tof_resolution = 30000,
-  verbose = TRUE
+  verbose = TRUE,
+  index = NULL,
+  rules = NULL,
+  ms1_spectrum = NULL,
+  use_mass_defect = TRUE,
+  check_isotopes = TRUE,
+  check_adduct_network = TRUE,
+  min_score = 0
 )
 }
 \arguments{
 \item{mz_df}{dataframe containing m/z values for annotation.}
 
-\item{db}{Reference metabolite dataset in the form of a Data.Frame.}
+\item{db}{Reference metabolite dataset in the form of a data.frame. May be
+\code{NULL} when \code{index} is supplied.}
 
-\item{ppm_error}{Numeric value indicating the size of the ppm error allowed when matching molecular weights between Seurat object and reference dataset. If only want exact matches set ppm = 0 (default = NULL).}
+\item{ppm_error}{Mass tolerance in ppm. If \code{NULL}, a strict 5 ppm maximum
+is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
+for exact numerical matches.}
 
-\item{adducts}{List of adducts to use for searching the database (e.g. "M+NH4","M+Na","M+CH3OH+H","M+K" etc.). For all possible adducts please visit \href{https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/R/MZAnnotation.R#L305}{here}. If NULL will take the full list of adducts (default = NULL).}
+\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}.
+If \code{NULL}, all validated rules for the selected polarity are used.}
 
 \item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
 
-\item{tof_resolution}{is the tof resolution of the instrument used for MALDI run, calculated by ion \verb{[ion mass,m/z]}/\verb{[Full width at half height]}. This value is used to estimate ppm_error when set to NULL (default = 30000).}
+\item{tof_resolution}{Instrument resolving power retained for compatibility;
+it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{index}{Optional reusable index created by
+\code{BuildMZAnnotationIndex()}.}
+
+\item{rules}{Optional custom adduct rule table; see \code{AdductRules()}.}
+
+\item{ms1_spectrum}{Optional contextual MS1 spectrum with \code{mz} and
+\code{intensity} columns for isotope and adduct-family scoring.}
+
+\item{use_mass_defect}{Apply the CHO negative mass-defect penalty.}
+
+\item{check_isotopes}{Score carbon-13 and halogen isotope evidence when a
+contextual spectrum is supplied.}
+
+\item{check_adduct_network}{Downweight complex ions whose base monomer family
+is absent from the contextual spectrum.}
+
+\item{min_score}{Minimum final annotation score to retain.}
 }
 \value{
 Generates an intermediate annotated m/z dataframe
 }
 \description{
-Helper function for \code{AnnotatesSM()} and \code{FishersPathwayAnalysis()}.
+Helper function for \code{AnnotateSM()} and \code{FishersPathwayAnalysis()}.
 }
 \examples{
 
