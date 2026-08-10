@@ -1,0 +1,16 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  Annotation_Refinement: Annotation_Refinement.html
+  Big_Data: Big_Data.html
+  human_brain_tissue_analysis: human_brain_tissue_analysis.html
+  Mouse_Urinary_Bladder: Mouse_Urinary_Bladder.html
+  Multi-Omic_Mouse_Brain: Multi-Omic_Mouse_Brain.html
+  Single_Cell_MultiOmics: Single_Cell_MultiOmics.html
+  SpaMTP_Additional_Features: SpaMTP_Additional_Features.html
+  SpaMTP: SpaMTP.html
+last_built: 2026-08-10T15:11Z
+urls:
+  reference: https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference
+  article: https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles
