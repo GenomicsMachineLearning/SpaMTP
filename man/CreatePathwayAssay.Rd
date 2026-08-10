@@ -10,6 +10,8 @@ CreatePathwayAssay(
   assay = "Spatial",
   slot = "counts",
   new_assay = "pathway",
+  annotation_score_threshold = 0.05,
+  annotation_source = c("current", "auto", "legacy"),
   verbose = TRUE
 )
 }
@@ -23,6 +25,13 @@ CreatePathwayAssay(
 \item{slot}{Character string specifying which slot in the assay to use as source data (default = "counts").}
 
 \item{new_assay}{Character string specifying the name of the new assay to create (default = "pathway").}
+
+\item{annotation_score_threshold}{Minimum indexed annotation score used to
+map m/z features to RaMP compounds (default = 0.05).}
+
+\item{annotation_source}{Metabolite annotation provenance. \code{"current"}
+requires the indexed, scored RaMP output; \code{"auto"} and \code{"legacy"} enable
+compatibility with older serialized SpaMTP objects.}
 
 \item{verbose}{Boolean logical value indicating whether to print verbose messages during execution. (default = TRUE).}
 }

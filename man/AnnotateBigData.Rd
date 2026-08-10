@@ -20,15 +20,15 @@ AnnotateBigData(
 
 \item{db}{Reference metabolite dataset in the form of a data.frame. SpaMTP
 provides four pre-cleaned databases (\code{HMDB_db}, \code{Lipidmaps_db},
-\code{Chebi_db}, \code{GNPS_db}). May be \code{NULL} when a pre-built
-\code{index} is supplied through \code{...}.}
+\code{Chebi_db}, \code{GNPS_db}). May be \code{NULL} when a pre-built \code{index} is supplied
+through \code{...}.}
 
 \item{ppm_error}{Mass tolerance in ppm. If \code{NULL}, a strict 5 ppm maximum
 is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
-\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}.
-If \code{NULL}, all validated rules for the selected polarity are used.}
+\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
+\code{NULL}, all validated rules for the selected polarity are used.}
 
 \item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
 
@@ -38,8 +38,7 @@ it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
-\code{annotateTable()}, such as \code{index}, \code{rules}, or
-\code{ms1_spectrum}.}
+\code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}
 }
 \value{
 A data.frame containing all successfully annotated m/z values, with their corresponding annotation.

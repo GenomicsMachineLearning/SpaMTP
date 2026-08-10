@@ -329,7 +329,8 @@
 #'
 #' @format A named list containing `ramp_version`, `load_timestamp`,
 #' `version_notes`, `source_versions`, `snapshot_counts`,
-#' `upstream_repository`, `upstream_database_file`, and `pruning`.
+#' `upstream_repository`, `upstream_database_file`, `pruning`, and graph-ID
+#' harmonisation metadata.
 #' @source <https://github.com/ncats/RaMP-DB>
 #'
 "ramp_db_metadata"
@@ -338,7 +339,7 @@
 
 #' @title RAMP_hmdb: A list containing network plot information about pathways from the HMDB database
 #'
-#' @description This object contains a collection of information for each RAMP HMDB network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#' @description This object contains a collection of information for each RAMP HMDB network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
 #' @format ## A list with 10 elements:
 #' \describe{
@@ -360,7 +361,7 @@
 
 #' @title RAMP_kegg: A list containing network plot information about pathways from the KEGG database
 #'
-#' @description This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#' @description This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
 #' @format ## A list with 10 elements:
 #' \describe{
@@ -381,7 +382,7 @@
 
 #' @title RAMP_wikipathway: A list containing network plot information about pathways from the Wiki database
 #'
-#' @description This object contains a collection of information for each RAMP Wiki network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#' @description This object contains a collection of information for each RAMP Wiki network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
 #' @format ## A list with 10 elements:
 #' \describe{
@@ -401,7 +402,7 @@
 
 #' @title RAMP_Reactome: A list containing network plot information about pathways from the Reactome database
 #'
-#' @description This object contains a collection of information for each RAMP Reactome network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+#' @description This object contains a collection of information for each RAMP Reactome network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
 #' @format ## A list with 10 elements:
 #' \describe{
@@ -455,5 +456,4 @@
 #' }
 #'
 "filtered_fmp10"
-
 

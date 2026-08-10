@@ -31,8 +31,8 @@ annotateTable(
 is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
-\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}.
-If \code{NULL}, all validated rules for the selected polarity are used.}
+\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
+\code{NULL}, all validated rules for the selected polarity are used.}
 
 \item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
 
@@ -41,21 +41,20 @@ it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 
-\item{index}{Optional reusable index created by
-\code{BuildMZAnnotationIndex()}.}
+\item{index}{Optional reusable index created by \code{BuildMZAnnotationIndex()}.}
 
 \item{rules}{Optional custom adduct rule table; see \code{AdductRules()}.}
 
-\item{ms1_spectrum}{Optional contextual MS1 spectrum with \code{mz} and
-\code{intensity} columns for isotope and adduct-family scoring.}
+\item{ms1_spectrum}{Optional contextual MS1 spectrum with \code{mz} and \code{intensity}
+columns for isotope and adduct-family scoring.}
 
 \item{use_mass_defect}{Apply the CHO negative mass-defect penalty.}
 
 \item{check_isotopes}{Score carbon-13 and halogen isotope evidence when a
 contextual spectrum is supplied.}
 
-\item{check_adduct_network}{Downweight complex ions whose base monomer family
-is absent from the contextual spectrum.}
+\item{check_adduct_network}{Downweight complex ions whose base monomer
+family is absent from the contextual spectrum.}
 
 \item{min_score}{Minimum final annotation score to retain.}
 }

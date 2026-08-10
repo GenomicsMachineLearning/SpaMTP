@@ -22,13 +22,15 @@
 }
 }
 }
+\source{
+\url{https://github.com/ncats/RaMP-DB}
+}
 \usage{
 chem_props
 }
 \description{
-Pruned from RaMP-DB 3.0.7. This object contains chemical structures,
-monoisotopic masses, names, identifiers, and formulae. It can be passed
-directly to \code{BuildMZAnnotationIndex()} or \code{AnnotateMZ()}.
+Pruned from RaMP-DB 3.0.7. This object contains chemical
+structures, monoisotopic masses, names, identifiers, and formulae. It can be
+passed directly to \code{BuildMZAnnotationIndex()} or \code{AnnotateMZ()}.
 }
-\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

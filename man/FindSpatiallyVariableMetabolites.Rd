@@ -10,6 +10,8 @@ FindSpatiallyVariableMetabolites(
   slot = "counts",
   image = "slice1",
   nfeatures = 2000,
+  max_spots = 5000,
+  seed = 1,
   verbose = TRUE
 )
 }
@@ -23,6 +25,14 @@ FindSpatiallyVariableMetabolites(
 \item{image}{Character string defining the image to extract the tissue coordinates from (defualt = "slice1").}
 
 \item{nfeatures}{Numeric values defining the top number of features to mark as the top spatially variable (default = 2000).}
+
+\item{max_spots}{Maximum number of spots used to construct Seurat's dense
+Moran's I distance matrix. When the object is larger, spots are sampled
+deterministically using \code{seed}. Set to \code{NULL} to use every spot (default =
+5000).}
+
+\item{seed}{Integer random seed used only when \code{max_spots} triggers
+subsampling (default = 1).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 }

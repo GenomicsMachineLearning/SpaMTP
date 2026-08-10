@@ -441,6 +441,13 @@ BuildMZAnnotationIndex <- function(db, polarity = c("positive", "negative", "neu
   )
 }
 
+#' Print an indexed metabolite annotation search space
+#'
+#' @param x A `spamtp_mz_index` returned by [BuildMZAnnotationIndex()].
+#' @param ... Additional arguments reserved for print-method compatibility.
+#'
+#' @return `x`, invisibly.
+#' @method print spamtp_mz_index
 #' @export
 print.spamtp_mz_index <- function(x, ...) {
   cat("SpaMTP m/z annotation index\n")

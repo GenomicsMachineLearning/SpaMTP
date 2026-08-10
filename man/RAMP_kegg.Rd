@@ -25,6 +25,6 @@
 RAMP_kegg
 }
 \description{
-This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites.
+This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 }
 \keyword{datasets}

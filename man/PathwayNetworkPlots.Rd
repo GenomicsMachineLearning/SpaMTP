@@ -2,7 +2,7 @@
 % Please edit documentation in R/PathwayNetworks.R
 \name{PathwayNetworkPlots}
 \alias{PathwayNetworkPlots}
-\title{Constructs an interactive network for exploring spatial metabolomics and transcriptomics data.}
+\title{Construct an interactive pathway network visualization}
 \usage{
 PathwayNetworkPlots(
   SpaMTP,
@@ -17,45 +17,103 @@ PathwayNetworkPlots(
   SM_assay = "SPM",
   ST_assay = "SPT",
   analyte_types = c("genes", "metabolites"),
+  annotation_source = c("current", "auto", "legacy"),
+  annotation_score_threshold = NULL,
+  annotation_score_floor = 0.01,
+  metabolite_detection = c("leading_edge", "annotated"),
   image = "slice1",
-  verbose = T
+  verbose = TRUE,
+  top_n_pathways = 10L,
+  max_nodes = 500L,
+  label_mode = c("detected", "all", "none"),
+  max_spatial_points = 50000L,
+  layout_mode = c("repulsion", "force", "radial", "bipartite")
 )
 }
 \arguments{
-\item{SpaMTP}{A \code{SpaMTP} Seurat object containing spatial metabolomics (SM) and/or spatial transcriptomics (ST) data. If SM data is included, it must be annotated using the \code{SpaMTP::AnnotateSM()} function.}
+\item{SpaMTP}{A \code{SpaMTP} Seurat object containing spatial metabolomics and/or
+spatial transcriptomics data. Metabolomics data must first be annotated by
+\code{\link[=AnnotateSM]{AnnotateSM()}}.}
 
-\item{ident}{A character string specifying the cluster identifier used to group regions, corresponding to a column name in the \code{SpaMTP@meta.data} slot.}
+\item{ident}{Metadata column used to identify spatial clusters or regions.}
 
-\item{regpathway}{A dataframe output from the \code{SpaMTP::FindRegionalPathways()} function, containing identified regional pathways.}
+\item{regpathway}{Data frame returned by \code{\link[=FindRegionalPathways]{FindRegionalPathways()}}.}
 
-\item{DE.list}{A list containing differential expression results from the \code{FindAllMarkers()} function, with items matching the order of the \code{analyte_types} argument.}
+\item{DE.list}{One differential-expression data frame per requested analyte
+type. Data frames must contain \code{cluster}, \code{gene}, \code{avg_log2FC} (or
+\code{logFC}), and \code{p_val_adj} (or \code{FDR}). A named list is recommended.}
 
-\item{selected_pathways}{A character vector specifying the names or IDs of pathways used to construct the network (e.g., \code{c("Amino acid metabolism", "WP1902", "Aspartate and asparagine metabolism")}). This argument is not case-sensitive.}
+\item{selected_pathways}{Optional pathway names or source IDs. Matching is
+case-insensitive. When \code{NULL}, the most important pathways are selected by
+summed absolute NES.}
 
-\item{path}{The directory to save the output. If not provided, the default is the current working directory.}
+\item{path}{Output directory for the generated HTML file.}
 
-\item{SM_slot}{The slot name containing the spatial metabolomics assay matrix (default: \code{"counts"}).}
+\item{SM_slot}{Layer containing spatial-metabolomics values.}
 
-\item{ST_slot}{The slot name containing the spatial transcriptomics assay matrix (default: \code{"counts"}).}
+\item{ST_slot}{Layer containing spatial-transcriptomics values.}
 
-\item{colour_palette}{The color palette used to plot the spatial image in the output HTML file. Default: \code{grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(11, "Spectral")))(100)}.}
+\item{colour_palette}{Colours used for the spatial abundance raster.}
 
-\item{SM_assay}{A character string specifying the assay name for spatial metabolomics data in \code{SpaMTP} to extract intensity values (default: \code{"SPM"}).}
+\item{SM_assay}{Spatial-metabolomics assay name.}
 
-\item{ST_assay}{A character string specifying the assay name for spatial transcriptomics data in \code{SpaMTP} to extract RNA count values (default: \code{"SPT"}).}
+\item{ST_assay}{Spatial-transcriptomics assay name.}
 
-\item{analyte_types}{A subset of \code{c("genes", "metabolites")}. Can be \code{c("genes")}, \code{c("metabolites")}, or both.}
+\item{analyte_types}{One or both of \code{"genes"} and \code{"metabolites"}.}
 
-\item{image}{Character string specifying which image stored within the SpaMTP object to use for plotting (default = "slice1").}
+\item{annotation_source}{Metabolite annotation provenance. The default,
+\code{"current"}, requires the indexed, scored RaMP annotation output.
+\code{"auto"} permits a warned legacy fallback and \code{"legacy"} requests it
+explicitly.}
 
-\item{verbose}{A logical value indicating whether to display detailed messages during execution (default: \code{FALSE}).}
+\item{annotation_score_threshold}{Minimum indexed annotation score used for
+metabolite matching. When \code{NULL}, the threshold recorded by
+\code{FindRegionalPathways()} is reused (default = \code{NULL}).}
+
+\item{annotation_score_floor}{Lowest annotation score embedded in the HTML
+for interactive filtering. It is automatically lowered when the initial
+\code{annotation_score_threshold} is smaller (default = \code{0.01}).}
+
+\item{metabolite_detection}{Which metabolite nodes receive detected styling.
+\code{"leading_edge"} uses only GSEA leading-edge metabolites;
+\code{"annotated"} also includes every score-filtered annotation belonging to
+the selected pathway, regardless of DE significance.}
+
+\item{image}{Spatial image/FOV passed to \code{Seurat::GetTissueCoordinates()}.}
+
+\item{verbose}{Display progress messages.}
+
+\item{top_n_pathways}{Number of pathways selected when \code{selected_pathways} is
+\code{NULL}.}
+
+\item{max_nodes}{Maximum number of nodes per cluster-pathway view. Detected
+leading-edge analytes are always retained, followed by their neighbours and
+high-degree nodes. Use \code{Inf} to disable pruning.}
+
+\item{label_mode}{Initial node-label mode: detected nodes only, all nodes, or
+no labels. It can also be changed interactively.}
+
+\item{max_spatial_points}{Maximum number of spatial points embedded in the
+HTML. Larger datasets are deterministically downsampled for responsive
+browser rendering. Use \code{Inf} to retain all points.}
+
+\item{layout_mode}{Initial network layout. \code{"repulsion"} maximises spacing,
+\code{"force"} uses a balanced force-directed layout, \code{"radial"} separates
+analyte classes into rings, and \code{"bipartite"} separates genes and
+metabolites vertically. It can also be changed interactively.}
 }
 \value{
-An interactive HTML file visualizing the network structure of the specified pathways.
+Invisibly returns the generated HTML file path.
 }
 \description{
-Constructs an interactive network for exploring spatial metabolomics and transcriptomics data.
+Builds a self-contained data payload and an interactive D3 visualization for
+selected pathways across spatial clusters. Topology lookup, edge preparation,
+differential-expression matching, and matrix extraction are indexed so they
+are not repeated for every cluster-pathway pair.
 }
 \examples{
-#PathwayNetworkPlots(SpaMTP, ident = "Custom_ident", regpathway = regpathway, DE.list = DE.list, selected_pathways = selected_pathways)
+# PathwayNetworkPlots(
+#   SpaMTP, ident = "Custom_ident", regpathway = regpathway,
+#   DE.list = DE.list, selected_pathways = "WP1902"
+# )
 }

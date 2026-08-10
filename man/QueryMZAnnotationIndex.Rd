@@ -18,22 +18,21 @@ QueryMZAnnotationIndex(
 \arguments{
 \item{observed_mz}{Numeric vector of observed m/z values.}
 
-\item{index}{A \code{spamtp_mz_index} from
-\code{BuildMZAnnotationIndex()}.}
+\item{index}{A \code{spamtp_mz_index} from \code{\link[=BuildMZAnnotationIndex]{BuildMZAnnotationIndex()}}.}
 
 \item{ppm}{Mass tolerance in parts per million.}
 
-\item{ms1_spectrum}{Optional contextual spectrum with \code{mz} and
-\code{intensity} columns. It should represent the same retention-time window
-or spatial pixel/region as the queried peaks.}
+\item{ms1_spectrum}{Optional contextual spectrum with \code{mz} and \code{intensity}
+columns. It should represent the same retention-time window or spatial
+pixel/region as the queried peaks.}
 
 \item{use_mass_defect}{Apply the CHO negative mass-defect penalty.}
 
 \item{check_isotopes}{Score carbon-13 and, when relevant, chlorine/bromine
 M+2 patterns.}
 
-\item{check_adduct_network}{Downweight complex ions whose base monomer family
-is absent from \code{ms1_spectrum}.}
+\item{check_adduct_network}{Downweight complex ions whose base monomer
+family is absent from \code{ms1_spectrum}.}
 
 \item{min_score}{Minimum final score to retain.}
 }

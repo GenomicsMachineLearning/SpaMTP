@@ -35,7 +35,9 @@ FishersPathwayAnalysis(
 \itemize{
 \item Supported \code{metabolites} format: strings which contain the metabolite ID with database name. For example = "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","    LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
 \item Supported \code{genes} data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-\item Supported \code{mzs} format: any string or numeric vector contains the m/z. NOTE: If \code{mzs} values are provided then \code{annotateTable()} will be run using default parameters and combining the Chebi_db, Lipidmaps_db and HMDB_db databases.
+\item Supported \code{mzs} format: any string or numeric vector containing m/z. If
+\code{mzs} values are provided, the current indexed annotation pipeline and the
+bundled RaMP \code{chem_props} table are used by default.
 }
 }}
 }

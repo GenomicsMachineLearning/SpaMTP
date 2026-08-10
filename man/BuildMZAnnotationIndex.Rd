@@ -21,7 +21,7 @@ database and the RaMP \code{chem_props} schema are supported.}
 \item{adducts}{Optional character vector of adduct names or bracketed
 notations.}
 
-\item{rules}{Optional custom rule table. See \code{AdductRules()}.}
+\item{rules}{Optional custom rule table. See \code{\link[=AdductRules]{AdductRules()}}.}
 
 \item{collapse_isomers}{Collapse records sharing formula, exact mass, and
 proton bound before indexing.}

@@ -12,7 +12,9 @@
 #' ### Details
 #' * Supported `metabolites` format: strings which contain the metabolite ID with database name. For example = "hmdb:HMDBX", "chebi:X", "pubchem:X","wikidata:X" ,"kegg:X" ,"CAS:X","lipidbank:X","chemspider:X","	LIPIDMAPS:X" (where X stands for upper case of the cooresponding ID in each database)
 #' * Supported `genes` data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
-#' * Supported `mzs` format: any string or numeric vector contains the m/z. NOTE: If `mzs` values are provided then `annotateTable()` will be run using default parameters and combining the Chebi_db, Lipidmaps_db and HMDB_db databases.
+#' * Supported `mzs` format: any string or numeric vector containing m/z. If
+#'   `mzs` values are provided, the current indexed annotation pipeline and the
+#'   bundled RaMP `chem_props` table are used by default.
 #'
 #'
 #' @return a dataframe with the relevant pathway information
@@ -62,7 +64,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
   if ("mzs" %in% names(Analyte)) {
 
-    warning("A list of mzs has been provided! annotateTable() will now be run using input specified via `...`! If no appropriate inputs have been provided default settings will be used including `db = rbind(Chebi_db, Lipidmaps_db, HMDB_db)`. Please see annotateTable() documentation for more ...")
+    warning("A list of m/z values was provided. The current indexed annotation pipeline will run using arguments supplied through `...`; its default database is the bundled RaMP chem_props table.", call. = FALSE)
 
    analytes_mz = Analyte[["mzs"]]
 
@@ -75,42 +77,39 @@ FishersPathwayAnalysis <- function (Analyte,
 
    args <- list(...)
 
-   # Set db to 2 if it's not passed in ..., otherwise use the value provided in ...
-   db <- if ("db" %in% names(args)) args$db else rbind(Chebi_db,
-                                                         Lipidmaps_db,
-                                                         HMDB_db)
+   db <- if ("db" %in% names(args)) args$db else chem_props
 
    remaining_args <- args[setdiff(names(args), "db")]
 
    db_3 <- do.call(annotateTable, c(list(mz_df= input_mz, db = db, verbose = verbose), remaining_args))
 
 
-    db_3list = pbapply::pblapply(1:nrow(db_3), function(i){
-      if (any(grepl(db_3[i, ], pattern = ";"))) {
-        # Only take the first row
-        ids = unlist(stringr::str_split(db_3[i, ]$Isomers, pattern = ";"))
-        ids[which(grepl(ids, pattern = "HMDB"))] = paste0("HMDB:",ids[which(grepl(ids, pattern = "HMDB"))])
-        ids[which(grepl(ids, pattern = "LM"))] = paste0("LIPIDMAPS:",ids[which(grepl(ids, pattern = "LM"))])
-        ids = sub(" ","",ids)
-        mzs = rep(db_3[i, ]$observed_mz, times = length(ids))
-        adducts = rep(db_3[i, ]$Adduct, times = length(ids))
-        return(cbind(ids,mzs,adducts))
-      } else{
-        ids = db_3[i,]$Isomers
-        ids[which(grepl(ids, pattern = "HMDB"))] = paste0("HMDB:",ids[which(grepl(ids, pattern = "HMDB"))])
-        ids[which(grepl(ids, pattern = "LM"))] = paste0("LIPIDMAPS:",ids[which(grepl(ids, pattern = "LM"))])
-        ids = sub(" ","",ids)
-        mzs = rep(db_3[i, ]$observed_mz, times = length(ids))
-        adducts = rep(db_3[i, ]$Adduct, times = length(ids))
-        return(cbind(ids,mzs,adducts))
-      }
-    })
-    expand_db3_df = do.call(rbind, db_3list)
-    expand_db3 = expand_db3_df[,1]
-    mz_db3 = expand_db3_df[,2]
-    adducts_db3 = expand_db3_df[,3]
-    analytes_mz = sub(" ", "", expand_db3)
-    source_mz = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
+    if (.annotation_has_current_schema(db_3)) {
+      expanded <- .expand_annotation_column(db_3, "Ramp_IDs")
+      expanded$Ramp_IDs <- toupper(expanded$Ramp_IDs)
+      expanded <- expanded[grepl("^RAMP_C_", expanded$Ramp_IDs), , drop = FALSE]
+      analytes_mz <- expanded$Ramp_IDs
+      mz_db3 <- expanded$observed_mz
+      adducts_db3 <- expanded$Adduct
+
+      # The downstream Fisher implementation accepts source identifiers. Add
+      # an exact, synthetic source key so current RaMP IDs are never remapped
+      # through an older source-ID annotation.
+      ramp_rows <- match(unique(analytes_mz), source_df$rampId)
+      source_mz <- source_df[ramp_rows[!is.na(ramp_rows)], , drop = FALSE]
+      source_mz$sourceId <- source_mz$rampId
+    } else {
+      expanded <- .expand_annotation_column(db_3, "Isomers")
+      ids <- as.character(expanded$Isomers)
+      ids[grepl("^HMDB", ids, ignore.case = TRUE)] <- paste0(
+        "HMDB:", ids[grepl("^HMDB", ids, ignore.case = TRUE)]
+      )
+      ids[grepl("^LM", ids)] <- paste0("LIPIDMAPS:", ids[grepl("^LM", ids)])
+      analytes_mz <- gsub(" ", "", ids, fixed = TRUE)
+      mz_db3 <- expanded$observed_mz
+      adducts_db3 <- expanded$Adduct
+      source_mz <- source_df[grepl("^RAMP_C_", source_df$rampId), , drop = FALSE]
+    }
     analytehaspathway_mz = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
   }
 
@@ -339,6 +338,23 @@ FishersPathwayAnalysis <- function (Analyte,
   return(return)
 }
 
+.expand_pathway_annotation_ids <- function(db_3) {
+  if (!"Isomers_IDs" %in% names(db_3)) {
+    stop("SpaMTP@tools$db_3 must contain an Isomers_IDs column.")
+  }
+  db_3 <- tidyr::separate_rows(
+    as.data.frame(db_3, stringsAsFactors = FALSE),
+    dplyr::all_of("Isomers_IDs"),
+    sep = "\\s*;\\s*"
+  )
+  db_3$Isomers_IDs <- trimws(as.character(db_3$Isomers_IDs))
+  db_3[
+    !is.na(db_3$Isomers_IDs) & nzchar(db_3$Isomers_IDs),
+    ,
+    drop = FALSE
+  ]
+}
+
 
 #' Regional Pathway Enrichment
 #'
@@ -354,8 +370,17 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @param ST_slot The slot name containing the ST assay matrix data (default = "counts").
 #' @param min_path_size The min number of metabolites in a specific pathway (default = 5).
 #' @param max_path_size The max number of metabolites in a specific pathway (default = 500).
-#' @param pval_cutoff_mets A numerical value defining the adjusted p value cutoff for significant differentially expressed metabolites. If `NULL` cutoff = `0.05` (default = 0.05).
+#' @param pval_cutoff_mets Adjusted p-value cutoff used when constructing
+#'   metabolite ranks. Set to `1` to include annotated metabolites regardless
+#'   of DE significance (default = 0.05).
 #' @param pval_cutoff_genes A numerical value defining the adjusted p value cutoff for significant differentially expressed genes. If `NULL` cutoff = `0.05` (default = 0.05).
+#' @param annotation_score_threshold Minimum indexed annotation score used for
+#'   pathway mapping. It can be changed without re-running `AnnotateSM()` when
+#'   the object was annotated with `min_score = 0` (default = 0.05).
+#' @param annotation_source Metabolite annotation provenance. The default,
+#'   `"current"`, requires scored RaMP IDs from the indexed annotation
+#'   pipeline. `"auto"` permits a warned fallback to legacy `@tools$db_3`,
+#'   while `"legacy"` explicitly requests that compatibility path.
 #' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #'
 #' @return A SpaMTP object with set enrichment on given analyte types.
@@ -377,7 +402,10 @@ FindRegionalPathways = function(SpaMTP,
                                 max_path_size = 500,
                                 pval_cutoff_mets = 0.05,
                                 pval_cutoff_genes = 0.05,
+                                annotation_score_threshold = 0.05,
+                                annotation_source = c("current", "auto", "legacy"),
                                 verbose = TRUE) {
+  annotation_source <- match.arg(annotation_source)
   ## Checks for ident in SpaMTP Object
   if (!(ident %in% colnames(SpaMTP@meta.data))) {
     stop(
@@ -432,25 +460,34 @@ FindRegionalPathways = function(SpaMTP,
       }
     }
   }
-  # (2) Annotation
-  if (is.null(SpaMTP@tools$db_3)) {
-    stop(
-      "@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
-      "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ..."
+  annotation_metadata <- NULL
+  db_3 <- NULL
+  if ("metabolites" %in% analyte_types) {
+    # (2) Resolve annotations. Scored Ramp_IDs from the indexed pipeline are
+    # the primary key; source-ID joins are only available in legacy mode.
+    verbose_message(
+      message_text = "Resolving current RaMP metabolite annotations ... ",
+      verbose = verbose
     )
+    db_3 <- .resolve_pathway_metabolite_annotations(
+      SpaMTP,
+      annotation_source = annotation_source,
+      score_threshold = annotation_score_threshold,
+      chemical_properties = chem_props
+    )
+    annotation_metadata <- attr(db_3, "annotation_metadata")
+    annotation_metadata$pathway_pval_cutoff_mets <- pval_cutoff_mets
+    if (isTRUE(verbose) && length(annotation_metadata$engine)) {
+      ramp_label <- annotation_metadata$ramp_version
+      if (is.null(ramp_label) || is.na(ramp_label)) ramp_label <- "unknown"
+      message(
+        "Annotation engine: ", annotation_metadata$engine,
+        "; RaMP: ", ramp_label
+      )
+    }
   }
-  db_3 <- SpaMTP@tools$db_3
-  db_3 = db_3 %>%
-    tidyr::separate_rows(Isomers_IDs, IsomerNames, sep = "; ")
 
-  verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
-
-  db_3 = db_3 %>% dplyr::mutate(inputid = Isomers_IDs) %>%  dplyr::mutate(chem_source_id = inputid)
-  rampid = c()
-  verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
-  db_3 = merge(chem_props, db_3, by = "chem_source_id")
   ### Adding DE Results
-  db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
   if (length(DE.list) != length(analyte_types)) {
     stop(
       "Number of DE data.frames provided does not match the number of analyte types specified. Please make sure a DE dataframe is provided for each analyte type"
@@ -599,6 +636,7 @@ FindRegionalPathways = function(SpaMTP,
     dplyr::mutate(group_importance = sum(abs(NES)))
   colnames(gsea_all_cluster)[1] = "pathwayName"
   gsea_all_cluster = merge(gsea_all_cluster, pathway, by = "pathwayName")
+  attr(gsea_all_cluster, "annotation_metadata") <- annotation_metadata
   return(gsea_all_cluster)
 }
 
@@ -660,6 +698,11 @@ RunRAMPgeseca <- function(E,
 #' @param assay Character string specifying the name of the assay to use as source data (default = "Spatial").
 #' @param slot Character string specifying which slot in the assay to use as source data (default = "counts").
 #' @param new_assay Character string specifying the name of the new assay to create (default = "pathway").
+#' @param annotation_score_threshold Minimum indexed annotation score used to
+#'   map m/z features to RaMP compounds (default = 0.05).
+#' @param annotation_source Metabolite annotation provenance. `"current"`
+#'   requires the indexed, scored RaMP output; `"auto"` and `"legacy"` enable
+#'   compatibility with older serialized SpaMTP objects.
 #' @param verbose Boolean logical value indicating whether to print verbose messages during execution. (default = TRUE).
 #'
 #' @return A SpaMTP object with a new assay added, containing respective gene/metabolite data formatted based on RAMP_db IDs.
@@ -676,7 +719,9 @@ RunRAMPgeseca <- function(E,
 #'
 #' ## Create a pathway assay from gene data with verbose output
 #' #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "genes", assay = "SPT", new_assay = "gene_pathway", verbose = TRUE)
-CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", verbose = TRUE){
+CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", annotation_score_threshold = 0.05, annotation_source = c("current", "auto", "legacy"), verbose = TRUE){
+
+  annotation_source <- match.arg(annotation_source)
 
   if(!analyte_type %in% c("genes", "metabolites")){
     stop("Incorrect `analyte_type` provided! must be either 'genes' or 'metabolites'. Please provided the correct analyte matching the selected assay data.")
@@ -727,23 +772,18 @@ CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Sp
       matrix <- as.data.frame(SpaMTP[[assay]][slot])
 
       # (2) Annotation
-      if (is.null(SpaMTP@tools$db_3)) {
-        stop(
-          "@tools$db_3 is empty! No intermediate annotation data saved in SpaMTP object. Please run AnnotateSM() with save.intermediate = TRUE",
-          "or save the database by setting filename = '...' and manually assign the annotation dataframe to @tools$db_3 <- [ ..."
-        )
-      }
-      db_3 <- SpaMTP@tools$db_3
-      db_3 = db_3 %>%
-        tidyr::separate_rows(Isomers_IDs, IsomerNames, sep = "; ")
+      verbose_message(
+        message_text = "Resolving current RaMP metabolite annotations ... ",
+        verbose = verbose
+      )
+      db_3 <- .resolve_pathway_metabolite_annotations(
+        SpaMTP,
+        annotation_source = annotation_source,
+        score_threshold = annotation_score_threshold,
+        chemical_properties = chem_props
+      )
 
-      verbose_message(message_text = "Query necessary data and establish pathway database" , verbose = verbose)
-
-      db_3 = db_3 %>% dplyr::mutate(inputid = Isomers_IDs) %>%  dplyr::mutate(chem_source_id = inputid)
-      verbose_message(message_text = "Query db for addtional matching" , verbose = verbose)
-      db_3 = merge(chem_props, db_3, by = "chem_source_id")
       ### Adding DE Results
-      db_3 = db_3 %>% mutate(mz_name = paste0("mz-", db_3$observed_mz))
       db_3 <- db_3[c("mz_name",  "ramp_id")]
       db_3 <- db_3 %>% distinct()
       matrix$mz_name <- rownames(SpaMTP@assays[[assay]])
@@ -921,5 +961,3 @@ get_analytes_db <- function(input_id,analytehaspathway,chem_props,pathway) {
   names(analytes_db) = analytes_db_name
   return(analytes_db)
 }
-
-

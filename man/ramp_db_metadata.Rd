@@ -7,15 +7,18 @@
 \format{
 A named list containing \code{ramp_version}, \code{load_timestamp},
 \code{version_notes}, \code{source_versions}, \code{snapshot_counts},
-\code{upstream_repository}, \code{upstream_database_file}, and
-\code{pruning}.
+\code{upstream_repository}, \code{upstream_database_file}, \code{pruning}, and graph-ID
+harmonisation metadata.
 }
 \source{
 \url{https://github.com/ncats/RaMP-DB}
 }
+\usage{
+ramp_db_metadata
+}
 \description{
-Version, source database releases, row counts, and retained columns for the
-SpaMTP RaMP-DB 3.0.7 snapshot. The full upstream SQLite database is not
-bundled with SpaMTP.
+Version, source database releases, row counts, and retained
+columns for the SpaMTP RaMP-DB 3.0.7 snapshot. The full upstream SQLite
+database is not bundled with SpaMTP.
 }
 \keyword{datasets}

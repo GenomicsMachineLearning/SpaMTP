@@ -14,12 +14,14 @@
 }
 }
 }
+\source{
+\url{https://github.com/ncats/RaMP-DB}
+}
 \usage{
 analytehaspathway
 }
 \description{
-Pruned from RaMP-DB 3.0.7. This object maps analytes to pathways and records
-the contributing pathway source.
+Pruned from RaMP-DB 3.0.7. This object maps analytes to
+pathways and records the contributing pathway source.
 }
-\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

@@ -53,9 +53,14 @@ navbar:
     - news
     right:
     - search
+    - development
     - github
     - lightswitch
   components:
+    development:
+      text: Development
+      href: https://genomicsmachinelearning.github.io/SpaMTP/developmental/
+      aria-label: Developmental documentation
     news:
       text: "Updates"
       href: news/index.html
@@ -101,6 +106,12 @@ reference:
     metabolic database
   contents:
   - AnnotateSM
+  - AnnotateMZ
+  - AdductRules
+  - BuildMZAnnotationIndex
+  - QueryMZAnnotationIndex
+  - AnnotationInfo
+  - print.spamtp_mz_index
   - AddCustomMZAnnotations
   - AddFMP10Annotations
   - SearchAnnotations
@@ -222,6 +233,7 @@ reference:
   - chem_props
   - pathway
   - source_df
+  - ramp_db_metadata
 - title: Pathway Network Datasets
   desc: Various datasets required for generated pathway network plots
   contents:

@@ -28,13 +28,35 @@ VisualisePathways = function(SpaMTP,
                              method = "ward.D2",
                              verbose = TRUE,
                              ...) {
+  no_pathways_plot <- function(reason) {
+    verbose_message(message_text = reason, verbose = verbose)
+    ggplot2::ggplot() +
+      ggplot2::annotate(
+        "text",
+        x = 0,
+        y = 0,
+        label = reason,
+        size = 5
+      ) +
+      ggplot2::xlim(-1, 1) +
+      ggplot2::ylim(-1, 1) +
+      ggplot2::labs(title = "No pathways to visualise") +
+      ggplot2::theme_void()
+  }
+
   if (is.null(min_n)){
     stop("Incorrect minimum analyte number! `min_n` must be set to a value > 1. Please adjust this value accordingly ...")
   }
   pathway_df = pathway_df[which(pathway_df$analytes_in_pathways>=min_n),]
-  pathway_df$duplicate_pathways <- NA
+  if (nrow(pathway_df) == 0L) {
+    return(no_pathways_plot(
+      paste0("No pathways contain at least ", min_n, " detected analytes.")
+    ))
+  }
+
+  pathway_df$duplicate_pathways <- rep(NA_character_, nrow(pathway_df))
   verbose_message(message_text = "Reducing synonymous pathways", verbose = verbose)
-  index = c(1:nrow(pathway_df))
+  index = seq_len(nrow(pathway_df))
   merged_pathways = data.frame()
   pb = txtProgressBar(
     min = 0,
@@ -49,8 +71,8 @@ VisualisePathways = function(SpaMTP,
       name = strsplit(pathway_df$pathway_name[index[1]], pattern)[[1]][1]
       full_name = paste0(name, pattern)
       frst_ind = which(grepl(
-        pathway_df$pathway_name,
-        pattern = full_name
+        pattern = full_name,
+        x = pathway_df$pathway_name
       ))
       all_pathways = pathway_df[frst_ind, ]
       second_ind = which(duplicated(all_pathways$p_val))
@@ -69,7 +91,7 @@ VisualisePathways = function(SpaMTP,
         unique_pathways$pathway_name <- name
         merged_pathways = rbind(merged_pathways, unique_pathways)
       } else{
-        merged_pathways = rbind(merged_pathways, all_pathways[frst_ind, ])
+        merged_pathways = rbind(merged_pathways, all_pathways)
       }
 
     } else{
@@ -81,7 +103,13 @@ VisualisePathways = function(SpaMTP,
   close(pb)
   merged_pathways = merged_pathways %>% filter(p_val <= p_val_threshold) %>% mutate(signif_at_005level =   ifelse(p_val <= 0.05, "Significant", "Non-significant"))
 
-  retain_ind = 1:nrow(merged_pathways)
+  if (nrow(merged_pathways) == 0L) {
+    return(no_pathways_plot(
+      paste0("No pathways passed the p-value threshold (", p_val_threshold, ").")
+    ))
+  }
+
+  retain_ind = seq_len(nrow(merged_pathways))
 
   gg_bar1 = with(
     merged_pathways,
@@ -149,7 +177,7 @@ VisualisePathways = function(SpaMTP,
   )
   mass_matrix = Matrix::t(SpaMTP[[assay]]@layers[[slot]])
 
-  for(z in 1:nrow(merged_pathways)){
+  for(z in seq_len(nrow(merged_pathways))){
     mzs = paste0("mz-",
                  stringr::str_extract_all(merged_pathways$adduct_info[z], "\\d+\\.\\d+")[[1]])
     if ("mz-" %in% mzs){
@@ -201,6 +229,14 @@ VisualisePathways = function(SpaMTP,
   }
   gg_bar1 =  gg_bar1 + ylim(-2, max(merged_pathways$total_in_pathways) + 5)
   #gg_bar1
+
+  if (nrow(merged_pathways) == 1L) {
+    verbose_message(
+      message_text = "\nOnly one pathway passed filtering; returning the pathway plot without a dendrogram.",
+      verbose = verbose
+    )
+    return(gg_bar1)
+  }
 
   # Adding the dendrogram
 
@@ -865,7 +901,6 @@ addGesecaScores <- function(pathways,
 
   return(res)
 }
-
 
 
 

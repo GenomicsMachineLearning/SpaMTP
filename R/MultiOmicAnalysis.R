@@ -17,6 +17,14 @@
 #' # SpaMTP.obj <- MultiOmicIntegration(SpaMTP.obj, weight.list = list(0.5, 0.5), reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))
 MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30), return.intermediate = FALSE, verbose = FALSE, ...){
 
+  # Seurat's Annoy neighbour search uses future.apply even under a sequential
+  # plan. Some R/future combinations can crash in future's post-evaluation
+  # connection-diff check after the native Annoy call has completed. Disable
+  # that diagnostic only for this integration and restore the caller's option
+  # on exit; it does not change neighbour calculation or parallel scheduling.
+  previous_future_options <- options(future.connections.onMisuse = "ignore")
+  on.exit(options(previous_future_options), add = TRUE)
+
   if (is.null(weight.list)){
     mm.integration <- Seurat::FindMultiModalNeighbors(
       multiomic.data, reduction.list = reduction.list,

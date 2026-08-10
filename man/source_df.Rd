@@ -19,12 +19,14 @@
 }
 }
 }
+\source{
+\url{https://github.com/ncats/RaMP-DB}
+}
 \usage{
 source_df
 }
 \description{
-Pruned from RaMP-DB 3.0.7. This object maps RaMP analytes to source
-identifiers, names, database provenance, and pathway counts.
+Pruned from RaMP-DB 3.0.7. This object maps RaMP analytes to
+source identifiers, names, database provenance, and pathway counts.
 }
-\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

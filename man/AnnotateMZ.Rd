@@ -33,8 +33,7 @@ AnnotateMZ(
 
 \item{ms1_spectrum}{Optional contextual spectrum.}
 
-\item{...}{Additional arguments passed to
-\code{QueryMZAnnotationIndex()}.}
+\item{...}{Additional arguments passed to \code{\link[=QueryMZAnnotationIndex]{QueryMZAnnotationIndex()}}.}
 }
 \value{
 A ranked candidate data frame.

@@ -6,4 +6,5 @@
 .quarto
 inst/doc
 docs
+vignettes/.knitr-cache/
 .idea

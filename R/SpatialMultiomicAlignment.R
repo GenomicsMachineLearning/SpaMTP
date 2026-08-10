@@ -382,6 +382,15 @@ lowresMapping <- function(SM.data, ST.data,
 
     ## adds m/z annotations to new object
     SpaMTP.obj[[new_SPM.assay]]@meta.data <- SM.data[[SM.assay]]@meta.data
+    for (tool_name in c("mz_annotation", "db_3")) {
+      if (!is.null(SM.data@tools[[tool_name]])) {
+        SpaMTP.obj@tools[[tool_name]] <- SM.data@tools[[tool_name]]
+      }
+    }
+    if (!is.null(SpaMTP.obj@tools$mz_annotation$metadata)) {
+      SpaMTP.obj@tools$mz_annotation$metadata$source_assay <- SM.assay
+      SpaMTP.obj@tools$mz_annotation$metadata$assay <- new_SPM.assay
+    }
   }
 
   SpaMTP.obj <- RenameAssays(SpaMTP.obj, assay.name = ST.assay, new.assay.name = new_SPT.assay)
@@ -535,6 +544,15 @@ hiresMapping <- function(SM.data, ST.data,
 
       ## adds m/z annotations to new object
       xenium.data[[new_SPM.assay]]@meta.data <- SM.data[[SM.assay]]@meta.data
+      for (tool_name in c("mz_annotation", "db_3")) {
+        if (!is.null(SM.data@tools[[tool_name]])) {
+          xenium.data@tools[[tool_name]] <- SM.data@tools[[tool_name]]
+        }
+      }
+      if (!is.null(xenium.data@tools$mz_annotation$metadata)) {
+        xenium.data@tools$mz_annotation$metadata$source_assay <- SM.assay
+        xenium.data@tools$mz_annotation$metadata$assay <- new_SPM.assay
+      }
     }
 
 

@@ -8,17 +8,19 @@
 \subsection{A data frame with 463,257 rows and 2 variables:}{
 
 \describe{
-\item{rampId}{RaMP-DB analyte ID (character)}
+\item{rampId}{Ramp_DB analyte ID/Name (character)}
 \item{type}{Analyte type (character)}
 }
 }
+}
+\source{
+\url{https://github.com/ncats/RaMP-DB}
 }
 \usage{
 analyte
 }
 \description{
-Pruned from RaMP-DB 3.0.7. This object contains RaMP analytes and their
-analyte type while omitting the redundant \code{common_name} column.
+Pruned from RaMP-DB 3.0.7. This object contains RaMP analytes
+and their analyte type while omitting the redundant \code{common_name} column.
 }
-\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

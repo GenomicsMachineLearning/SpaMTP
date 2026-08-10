@@ -16,12 +16,14 @@
 }
 }
 }
+\source{
+\url{https://github.com/ncats/RaMP-DB}
+}
 \usage{
 pathway
 }
 \description{
-Pruned from RaMP-DB 3.0.7. This object contains pathways, their source
-identifiers, categories, types, and names.
+Pruned from RaMP-DB 3.0.7. This object contains pathways,
+their source identifiers, categories, types, and names.
 }
-\source{\url{https://github.com/ncats/RaMP-DB}}
 \keyword{datasets}

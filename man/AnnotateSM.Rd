@@ -16,6 +16,7 @@ AnnotateSM(
   filepath = NULL,
   return.only.annotated = TRUE,
   save.intermediate = TRUE,
+  min_score = 0,
   verbose = TRUE,
   ...
 )
@@ -23,8 +24,9 @@ AnnotateSM(
 \arguments{
 \item{data}{Seurat Spatial Metabolomic Object containing m/z values for annotation.}
 
-\item{db}{Reference metabolite dataset in the form of a data.frame. May be
-\code{NULL} when a pre-built \code{index} is supplied through \code{...}.}
+\item{db}{Reference metabolite dataset in the form of a data.frame. When
+\code{NULL}, the bundled current RaMP \code{chem_props} table is used, unless a
+pre-built \code{index} is supplied through \code{...}.}
 
 \item{assay}{Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").}
 
@@ -34,8 +36,8 @@ AnnotateSM(
 is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
-\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}.
-If \code{NULL}, all validated rules for the selected polarity are used.}
+\item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
+\code{NULL}, all validated rules for the selected polarity are used.}
 
 \item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
 
@@ -46,13 +48,20 @@ it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 
 \item{return.only.annotated}{Boolean value indicating if the annotated Seurat Object should only include m/z values that were successfully annotated (default = TRUE).}
 
-\item{save.intermediate}{Boolean indicating whether to save an intermediate file in the \verb{@tools} slot of the SpaMTP object required for later analysis functions such as \code{FindRegionalPathways()} (default = TRUE).}
+\item{save.intermediate}{Boolean indicating whether to store the scored
+annotation result and its pipeline/RaMP provenance in
+\verb{@tools$mz_annotation}. A compatibility copy is retained in
+\verb{@tools$db_3} (default = TRUE).}
+
+\item{min_score}{Minimum annotation score retained in the stored candidate
+table. The default \code{0} keeps all ppm-valid candidates so downstream
+pathway functions can apply a user-defined threshold without re-running
+annotation.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
-\code{annotateTable()}, such as \code{index}, \code{rules}, or
-\code{ms1_spectrum}.}
+\code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}
 }
 \value{
 A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj\verb{[["Spatial"]][[]]})

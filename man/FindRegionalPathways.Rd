@@ -17,6 +17,8 @@ FindRegionalPathways(
   max_path_size = 500,
   pval_cutoff_mets = 0.05,
   pval_cutoff_genes = 0.05,
+  annotation_score_threshold = 0.05,
+  annotation_source = c("current", "auto", "legacy"),
   verbose = TRUE
 )
 }
@@ -41,9 +43,20 @@ FindRegionalPathways(
 
 \item{max_path_size}{The max number of metabolites in a specific pathway (default = 500).}
 
-\item{pval_cutoff_mets}{A numerical value defining the adjusted p value cutoff for significant differentially expressed metabolites. If \code{NULL} cutoff = \code{0.05} (default = 0.05).}
+\item{pval_cutoff_mets}{Adjusted p-value cutoff used when constructing
+metabolite ranks. Set to \code{1} to include annotated metabolites regardless
+of DE significance (default = 0.05).}
 
 \item{pval_cutoff_genes}{A numerical value defining the adjusted p value cutoff for significant differentially expressed genes. If \code{NULL} cutoff = \code{0.05} (default = 0.05).}
+
+\item{annotation_score_threshold}{Minimum indexed annotation score used for
+pathway mapping. It can be changed without re-running \code{AnnotateSM()} when
+the object was annotated with \code{min_score = 0} (default = 0.05).}
+
+\item{annotation_source}{Metabolite annotation provenance. The default,
+\code{"current"}, requires scored RaMP IDs from the indexed annotation
+pipeline. \code{"auto"} permits a warned fallback to legacy \verb{@tools$db_3},
+while \code{"legacy"} explicitly requests that compatibility path.}
 
 \item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
 }

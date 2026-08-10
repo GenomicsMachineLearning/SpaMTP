@@ -10,8 +10,8 @@ AdductRules(
 )
 }
 \arguments{
-\item{polarity}{One of \code{"both"}, \code{"positive"},
-\code{"negative"}, or \code{"neutral"}.}
+\item{polarity}{One of \code{"both"}, \code{"positive"}, \code{"negative"}, or
+\code{"neutral"}.}
 
 \item{include_complex}{Include multimers, solvent clusters, metal-exchange,
 and multiply charged ions.}

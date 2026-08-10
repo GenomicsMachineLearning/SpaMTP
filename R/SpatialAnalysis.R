@@ -129,6 +129,12 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
 #' @param slot Character string indicating the assay slot to use to pull expression values form (default = "counts").
 #' @param image Character string defining the image to extract the tissue coordinates from (defualt = "slice1").
 #' @param nfeatures Numeric values defining the top number of features to mark as the top spatially variable (default = 2000).
+#' @param max_spots Maximum number of spots used to construct Seurat's dense
+#'   Moran's I distance matrix. When the object is larger, spots are sampled
+#'   deterministically using `seed`. Set to `NULL` to use every spot (default =
+#'   5000).
+#' @param seed Integer random seed used only when `max_spots` triggers
+#'   subsampling (default = 1).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #'
 #' @return Returns SpaMTP object containing the MoransI pvalue and rank stored in the assay feature meta.data
@@ -136,13 +142,62 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
 #'
 #' @examples
 #' # SpaMTP.obj <- FindSpatiallyVariableMetabolites(SpaMTP)
-FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "counts",image = "slice1", nfeatures = 2000, verbose = TRUE){
+FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "counts",
+                                             image = "slice1", nfeatures = 2000,
+                                             max_spots = 5000, seed = 1,
+                                             verbose = TRUE){
+
+  if (!is.null(max_spots) &&
+      (!is.numeric(max_spots) || length(max_spots) != 1L ||
+       !is.finite(max_spots) || max_spots < 2)) {
+    stop("max_spots must be NULL or one finite number >= 2.")
+  }
+  if (!is.numeric(seed) || length(seed) != 1L || !is.finite(seed)) {
+    stop("seed must be one finite number.")
+  }
 
   DefaultAssay(object) <- assay
   features <- rownames(x = object[[assay]])
   spatial.location <- GetTissueCoordinates(object = object[[image]])
   data <- GetAssayData(object = object, slot = slot)
-  data <- as.matrix(x = data[features, ])
+  data <- data[features, , drop = FALSE]
+
+  if (nrow(spatial.location) != ncol(data)) {
+    stop("The selected image coordinates and assay must contain the same number of spots.")
+  }
+  coordinate_names <- rownames(spatial.location)
+  if (!is.null(coordinate_names) && !is.null(colnames(data))) {
+    coordinate_order <- match(colnames(data), coordinate_names)
+    if (!anyNA(coordinate_order)) {
+      spatial.location <- spatial.location[coordinate_order, , drop = FALSE]
+    }
+  }
+
+  if (!is.null(max_spots) && ncol(data) > max_spots) {
+    max_spots <- as.integer(max_spots)
+    had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+    if (had_seed) old_seed <- get(".Random.seed", envir = .GlobalEnv)
+    on.exit({
+      if (had_seed) {
+        assign(".Random.seed", old_seed, envir = .GlobalEnv)
+      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+        rm(".Random.seed", envir = .GlobalEnv)
+      }
+    }, add = TRUE)
+    set.seed(as.integer(seed))
+    retained_spots <- sort(sample.int(ncol(data), max_spots))
+    verbose_message(
+      message_text = paste0(
+        "Sampling ", max_spots, " of ", ncol(data),
+        " spots for the Moran's I distance matrix ... "
+      ),
+      verbose = verbose
+    )
+    data <- data[, retained_spots, drop = FALSE]
+    spatial.location <- spatial.location[retained_spots, , drop = FALSE]
+  }
+
+  data <- as.matrix(x = data)
   data <- data[RowVar(x = data) > 0, ]
   svf.info <- RunMoransI(data = data, pos = spatial.location, verbose = verbose)
   colnames(x = svf.info) <- paste0("MoransI_", colnames(x = svf.info))

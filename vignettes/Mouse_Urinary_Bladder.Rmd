@@ -434,13 +434,23 @@ One of the major steps in the analysis of metabolomics is the identification/ann
 
 *SpaMTP* has a user-friendly function that assigns possible annotations to each m/z value based on a few variables:
 
-* db: Database to query the m/z masses against -> options are = "HMDB", "LipidMaps", "GNPS" or "ChEBI"
+* db: Database to query. The default `NULL` uses the bundled RaMP 3.0 chemical-property table and preserves current `RAMP_C_*` identifiers for pathway analysis. A custom database can still be supplied.
 * polarity: Polarity mode the experiment was run in -> either "positive" or "negative"
 * adducts: Specify different adduct ions that are likely formed or lost during the mass spectrometry imaging. 
 
 
 ```{r, warning=FALSE, message=FALSE}
-bladder_annotated <- AnnotateSM(bladder, db = Lipidmaps_db, ppm_error = 15, adducts = "M+K", polarity = "positive")
+pathway_annotation_score_threshold <- 0.01
+pathway_metabolite_pval_cutoff <- 1
+
+bladder_annotated <- AnnotateSM(
+  bladder,
+  db = NULL,
+  ppm_error = 15,
+  adducts = "M+K",
+  polarity = "positive",
+  min_score = 0
+)
 ```
 
     Filtering 'Lipidmaps_db' database by M+K adduct/s
@@ -456,7 +466,7 @@ bladder_annotated <- AnnotateSM(bladder, db = Lipidmaps_db, ppm_error = 15, addu
 bladder_annotated
 ```
 
-Following annotation with the [LIPID_MAPS](https://www.lipidmaps.org/) database, there are 79 m/z masses that were successfully annotated!
+The indexed annotation uses the current bundled RaMP chemical properties. All ppm-valid candidates are stored (`min_score = 0`), so downstream pathway analysis and the interactive network viewer can apply a user-defined score threshold without re-running annotation.
 
 These annotations are stored in the feature meta.data slot within our SpaMTP Object, lets take a look:
 
@@ -476,12 +486,13 @@ df %>%
 
 We can see that for each m/z value, along with all possible annotations, we also observe information including database ID, the adduct used to annotate this metabolite, the common chemical formula, and the plus-minus ppm error between the observed mass and the reference mass of these annotated molecules in our reference dataset.
 
-In addition to storing the m/z annotations in the feature meta.data slot, if save.intermediates = `TRUE` is set within the *AnnotateSM()* function, then an intermediate data.frame will be stored in the `@tools` slot of the SpaMTP object. This data.frame is a less compressed version of the annotation data.frame stored in the feature meta.data slot, which is used later for pathway analysis. For more information visit the hidden window below:
+In addition to storing the m/z annotations in the feature meta.data slot, if `save.intermediate = TRUE` is set within *AnnotateSM()*, the scored candidates and their RaMP provenance are stored in `@tools$mz_annotation`. A compatibility copy remains in `@tools$db_3`. The scored result is used later for pathway analysis. For more information visit the hidden window below:
 
 <details>
   <summary>*Storing an intermediate data.frame for downstream pathway analysis*</summary>
 ```{r}
-str(bladder_annotated@tools) #The stored dataframe is called db_3
+AnnotationInfo(bladder_annotated)
+str(bladder_annotated@tools$mz_annotation, max.level = 1)
 ```
 
 </details> 
@@ -1028,7 +1039,9 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 DE.list = list(cluster_DEMs$DEMs),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
-                                ST_assay = NULL)
+                                ST_assay = NULL,
+                                annotation_score_threshold = pathway_annotation_score_threshold,
+                                pval_cutoff_mets = pathway_metabolite_pval_cutoff)
 ```
 
 ```{r, echo=TRUE, results='hide'}
@@ -1049,14 +1062,21 @@ df %>%
   )
 ```
 
-Based on this, we can see that there is only one significant differentially expressed pathway. Before we annotated our sample based on only `M+K` analytes, and using the LIPIDMAPS database. To increase the number of possible pathways detected we can broaden our annotation range to include `M+H` and `M+K` analytes from the HMDB, LIPIDMAPS and ChEBI databases and re-run the analysis.
+The example uses `pval_cutoff_mets = 1`, so annotated metabolites can contribute to pathway ranks regardless of DE significance. Set it back to `0.05` for the stricter DE-significant analysis. To increase annotation coverage further, we can broaden the adduct range from `M+K` to both `M+H` and `M+K` and re-run the analysis.
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 ## Get Data
 ROI_pathays <- subset(bladder, subset = ssc %in% c("2", "5", "6"))
 
 ## Re-annotate
-ROI_pathays <- AnnotateSM(ROI_pathays, db = rbind(Chebi_db,Lipidmaps_db,HMDB_db), ppm_error = 15, polarity = "positive", adducts = c("M+H","M+K"))
+ROI_pathays <- AnnotateSM(
+  ROI_pathays,
+  db = NULL,
+  ppm_error = 15,
+  polarity = "positive",
+  adducts = c("M+H", "M+K"),
+  min_score = 0
+)
 
 
 ## Re-run DE analysis
@@ -1071,7 +1091,9 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI_pathays,
                                 DE.list = list(DE$DEMs),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
-                                ST_assay = NULL)
+                                ST_assay = NULL,
+                                annotation_score_threshold = pathway_annotation_score_threshold,
+                                pval_cutoff_mets = pathway_metabolite_pval_cutoff)
 ```
 
 ```{r echo=TRUE, eval=FALSE}
@@ -1183,7 +1205,12 @@ patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse
 In addition to finding correlated m/z's based on spatial location, we can also identify metabolites that demonstrate a strong spatial pattern. This is done using Moran's I scores to determine the most spatially variable features.
 
 ```{r fig.width=30, fig.height=10, dpi=72,warning=FALSE, message=FALSE}
-ROI <- FindSpatiallyVariableMetabolites(ROI, assay = "Spatial", image = "fov") # Finds Spatially Strong m/z's
+ROI <- FindSpatiallyVariableMetabolites(
+  ROI,
+  assay = "Spatial",
+  image = "fov",
+  max_spots = 2000
+) # Bounds the dense Moran's I distance matrix for the documentation runner.
 
 ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
 ```
@@ -1222,7 +1249,7 @@ image(bladder_cardinal, mz=c(798.5410, 741.5307, 743.5482),
         normalize.image="linear",
         superpose=TRUE)
 
-image(bladder_cardinal, "Seurat_metadata.seurat_clusters", col = unlist(unname(SpaMTP_palette)))
+image(bladder_cardinal, "Seurat_metadata.clusters", col = unlist(unname(SpaMTP_palette)))
 
 ```
 We can see based on this ion image overlay plot that the three selected *m/z* values correspond quite significantly with our *Seurat* based clustering. 743.5482 clearly maps cluster 5 (green), whereas 798.5410 corresponds to cluster 2 and 3 (red).
@@ -1234,7 +1261,12 @@ We can also run pathway analysis on the new clustering results. Lets do that now
 
 ```{r warning=FALSE, message=FALSE, results='hide'}
 ## Annotate ROI with additional datasets
-ROI <- AnnotateSM(ROI, db = rbind(Chebi_db,Lipidmaps_db, HMDB_db), polarity = "positive")
+ROI <- AnnotateSM(
+  ROI,
+  db = NULL,
+  polarity = "positive",
+  min_score = 0
+)
 
 ## Performs TIC normalisation
 ROI <- NormalizeSMData(ROI)
@@ -1249,7 +1281,9 @@ DE_pathways <- FindRegionalPathways(SpaMTP = ROI,
                                 DE.list = list(DE),
                                 analyte_types = c("metabolites"),
                                 SM_assay = "Spatial",
-                                ST_assay = NULL)
+                                ST_assay = NULL,
+                                annotation_score_threshold = pathway_annotation_score_threshold,
+                                pval_cutoff_mets = pathway_metabolite_pval_cutoff)
 ```
 
 
@@ -1286,9 +1320,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
-
-
 
 
 

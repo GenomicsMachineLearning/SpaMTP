@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpaMTP pathway networks</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #dce3ec;
+      --panel: #ffffff;
+      --soft: #f5f7fb;
+      --accent: #3157d5;
+      --accent-soft: #e9edff;
+      --shadow: 0 10px 30px rgba(32, 48, 78, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 960px;
+      color: var(--ink);
+      background: var(--soft);
+      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, select, input { font: inherit; }
+    .app { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 64px;
+      padding: 10px 18px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 10px rgba(32, 48, 78, .04);
+      z-index: 3;
+    }
+    .brand { min-width: 235px; }
+    .brand h1 { margin: 0; font-size: 16px; letter-spacing: -.01em; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+    .controls { display: flex; align-items: end; flex-wrap: wrap; gap: 9px; }
+    .control { display: grid; gap: 4px; }
+    .control label { color: var(--muted); font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: .04em; }
+    .score-control { min-width: 150px; }
+    .score-control label { display: flex; justify-content: space-between; gap: 8px; }
+    .score-control output { color: var(--accent); font-variant-numeric: tabular-nums; }
+    .score-control input { width: 150px; height: 34px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+    select, .button {
+      height: 34px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    select:hover, .button:hover { border-color: #8fa1ba; }
+    .button.primary { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .button.active { color: var(--accent); background: var(--accent-soft); border-color: #aebcf7; }
+    .workspace { display: grid; grid-template-columns: 230px minmax(480px, 1fr) 294px; min-height: 0; }
+    .sidebar, .inspector { overflow: auto; background: var(--panel); }
+    .sidebar { border-right: 1px solid var(--line); padding: 16px 12px; }
+    .inspector { border-left: 1px solid var(--line); padding: 16px; }
+    .section-title { margin: 0 0 10px; color: var(--muted); font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .07em; }
+    .pathway-list { display: grid; gap: 6px; }
+    .pathway {
+      width: 100%;
+      padding: 9px 10px;
+      overflow: hidden;
+      color: #354057;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .pathway:hover { background: #f1f4f9; }
+    .pathway.active { color: #213d9b; background: var(--accent-soft); border-color: #c8d1fa; font-weight: 700; }
+    .graph-panel { position: relative; min-width: 0; min-height: 0; background: #fbfcfe; }
+    #network { width: 100%; height: 100%; display: block; touch-action: none; }
+    .empty-state {
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .status {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .badge {
+      padding: 5px 8px;
+      color: #435069;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      font-size: 11px;
+    }
+    .node { cursor: grab; }
+    .node:active { cursor: grabbing; }
+    .node-gene, .node-metabolite {
+      fill: currentColor;
+      stroke: #64748b;
+      stroke-width: 1.25px;
+      vector-effect: non-scaling-stroke;
+    }
+    .node-metabolite { rx: 3px; }
+    .node-undetected { opacity: .55; }
+    .node-detected > .node-gene, .node-detected > .node-metabolite { stroke: #172033; stroke-width: 2px; }
+    .node-leading-edge > .node-gene, .node-leading-edge > .node-metabolite { stroke: #7c3aed; stroke-width: 3px; }
+    .node-pinned > .node-gene, .node-pinned > .node-metabolite { stroke: #3157d5; stroke-width: 3px; opacity: 1; }
+    .network-label {
+      fill: #334155;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,.94);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      pointer-events: none;
+      font-size: 11px;
+      font-weight: 550;
+    }
+    .network-label-undetected { fill: #52617a; font-size: 10.5px; font-weight: 500; }
+    .network-link { fill: none; opacity: .62; }
+    .card { margin-bottom: 16px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+    .card h3 { margin: 0 0 8px; font-size: 13px; }
+    .card p { margin: 5px 0; color: var(--muted); font-size: 12px; }
+    .gradient { height: 10px; margin: 9px 0 4px; border-radius: 999px; background: linear-gradient(90deg, #2166ac, #f7f7f7, #b2182b); }
+    .gradient-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
+    .node-key { display: flex; align-items: center; gap: 8px; margin: 7px 0; color: #475569; font-size: 12px; }
+    .circle-key { width: 11px; height: 11px; background: #7b879b; border-radius: 50%; }
+    .rect-key { width: 14px; height: 10px; background: #7b879b; border-radius: 2px; }
+    .reaction-list { display: grid; gap: 6px; min-height: 22px; max-height: 190px; overflow: auto; }
+    .reaction-row { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 7px; color: #475569; font-size: 11px; }
+    .reaction-line { height: 0; border-top: 2px solid var(--edge-colour); }
+    .reaction-line.dashed { border-top-style: dashed; }
+    .canvas-wrap { display: grid; place-items: center; min-height: 194px; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    canvas { width: 250px; height: 180px; display: block; }
+    .spatial-caption { min-height: 34px; overflow-wrap: anywhere; }
+    .spatial-legend { margin-top: 9px; }
+    .spatial-legend[hidden] { display: none; }
+    .spatial-gradient {
+      height: 11px;
+      border: 1px solid rgba(100,116,139,.28);
+      border-radius: 3px;
+    }
+    .spatial-legend-title { margin: 0 0 4px; color: #475569; font-size: 11px; font-weight: 600; }
+    .tooltip {
+      position: fixed;
+      display: none;
+      max-width: 280px;
+      padding: 8px 10px;
+      color: #fff;
+      background: rgba(15, 23, 42, .94);
+      border-radius: 7px;
+      box-shadow: var(--shadow);
+      pointer-events: none;
+      z-index: 10;
+      font-size: 12px;
+    }
+    .footer-note { color: #94a3b8; font-size: 10px; }
+    @media (max-width: 1150px) {
+      .workspace { grid-template-columns: 190px minmax(440px, 1fr) 260px; }
+      .brand { min-width: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1 id="page-title">SpaMTP pathway networks</h1>
+        <p>Interactive multi-omic topology explorer</p>
+      </div>
+      <div class="controls">
+        <div class="control">
+          <label for="cluster-select">Region</label>
+          <select id="cluster-select"></select>
+        </div>
+        <div class="control">
+          <label for="label-select">Labels</label>
+          <select id="label-select">
+            <option value="detected">Metabolites + detected</option>
+            <option value="all">All</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="layout-select">Layout</label>
+          <select id="layout-select">
+            <option value="repulsion">Repulsion</option>
+            <option value="force">Balanced force</option>
+            <option value="radial">Radial</option>
+            <option value="bipartite">Gene ↔ metabolite</option>
+          </select>
+        </div>
+        <div class="control" id="evidence-control">
+          <label for="evidence-select">Metabolite evidence</label>
+          <select id="evidence-select">
+            <option value="leading_edge">Leading edge</option>
+            <option value="annotated">All annotations</option>
+          </select>
+        </div>
+        <div class="control score-control" id="score-control">
+          <label for="score-input"><span>Min annotation score</span><output id="score-value">0.05</output></label>
+          <input id="score-input" type="range" min="0.01" max="1" step="0.01" value="0.05">
+        </div>
+        <button class="button active" id="mode-button" type="button">Focused network</button>
+        <button class="button" id="fit-button" type="button">Reset view</button>
+        <button class="button primary" id="save-button" type="button">Export SVG</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <h2 class="section-title">Pathways</h2>
+        <div class="pathway-list" id="pathway-list"></div>
+      </aside>
+
+      <section class="graph-panel" id="graph-panel">
+        <svg id="network" role="img" aria-label="Interactive pathway network"></svg>
+        <div class="status">
+          <span class="badge" id="node-count">0 nodes</span>
+          <span class="badge" id="edge-count">0 edges</span>
+          <span class="badge" id="mode-status">focused</span>
+        </div>
+        <div class="empty-state" id="empty-state">No network is available for this pathway and region.</div>
+      </section>
+
+      <aside class="inspector">
+        <h2 class="section-title">Network details</h2>
+        <div class="card">
+          <h3>Log2 fold change</h3>
+          <div class="gradient"></div>
+          <div class="gradient-labels"><span id="fc-min">−1</span><span>0</span><span id="fc-max">1</span></div>
+          <div class="node-key"><span class="circle-key"></span>Gene / RNA</div>
+          <div class="node-key"><span class="rect-key"></span>Metabolite</div>
+          <p>Purple outlines mark GSEA leading-edge nodes. Dark outlines mark annotated pathway metabolites, including non-DE nodes when that mode is selected. Grey nodes have no dataset match.</p>
+        </div>
+        <div class="card">
+          <h3>Edge types</h3>
+          <div class="reaction-list" id="reaction-list"></div>
+        </div>
+        <div class="card">
+          <h3>Spatial abundance</h3>
+          <p class="spatial-caption" id="spatial-caption">Select a detected node to show its spatial signal.</p>
+          <div class="canvas-wrap"><canvas id="spatial-canvas" width="500" height="360"></canvas></div>
+          <div class="spatial-legend" id="spatial-legend" hidden>
+            <p class="spatial-legend-title">Assay abundance</p>
+            <div class="spatial-gradient" id="spatial-gradient"></div>
+            <div class="gradient-labels">
+              <span id="spatial-min">0</span>
+              <span id="spatial-mid">0.5</span>
+              <span id="spatial-max">1</span>
+            </div>
+          </div>
+          <p id="spatial-range"></p>
+        </div>
+        <div class="card">
+          <h3>Selected region</h3>
+          <div class="canvas-wrap"><canvas id="cluster-canvas" width="500" height="360"></canvas></div>
+          <p id="point-summary"></p>
+        </div>
+        <p class="footer-note">Dragged nodes remain pinned. Double-click a node to release it; Reset view releases all nodes. Scroll to zoom and drag the background to pan.</p>
+      </aside>
+    </main>
+  </div>
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const payload = __SPAMTP_PAYLOAD__;
+    const state = {
+      pathway: 0,
+      cluster: 0,
+      focused: true,
+      labelMode: payload.label_mode || "detected",
+      layoutMode: payload.layout_mode || "repulsion",
+      metaboliteDetection: payload.metadata?.metabolite_detection || "leading_edge",
+      annotationThreshold: Number.isFinite(+payload.metadata?.annotation_score_threshold)
+        ? +payload.metadata.annotation_score_threshold
+        : 0.05,
+      simulation: null,
+      zoom: null,
+      zoomTransform: d3.zoomIdentity,
+      graphWidth: 0,
+      graphHeight: 0,
+      suppressViewportRestart: false,
+      pins: new Map()
+    };
+
+    const pageTitle = document.getElementById("page-title");
+    const pathwayList = document.getElementById("pathway-list");
+    const clusterSelect = document.getElementById("cluster-select");
+    const labelSelect = document.getElementById("label-select");
+    const layoutSelect = document.getElementById("layout-select");
+    const evidenceControl = document.getElementById("evidence-control");
+    const evidenceSelect = document.getElementById("evidence-select");
+    const scoreControl = document.getElementById("score-control");
+    const scoreInput = document.getElementById("score-input");
+    const scoreValue = document.getElementById("score-value");
+    const modeButton = document.getElementById("mode-button");
+    const graphPanel = document.getElementById("graph-panel");
+    const emptyState = document.getElementById("empty-state");
+    const tooltip = document.getElementById("tooltip");
+    const svg = d3.select("#network");
+    const fcLimit = Number.isFinite(+payload.fc_limit) && +payload.fc_limit > 0 ? +payload.fc_limit : 1;
+    const foldColour = d3.scaleLinear()
+      .domain([-fcLimit, 0, fcLimit])
+      .range(["#2166ac", "#f7f7f7", "#b2182b"])
+      .clamp(true);
+
+    pageTitle.textContent = payload.title || "SpaMTP pathway networks";
+    labelSelect.value = state.labelMode;
+    layoutSelect.value = state.layoutMode;
+    evidenceSelect.value = state.metaboliteDetection;
+    const annotationControlsEnabled = payload.metadata?.annotation_controls !== false &&
+      payload.metadata?.annotation_score_floor !== undefined;
+    const annotationFloor = Number.isFinite(+payload.metadata?.annotation_score_floor)
+      ? +payload.metadata.annotation_score_floor
+      : 0;
+    const annotationCeiling = Math.max(
+      1,
+      Number.isFinite(+payload.metadata?.annotation_score_ceiling)
+        ? +payload.metadata.annotation_score_ceiling
+        : 1,
+      state.annotationThreshold
+    );
+    scoreInput.min = String(annotationFloor);
+    scoreInput.max = String(annotationCeiling);
+    scoreInput.step = annotationCeiling <= 1 ? "0.01" : "0.05";
+    scoreInput.value = String(clamp(state.annotationThreshold, annotationFloor, annotationCeiling));
+    scoreValue.value = formatScore(state.annotationThreshold);
+    evidenceControl.hidden = !annotationControlsEnabled;
+    scoreControl.hidden = !annotationControlsEnabled;
+    scoreControl.style.opacity = state.metaboliteDetection === "annotated" ? "1" : ".48";
+    scoreInput.disabled = state.metaboliteDetection !== "annotated";
+    document.getElementById("fc-min").textContent = `−${formatNumber(fcLimit)}`;
+    document.getElementById("fc-max").textContent = formatNumber(fcLimit);
+
+    payload.pathways.forEach((pathway, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `pathway${index === 0 ? " active" : ""}`;
+      button.textContent = pathway;
+      button.title = pathway;
+      button.addEventListener("click", () => {
+        state.pathway = index;
+        pathwayList.querySelectorAll(".pathway").forEach((item, itemIndex) => {
+          item.classList.toggle("active", itemIndex === index);
+        });
+        renderNetwork();
+      });
+      pathwayList.appendChild(button);
+    });
+
+    payload.clusters.forEach((cluster, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = cluster;
+      clusterSelect.appendChild(option);
+    });
+
+    clusterSelect.addEventListener("change", event => {
+      state.cluster = +event.target.value;
+      drawClusterMap();
+      renderNetwork();
+    });
+    labelSelect.addEventListener("change", event => {
+      state.labelMode = event.target.value;
+      renderNetwork();
+    });
+    layoutSelect.addEventListener("change", event => {
+      state.layoutMode = event.target.value;
+      state.pins.delete(currentViewKey());
+      renderNetwork();
+    });
+    evidenceSelect.addEventListener("change", event => {
+      state.metaboliteDetection = event.target.value;
+      scoreControl.style.opacity = state.metaboliteDetection === "annotated" ? "1" : ".48";
+      scoreInput.disabled = state.metaboliteDetection !== "annotated";
+      renderNetwork();
+    });
+    let scoreRenderTimer;
+    scoreInput.addEventListener("input", event => {
+      state.annotationThreshold = +event.target.value;
+      scoreValue.value = formatScore(state.annotationThreshold);
+      clearTimeout(scoreRenderTimer);
+      scoreRenderTimer = setTimeout(renderNetwork, 90);
+    });
+    modeButton.addEventListener("click", () => {
+      state.focused = !state.focused;
+      modeButton.classList.toggle("active", state.focused);
+      modeButton.textContent = state.focused ? "Focused network" : "Full network";
+      renderNetwork();
+    });
+    document.getElementById("fit-button").addEventListener("click", resetView);
+    document.getElementById("save-button").addEventListener("click", exportSvg);
+
+    function currentRawNetwork() {
+      return payload.networks[state.cluster][state.pathway];
+    }
+
+    function nodeIsDetected(node) {
+      const supportsInteractiveEvidence = Object.prototype.hasOwnProperty.call(node, "annotated");
+      if (!supportsInteractiveEvidence) return Boolean(node.detected);
+      if (node.group === "rna" || node.leading_edge) return Boolean(node.leading_edge);
+      if (state.metaboliteDetection !== "annotated" || !node.annotated) return false;
+      return Number.isFinite(+node.annotation_score) &&
+        +node.annotation_score >= state.annotationThreshold;
+    }
+
+    function networkForRender() {
+      const raw = currentRawNetwork();
+      const pinned = state.pins.get(currentViewKey());
+      const nodes = (raw.nodes || []).map(node => {
+        const copy = {...node};
+        copy.detected = nodeIsDetected(copy);
+        const position = pinned?.get(copy.id);
+        if (position) {
+          copy.x = position.x;
+          copy.y = position.y;
+          copy.fx = position.x;
+          copy.fy = position.y;
+          copy.pinned = true;
+        }
+        return copy;
+      });
+      let links = (raw.links || []).map(link => ({...link}));
+      if (!state.focused) return {nodes, links};
+
+      const detected = new Set(nodes.filter(node => node.detected).map(node => node.id));
+      links = links.filter(link => detected.has(link.source) || detected.has(link.target));
+      const retained = new Set(nodes.filter(node => node.detected).map(node => node.id));
+      links.forEach(link => {
+        retained.add(link.source);
+        retained.add(link.target);
+      });
+      return {nodes: nodes.filter(node => retained.has(node.id)), links};
+    }
+
+    function renderNetwork() {
+      if (state.simulation) state.simulation.stop();
+      svg.selectAll("*").remove();
+      const panelBounds = graphPanel.getBoundingClientRect();
+      const width = Math.max(420, panelBounds.width || graphPanel.clientWidth);
+      const height = Math.max(420, window.innerHeight - panelBounds.top);
+      state.graphWidth = width;
+      state.graphHeight = height;
+      state.zoomTransform = d3.zoomIdentity;
+      svg.attr("viewBox", `0 0 ${width} ${height}`);
+
+      const network = networkForRender();
+      document.getElementById("node-count").textContent = `${network.nodes.length} nodes`;
+      document.getElementById("edge-count").textContent = `${network.links.length} edges`;
+      const evidenceStatus = state.metaboliteDetection === "annotated"
+        ? `annotations ≥ ${formatScore(state.annotationThreshold)}`
+        : "leading edge";
+      document.getElementById("mode-status").textContent = `${state.focused ? "focused" : "full"} · ${layoutName()} · ${evidenceStatus}`;
+      emptyState.style.display = network.nodes.length ? "none" : "grid";
+      updateReactionLegend(currentRawNetwork().links || []);
+      if (!network.nodes.length) return;
+
+      const viewport = svg.append("g").attr("class", "network-viewport");
+      state.zoom = d3.zoom()
+        .scaleExtent([0.2, 5])
+        .on("zoom", event => {
+          state.zoomTransform = event.transform;
+          viewport.attr("transform", event.transform);
+        })
+        .on("end", () => {
+          if (!state.suppressViewportRestart) updateSimulationViewport();
+        });
+      svg.call(state.zoom).on("dblclick.zoom", null);
+
+      const markerStyles = Array.from(new Map(network.links.map(link => {
+        const key = markerKey(link);
+        return [key, {key, head: link.head, colour: link.colour}];
+      })).values());
+      const defs = svg.append("defs");
+      const markers = defs.selectAll("marker")
+        .data(markerStyles)
+        .join("marker")
+        .attr("id", item => item.key)
+        .attr("viewBox", "0 -6 12 12")
+        .attr("refX", 13)
+        .attr("refY", 0)
+        .attr("markerWidth", 7)
+        .attr("markerHeight", 7)
+        .attr("orient", "auto-start-reverse")
+        .attr("markerUnits", "strokeWidth");
+      markers.each(function(item) {
+        const marker = d3.select(this);
+        if (item.head === "crosshead") {
+          marker.append("path").attr("d", "M2,-5L10,5M10,-5L2,5")
+            .attr("fill", "none").attr("stroke", item.colour).attr("stroke-width", 1.8);
+        } else if (item.head === "thead") {
+          marker.append("path").attr("d", "M3,-6L3,6")
+            .attr("fill", "none").attr("stroke", item.colour).attr("stroke-width", 2.2);
+        } else if (item.head === "round") {
+          marker.append("circle").attr("cx", 5).attr("cy", 0).attr("r", 3)
+            .attr("fill", "white").attr("stroke", item.colour).attr("stroke-width", 1.8);
+        } else if (item.head === "revarrow") {
+          marker.append("path").attr("d", "M10,-5L2,0L10,5")
+            .attr("fill", "none").attr("stroke", item.colour).attr("stroke-width", 1.8);
+        } else {
+          marker.append("path").attr("d", "M1,-5L11,0L1,5Z").attr("fill", item.colour);
+        }
+      });
+
+      const link = viewport.append("g")
+        .attr("class", "network-links")
+        .selectAll("path")
+        .data(network.links)
+        .join("path")
+        .attr("class", "network-link")
+        .attr("stroke", edge => edge.colour || "#64748b")
+        .attr("stroke-width", edge => 1 + Math.min(1.5, Math.log1p(+edge.weight || 1) / 3))
+        .attr("stroke-dasharray", edge => edge.style === "dashed" ? "5 4" : null)
+        .attr("marker-end", edge => `url(#${markerKey(edge)})`)
+        .on("mousemove", (event, edge) => showTooltip(event, edge.reaction || "Interaction"))
+        .on("mouseleave", hideTooltip);
+
+      const node = viewport.append("g")
+        .attr("class", "network-nodes")
+        .selectAll("g")
+        .data(network.nodes, item => item.id)
+        .join("g")
+        .attr("class", item => `node ${item.detected ? "node-detected" : "node-undetected"}${item.leading_edge ? " node-leading-edge" : ""}${item.pinned ? " node-pinned" : ""}`)
+        .style("color", item => Number.isFinite(+item.expr) ? foldColour(+item.expr) : "#94a3b8")
+        .on("mousemove", (event, item) => {
+          const fc = Number.isFinite(+item.expr) ? `<br>log2FC: ${formatNumber(+item.expr)}` : "<br>log2FC: not matched";
+          const evidence = item.leading_edge
+            ? "<br>Evidence: GSEA leading edge"
+            : (item.annotated
+              ? `<br>Evidence: pathway annotation (score ${formatScore(+item.annotation_score)})`
+              : "");
+          showTooltip(event, `${escapeHtml(item.display || item.name || item.id)}${fc}${evidence}`);
+        })
+        .on("mouseleave", hideTooltip)
+        .on("click", (event, item) => {
+          event.stopPropagation();
+          drawSpatialMap(item);
+        })
+        .on("dblclick", function(event, item) {
+          event.preventDefault();
+          event.stopPropagation();
+          item.fx = null;
+          item.fy = null;
+          item.pinned = false;
+          state.pins.get(currentViewKey())?.delete(item.id);
+          d3.select(this).classed("node-pinned", false);
+          state.simulation.alpha(0.35).restart();
+        });
+
+      node.filter(item => item.group === "rna")
+        .append("circle")
+        .attr("class", "node-gene")
+        .attr("r", item => item.detected ? 8 : 5.5);
+      node.filter(item => item.group !== "rna")
+        .append("rect")
+        .attr("class", "node-metabolite")
+        .attr("x", item => item.detected ? -9 : -6.5)
+        .attr("y", item => item.detected ? -7 : -5)
+        .attr("width", item => item.detected ? 18 : 13)
+        .attr("height", item => item.detected ? 14 : 10);
+
+      const labelledNodes = network.nodes.filter(shouldShowLabel);
+      const labels = viewport.append("g")
+        .attr("class", "network-labels")
+        .selectAll("text")
+        .data(labelledNodes, item => item.id)
+        .join("text")
+        .attr("class", item => `network-label${item.detected ? "" : " network-label-undetected"}`)
+        .attr("text-anchor", "middle")
+        .attr("dy", -13)
+        .text(item => truncate(item.name || item.display || item.id, 32));
+
+      const nodeCount = Math.max(1, network.nodes.length);
+      const initialBounds = visibleWorldBounds(d3.zoomIdentity);
+      initialiseNodePositions(network.nodes, initialBounds);
+      const layout = layoutParameters(nodeCount, initialBounds.width, initialBounds.height);
+      state.simulation = d3.forceSimulation(network.nodes)
+        .force("link", d3.forceLink(network.links)
+          .id(item => item.id)
+          .distance(edge => Math.max(52, 118 - Math.log1p(+edge.weight || 1) * 10) * layout.linkScale)
+          .strength(layout.linkStrength))
+        .force("charge", d3.forceManyBody().strength(layout.charge))
+        .force("center", state.layoutMode === "bipartite" ? null : d3.forceCenter(initialBounds.cx, initialBounds.cy))
+        .force("collide", d3.forceCollide(item => collisionRadius(item, layout))
+          .strength(0.96)
+          .iterations(4))
+        .force("radial", state.layoutMode === "radial"
+          ? d3.forceRadial(
+              item => item.group === "rna" ? layout.radius * 0.62 : layout.radius,
+              initialBounds.cx,
+              initialBounds.cy
+            ).strength(0.72)
+          : null)
+        .force("x", state.layoutMode === "bipartite"
+          ? d3.forceX(initialBounds.cx).strength(0.1)
+          : state.layoutMode === "radial"
+            ? null
+            : d3.forceX(initialBounds.cx).strength(layout.centerStrength))
+        .force("y", state.layoutMode === "bipartite"
+          ? d3.forceY(item => item.group === "rna"
+              ? initialBounds.y0 + initialBounds.height * 0.27
+              : initialBounds.y0 + initialBounds.height * 0.7).strength(0.42)
+          : state.layoutMode === "radial"
+            ? null
+            : d3.forceY(initialBounds.cy).strength(layout.centerStrength * 1.25))
+        .force("viewport", viewportBoundsForce(() => visibleWorldBounds(), item => collisionRadius(item, layout)))
+        .alphaDecay(0.045)
+        .velocityDecay(0.35);
+
+      const updatePositions = () => {
+        link.attr("d", edgePath);
+        node.attr("transform", item => `translate(${item.x},${item.y})`);
+        labels
+          .attr("x", item => item.x)
+          .attr("y", item => item.y);
+      };
+      state.simulation.stop();
+      const warmupTicks = Math.min(160, Math.max(70, Math.round(4400 / nodeCount)));
+      for (let tick = 0; tick < warmupTicks; tick += 1) {
+        state.simulation.tick();
+        constrainNodesToViewport(network.nodes, initialBounds, layout);
+      }
+      updatePositions();
+      fitNetworkView(network.nodes, width, height);
+
+      let framePending = false;
+      state.simulation.on("tick", () => {
+        if (framePending) return;
+        framePending = true;
+        requestAnimationFrame(() => {
+          framePending = false;
+          updatePositions();
+        });
+      });
+      node.call(d3.drag()
+        .on("start", (event, item) => {
+          if (!event.active) state.simulation.alphaTarget(0.18).restart();
+          item.fx = item.x;
+          item.fy = item.y;
+        })
+        .on("drag", (event, item) => {
+          const bounds = visibleWorldBounds();
+          const padding = Math.max(10 / Math.max(state.zoomTransform.k, 0.2), 4);
+          item.fx = clamp(event.x, bounds.x0 + padding, bounds.x1 - padding);
+          item.fy = clamp(event.y, bounds.y0 + padding, bounds.y1 - padding);
+        })
+        .on("end", function(event, item) {
+          if (!event.active) state.simulation.alphaTarget(0);
+          const bounds = visibleWorldBounds();
+          const padding = Math.max(10 / Math.max(state.zoomTransform.k, 0.2), 4);
+          item.fx = clamp(item.x, bounds.x0 + padding, bounds.x1 - padding);
+          item.fy = clamp(item.y, bounds.y0 + padding, bounds.y1 - padding);
+          item.pinned = true;
+          if (!state.pins.has(currentViewKey())) {
+            state.pins.set(currentViewKey(), new Map());
+          }
+          state.pins.get(currentViewKey()).set(item.id, {x: item.fx, y: item.fy});
+          d3.select(this).classed("node-pinned", true);
+        }));
+    }
+
+    function edgePath(edge) {
+      const sourceX = edge.source.x;
+      const sourceY = edge.source.y;
+      let targetX = edge.target.x;
+      let targetY = edge.target.y;
+      if (sourceX === targetX && sourceY === targetY) {
+        targetX += 1;
+        targetY += 1;
+        return `M${sourceX},${sourceY}C${sourceX + 30},${sourceY - 35} ${sourceX - 30},${sourceY - 35} ${targetX},${targetY}`;
+      }
+      const dx = targetX - sourceX;
+      const dy = targetY - sourceY;
+      const radius = Math.max(1, Math.hypot(dx, dy) * 1.8);
+      return `M${sourceX},${sourceY}A${radius},${radius} 0 0,1 ${targetX},${targetY}`;
+    }
+
+    function markerKey(edge) {
+      return `marker-${String(edge.head || "arrow").replace(/[^a-z0-9_-]/gi, "-")}-${String(edge.colour || "grey").replace(/[^a-z0-9_-]/gi, "-")}`;
+    }
+
+    function currentViewKey() {
+      return `${state.cluster}|${state.pathway}`;
+    }
+
+    function layoutName() {
+      return ({
+        repulsion: "repulsion",
+        force: "force",
+        radial: "radial",
+        bipartite: "gene ↔ metabolite"
+      })[state.layoutMode] || state.layoutMode;
+    }
+
+    function layoutParameters(nodeCount, width, height) {
+      const radius = Math.min(width, height) * 0.38;
+      if (state.layoutMode === "repulsion") {
+        return {
+          charge: -Math.max(500, Math.min(1100, 38000 / nodeCount)),
+          linkScale: 1.75,
+          linkStrength: 0.2,
+          collision: 27,
+          detectedCollision: 36,
+          centerStrength: 0.025,
+          radius
+        };
+      }
+      if (state.layoutMode === "radial") {
+        return {
+          charge: -Math.max(90, Math.min(190, 7200 / nodeCount)),
+          linkScale: 0.92,
+          linkStrength: 0.25,
+          collision: 18,
+          detectedCollision: 24,
+          centerStrength: 0,
+          radius
+        };
+      }
+      if (state.layoutMode === "bipartite") {
+        return {
+          charge: -Math.max(150, Math.min(320, 11000 / nodeCount)),
+          linkScale: 1.12,
+          linkStrength: 0.34,
+          collision: 20,
+          detectedCollision: 27,
+          centerStrength: 0,
+          radius
+        };
+      }
+      return {
+        charge: -Math.max(90, Math.min(240, 9500 / nodeCount)),
+        linkScale: 1,
+        linkStrength: 0.42,
+        collision: 15,
+        detectedCollision: 21,
+        centerStrength: 0.018,
+        radius
+      };
+    }
+
+    function shouldShowLabel(item) {
+      return state.labelMode === "all" ||
+        (state.labelMode === "detected" && (item.detected || item.group !== "rna"));
+    }
+
+    function collisionRadius(item, layout) {
+      const nodeRadius = item.detected ? layout.detectedCollision : layout.collision;
+      if (!shouldShowLabel(item)) return nodeRadius;
+      const labelLength = Math.min(32, String(item.name || item.display || item.id).length);
+      return Math.max(nodeRadius, 24 + labelLength * 1.15);
+    }
+
+    function visibleWorldBounds(transform = state.zoomTransform) {
+      const width = Math.max(1, state.graphWidth);
+      const height = Math.max(1, state.graphHeight);
+      const current = transform || d3.zoomIdentity;
+      const inset = 18 / Math.max(current.k, 0.2);
+      const rawX0 = current.invertX(0);
+      const rawX1 = current.invertX(width);
+      const rawY0 = current.invertY(0);
+      const rawY1 = current.invertY(height);
+      const x0 = Math.min(rawX0 + inset, rawX1 - inset);
+      const x1 = Math.max(rawX0 + inset, rawX1 - inset);
+      const y0 = Math.min(rawY0 + inset, rawY1 - inset);
+      const y1 = Math.max(rawY0 + inset, rawY1 - inset);
+      return {
+        x0, x1, y0, y1,
+        width: Math.max(1, x1 - x0),
+        height: Math.max(1, y1 - y0),
+        cx: (x0 + x1) / 2,
+        cy: (y0 + y1) / 2,
+        scale: current.k
+      };
+    }
+
+    function viewportBoundsForce(boundsGetter, radiusGetter) {
+      let nodes = [];
+      function force(alpha) {
+        const bounds = boundsGetter();
+        const strength = 0.42 * alpha;
+        nodes.forEach(item => {
+          if (item.fx != null || item.fy != null) return;
+          const radius = Math.min(
+            Math.max(4, radiusGetter(item)),
+            Math.max(4, Math.min(bounds.width, bounds.height) * 0.22)
+          );
+          if (item.x < bounds.x0 + radius) {
+            item.vx += (bounds.x0 + radius - item.x) * strength;
+          } else if (item.x > bounds.x1 - radius) {
+            item.vx += (bounds.x1 - radius - item.x) * strength;
+          }
+          if (item.y < bounds.y0 + radius) {
+            item.vy += (bounds.y0 + radius - item.y) * strength;
+          } else if (item.y > bounds.y1 - radius) {
+            item.vy += (bounds.y1 - radius - item.y) * strength;
+          }
+        });
+      }
+      force.initialize = value => { nodes = value || []; };
+      return force;
+    }
+
+    function constrainNodesToViewport(nodes, bounds, layout) {
+      nodes.forEach(item => {
+        if (item.fx != null || item.fy != null) return;
+        const radius = Math.min(
+          Math.max(4, collisionRadius(item, layout)),
+          Math.max(4, Math.min(bounds.width, bounds.height) * 0.22)
+        );
+        item.x = clamp(item.x, bounds.x0 + radius, bounds.x1 - radius);
+        item.y = clamp(item.y, bounds.y0 + radius, bounds.y1 - radius);
+      });
+    }
+
+    function updateSimulationViewport() {
+      if (!state.simulation) return;
+      const bounds = visibleWorldBounds();
+      const nodeCount = Math.max(1, state.simulation.nodes().length);
+      const layout = layoutParameters(nodeCount, bounds.width, bounds.height);
+      const centerForce = state.simulation.force("center");
+      if (centerForce) centerForce.x(bounds.cx).y(bounds.cy);
+      const radialForce = state.simulation.force("radial");
+      if (radialForce) {
+        radialForce
+          .x(bounds.cx)
+          .y(bounds.cy)
+          .radius(item => item.group === "rna" ? layout.radius * 0.62 : layout.radius);
+      }
+      const xForce = state.simulation.force("x");
+      if (xForce) xForce.x(bounds.cx);
+      const yForce = state.simulation.force("y");
+      if (yForce) {
+        yForce.y(state.layoutMode === "bipartite"
+          ? item => item.group === "rna"
+            ? bounds.y0 + bounds.height * 0.27
+            : bounds.y0 + bounds.height * 0.7
+          : bounds.cy);
+      }
+      state.simulation.alpha(Math.max(state.simulation.alpha(), 0.2)).restart();
+    }
+
+    function fitNetworkView(nodes, width, height) {
+      if (!state.zoom || !nodes.length) return;
+      let minX = Infinity;
+      let maxX = -Infinity;
+      let minY = Infinity;
+      let maxY = -Infinity;
+      nodes.forEach(item => {
+        const labelLength = shouldShowLabel(item)
+          ? Math.min(32, String(item.name || item.display || item.id).length)
+          : 0;
+        const labelHalfWidth = labelLength ? 18 + labelLength * 3.2 : 14;
+        minX = Math.min(minX, item.x - labelHalfWidth);
+        maxX = Math.max(maxX, item.x + labelHalfWidth);
+        minY = Math.min(minY, item.y - (labelLength ? 31 : 16));
+        maxY = Math.max(maxY, item.y + 18);
+      });
+      const margin = 32;
+      const contentWidth = Math.max(1, maxX - minX);
+      const contentHeight = Math.max(1, maxY - minY);
+      const scale = Math.max(0.2, Math.min(
+        1,
+        (width - margin * 2) / contentWidth,
+        (height - margin * 2) / contentHeight
+      ));
+      const centreX = (minX + maxX) / 2;
+      const centreY = (minY + maxY) / 2;
+      const transform = d3.zoomIdentity
+        .translate(width / 2, height / 2)
+        .scale(scale)
+        .translate(-centreX, -centreY);
+      state.suppressViewportRestart = true;
+      svg.call(state.zoom.transform, transform);
+      state.suppressViewportRestart = false;
+    }
+
+    function initialiseNodePositions(nodes, bounds) {
+      const movable = nodes.filter(item => !item.pinned);
+      const total = Math.max(1, movable.length);
+      if (state.layoutMode === "bipartite") {
+        const groups = [
+          movable.filter(item => item.group === "rna"),
+          movable.filter(item => item.group !== "rna")
+        ];
+        groups.forEach((group, groupIndex) => {
+          group.forEach((item, index) => {
+            item.x = bounds.x0 + bounds.width *
+              (0.12 + 0.76 * (index + 1) / (group.length + 1));
+            item.y = bounds.y0 + bounds.height *
+              (groupIndex === 0 ? 0.27 : 0.7) + ((index % 3) - 1) * 8;
+          });
+        });
+        return;
+      }
+      const maximumRadius = Math.min(bounds.width, bounds.height) *
+        (state.layoutMode === "repulsion" ? 0.4 : 0.31);
+      movable.forEach((item, index) => {
+        const angle = index * 2.399963229728653;
+        const radius = maximumRadius * Math.sqrt((index + 0.5) / total);
+        item.x = bounds.cx + Math.cos(angle) * radius;
+        item.y = bounds.cy + Math.sin(angle) * radius;
+      });
+    }
+
+    function updateReactionLegend(links) {
+      const container = document.getElementById("reaction-list");
+      container.replaceChildren();
+      const unique = new Map();
+      links.forEach(link => unique.set(
+        `${link.reaction}|${link.colour}|${link.style}|${link.head}`,
+        link
+      ));
+      if (!unique.size) {
+        const text = document.createElement("p");
+        text.textContent = "No reactions in this view.";
+        container.appendChild(text);
+        return;
+      }
+      unique.forEach(link => {
+        const row = document.createElement("div");
+        row.className = "reaction-row";
+        const swatch = document.createElement("span");
+        swatch.className = `reaction-line${link.style === "dashed" ? " dashed" : ""}`;
+        swatch.style.setProperty("--edge-colour", link.colour || "#64748b");
+        swatch.style.borderTopColor = link.colour || "#64748b";
+        const text = document.createElement("span");
+        text.textContent = link.reaction || "Interaction";
+        row.append(swatch, text);
+        container.appendChild(row);
+      });
+    }
+
+    function resetView() {
+      state.pins.delete(currentViewKey());
+      if (state.simulation) state.simulation.stop();
+      if (state.zoom) {
+        state.suppressViewportRestart = true;
+        svg.call(state.zoom.transform, d3.zoomIdentity);
+        state.suppressViewportRestart = false;
+      }
+      renderNetwork();
+    }
+
+    function drawClusterMap() {
+      const selected = String(payload.clusters[state.cluster]);
+      drawRaster("cluster-canvas", payload.spatial.clusters.map(value =>
+        String(value).toLowerCase() === selected.toLowerCase() ? "#d73027" : "#d7dde7"
+      ));
+      const shown = payload.spatial.displayed_points || payload.spatial.coordinates.length;
+      const total = payload.spatial.total_points || shown;
+      document.getElementById("point-summary").textContent = shown < total
+        ? `${selected}; showing ${shown.toLocaleString()} of ${total.toLocaleString()} points`
+        : `${selected}; ${shown.toLocaleString()} spatial points`;
+    }
+
+    function drawSpatialMap(node) {
+      const values = payload.spatial.expression[node.group]?.[node.id];
+      const caption = document.getElementById("spatial-caption");
+      const rangeText = document.getElementById("spatial-range");
+      const spatialLegend = document.getElementById("spatial-legend");
+      caption.textContent = node.display || node.name || node.id;
+      if (!Array.isArray(values) || !values.length) {
+        drawRaster("spatial-canvas", payload.spatial.coordinates.map(() => "#e2e8f0"));
+        spatialLegend.hidden = true;
+        rangeText.textContent = "No matching assay feature was found.";
+        return;
+      }
+      const finite = values.filter(value => Number.isFinite(+value)).map(Number);
+      if (!finite.length) {
+        drawRaster("spatial-canvas", payload.spatial.coordinates.map(() => "#e2e8f0"));
+        spatialLegend.hidden = true;
+        rangeText.textContent = "No finite assay abundance values were found.";
+        return;
+      }
+      const upper = percentile(finite, 0.99);
+      const lower = Math.min(0, ...finite);
+      const span = upper - lower || 1;
+      const colours = values.map(value => {
+        if (!Number.isFinite(+value)) return "#e2e8f0";
+        const scaled = clamp((+value - lower) / span, 0, 1);
+        const index = Math.min(payload.palette.length - 1, Math.floor(scaled * payload.palette.length));
+        return payload.palette[index];
+      });
+      drawRaster("spatial-canvas", colours);
+      const gradientColours = payload.palette.filter((colour, index) =>
+        index === 0 || index === payload.palette.length - 1 || index % Math.max(1, Math.floor(payload.palette.length / 10)) === 0
+      );
+      document.getElementById("spatial-gradient").style.background =
+        `linear-gradient(90deg, ${gradientColours.join(", ")})`;
+      document.getElementById("spatial-min").textContent = formatNumber(lower);
+      document.getElementById("spatial-mid").textContent = formatNumber(lower + span / 2);
+      document.getElementById("spatial-max").textContent = formatNumber(upper);
+      spatialLegend.hidden = false;
+      rangeText.textContent = "Colours are clipped at the 99th percentile.";
+    }
+
+    function drawRaster(canvasId, colours) {
+      const canvas = document.getElementById(canvasId);
+      const context = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#f8fafc";
+      context.fillRect(0, 0, width, height);
+      const pointSize = Math.max(1.2, Math.min(4, 560 / Math.sqrt(Math.max(1, payload.spatial.coordinates.length))));
+      payload.spatial.coordinates.forEach((coordinate, index) => {
+        context.fillStyle = colours[index] || "#e2e8f0";
+        context.fillRect(
+          8 + coordinate.x * (width - 16),
+          8 + coordinate.y * (height - 16),
+          pointSize,
+          pointSize
+        );
+      });
+    }
+
+    function exportSvg() {
+      const original = document.getElementById("network");
+      const clone = original.cloneNode(true);
+      clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+      style.textContent = ".network-label{font:11px sans-serif;fill:#334155;paint-order:stroke;stroke:#fff;stroke-width:3px}.network-label-undetected{fill:#52617a;font-size:10.5px}.network-link{fill:none;opacity:.62}.node-gene,.node-metabolite{fill:currentColor;stroke:#64748b;stroke-width:1.25px;vector-effect:non-scaling-stroke}.node-detected>.node-gene,.node-detected>.node-metabolite{stroke:#172033;stroke-width:2px}.node-leading-edge>.node-gene,.node-leading-edge>.node-metabolite{stroke:#7c3aed;stroke-width:3px}.node-undetected{opacity:.55}.node-pinned>.node-gene,.node-pinned>.node-metabolite{stroke:#3157d5;stroke-width:3px;opacity:1}";
+      clone.prepend(style);
+      const source = new XMLSerializer().serializeToString(clone);
+      const blob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${safeFileName(payload.pathways[state.pathway])}_${safeFileName(payload.clusters[state.cluster])}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function showTooltip(event, html) {
+      tooltip.innerHTML = html;
+      tooltip.style.display = "block";
+      tooltip.style.left = `${event.clientX + 12}px`;
+      tooltip.style.top = `${event.clientY + 12}px`;
+    }
+    function hideTooltip() { tooltip.style.display = "none"; }
+    function clamp(value, low, high) { return Math.max(low, Math.min(high, value)); }
+    function truncate(value, length) { return value.length > length ? `${value.slice(0, length - 1)}…` : value; }
+    function formatNumber(value) { return Math.abs(value) >= 10 ? value.toFixed(1) : value.toFixed(2); }
+    function formatScore(value) { return Number.isFinite(+value) ? (+value).toFixed(2) : "n/a"; }
+    function safeFileName(value) { return String(value).replace(/[^a-z0-9._-]+/gi, "_"); }
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[character]);
+    }
+    function percentile(values, probability) {
+      if (!values.length) return 1;
+      const sorted = [...values].sort((a, b) => a - b);
+      return sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil(probability * sorted.length) - 1))];
+    }
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(renderNetwork, 160);
+    });
+
+    drawClusterMap();
+    drawRaster("spatial-canvas", payload.spatial.coordinates.map(() => "#e2e8f0"));
+    renderNetwork();
+  </script>
+</body>
+</html>

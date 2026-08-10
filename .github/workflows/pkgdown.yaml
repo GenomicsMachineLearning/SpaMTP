@@ -2,7 +2,7 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, developmental]
   pull_request:
   release:
     types: [published]
@@ -15,9 +15,12 @@ permissions: read-all
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
+    # Stable and developmental deployments both write to gh-pages. Serialize
+    # those jobs so one branch cannot overwrite the other mid-deployment, while
+    # keeping pull-request checks independent.
     concurrency:
-      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
+      group: pkgdown-${{ github.event_name == 'pull_request' && github.run_id || 'gh-pages' }}
+      cancel-in-progress: false
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     permissions:
@@ -25,7 +28,51 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
+          # GitHub LFS currently cannot serve two historical vignette objects.
+          # Checking out all LFS objects makes the workflow fail before R starts.
+          lfs: false
+
+      - name: Restore pkgdown vignette data
+        uses: actions/cache@v4
+        with:
+          path: |
+            vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds
+            vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds
+          key: pkgdown-vignette-data-zenodo-18282678-v1
+
+      - name: Download unavailable LFS vignette data from Zenodo
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ensure_file() {
+            local path="$1"
+            local url="$2"
+            local expected_sha256="$3"
+
+            if [[ -f "$path" ]] && echo "$expected_sha256  $path" | sha256sum --check --status; then
+              echo "Using cached $path"
+              return
+            fi
+
+            mkdir -p "$(dirname "$path")"
+            curl --location --fail --show-error \
+              --retry 5 --retry-all-errors --retry-delay 15 \
+              --connect-timeout 30 --max-time 1800 \
+              --output "${path}.part" "$url"
+            echo "$expected_sha256  ${path}.part" | sha256sum --check
+            mv "${path}.part" "$path"
+          }
+
+          ensure_file \
+            "vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds" \
+            "https://zenodo.org/records/18282678/files/brain_tumour_integrated.rds?download=1" \
+            "0b946f7f8843502c6675fdb025e0bd29d39d1245ea5083451ea814b7818e551a"
+          ensure_file \
+            "vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds" \
+            "https://zenodo.org/records/18282678/files/brain_tumour_combined_pathways.rds?download=1" \
+            "ecbd858c53d577d9aa2c5365ef772edd495f80e4572fec0cc5f74c1618d2903e"
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
@@ -37,14 +84,61 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
+      - name: Restore expensive vignette chunk cache
+        id: vignette-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: vignettes/.knitr-cache
+          key: pkgdown-knitr-${{ runner.os }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'vignettes/**/*.Rmd') }}
+          restore-keys: |
+            pkgdown-knitr-${{ runner.os }}-
+
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        run: |
+          is_development <- identical(Sys.getenv("GITHUB_REF_NAME"), "developmental")
+          site_url <- if (is_development) {
+            "https://genomicsmachinelearning.github.io/SpaMTP/developmental"
+          } else {
+            "https://genomicsmachinelearning.github.io/SpaMTP"
+          }
+          override <- list(url = site_url)
+          if (is_development) {
+            override$home <- list(title = "SpaMTP developmental")
+          }
+          pkgdown::build_site_github_pages(
+            new_process = FALSE,
+            install = FALSE,
+            override = override
+          )
         shell: Rscript {0}
 
-      - name: Deploy to GitHub pages 🚀
-        if: github.event_name != 'pull_request'
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+      # Save completed expensive chunks even if a later vignette chunk fails,
+      # so the next diagnostic run resumes instead of starting from zero.
+      - name: Save expensive vignette chunk cache
+        if: always() && steps.vignette-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
         with:
-          clean: false
+          path: vignettes/.knitr-cache
+          key: pkgdown-knitr-${{ runner.os }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'vignettes/**/*.Rmd') }}
+
+      - name: Deploy stable site to GitHub Pages
+        if: github.event_name != 'pull_request' && github.ref_name != 'developmental'
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
+        with:
           branch: gh-pages
           folder: docs
+          clean: true
+          clean-exclude: |
+            developmental
+            developmental/**
+          commit-message: "docs: deploy stable site from ${{ github.ref_name }}"
+
+      - name: Deploy developmental site to GitHub Pages
+        if: github.event_name != 'pull_request' && github.ref_name == 'developmental'
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
+        with:
+          branch: gh-pages
+          folder: docs
+          target-folder: developmental
+          clean: true
+          commit-message: "docs: deploy developmental site"
