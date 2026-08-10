@@ -159,7 +159,11 @@ FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "coun
   DefaultAssay(object) <- assay
   features <- rownames(x = object[[assay]])
   spatial.location <- GetTissueCoordinates(object = object[[image]])
-  data <- GetAssayData(object = object, slot = slot)
+  data <- SeuratObject::LayerData(
+    object = object,
+    assay = assay,
+    layer = slot
+  )
   data <- data[features, , drop = FALSE]
 
   if (nrow(spatial.location) != ncol(data)) {

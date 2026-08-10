@@ -10,3 +10,10 @@ test_that("FindSpatiallyVariableMetabolites validates sampling controls", {
     fixed = TRUE
   )
 })
+
+test_that("FindSpatiallyVariableMetabolites reads Seurat v5 assay layers", {
+  function_body <- paste(deparse(body(FindSpatiallyVariableMetabolites)), collapse = "\n")
+
+  expect_match(function_body, "SeuratObject::LayerData", fixed = TRUE)
+  expect_false(grepl("GetAssayData", function_body, fixed = TRUE))
+})

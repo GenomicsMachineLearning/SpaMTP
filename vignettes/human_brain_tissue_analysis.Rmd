@@ -2,7 +2,7 @@
 title: "SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics, Transcriptomics, Proteomics)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{SpaMTP: Human Brain Tissue Analysis}
+  %\VignetteIndexEntry{SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics, Transcriptomics, Proteomics)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

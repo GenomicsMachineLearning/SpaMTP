@@ -662,7 +662,7 @@
   }
   if (is.null(value)) {
     value <- tryCatch(
-      SeuratObject::GetAssayData(object, assay = assay, slot = layer),
+      SeuratObject::GetAssayData(object, assay = assay, layer = layer),
       error = function(e) NULL
     )
   }
