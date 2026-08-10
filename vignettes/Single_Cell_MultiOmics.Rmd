@@ -2,7 +2,7 @@
 title: "SpaMTP: Simulated Single Cell Multi-Omics Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Single_Cell_MultiOmics}
+  %\VignetteIndexEntry{SpaMTP: Simulated Single Cell Multi-Omics Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -51,7 +51,15 @@ maldi_url <- "https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1
 xenium <- readRDS(url(xenium_url))
 MALDI <- readRDS(url(maldi_url))
 
-MALDI <- UpdateSeuratObject(MALDI) # Only Required if SeuratObjects => 5.0.2
+# These Zenodo objects were serialized with SeuratObject 5.0.1/5.0.2.
+# Updating both objects adds slots introduced by newer FOV schemas before any
+# spatial boundary is modified by Crop().
+xenium <- suppressWarnings(
+  suppressMessages(SeuratObject::UpdateSeuratObject(xenium))
+)
+MALDI <- suppressWarnings(
+  suppressMessages(SeuratObject::UpdateSeuratObject(MALDI))
+)
 ```  
 
 
@@ -81,10 +89,12 @@ Based on these plots, we can see that our Xenium data is at a much higher resolu
 # Futures may be required to use Seurat's `Crop()` function
 
 library(future)
-plan("multicore", workers = 16) # Use all 16 cores
+workers <- max(1L, min(4L, future::availableCores()))
+future_strategy <- if (future::supportsMulticore()) "multicore" else "multisession"
+plan(future_strategy, workers = workers)
 
-# Each core can have up to 16 GB of memory (16 GB / 16 cores)
-options(future.globals.maxSize = 16000 * 1024^2) # 16 GB per core
+# Permit large spatial objects without over-provisioning GitHub-hosted runners.
+options(future.globals.maxSize = 16000 * 1024^2) # 16 GB serialization limit
 
 ```
 
