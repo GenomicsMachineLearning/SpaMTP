@@ -142,3 +142,9 @@ jobs:
           target-folder: developmental
           clean: true
           commit-message: "docs: deploy developmental site"
+
+      - name: Report developmental documentation URL
+        if: github.event_name != 'pull_request' && github.ref_name == 'developmental'
+        run: |
+          echo "### Developmental documentation" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://genomicsmachinelearning.github.io/SpaMTP/developmental/" >> "$GITHUB_STEP_SUMMARY"
