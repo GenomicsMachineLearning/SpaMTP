@@ -2,7 +2,7 @@
 title: "SpaMTP: Spatial Multi-Omics Analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Multi-Omic Mouse Brain}
+  %\VignetteIndexEntry{SpaMTP: Spatial Multi-Omics Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,13 +18,21 @@ spamtp_root <- if (file.exists("DESCRIPTION")) {
 cache_inputs <- c(
   file.path(spamtp_root, "DESCRIPTION"),
   file.path(spamtp_root, "NAMESPACE"),
-  list.files(file.path(spamtp_root, "R"), pattern = "\\.R$", full.names = TRUE),
-  file.path(spamtp_root, "vignettes", "Multi-Omic_Mouse_Brain.Rmd")
+  list.files(file.path(spamtp_root, "R"), pattern = "\\.R$", full.names = TRUE)
 )
+# knitr already includes each chunk's code in its individual cache key. A
+# stable schema token prevents a prose or display-only vignette edit from
+# invalidating every expensive analysis chunk. Bump this token only when the
+# cache structure itself changes. Its initial value preserves the cache key
+# used before this policy was introduced.
+spamtp_cache_schema <- "52d41ddee15de27d449bc553ed7e748b"
 spamtp_cache_key <- paste(
   R.version$major,
   R.version$minor,
-  paste(unname(tools::md5sum(cache_inputs)), collapse = "-"),
+  paste(
+    c(unname(tools::md5sum(cache_inputs)), spamtp_cache_schema),
+    collapse = "-"
+  ),
   sep = "-"
 )
 knitr::opts_chunk$set(
@@ -936,18 +944,23 @@ head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 4)
 cat('<div style="width: fit-content; display: block; margin-left: auto; margin-right: auto;">')
 
 df <- head(striatum_DEGs[striatum_DEGs$cluster == "2",], n = 4)
-df %>%
-    knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-                  full_width = F, position = "center") %>%
-    kableExtra::row_spec(0, bold = TRUE)%>%
-  kableExtra::column_spec(1, bold = TRUE) %>%
-    kableExtra::row_spec(1:nrow(df), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+if (nrow(df) == 0L) {
+  cat("<p><em>No cluster 2 markers passed the current differential-expression thresholds.</em></p>")
+} else {
+  df %>%
+      knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%
+      kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                    full_width = FALSE, position = "center") %>%
+      kableExtra::row_spec(0, bold = TRUE) %>%
+      kableExtra::row_spec(seq_len(nrow(df)), extra_css = "border-bottom: 1px solid #ddd; border-top: 1px solid #ddd;")
+}
 cat('</div>')
 ```
 
 
-Supporting the findings from the orginal publication, we can see that "Pcp4" is up-regulated in cluster 2 (in-tact striatum cells).
+When markers pass the current differential-expression thresholds, the demo
+typically recovers "Pcp4" among the genes up-regulated in cluster 2 (intact
+striatum cells), consistent with the original publication.
 
 
 ```{r, fig.width=7, fig.height=4, message=FALSE, warning=FALSE,dpi=72}
