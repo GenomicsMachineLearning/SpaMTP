@@ -12,19 +12,17 @@ name: pkgdown.yaml
 
 permissions: read-all
 
+env:
+  GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+  PKGDOWN_CACHE_VERSION: v2
+  PKGDOWN_VARIANT: ${{ github.ref_name == 'developmental' && 'developmental' || 'stable' }}
+  PKGDOWN_SITE_URL: ${{ github.ref_name == 'developmental' && 'https://genomicsmachinelearning.github.io/SpaMTP/developmental' || 'https://genomicsmachinelearning.github.io/SpaMTP' }}
+
 jobs:
-  pkgdown:
+  dependencies:
+    name: Prepare dependencies and site shell
     runs-on: ubuntu-latest
-    # Stable and developmental deployments both write to gh-pages. Serialize
-    # those jobs so one branch cannot overwrite the other mid-deployment, while
-    # keeping pull-request checks independent.
-    concurrency:
-      group: pkgdown-${{ github.event_name == 'pull_request' && github.run_id || 'gh-pages' }}
-      cancel-in-progress: false
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,8 +30,9 @@ jobs:
           # Checking out all LFS objects makes the workflow fail before R starts.
           lfs: false
 
-      - name: Restore pkgdown vignette data
-        uses: actions/cache@v4
+      - name: Restore large vignette data
+        id: vignette-data
+        uses: actions/cache/restore@v4
         with:
           path: |
             vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds
@@ -73,6 +72,205 @@ jobs:
             "https://zenodo.org/records/18282678/files/brain_tumour_combined_pathways.rds?download=1" \
             "ecbd858c53d577d9aa2c5365ef772edd495f80e4572fec0cc5f74c1618d2903e"
 
+      - name: Save large vignette data
+        if: steps.vignette-data.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds
+            vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds
+          key: pkgdown-vignette-data-zenodo-18282678-v1
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
+          # Preserve the installed library even if a later validation or site
+          # preparation step fails, so the next push can restore it.
+          cache: always
+
+      - name: Parse all vignette chunks
+        shell: Rscript {0}
+        run: |
+          vignette_files <- list.files(
+            "vignettes", pattern = "[.]Rmd$", full.names = TRUE
+          )
+          for (vignette_file in vignette_files) {
+            output_file <- tempfile(fileext = ".R")
+            knitr::purl(
+              vignette_file,
+              output = output_file,
+              documentation = 0,
+              quiet = TRUE
+            )
+            parse(output_file)
+            message("Parsed ", vignette_file)
+          }
+
+      - name: Build reusable site shell
+        shell: Rscript {0}
+        run: |
+          override <- list(url = Sys.getenv("PKGDOWN_SITE_URL"))
+          if (identical(Sys.getenv("PKGDOWN_VARIANT"), "developmental")) {
+            override$home <- list(title = "SpaMTP developmental")
+          }
+          pkgdown::build_home(
+            override = override,
+            preview = FALSE,
+            quiet = FALSE
+          )
+
+      - name: Upload site shell
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-site-shell
+          path: docs
+          if-no-files-found: error
+          retention-days: 1
+
+  build-vignettes:
+    name: Vignette — ${{ matrix.article }}
+    needs: dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        article:
+          - SpaMTP
+          - Mouse_Urinary_Bladder
+          - Multi-Omic_Mouse_Brain
+          - human_brain_tissue_analysis
+          - SpaMTP_Additional_Features
+          - Big_Data
+          - Annotation_Refinement
+          - Single_Cell_MultiOmics
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # The dependency job primes the r-lib cache. Each fresh matrix runner
+      # restores that cache here instead of compiling the library from scratch.
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
+
+      - name: Download site shell
+        uses: actions/download-artifact@v4
+        with:
+          name: pkgdown-site-shell
+          path: docs
+
+      - name: Restore human brain vignette data
+        if: matrix.article == 'human_brain_tissue_analysis'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_integrated.rds
+            vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds
+          key: pkgdown-vignette-data-zenodo-18282678-v1
+
+      - name: Restore rendered article
+        id: article-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            docs/articles/${{ matrix.article }}.html
+            docs/articles/${{ matrix.article }}_files
+          key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', '_pkgdown.yml') }}
+
+      - name: Restore partial knitr cache
+        id: knitr-cache
+        if: steps.article-cache.outputs.cache-hit != 'true' && matrix.article == 'Multi-Omic_Mouse_Brain'
+        uses: actions/cache/restore@v4
+        with:
+          # Keep the historical root path so caches produced by the previous
+          # monolithic workflow remain restorable. The vignette itself writes
+          # only to its Multi-Omic_Mouse_Brain subdirectory.
+          path: vignettes/.knitr-cache
+          key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-
+            pkgdown-knitr-${{ runner.os }}-
+
+      - name: Build article
+        if: steps.article-cache.outputs.cache-hit != 'true'
+        env:
+          ARTICLE: ${{ matrix.article }}
+        shell: Rscript {0}
+        run: |
+          override <- list(url = Sys.getenv("PKGDOWN_SITE_URL"))
+          if (identical(Sys.getenv("PKGDOWN_VARIANT"), "developmental")) {
+            override$home <- list(title = "SpaMTP developmental")
+          }
+          pkgdown::build_article(
+            Sys.getenv("ARTICLE"),
+            lazy = FALSE,
+            new_process = FALSE,
+            override = override,
+            quiet = FALSE
+          )
+
+      # The run-specific key makes every failed attempt a new checkpoint. GitHub
+      # cache entries are immutable, so reusing a fixed key would lose progress.
+      - name: Save partial knitr cache
+        if: always() && steps.article-cache.outputs.cache-hit != 'true' && matrix.article == 'Multi-Omic_Mouse_Brain'
+        uses: actions/cache/save@v4
+        with:
+          path: vignettes/.knitr-cache
+          key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save rendered article
+        if: steps.article-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            docs/articles/${{ matrix.article }}.html
+            docs/articles/${{ matrix.article }}_files
+          key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', '_pkgdown.yml') }}
+
+      - name: Upload rendered article
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-article-${{ matrix.article }}
+          path: |
+            docs/articles/${{ matrix.article }}.html
+            docs/articles/${{ matrix.article }}_files
+          if-no-files-found: error
+          retention-days: 1
+
+  assemble-and-deploy:
+    name: Assemble and deploy pkgdown
+    needs: build-vignettes
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Stable and developmental deployments both update gh-pages. Only the
+    # final publishing job needs serialization; vignette jobs remain parallel.
+    concurrency:
+      group: pkgdown-gh-pages
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
@@ -84,42 +282,56 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      - name: Restore expensive vignette chunk cache
-        id: vignette-cache
-        uses: actions/cache/restore@v4
+      - name: Download site shell
+        uses: actions/download-artifact@v4
         with:
-          path: vignettes/.knitr-cache
-          key: pkgdown-knitr-${{ runner.os }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'vignettes/**/*.Rmd') }}
-          restore-keys: |
-            pkgdown-knitr-${{ runner.os }}-
+          name: pkgdown-site-shell
+          path: docs
 
-      - name: Build site
+      - name: Download rendered articles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pkgdown-article-*
+          path: docs/articles
+          merge-multiple: true
+
+      - name: Verify article artifacts
+        shell: Rscript {0}
         run: |
-          is_development <- identical(Sys.getenv("GITHUB_REF_NAME"), "developmental")
-          site_url <- if (is_development) {
-            "https://genomicsmachinelearning.github.io/SpaMTP/developmental"
-          } else {
-            "https://genomicsmachinelearning.github.io/SpaMTP"
+          articles <- c(
+            "SpaMTP",
+            "Mouse_Urinary_Bladder",
+            "Multi-Omic_Mouse_Brain",
+            "human_brain_tissue_analysis",
+            "SpaMTP_Additional_Features",
+            "Big_Data",
+            "Annotation_Refinement",
+            "Single_Cell_MultiOmics"
+          )
+          outputs <- file.path("docs", "articles", paste0(articles, ".html"))
+          missing <- outputs[!file.exists(outputs) | file.info(outputs)$size == 0]
+          if (length(missing)) {
+            stop("Missing rendered article artifacts: ", paste(missing, collapse = ", "))
           }
-          override <- list(url = site_url)
-          if (is_development) {
+          # Artifact extraction occurs after checkout, but set the timestamps
+          # explicitly so pkgdown lazy mode never re-renders them in this job.
+          Sys.setFileTime(outputs, Sys.time())
+          message("Verified ", length(outputs), " rendered articles")
+
+      - name: Assemble site without re-rendering articles
+        shell: Rscript {0}
+        run: |
+          override <- list(url = Sys.getenv("PKGDOWN_SITE_URL"))
+          if (identical(Sys.getenv("PKGDOWN_VARIANT"), "developmental")) {
             override$home <- list(title = "SpaMTP developmental")
           }
           pkgdown::build_site_github_pages(
+            clean = FALSE,
+            lazy = TRUE,
             new_process = FALSE,
             install = FALSE,
             override = override
           )
-        shell: Rscript {0}
-
-      # Save completed expensive chunks even if a later vignette chunk fails,
-      # so the next diagnostic run resumes instead of starting from zero.
-      - name: Save expensive vignette chunk cache
-        if: always() && steps.vignette-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: vignettes/.knitr-cache
-          key: pkgdown-knitr-${{ runner.os }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'vignettes/**/*.Rmd') }}
 
       - name: Deploy stable site to GitHub Pages
         if: github.event_name != 'pull_request' && github.ref_name != 'developmental'

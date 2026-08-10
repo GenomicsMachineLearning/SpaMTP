@@ -1104,6 +1104,12 @@ This data object contains the intact and lesioned striatum regions we will be co
 ```{r dhb_load_annotation, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=72, cache=TRUE}
 striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"
 striatum.dhb.data <- readRDS(url(striatum_url))
+# This object was serialized with SeuratObject 5.0.2. Upgrade its image/assay
+# associations before changing feature metadata so current SpatialPlot methods
+# can validate that every spot still aligns to slice1.
+striatum.dhb.data <- suppressWarnings(
+  SeuratObject::UpdateSeuratObject(striatum.dhb.data)
+)
 # Refresh the old serialized annotation with all current RaMP 3.0 candidates.
 # min_score = 0 keeps threshold selection available at pathway-analysis time.
 striatum.dhb.data <- AnnotateSM(
@@ -1116,7 +1122,11 @@ striatum.dhb.data <- AnnotateSM(
   verbose = FALSE
 )
 
-SpatialDimPlot(striatum.dhb.data, group.by = "striatum",pt.size.factor = 2)
+SpatialDimPlot(
+  striatum.dhb.data,
+  group.by = "striatum",
+  pt.size.factor = 2
+)
 ```
 
 Lets run DE and then find regional pathways `FindRegionalPathways()` on our combined data object. 
