@@ -134,6 +134,64 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: Stage shared article assets
+        shell: Rscript {0}
+        run: |
+          asset_roots <- c(
+            file.path("vignettes", "assets"),
+            file.path("vignettes", "vignette_data_files")
+          )
+          static_files <- system2(
+            "git", c("ls-files", "--", asset_roots), stdout = TRUE
+          )
+          static_files <- unique(static_files[
+            grepl(
+              "[.](html?|png|jpe?g|gif|svg|webp)$",
+              static_files,
+              ignore.case = TRUE
+            )
+          ])
+          relative_files <- sub("^vignettes/", "", static_files)
+          destinations <- file.path("docs", "articles", relative_files)
+          invisible(lapply(
+            unique(dirname(destinations)),
+            dir.create,
+            recursive = TRUE,
+            showWarnings = FALSE
+          ))
+          copied <- file.copy(static_files, destinations, overwrite = TRUE)
+          if (!all(copied)) {
+            stop(
+              "Failed to stage article assets: ",
+              paste(static_files[!copied], collapse = ", ")
+            )
+          }
+
+          # Older cached SpaMTP.html files use the lowercase spelling. Keep an
+          # alias while new renders use the source file's canonical case.
+          alias_copied <- file.copy(
+            file.path("vignettes", "assets", "SM_Analysis.png"),
+            file.path("docs", "articles", "assets", "sm_analysis.png"),
+            overwrite = TRUE
+          )
+          if (!alias_copied) {
+            stop("Failed to stage the legacy lowercase SM analysis image alias.")
+          }
+          message(
+            "Staged ", length(static_files), " shared article assets (",
+            round(sum(file.info(static_files)$size) / 1024^2, 1), " MiB)"
+          )
+
+      - name: Upload shared article assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-shared-assets
+          path: |
+            docs/articles/assets
+            docs/articles/vignette_data_files
+          if-no-files-found: error
+          retention-days: 1
+
   build-vignettes:
     name: Vignette — ${{ matrix.article }}
     needs: dependencies
@@ -288,6 +346,12 @@ jobs:
           name: pkgdown-site-shell
           path: docs
 
+      - name: Download shared article assets
+        uses: actions/download-artifact@v4
+        with:
+          name: pkgdown-shared-assets
+          path: docs/articles
+
       - name: Download rendered articles
         uses: actions/download-artifact@v4
         with:
@@ -316,7 +380,42 @@ jobs:
           # Artifact extraction occurs after checkout, but set the timestamps
           # explicitly so pkgdown lazy mode never re-renders them in this job.
           Sys.setFileTime(outputs, Sys.time())
-          message("Verified ", length(outputs), " rendered articles")
+
+          missing_references <- character()
+          for (article in outputs) {
+            document <- xml2::read_html(article)
+            references <- c(
+              xml2::xml_attr(xml2::xml_find_all(document, ".//*[@src]"), "src"),
+              xml2::xml_attr(
+                xml2::xml_find_all(document, ".//link[@rel='stylesheet']"),
+                "href"
+              )
+            )
+            references <- unique(references[!is.na(references) & nzchar(references)])
+            references <- references[
+              !grepl("^[A-Za-z][A-Za-z0-9+.-]*:|^//|^#", references)
+            ]
+            references <- sub("[?#].*$", "", references)
+            targets <- file.path(dirname(article), utils::URLdecode(references))
+            missing_local <- references[!file.exists(targets)]
+            if (length(missing_local)) {
+              missing_references <- c(
+                missing_references,
+                paste0(article, " -> ", missing_local)
+              )
+            }
+          }
+          missing_references <- unique(missing_references)
+          if (length(missing_references)) {
+            stop(
+              "Missing local article assets:\n",
+              paste(missing_references, collapse = "\n")
+            )
+          }
+          message(
+            "Verified ", length(outputs),
+            " rendered articles and all local image/iframe dependencies"
+          )
 
       - name: Assemble site without re-rendering articles
         shell: Rscript {0}

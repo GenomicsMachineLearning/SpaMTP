@@ -1167,20 +1167,35 @@ selected_pathways = c(
 PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathways)
 ```
 
-One of the significant pathways associated with the lesioned region was 'Dopamine beta-hydroxylase deficiency'. We can use ***SpaMTP's*** network plotting function to visualuse the network of this pathway, along with the relative differentially expressed elements that make up the activity of this pathway. Lets have a look:
+One of the significant pathways associated with the lesioned region was 'Dopamine beta-hydroxylase deficiency'. We can use ***SpaMTP's*** network plotting function to visualise the network of this pathway, along with the relative differentially expressed elements that make up the activity of this pathway. The embedded viewer below is generated from the current RaMP annotations during the vignette build.
 
-```{r eval=FALSE}
-PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "vignette_data_files/Mouse_Brain/DHB_data")
+```{r dhb_pathway_network, results='asis', warning=FALSE, message=FALSE}
+network_asset_dir <- file.path(
+  "Multi-Omic_Mouse_Brain_files", "pathway-network"
+)
+dir.create(network_asset_dir, recursive = TRUE, showWarnings = FALSE)
+
+network_file <- PathwayNetworkPlots(
+  striatum.dhb.data,
+  ident = "striatum",
+  regpathway = regpathway,
+  DE.list = list("genes" = deg, "metabolites" = dem),
+  selected_pathways = selected_pathways,
+  path = network_asset_dir,
+  annotation_score_threshold = pathway_annotation_score_threshold,
+  metabolite_detection = "annotated",
+  max_nodes = 350,
+  label_mode = "detected",
+  max_spatial_points = 10000,
+  layout_mode = "repulsion",
+  verbose = FALSE
+)
+network_src <- gsub("\\\\", "/", network_file)
+cat(sprintf(
+  '<iframe src="%s" width="100%%" height="760px" title="Interactive SpaMTP pathway network" loading="lazy"></iframe>',
+  network_src
+))
 ```
-
-    Assuming DE.list[1] contains genes results .... 
-    Assuming DE.list[2] contains metabolites results ....     
-    Query necessary data and establish pathway database
-    Query db for addtional matching
-    Constructing DE dataframes.... 
-    File successfully written to vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_22_12_23_05_AEST.html
-
-<iframe src="vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_20_22_39_44_AEST.html" width="100%" height="700px"></iframe>
 
 
 One key metabolite that was previously not mentioned by the original publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite has previously been associated with Parkinson's disease and using ***SpaMTP***, we were able to detect its expression within the lesioned striatum. We will now visualise the expression of this metabolite spatially:
