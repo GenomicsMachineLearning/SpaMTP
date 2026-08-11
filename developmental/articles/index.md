@@ -9,6 +9,8 @@
 - [SpaMTP: Single Cell Multi-Omic Analysis (Metabolomics,
   Transcriptomics,
   Proteomics)](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/human_brain_tissue_analysis.md):
+- [SpaMTP: Indexed Metabolite Annotation with RaMP
+  3.0](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Metabolite_Annotation_Pipeline.md):
 - [SpaMTP: Spatial Metabolomics
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Mouse_Urinary_Bladder.md):
 - [SpaMTP: Spatial Multi-Omics

@@ -223,6 +223,8 @@ Transcriptomic data
 - [`MapSpatialOmics()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MapSpatialOmics.md)
   : Maps Spatial Metabolomic (MALDI) data to corresponding Spatial
   Transcriptomics data and coordinates.
+- [`ApplySpatialAlignment()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/ApplySpatialAlignment.md)
+  : Apply automatic or precomputed spatial alignment
 - [`AlignSpatialOmics()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AlignSpatialOmics.md)
   : Interactive app for SM and ST coordinate alignment
 - [`MultiOmicIntegration()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MultiOmicIntegration.md)

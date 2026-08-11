@@ -115,7 +115,7 @@ pig206_peaks
     ## pixelData(3): x, y, run
     ## coord(2): x = 10...120, y = 1...66
     ## runNames(1): PIGII_206
-    ## metadata(1): processing_20260810143059
+    ## metadata(1): processing_20260811024653
     ## mass range: 150.2917 to 999.8333 
     ## centroided: TRUE
 
@@ -189,7 +189,7 @@ pig206_peaks
     ## pixelData(4): x, y, run, ssc
     ## coord(2): x = 10...120, y = 1...66
     ## runNames(1): PIGII_206
-    ## metadata(1): processing_20260810143059
+    ## metadata(1): processing_20260811024653
     ## mass range: 150.2917 to 999.8333 
     ## centroided: TRUE
 
@@ -629,7 +629,7 @@ AnnotationInfo(bladder_annotated)
     ## [1] "3.0.7"
     ## 
     ## $generated_at
-    ## [1] "2026-08-10 14:35:57 UTC"
+    ## [1] "2026-08-11 02:49:59 UTC"
     ## 
     ## $candidates
     ## [1] 409
