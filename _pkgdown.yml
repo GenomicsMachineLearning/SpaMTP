@@ -81,6 +81,8 @@ navbar:
         href: articles/SpaMTP_Additional_Features.html
       - text: Handling Big Datasets
         href: articles/Big_Data.html
+      - text: Indexed Metabolite Annotation with RaMP 3.0
+        href: articles/Metabolite_Annotation_Pipeline.html
       - text: Refining Metabolite Annotations
         href: articles/Annotation_Refinement.html
       - text: Simulated scMulti-Omics Analysis

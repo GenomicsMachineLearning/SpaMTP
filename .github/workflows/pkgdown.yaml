@@ -244,6 +244,7 @@ jobs:
           - human_brain_tissue_analysis
           - SpaMTP_Additional_Features
           - Big_Data
+          - Metabolite_Annotation_Pipeline
           - Annotation_Refinement
           - Single_Cell_MultiOmics
     steps:
@@ -412,6 +413,7 @@ jobs:
             "human_brain_tissue_analysis",
             "SpaMTP_Additional_Features",
             "Big_Data",
+            "Metabolite_Annotation_Pipeline",
             "Annotation_Refinement",
             "Single_Cell_MultiOmics"
           )
