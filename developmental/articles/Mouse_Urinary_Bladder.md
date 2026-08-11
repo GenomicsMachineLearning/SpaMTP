@@ -69,10 +69,14 @@ dataset](https://bioconductor.org/packages/release/data/experiment/vignettes/Car
 # Load directly from file
 #pig206 <- readRDS("./Documents/pig206.RDS")
 
-# Load directly from URL
-pig206_url <- "https://zenodo.org/records/17246555/files/pig206.RDS?download=1"
-
-pig206 <- readRDS(file = url(pig206_url))
+# Resolve a checksum-verified local cache, downloading only when absent.
+pig206_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "pig206.RDS",
+  url = "https://zenodo.org/api/records/17246555/files/pig206.RDS/content",
+  expected_md5 = "d056b5c31c136b6e64ffb975ebca9100"
+)
+pig206 <- readRDS(pig206_file)
 ```
 
 ``` r
@@ -115,7 +119,7 @@ pig206_peaks
     ## pixelData(3): x, y, run
     ## coord(2): x = 10...120, y = 1...66
     ## runNames(1): PIGII_206
-    ## metadata(1): processing_20260811024653
+    ## metadata(1): processing_20260811125907
     ## mass range: 150.2917 to 999.8333 
     ## centroided: TRUE
 
@@ -128,7 +132,7 @@ which is abundant in the pig liver.
 image(pig206_peaks, mz=537.08)
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-7-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-6-1.png)
 
 In addition to pre-processing methods, we can also run additional
 analyses such as *Cardinal’s* tissue segmentation with spatial shrunken
@@ -161,7 +165,7 @@ col_palette = list("1" = "#5aa14f",
 image(pig206_ssc, i=5,type="class",col= unlist(unname(col_palette)))
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-9-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-8-1.png)
 
 From this we can see areas such as the liver, heart, and brain
 distinguished as segments 4, 1, and 5 respectively, as presented in the
@@ -189,7 +193,7 @@ pig206_peaks
     ## pixelData(4): x, y, run, ssc
     ## coord(2): x = 10...120, y = 1...66
     ## runNames(1): PIGII_206
-    ## metadata(1): processing_20260811024653
+    ## metadata(1): processing_20260811125907
     ## mass range: 150.2917 to 999.8333 
     ## centroided: TRUE
 
@@ -303,7 +307,7 @@ ImageDimPlot(rcc_spamtp, group.by = "diagnosis", dark.background = F, fov = name
              cols = c("red", "blue"),na.value= "white")
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-24-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-23-1.png)
 
 #### 3. Load Intensity Matrix files
 
@@ -340,9 +344,14 @@ This dataset will be used for the remainder of the tutorial.
 # Load directly from file
 #bladder <- ReadSM_mtx("./Documents/bladder_csv.csv", mz.prefix = "mz-", feature.start.column = 2)
 
-# Load directly from URL
-bladder_url <- "https://zenodo.org/records/17246684/files/bladder_csv.csv?download=1"
-bladder <- ReadSM_mtx(mtx.file = bladder_url, mz.prefix = "mz-", feature.start.column = 2)
+# Load through the same checksum-verified cache used by the CI build.
+bladder_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "bladder_csv.csv",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_csv.csv/content",
+  expected_md5 = "505fac26445a56ae00cc377b87b03143"
+)
+bladder <- ReadSM_mtx(mtx.file = bladder_file, mz.prefix = "mz-", feature.start.column = 2)
 ```
 
 ``` r
@@ -365,7 +374,7 @@ distribution of the total number of features (m/z’s) present per pixel.
 ImageFeaturePlot(bladder, features = "nFeature_Spatial", size = 1) + coord_flip() + scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-27-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-26-1.png)
 
 In addition we can also add metadata such as tissue segmentation results
 from ssc. These segments were generated following parameters specified
@@ -375,8 +384,13 @@ k=10, s=24’ using ‘gausian’ weights.
 
 ``` r
 
-metadata_url <- "https://zenodo.org/records/17246684/files/bladder_metadata.csv?download=1"
-bladder_metadata <- read.csv(url(metadata_url), row.names = 1)
+bladder_metadata_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "bladder_metadata.csv",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_metadata.csv/content",
+  expected_md5 = "d2a6fc89ed617a0b29a291b4ecd2b715"
+)
+bladder_metadata <- read.csv(bladder_metadata_file, row.names = 1)
 ```
 
 ``` r
@@ -419,7 +433,7 @@ ImageDimPlot(bladder, group.by = "ssc", cols = col_palette, dark.background = F,
     ## Coordinate system already present.
     ## ℹ Adding new coordinate system, which will replace the existing one.
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-32-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-31-1.png)
 
 We can see that our segmentation plot matches [*Cardinal’s* previously
 published results](https://doi.org/10.1038/s41592-023-02070-z).
@@ -433,7 +447,7 @@ bladder.
 ImageMZPlot(bladder, mzs = c(770.5104, 770.56, 741.5307), size = 1.5) & coord_flip() & scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-33-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-32-1.png)
 
 Based on the plots above, there are a few clusters that are associated
 with regions outside the tissue. It is clear that cluster 3 and 4 are
@@ -473,7 +487,7 @@ per pixel between our segments:
 VlnPlot(ROI, features = c("nCount_Spatial", "nFeature_Spatial"),group.by = "ssc",cols = col_palette)+ theme_minimal()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-35-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-34-1.png)
 
 Based on this we can see cluster 1 follows a different distribution
 compared to the other clusters and is also likely outside the tissue
@@ -492,7 +506,13 @@ data to our normalised and filtered dataset.
 
 ``` r
 
-raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1"))
+raw_bladder_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "raw_bladder.RDS",
+  url = "https://zenodo.org/api/records/17246684/files/raw_bladder.RDS/content",
+  expected_md5 = "a385f37641929a43ef6ab917febaf036"
+)
+raw_bladder <- readRDS(raw_bladder_file)
 ```
 
 These plots display the intensity of each m/z summed across all pixels
@@ -513,7 +533,7 @@ cluster using the box.plot function:
 MZBoxPlot(seurat.obj = ROI,group.by = "ssc", mzs = "mz-740.471557617188", log.data = TRUE, show.points = F, top.cutoff = 0.05,bottom.cutoff = 0.05,cols = col_palette) 
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-38-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-37-1.png)
 
 Based on this we can see that the “mz = 740.471557617188” is expressed
 in all clusters and is highest in cluster 6.
@@ -629,7 +649,7 @@ AnnotationInfo(bladder_annotated)
     ## [1] "3.0.7"
     ## 
     ## $generated_at
-    ## [1] "2026-08-11 02:49:59 UTC"
+    ## [1] "2026-08-11 13:00:14 UTC"
     ## 
     ## $candidates
     ## [1] 409
@@ -642,6 +662,9 @@ AnnotationInfo(bladder_annotated)
     ## 
     ## $polarity
     ## [1] "positive"
+    ## 
+    ## $maldi_matrix
+    ## [1] "unspecified"
     ## 
     ## $ppm
     ## [1] 15
@@ -661,8 +684,8 @@ str(bladder_annotated@tools$mz_annotation, max.level = 1)
 ```
 
     ## List of 2
-    ##  $ metadata:List of 12
-    ##  $ results :'data.frame':    409 obs. of  18 variables:
+    ##  $ metadata:List of 13
+    ##  $ results :'data.frame':    409 obs. of  25 variables:
 
   
 
@@ -762,7 +785,7 @@ ROI <- subset(bladder_annotated, subset = ssc %in% c("2", "5", "6"))
 ImageMZAnnotationPlot(ROI, metabolites = c("SM(34:1)", "PC(34:1)"), size = 1, column.name = "Species.Name.Simple", plot.exact = F, dark.background = F, plot.pixel = T) & coord_flip() & scale_x_reverse()  & scale_colour_gradientn(colors = viridis(100)) 
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-50-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-49-1.png)
 
 We can see that our annotations match those published previously. Due to
 the limitations with MSI based technologies, we can not exactly identify
@@ -826,7 +849,7 @@ DEMsHeatmap(cluster_DEMs, only.pos = FALSE, order.by = "logFC",
             ,plot.save.height = 10, plot.save.width = 15, annotation_colors = col_palette[c("2","5","6")])
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-52-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-51-1.png)
 
 We can also observe the spatial expression patterns of some top DE
 metabolites.
@@ -837,7 +860,7 @@ metabolites.
 ImageMZAnnotationPlot(ROI, metabolites = c("LacCer(d18:1/12:0)","SM(d18:0/16:0)","Bastimolide B"), size = 2)) & coord_flip() & scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-53-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-52-1.png)
 
 We can see that the expression of these metabolites matches the spatial
 location of each of these three tissue regions quite well.
@@ -917,7 +940,7 @@ volc_plot <- EnhancedVolcano::EnhancedVolcano( urothelium,
 volc_plot
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-55-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-54-1.png)
 
 In the volcano plot above, we can see that our analysis correctly
 identified SM(34:1) to be up-regulated in cluster 5, and PC(34:1) was
@@ -958,7 +981,7 @@ ggplot(category_counts, aes(x = Lipid.Maps.Category, y = count, fill = cluster))
   scale_fill_manual(values = col_palette) 
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-57-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-56-1.png)
 
 The results displayed in the bar graph above demonstrate the number of
 different types of lipid **categories** differentially expressed in each
@@ -995,7 +1018,7 @@ ggplot(category_counts, aes(x = Lipid.Maps.Main.Class, y = count, fill = cluster
   scale_fill_manual(values = col_palette) 
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-58-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-57-1.png)
 
 ### Metabolite Expression Visualisation
 
@@ -1034,7 +1057,7 @@ head(ROI, n = 3)
 ImageFeaturePlot(ROI, features = c("GPs"), size = 2, dark.background = F) & coord_flip() & scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-62-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-61-1.png)
 
 We can see clearly that the combined expression of these GP lipids is
 highly expressed in the urothelium cells.
@@ -1060,7 +1083,7 @@ check this we can generate some key visualisations:
 ImageMZAnnotationPlot(bladder_annotated, metabolites = "PC(30:2)", column.name = "Species.Name.Simple", size = 2) & coord_flip() & scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-64-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-63-1.png)
 
 SpaMTP also includes a useful density plot function that generates a
 [HTML](https://github.com/GenomicsMachineLearning/SpaMTP/blob/main/vignettes/vignette_data_files/Mouse_Urinary_Bladder/mzs_density_map.html)
@@ -1193,7 +1216,7 @@ generated based on the provided metabolite ID’s.
 VisualisePathways(ROI,pathway_df = cluster_6_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-76-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-75-1.png)
 
 We can also plot the results generated from running Fishers Exact Test
 using the m/z values. This will allow us to plot the expression of each
@@ -1204,7 +1227,7 @@ pathway spatially!
 VisualisePathways(bladder_annotated,pathway_df = cluster_6_mz_pathways,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-79-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-78-1.png)
 
 The second form of pathway analysis identifies differentially expressed
 pathways per group/cluster based on a the relative expression of
@@ -1310,7 +1333,7 @@ Lets plot these results:
 PlotRegionalPathways(regpathway = DE_pathways)
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-86-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-85-1.png)
 
 This plot highlights that cluster 5 (bladder muscle) is enriched for
 `Biochemical pathways`. Alternatively, the urothelium (cluster 6) is
@@ -1364,7 +1387,7 @@ SpaMTP_palette = list("0" = "#0074B0",
 DimPlot(ROI, group.by = "clusters", cols = SpaMTP_palette, pt.size = 2) | ImageDimPlot(ROI, size = 2, group.by = "clusters", cols = SpaMTP_palette)  + coord_flip() + scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-88-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-87-1.png)
 
 Comparing these results to the SSC segmentation we can see this
 clustering can still detect the urinary bladder muscle (cluster 0/1),
@@ -1402,7 +1425,7 @@ df$mz_name <- paste0("mz-",round(df$mz, digits = 6)) # simplifies the m/z names 
 ggplot(df, aes(x = -rank, y = correlation)) + geom_bar(stat = "identity") + geom_text(aes(label = mz_name), vjust = -0.5, size = 3, color = "black") + coord_flip() + theme_classic()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-90-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-89-1.png)
 
 We can see that our top hit is m/z = 734.5467, which is described in
 *Cardinal’s* paper as the peak defining the lamina propria.
@@ -1424,7 +1447,7 @@ plots[["mz"]] <- ImageFeaturePlot(ROI, features = 'mz-743.546752929688', size = 
 patchwork::wrap_plots(plots, ncol = 3, nrow = 2)& coord_flip() & scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-91-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-90-1.png)
 
 In addition to finding correlated m/z’s based on spatial location, we
 can also identify metabolites that demonstrate a strong spatial pattern.
@@ -1443,7 +1466,7 @@ ROI <- FindSpatiallyVariableMetabolites(
 ImageFeaturePlot(ROI, features = GetSpatiallyVariableMetabolites(ROI, assay = "Spatial", n = 6), size = 1)  & coord_flip() & scale_x_reverse()
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-92-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-91-1.png)
 
 ### Switching between SpaMTP and Cardinal Objects
 
@@ -1494,14 +1517,14 @@ image(bladder_cardinal, mz=c(798.5410, 741.5307, 743.5482),
         superpose=TRUE)
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-95-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-94-1.png)
 
 ``` r
 
 image(bladder_cardinal, "Seurat_metadata.clusters", col = unlist(unname(SpaMTP_palette)))
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-95-2.png) We
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-94-2.png) We
 can see based on this ion image overlay plot that the three selected
 *m/z* values correspond quite significantly with our *Seurat* based
 clustering. 743.5482 clearly maps cluster 5 (green), whereas 798.5410
@@ -1555,7 +1578,7 @@ between clusters:
 PlotRegionalPathways(regpathway = DE_pathways, num_display = 4)
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-97-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-96-1.png)
 
 We can also plots some key pathways of interest that were also
 upregulated in our dataset.
@@ -1569,7 +1592,7 @@ key_pathways <- c("Biochemical pathways: part I","G alpha (i) signalling events"
 PlotRegionalPathways(regpathway = DE_pathways, selected_pathways = key_pathways)
 ```
 
-![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-98-1.png)
+![](Mouse_Urinary_Bladder_files/figure-html/unnamed-chunk-97-1.png)
 
 Based on these findings, we observe that the lamina propria (cluster 5)
 has an up regulation of metabolites associated with sensory perception

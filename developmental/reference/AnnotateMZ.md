@@ -10,9 +10,10 @@ AnnotateMZ(
   observed_mz,
   db = NULL,
   index = NULL,
-  polarity = c("positive", "negative", "neutral"),
+  polarity = NULL,
   adducts = NULL,
   rules = NULL,
+  maldi_matrix = NULL,
   ppm = 5,
   ms1_spectrum = NULL,
   ...
@@ -35,15 +36,22 @@ AnnotateMZ(
 
 - polarity:
 
-  Ion mode.
+  Ion mode. When `NULL`, infer it from `index` or the matrix profile,
+  falling back to positive mode.
 
 - adducts:
 
-  Optional adduct subset.
+  Optional adduct subset. When `NULL`, retain the complete rule space
+  selected by the matrix profile or polarity.
 
 - rules:
 
   Optional custom rule table.
+
+- maldi_matrix:
+
+  Optional MALDI matrix/reagent profile used to select rules
+  automatically when `rules` is `NULL`.
 
 - ppm:
 

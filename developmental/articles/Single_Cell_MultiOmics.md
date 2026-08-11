@@ -31,11 +31,21 @@ single cell spatial datasets.
 
 ``` r
 
-xenium_url <- "https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"
-maldi_url <- "https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"
+xenium_file <- resolve_spamtp_vignette_file(
+  article = "Single_Cell_MultiOmics",
+  filename = "Sim_Xenium.RDS",
+  url = "https://zenodo.org/api/records/17247007/files/Sim_Xenium.RDS/content",
+  expected_md5 = "28b74f9a959365352c8e8475846f66a3"
+)
+maldi_file <- resolve_spamtp_vignette_file(
+  article = "Single_Cell_MultiOmics",
+  filename = "Sim_MALDI.RDS",
+  url = "https://zenodo.org/api/records/17247007/files/Sim_MALDI.RDS/content",
+  expected_md5 = "bb5a9d6b2d819ebcce4b06c0f07cacbb"
+)
 
-xenium <- readRDS(url(xenium_url))
-MALDI <- readRDS(url(maldi_url))
+xenium <- readRDS(xenium_file)
+MALDI <- readRDS(maldi_file)
 
 # These Zenodo objects were serialized with SeuratObject 5.0.1/5.0.2.
 # Updating both objects adds slots introduced by newer FOV schemas before any
@@ -60,7 +70,7 @@ First, lets look at our Xenium data:
 ImageDimPlot(xenium, group.by = "celltype", size = 1)
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-4-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-3-1.png)
 
 Now, lets look at our MALDI data:
 
@@ -69,7 +79,7 @@ Now, lets look at our MALDI data:
 ImageDimPlot(MALDI, group.by = "clusters", size = 1)
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-5-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-4-1.png)
 
 Based on these plots, we can see that our Xenium data is at a much
 higher resolution, compared to the MALDI data. We can zoom in and see
@@ -116,7 +126,7 @@ DefaultBoundary(xenium[["zoom"]]) <- "segmentation"
 ImageDimPlot(xenium, group.by = "celltype", fov = "zoom", size = 1)| ImageDimPlot(MALDI, group.by = "clusters", fov = "zoom", size = 2)
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-8-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-7-1.png)
 Looking at our zoomed in FOV the single cell resolution ST provides much
 higher levels of detail compared to the SM data.
 
@@ -133,7 +143,7 @@ datasets.
 CheckAlignment(ST.data = xenium, SM.data = MALDI, image.slice = "fov",size = 0.05) & coord_flip()
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-9-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-8-1.png)
 
 Based on this, we can see our datasets are aligned correctly. Next, we
 will map our SM and Xenium ST data to generate a *SpaMTP* *Seurat*
@@ -192,7 +202,7 @@ p2 <- ImageFeaturePlot(MALDI, features = "mz-100", fov = "zoom", size = 1.5, dar
 p1|p2
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-14-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-13-1.png)
 
 Comparing the mapped data to the original SM data we can see that the
 spatial pattern of both clusters and metabolite (‘mz-100’) match. Now
@@ -225,14 +235,14 @@ MO_data$Oligo_states <- ifelse(MO_data$celltype == "Oligodendrocyte", paste0("Ol
 ImageDimPlot(MO_data, group.by = "Oligo_states", fov = "zoom", dark.background = F, cols = c("grey", "red", "blue", "yellow", "green", "pink"))
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-16-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-15-1.png)
 
 ``` r
 
 DotPlot(MO_data, group.by = "Oligo_states", features = c(rownames(MO_data[["SPT"]]), "spm_mz-200"))
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-17-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-16-1.png)
 This dotplot may suggest that Oligo State 1 and 2 are different cell
 subtypes based on their differential expression of gene1/gene2 and
 mz-200 (Note: this is synthetic data and has no biological context -
@@ -247,7 +257,7 @@ and gene expression on a single plot.
 ImageFeaturePlot(MO_data, features = "mz-200", molecules = c("gene1", "gene2"), fov = "zoom", mols.cols = c("blue", "green"))
 ```
 
-![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-18-1.png)
+![](Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-17-1.png)
 Analysing this spatial plot, there is a clear correlation between
 ‘mz-100’ and ‘gene1’ suggesting there interaction or similar
 functionality.

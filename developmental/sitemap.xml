@@ -7,7 +7,7 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Metabolite_Annotation_Pipeline.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Mouse_Urinary_Bladder.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Multi-Omic_Mouse_Brain.html</loc></url>
-<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Multi-Omic_Mouse_Brain_files/pathway-network/striatum_2026_08_11_03_15_44.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Multi-Omic_Mouse_Brain_files/pathway-network/striatum_2026_08_11_13_04_12.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Single_Cell_MultiOmics.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/SpaMTP.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/SpaMTP_Additional_Features.html</loc></url>
@@ -65,6 +65,8 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/Lipidmaps_db.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSM.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/Load_METASPACE.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixProfiles.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixRules.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MZBoxPlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MZRidgePlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MZVlnPlot.html</loc></url>

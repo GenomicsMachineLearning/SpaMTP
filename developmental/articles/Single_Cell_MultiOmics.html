@@ -111,11 +111,21 @@ arbitrary, this data is only used to highlight
 <strong><em>SpaMTP’s</em></strong> functionally with single cell spatial
 datasets.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">xenium_url</span> <span class="op">&lt;-</span> <span class="st">"https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"</span></span>
-<span><span class="va">maldi_url</span> <span class="op">&lt;-</span> <span class="st">"https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"</span></span>
+<code class="sourceCode R"><span><span class="va">xenium_file</span> <span class="op">&lt;-</span> <span class="fu">resolve_spamtp_vignette_file</span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"Single_Cell_MultiOmics"</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"Sim_Xenium.RDS"</span>,</span>
+<span>  url <span class="op">=</span> <span class="st">"https://zenodo.org/api/records/17247007/files/Sim_Xenium.RDS/content"</span>,</span>
+<span>  expected_md5 <span class="op">=</span> <span class="st">"28b74f9a959365352c8e8475846f66a3"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">maldi_file</span> <span class="op">&lt;-</span> <span class="fu">resolve_spamtp_vignette_file</span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"Single_Cell_MultiOmics"</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"Sim_MALDI.RDS"</span>,</span>
+<span>  url <span class="op">=</span> <span class="st">"https://zenodo.org/api/records/17247007/files/Sim_MALDI.RDS/content"</span>,</span>
+<span>  expected_md5 <span class="op">=</span> <span class="st">"bb5a9d6b2d819ebcce4b06c0f07cacbb"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">xenium</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="va">xenium_url</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">MALDI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="va">maldi_url</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">xenium</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">xenium_file</span><span class="op">)</span></span>
+<span><span class="va">MALDI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">maldi_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># These Zenodo objects were serialized with SeuratObject 5.0.1/5.0.2.</span></span>
 <span><span class="co"># Updating both objects adds slots introduced by newer FOV schemas before any</span></span>
@@ -135,11 +145,11 @@ resolution between our single cell ST and lower resolution SM data.</p>
 <p>First, lets look at our Xenium data:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">xenium</span>, group.by <span class="op">=</span> <span class="st">"celltype"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
 <p>Now, lets look at our MALDI data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">MALDI</span>, group.by <span class="op">=</span> <span class="st">"clusters"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
 <p>Based on these plots, we can see that our Xenium data is at a much
 higher resolution, compared to the MALDI data. We can zoom in and see
 this in more detail:</p>
@@ -173,7 +183,7 @@ this in more detail:</p>
 <span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Boundaries.html" class="external-link">DefaultBoundary</a></span><span class="op">(</span><span class="va">xenium</span><span class="op">[[</span><span class="st">"zoom"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"segmentation"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">xenium</span>, group.by <span class="op">=</span> <span class="st">"celltype"</span>, fov <span class="op">=</span> <span class="st">"zoom"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">|</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">MALDI</span>, group.by <span class="op">=</span> <span class="st">"clusters"</span>, fov <span class="op">=</span> <span class="st">"zoom"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;">
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;">
 Looking at our zoomed in FOV the single cell resolution ST provides much
 higher levels of detail compared to the SM data.</p>
 </div>
@@ -187,7 +197,7 @@ alignment of our datasets.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set the boundary as segmentation for our Xenium data</span></span>
 <span><span class="fu"><a href="../reference/CheckAlignment.html">CheckAlignment</a></span><span class="op">(</span>ST.data <span class="op">=</span> <span class="va">xenium</span>, SM.data <span class="op">=</span> <span class="va">MALDI</span>, image.slice <span class="op">=</span> <span class="st">"fov"</span>,size <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <p>Based on this, we can see our datasets are aligned correctly. Next,
 we will map our SM and Xenium ST data to generate a <em>SpaMTP</em>
 <em>Seurat</em> object containing metabolite and transcriptomic
@@ -401,7 +411,7 @@ SeuratProject
 <span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">MALDI</span>, features <span class="op">=</span> <span class="st">"mz-100"</span>, fov <span class="op">=</span> <span class="st">"zoom"</span>, size <span class="op">=</span> <span class="fl">1.5</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">/</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">MO_data</span>, features <span class="op">=</span> <span class="st">"mz-100"</span>, fov <span class="op">=</span> <span class="st">"zoom"</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1</span><span class="op">|</span><span class="va">p2</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
 <p>Comparing the mapped data to the original SM data we can see that the
 spatial pattern of both clusters and metabolite (‘mz-100’) match. Now
 that our data is mapped to single cell resolution we have a much more
@@ -424,10 +434,10 @@ subtypes based on their metabolic activity.</p>
 <code class="sourceCode R"><span><span class="va">MO_data</span><span class="op">$</span><span class="va">Oligo_states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">MO_data</span><span class="op">$</span><span class="va">celltype</span> <span class="op">==</span> <span class="st">"Oligodendrocyte"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Oligo State: "</span>, <span class="va">MO_data</span><span class="op">$</span><span class="va">clusters_SPM</span><span class="op">)</span>,  <span class="st">"Other"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">MO_data</span>, group.by <span class="op">=</span> <span class="st">"Oligo_states"</span>, fov <span class="op">=</span> <span class="st">"zoom"</span>, dark.background <span class="op">=</span> <span class="cn">F</span>, cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"yellow"</span>, <span class="st">"green"</span>, <span class="st">"pink"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DotPlot.html" class="external-link">DotPlot</a></span><span class="op">(</span><span class="va">MO_data</span>, group.by <span class="op">=</span> <span class="st">"Oligo_states"</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">MO_data</span><span class="op">[[</span><span class="st">"SPT"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="st">"spm_mz-200"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="1920" style="display: block; margin: auto;">
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="1920" style="display: block; margin: auto;">
 This dotplot may suggest that Oligo State 1 and 2 are different cell
 subtypes based on their differential expression of gene1/gene2 and
 mz-200 (Note: this is synthetic data and has no biological context -
@@ -437,7 +447,7 @@ coordinates is that we can visualise the expression of both metabolites
 and gene expression on a single plot.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">MO_data</span>, features <span class="op">=</span> <span class="st">"mz-200"</span>, molecules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gene1"</span>, <span class="st">"gene2"</span><span class="op">)</span>, fov <span class="op">=</span> <span class="st">"zoom"</span>, mols.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"green"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;">
+<p><img src="Single_Cell_MultiOmics_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="1056" style="display: block; margin: auto;">
 Analysing this spatial plot, there is a clear correlation between
 ‘mz-100’ and ‘gene1’ suggesting there interaction or similar
 functionality.</p>

@@ -114,7 +114,13 @@ analysed extensively <a href="https://genomicsmachinelearning.github.io/SpaMTP/a
 spatially-aware Shrunken Centroid) and annotated data. For more
 information about how the data was processed, please visit <a href="https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html" class="external-link">here</a>.</p>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bladder_annotated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/records/17246684/files/bladder_annotated.RDS?download=1"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bladder_annotated_file</span> <span class="op">&lt;-</span> <span class="fu">resolve_spamtp_vignette_file</span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"SpaMTP_Additional_Features"</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"bladder_annotated.RDS"</span>,</span>
+<span>  url <span class="op">=</span> <span class="st">"https://zenodo.org/api/records/17246684/files/bladder_annotated.RDS/content"</span>,</span>
+<span>  expected_md5 <span class="op">=</span> <span class="st">"68b4a4fb4fb0aaa81fa138410d14ef0f"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">bladder_annotated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">bladder_annotated_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bladder_annotated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/UpdateSeuratObject.html" class="external-link">UpdateSeuratObject</a></span><span class="op">(</span><span class="va">bladder_annotated</span><span class="op">)</span> <span class="co"># Only Required if SeuratObjects =&gt; 5.0.2</span></span></code></pre></div>
 </div>

@@ -15,9 +15,10 @@ AnnotateBigData(
   db = NULL,
   ppm_error = NULL,
   adducts = NULL,
-  polarity = "positive",
+  polarity = NULL,
   tof_resolution = 30000,
   verbose = TRUE,
+  maldi_matrix = NULL,
   ...
 )
 ```
@@ -45,12 +46,14 @@ AnnotateBigData(
 
   Optional adduct names/notations; see
   [`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md).
-  If `NULL`, all validated rules for the selected polarity are used.
+  If `NULL`, use the complete rule space selected from `maldi_matrix`,
+  or all validated general rules for the selected polarity when no
+  matrix is given.
 
 - polarity:
 
-  Character string defining the polarity of adducts to use, either
-  "positive", "negative" or "neutral" (default = "positive").
+  Character string defining the ion mode. When `NULL`, infer it from a
+  supplied index or MALDI matrix profile, otherwise use positive.
 
 - tof_resolution:
 
@@ -61,6 +64,11 @@ AnnotateBigData(
 
   Boolean indicating whether to show the message. If TRUE the message
   will be show, else the message will be suppressed (default = TRUE).
+
+- maldi_matrix:
+
+  Optional MALDI matrix/reagent profile used for automatic rule
+  selection. The `adducts` argument remains an optional restriction.
 
 - ...:
 

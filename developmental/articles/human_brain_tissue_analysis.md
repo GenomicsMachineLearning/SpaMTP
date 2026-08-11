@@ -95,14 +95,14 @@ annoresult <- SpaMTP:::annotateTable(mz_df, db = rbind(HMDB_db, Chebi_db))
 head(annoresult)
 ```
 
-| ID | Match | observed_mz | Reference_mz | Error | Adduct | Formula | Exactmass | Isomers | InchiKeys | IsomerNames | Isomers_IDs | Ramp_IDs | Score | MassScore | ChemicalScore | IsotopeScore | AdductNetworkScore |
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| 1 | TRUE | 71.07229 | 71.07241 | 1.6596235 | M+H | C4H8N | 70.06513 | CHEBI:36781 | ZVJHJDDKYZXRJI-UHFFFAOYSA-O | 1-pyrrolinium | chebi:36781 | NA | 0.6090938 | 0.6090938 | 1 | NA | NA |
-| 2 | TRUE | 71.98143 | 71.98142 | 0.1836505 | M+3H | C3H3NO4S3 | 212.92242 | HMDB0258602 | KFQOIIOEXZGRKT-UHFFFAOYSA-N | Sulforhodanin | hmdb:HMDB0258602 | NA | 0.6460658 | 0.9939474 | 1 | NA | NA |
-| 2 | TRUE | 71.98143 | 71.98150 | 1.0277878 | M+3Na | C4H3O4S | 146.97685 | CHEBI:38715 | NJRXVEJTAYWCQJ-UHFFFAOYSA-K | thiomalate(3-) | chebi:38715 | NA | 0.3720785 | 0.8268412 | 1 | NA | NA |
-| 2 | TRUE | 71.98143 | 71.98111 | 4.4458139 | M+2Na | CH3FO2S | 97.98378 | HMDB0254520 | KNWQLFOXPQZGPX-UHFFFAOYSA-N | METHANESULFONYL FLUORIDE | hmdb:HMDB0254520 | NA | 0.0185269 | 0.0285030 | 1 | NA | NA |
-| 5 | TRUE | 77.96817 | 77.96827 | 1.3437715 | M+2Na-H | HO2 | 32.99711 | CHEBI:29793 | MYMOFIZGZYHOMD-UHFFFAOYSA-O | hydridodioxygen(1+) | chebi:29793 | NA | 0.4696287 | 0.7225057 | 1 | NA | NA |
-| 6 | TRUE | 78.95509 | 78.95524 | 1.8057466 | M+H+2Na | C2H6Se2 | 189.87999 | CHEBI:176517 | VLXBWPOEOIIREY-UHFFFAOYSA-N | dimethyl diselenide | chebi:176517 | NA | 0.2780159 | 0.5560318 | 1 | NA | NA |
+| ID | Match | observed_mz | Reference_mz | Error | Adduct | Formula | Exactmass | Isomers | InchiKeys | IsomerNames | Isomers_IDs | Ramp_IDs | Score | MassScore | ChemicalScore | ReactiveSiteScore | ReactiveSiteStatus | IsotopeScore | AdductNetworkScore | MALDIMatrix | RuleClass | RuleSource | ReactiveGroup | MinimumReactiveSites |
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| 1 | TRUE | 71.07229 | 71.07241 | 1.6596235 | M+H | C4H8N | 70.06513 | CHEBI:36781 | ZVJHJDDKYZXRJI-UHFFFAOYSA-O | 1-pyrrolinium | chebi:36781 | NA | 0.6090938 | 0.6090938 | 1 | 1 | not_required | NA | NA | unspecified | custom_adduct | user-supplied rule | none | 0 |
+| 2 | TRUE | 71.98143 | 71.98142 | 0.1836505 | M+3H | C3H3NO4S3 | 212.92242 | HMDB0258602 | KFQOIIOEXZGRKT-UHFFFAOYSA-N | Sulforhodanin | hmdb:HMDB0258602 | NA | 0.6460658 | 0.9939474 | 1 | 1 | not_required | NA | NA | unspecified | custom_adduct | user-supplied rule | none | 0 |
+| 2 | TRUE | 71.98143 | 71.98150 | 1.0277878 | M+3Na | C4H3O4S | 146.97685 | CHEBI:38715 | NJRXVEJTAYWCQJ-UHFFFAOYSA-K | thiomalate(3-) | chebi:38715 | NA | 0.3720785 | 0.8268412 | 1 | 1 | not_required | NA | NA | unspecified | custom_adduct | user-supplied rule | none | 0 |
+| 2 | TRUE | 71.98143 | 71.98111 | 4.4458139 | M+2Na | CH3FO2S | 97.98378 | HMDB0254520 | KNWQLFOXPQZGPX-UHFFFAOYSA-N | METHANESULFONYL FLUORIDE | hmdb:HMDB0254520 | NA | 0.0185269 | 0.0285030 | 1 | 1 | not_required | NA | NA | unspecified | custom_adduct | user-supplied rule | none | 0 |
+| 5 | TRUE | 77.96817 | 77.96827 | 1.3437715 | M+2Na-H | HO2 | 32.99711 | CHEBI:29793 | MYMOFIZGZYHOMD-UHFFFAOYSA-O | hydridodioxygen(1+) | chebi:29793 | NA | 0.4696287 | 0.7225057 | 1 | 1 | not_required | NA | NA | unspecified | custom_adduct | user-supplied rule | none | 0 |
+| 6 | TRUE | 78.95509 | 78.95524 | 1.8057466 | M+H+2Na | C2H6Se2 | 189.87999 | CHEBI:176517 | VLXBWPOEOIIREY-UHFFFAOYSA-N | dimethyl diselenide | chebi:176517 | NA | 0.2780159 | 0.5560318 | 1 | 1 | not_required | NA | NA | unspecified | custom_adduct | user-supplied rule | none | 0 |
 
 ### Multi-panel spatial maps (cell type, gene, protein, metabolite)
 

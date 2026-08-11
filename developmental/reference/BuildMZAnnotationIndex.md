@@ -10,9 +10,10 @@ peak.
 ``` r
 BuildMZAnnotationIndex(
   db,
-  polarity = c("positive", "negative", "neutral"),
+  polarity = NULL,
   adducts = NULL,
   rules = NULL,
+  maldi_matrix = NULL,
   collapse_isomers = TRUE
 )
 ```
@@ -26,16 +27,27 @@ BuildMZAnnotationIndex(
 
 - polarity:
 
-  `"positive"`, `"negative"`, or `"neutral"`.
+  `"positive"`, `"negative"`, or `"neutral"`. When `NULL`, use the
+  matrix-profile default, or positive mode when no profile is given.
 
 - adducts:
 
-  Optional character vector of adduct names or bracketed notations.
+  Optional character vector of adduct names or bracketed notations. When
+  `NULL`, use the complete automatically selected rule space; this is a
+  filter, not a compulsory input.
 
 - rules:
 
   Optional custom rule table. See
   [`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md).
+
+- maldi_matrix:
+
+  Optional MALDI matrix or derivatization reagent profile. When supplied
+  and `rules` is `NULL`,
+  [`MALDIMatrixRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixRules.md)
+  automatically selects standard and validated matrix-specific rules.
+  `adducts` remains an optional filter on that selected rule space.
 
 - collapse_isomers:
 

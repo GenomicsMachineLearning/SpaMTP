@@ -13,7 +13,7 @@ annotateTable(
   db = NULL,
   ppm_error = NULL,
   adducts = NULL,
-  polarity = "positive",
+  polarity = NULL,
   tof_resolution = 30000,
   verbose = TRUE,
   index = NULL,
@@ -22,7 +22,8 @@ annotateTable(
   use_mass_defect = TRUE,
   check_isotopes = TRUE,
   check_adduct_network = TRUE,
-  min_score = 0
+  min_score = 0,
+  maldi_matrix = NULL
 )
 ```
 
@@ -47,12 +48,14 @@ annotateTable(
 
   Optional adduct names/notations; see
   [`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md).
-  If `NULL`, all validated rules for the selected polarity are used.
+  If `NULL`, use the complete rule space selected from `maldi_matrix`,
+  or all validated general rules for the selected polarity when no
+  matrix is given.
 
 - polarity:
 
-  Character string defining the polarity of adducts to use, either
-  "positive", "negative" or "neutral" (default = "positive").
+  Character string defining the ion mode. When `NULL`, infer it from a
+  supplied index or MALDI matrix profile, otherwise use positive.
 
 - tof_resolution:
 
@@ -96,6 +99,11 @@ annotateTable(
 - min_score:
 
   Minimum final annotation score to retain.
+
+- maldi_matrix:
+
+  Optional MALDI matrix/reagent profile used for automatic rule
+  selection. `adducts = NULL` keeps the complete selected rule space.
 
 ## Value
 

@@ -17,13 +17,14 @@ AnnotateSM(
   raw.mz.column = "raw_mz",
   ppm_error = NULL,
   adducts = NULL,
-  polarity = "positive",
+  polarity = NULL,
   tof_resolution = 30000,
   filepath = NULL,
   return.only.annotated = TRUE,
   save.intermediate = TRUE,
   min_score = 0,
   verbose = TRUE,
+  maldi_matrix = NULL,
   ...
 )
 ```
@@ -63,12 +64,15 @@ AnnotateSM(
 
   Optional adduct names/notations; see
   [`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md).
-  If `NULL`, all validated rules for the selected polarity are used.
+  If `NULL`, use the complete rule space selected from `maldi_matrix`,
+  or all validated general rules for the selected polarity when no
+  matrix is given.
 
 - polarity:
 
-  Character string defining the polarity of adducts to use, either
-  "positive", "negative" or "neutral" (default = "positive").
+  Character string defining the ion mode. When `NULL`, use the MALDI
+  matrix profile default, a supplied index's mode, or positive mode when
+  neither is available.
 
 - tof_resolution:
 
@@ -103,6 +107,13 @@ AnnotateSM(
 
   Boolean indicating whether to show the message. If TRUE the message
   will be show, else the message will be suppressed (default = TRUE).
+
+- maldi_matrix:
+
+  Optional MALDI matrix or derivatization reagent name. When supplied,
+  SpaMTP selects validated matrix-specific rules automatically.
+  `adducts` is optional and only restricts that automatic search space
+  when explicitly supplied.
 
 - ...:
 

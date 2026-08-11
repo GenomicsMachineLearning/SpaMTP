@@ -187,8 +187,9 @@ positive_index
 
     ## SpaMTP m/z annotation index
     ##   polarity: positive
+    ##   MALDI matrix profile: unspecified
     ##   metabolites: 1
-    ##   adduct rules: 4
+    ##   ion/reaction rules: 4
     ##   expected ions: 4
 
 ``` r
@@ -526,11 +527,12 @@ knitr::kable(annotation_info_table, row.names = FALSE)
 | schema_version | 2                          |
 | engine         | indexed-chemical-v2        |
 | ramp_version   | 3.0.7                      |
-| generated_at   | 2026-08-11 02:59:15 UTC    |
+| generated_at   | 2026-08-11 13:11:09 UTC    |
 | candidates     | 4                          |
 | assay          | SPM                        |
 | raw_mz_column  | raw_mz                     |
 | polarity       | positive                   |
+| maldi_matrix   | unspecified                |
 | ppm            | 5                          |
 | min_score      | 0                          |
 | adducts        | M+H; M+Na; M+2Na-H; 2M+H   |

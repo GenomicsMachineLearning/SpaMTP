@@ -65,9 +65,10 @@ This function is to be used when dealing with large datasets as a preprocessing 
 <span>  db <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ppm_error <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  adducts <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  polarity <span class="op">=</span> <span class="st">"positive"</span>,</span>
+<span>  polarity <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tof_resolution <span class="op">=</span> <span class="fl">30000</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  maldi_matrix <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -95,11 +96,13 @@ for exact numerical matches.</p></dd>
 
 <dt id="arg-adducts">adducts<a class="anchor" aria-label="anchor" href="#arg-adducts"></a></dt>
 <dd><p>Optional adduct names/notations; see <code><a href="AdductRules.html">AdductRules()</a></code>. If
-<code>NULL</code>, all validated rules for the selected polarity are used.</p></dd>
+<code>NULL</code>, use the complete rule space selected from <code>maldi_matrix</code>, or
+all validated general rules for the selected polarity when no matrix is given.</p></dd>
 
 
 <dt id="arg-polarity">polarity<a class="anchor" aria-label="anchor" href="#arg-polarity"></a></dt>
-<dd><p>Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").</p></dd>
+<dd><p>Character string defining the ion mode. When <code>NULL</code>, infer
+it from a supplied index or MALDI matrix profile, otherwise use positive.</p></dd>
 
 
 <dt id="arg-tof-resolution">tof_resolution<a class="anchor" aria-label="anchor" href="#arg-tof-resolution"></a></dt>
@@ -109,6 +112,11 @@ it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.</p></
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).</p></dd>
+
+
+<dt id="arg-maldi-matrix">maldi_matrix<a class="anchor" aria-label="anchor" href="#arg-maldi-matrix"></a></dt>
+<dd><p>Optional MALDI matrix/reagent profile used for automatic
+rule selection. The <code>adducts</code> argument remains an optional restriction.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

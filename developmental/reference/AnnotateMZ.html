@@ -64,9 +64,10 @@ pre-built index for repeated or large searches.</p>
 <span>  <span class="va">observed_mz</span>,</span>
 <span>  db <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  index <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  polarity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"positive"</span>, <span class="st">"negative"</span>, <span class="st">"neutral"</span><span class="op">)</span>,</span>
+<span>  polarity <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  adducts <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rules <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  maldi_matrix <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ppm <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  ms1_spectrum <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -90,15 +91,22 @@ pre-built index for repeated or large searches.</p>
 
 
 <dt id="arg-polarity">polarity<a class="anchor" aria-label="anchor" href="#arg-polarity"></a></dt>
-<dd><p>Ion mode.</p></dd>
+<dd><p>Ion mode. When <code>NULL</code>, infer it from <code>index</code> or the
+matrix profile, falling back to positive mode.</p></dd>
 
 
 <dt id="arg-adducts">adducts<a class="anchor" aria-label="anchor" href="#arg-adducts"></a></dt>
-<dd><p>Optional adduct subset.</p></dd>
+<dd><p>Optional adduct subset. When <code>NULL</code>, retain the complete
+rule space selected by the matrix profile or polarity.</p></dd>
 
 
 <dt id="arg-rules">rules<a class="anchor" aria-label="anchor" href="#arg-rules"></a></dt>
 <dd><p>Optional custom rule table.</p></dd>
+
+
+<dt id="arg-maldi-matrix">maldi_matrix<a class="anchor" aria-label="anchor" href="#arg-maldi-matrix"></a></dt>
+<dd><p>Optional MALDI matrix/reagent profile used to select
+rules automatically when <code>rules</code> is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ppm">ppm<a class="anchor" aria-label="anchor" href="#arg-ppm"></a></dt>

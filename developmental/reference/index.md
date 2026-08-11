@@ -40,6 +40,10 @@ reference metabolic database
   : Annotate one or more observed m/z values
 - [`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md)
   : Return the validated SpaMTP adduct rule table
+- [`MALDIMatrixProfiles()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixProfiles.md)
+  : List MALDI matrix and on-tissue derivatization profiles
+- [`MALDIMatrixRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixRules.md)
+  : Select annotation rules from the MALDI matrix/reagent profile
 - [`BuildMZAnnotationIndex()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BuildMZAnnotationIndex.md)
   : Build a reusable indexed metabolite annotation search space
 - [`QueryMZAnnotationIndex()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/QueryMZAnnotationIndex.md)

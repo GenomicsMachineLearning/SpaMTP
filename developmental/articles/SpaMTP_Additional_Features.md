@@ -38,7 +38,13 @@ the data was processed, please visit
 
 ``` r
 
-bladder_annotated <- readRDS(url("https://zenodo.org/records/17246684/files/bladder_annotated.RDS?download=1"))
+bladder_annotated_file <- resolve_spamtp_vignette_file(
+  article = "SpaMTP_Additional_Features",
+  filename = "bladder_annotated.RDS",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_annotated.RDS/content",
+  expected_md5 = "68b4a4fb4fb0aaa81fa138410d14ef0f"
+)
+bladder_annotated <- readRDS(bladder_annotated_file)
 
 bladder_annotated <- UpdateSeuratObject(bladder_annotated) # Only Required if SeuratObjects => 5.0.2
 ```
