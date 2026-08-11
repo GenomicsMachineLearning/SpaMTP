@@ -8,9 +8,10 @@ AnnotateMZ(
   observed_mz,
   db = NULL,
   index = NULL,
-  polarity = c("positive", "negative", "neutral"),
+  polarity = NULL,
   adducts = NULL,
   rules = NULL,
+  maldi_matrix = NULL,
   ppm = 5,
   ms1_spectrum = NULL,
   ...
@@ -23,11 +24,16 @@ AnnotateMZ(
 
 \item{index}{Optional pre-built \code{spamtp_mz_index}.}
 
-\item{polarity}{Ion mode.}
+\item{polarity}{Ion mode. When \code{NULL}, infer it from \code{index} or the
+matrix profile, falling back to positive mode.}
 
-\item{adducts}{Optional adduct subset.}
+\item{adducts}{Optional adduct subset. When \code{NULL}, retain the complete
+rule space selected by the matrix profile or polarity.}
 
 \item{rules}{Optional custom rule table.}
+
+\item{maldi_matrix}{Optional MALDI matrix/reagent profile used to select
+rules automatically when \code{rules} is \code{NULL}.}
 
 \item{ppm}{Mass tolerance in ppm.}
 

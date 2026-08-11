@@ -57,8 +57,11 @@ labels_to_show <- function(annotation_column, n = 3) {
 #'   is used (or a smaller value inferred from `tof_resolution`). Set to zero
 #'   for exact numerical matches.
 #' @param adducts Optional adduct names/notations; see `AdductRules()`. If
-#'   `NULL`, all validated rules for the selected polarity are used.
-#' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
+#'   `NULL`, use the complete rule space selected from `maldi_matrix`, or all
+#'   validated general rules for the selected polarity when no matrix is given.
+#' @param polarity Character string defining the ion mode. When `NULL`, use the
+#'   MALDI matrix profile default, a supplied index's mode, or positive mode
+#'   when neither is available.
 #' @param tof_resolution Instrument resolving power retained for compatibility;
 #'   it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.
 #' @param filepath Character string of the directory to store the _annotated_mz_peaks.csv. If set to NULL no dataframe will be saved (default = NULL).
@@ -72,6 +75,10 @@ labels_to_show <- function(annotation_column, n = 3) {
 #'   pathway functions can apply a user-defined threshold without re-running
 #'   annotation.
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param maldi_matrix Optional MALDI matrix or derivatization reagent name.
+#'   When supplied, SpaMTP selects validated matrix-specific rules
+#'   automatically. `adducts` is optional and only restricts that automatic
+#'   search space when explicitly supplied.
 #' @param ... Additional indexed annotation/scoring arguments passed to
 #'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
@@ -81,14 +88,28 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' @examples
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
-AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, min_score = 0, verbose = TRUE, ...){
+AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = NULL, tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, min_score = 0, verbose = TRUE, maldi_matrix = NULL, ...){
 
   if (is.null(data@assays[[assay]])) {
     stop(paste0("No assay '",assay,"'exists in SpaMTP object! Please check assay name input ..."))
   }
 
   annotation_args <- list(...)
-  bundled_ramp <- is.null(db) && is.null(annotation_args$index)
+  supplied_index <- annotation_args$index
+  polarity <- if (is.null(polarity) &&
+                  inherits(supplied_index, "spamtp_mz_index")) {
+    supplied_index$polarity
+  } else {
+    .resolve_maldi_polarity(polarity, maldi_matrix)
+  }
+  resolved_matrix <- if (!is.null(maldi_matrix)) {
+    .normalise_maldi_matrix(maldi_matrix)
+  } else if (inherits(supplied_index, "spamtp_mz_index")) {
+    supplied_index$maldi_matrix
+  } else {
+    "unspecified"
+  }
+  bundled_ramp <- is.null(db) && is.null(supplied_index)
   if (bundled_ramp) {
     db <- chem_props
     verbose_message(
@@ -106,7 +127,7 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
   mz_df$row_id <- seq(1, length(mz_df[[raw.mz.column]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
-  db_3 <- annotateTable(mz_df= mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose, min_score = min_score, ...)
+  db_3 <- annotateTable(mz_df= mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose, min_score = min_score, maldi_matrix = maldi_matrix, ...)
 
 
   if (save.intermediate){
@@ -124,12 +145,21 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
         assay = assay,
         raw_mz_column = raw.mz.column,
         polarity = polarity,
+        maldi_matrix = resolved_matrix,
         ppm = effective_ppm,
         min_score = min_score,
-        adducts = if (is.null(adducts)) "all validated rules" else adducts,
+        adducts = if (is.null(adducts)) {
+          if (inherits(supplied_index, "spamtp_mz_index")) {
+            "complete pre-built index rule space"
+          } else if (is.null(maldi_matrix)) {
+            "all validated general rules"
+          } else {
+            "automatically selected from MALDI matrix profile"
+          }
+        } else adducts,
         database = if (bundled_ramp) {
           paste0("bundled RaMP ", .annotation_ramp_version(), " chem_props")
-        } else if (!is.null(annotation_args$index)) {
+        } else if (!is.null(supplied_index)) {
           "pre-built annotation index"
         } else {
           "user-supplied database"
@@ -217,8 +247,10 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
 #'   is used (or a smaller value inferred from `tof_resolution`). Set to zero
 #'   for exact numerical matches.
 #' @param adducts Optional adduct names/notations; see `AdductRules()`. If
-#'   `NULL`, all validated rules for the selected polarity are used.
-#' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
+#'   `NULL`, use the complete rule space selected from `maldi_matrix`, or all
+#'   validated general rules for the selected polarity when no matrix is given.
+#' @param polarity Character string defining the ion mode. When `NULL`, infer
+#'   it from a supplied index or MALDI matrix profile, otherwise use positive.
 #' @param tof_resolution Instrument resolving power retained for compatibility;
 #'   it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
@@ -232,6 +264,8 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
 #' @param check_adduct_network Downweight complex ions whose base monomer
 #'   family is absent from the contextual spectrum.
 #' @param min_score Minimum final annotation score to retain.
+#' @param maldi_matrix Optional MALDI matrix/reagent profile used for automatic
+#'   rule selection. `adducts = NULL` keeps the complete selected rule space.
 #'
 #' @returns Generates an intermediate annotated m/z dataframe
 #'
@@ -241,11 +275,12 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
 #'
 #' ### HelperFunction
 annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
-                          polarity = "positive", tof_resolution = 30000,
+                          polarity = NULL, tof_resolution = 30000,
                           verbose = TRUE, index = NULL, rules = NULL,
                           ms1_spectrum = NULL, use_mass_defect = TRUE,
                           check_isotopes = TRUE,
-                          check_adduct_network = TRUE, min_score = 0) {
+                          check_adduct_network = TRUE, min_score = 0,
+                          maldi_matrix = NULL) {
   if (!is.data.frame(mz_df) || !all(c("row_id", "mz") %in% names(mz_df))) {
     stop("mz_df must be a data.frame containing row_id and mz columns.")
   }
@@ -253,8 +288,10 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
   if (any(!is.finite(mz_df$mz) | mz_df$mz <= 0)) {
     stop("mz_df$mz must contain positive finite values.")
   }
-  if (!polarity %in% c("positive", "negative", "neutral")) {
-    stop("Please enter correct polarity from: 'positive', 'negative', 'neutral'")
+  polarity <- if (is.null(polarity) && inherits(index, "spamtp_mz_index")) {
+    index$polarity
+  } else {
+    .resolve_maldi_polarity(polarity, maldi_matrix)
   }
 
   # Resolving power is not the same as calibrated mass accuracy. Retain the
@@ -277,12 +314,16 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
       verbose = verbose
     )
     index <- BuildMZAnnotationIndex(
-      db = db, polarity = polarity, adducts = adducts, rules = rules
+      db = db, polarity = polarity, adducts = adducts, rules = rules,
+      maldi_matrix = maldi_matrix
     )
   } else if (!inherits(index, "spamtp_mz_index")) {
     stop("index must be created by BuildMZAnnotationIndex().")
   } else if (!identical(index$polarity, polarity)) {
     stop("The supplied index polarity does not match polarity.")
+  } else if (!is.null(maldi_matrix) &&
+             !identical(index$maldi_matrix, .normalise_maldi_matrix(maldi_matrix))) {
+    stop("The supplied index MALDI matrix profile does not match maldi_matrix.")
   }
 
   verbose_message(
@@ -308,7 +349,11 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
       InchiKeys = character(), IsomerNames = character(),
       Isomers_IDs = character(), Ramp_IDs = character(), Score = numeric(),
       MassScore = numeric(), ChemicalScore = numeric(),
+      ReactiveSiteScore = numeric(), ReactiveSiteStatus = character(),
       IsotopeScore = numeric(), AdductNetworkScore = numeric(),
+      MALDIMatrix = character(), RuleClass = character(),
+      RuleSource = character(), ReactiveGroup = character(),
+      MinimumReactiveSites = integer(),
       stringsAsFactors = FALSE
     )
   }
@@ -360,8 +405,16 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
     Score = matched$score,
     MassScore = matched$mass_score,
     ChemicalScore = matched$chemical_score,
+    ReactiveSiteScore = matched$reactive_site_score,
+    ReactiveSiteStatus = matched$reactive_site_status,
     IsotopeScore = matched$isotope_score,
     AdductNetworkScore = matched$adduct_network_score,
+    MALDIMatrix = matched$maldi_matrix,
+    RuleClass = matched$rule_class,
+    RuleSource = matched$rule_source,
+    ReactiveGroup = matched$reactive_group,
+    MinimumReactiveSites = matched$min_reactive_sites,
+    row.names = NULL,
     stringsAsFactors = FALSE
   )
 }
@@ -1216,11 +1269,15 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #'   is used (or a smaller value inferred from `tof_resolution`). Set to zero
 #'   for exact numerical matches.
 #' @param adducts Optional adduct names/notations; see `AdductRules()`. If
-#'   `NULL`, all validated rules for the selected polarity are used.
-#' @param polarity Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").
+#'   `NULL`, use the complete rule space selected from `maldi_matrix`, or all
+#'   validated general rules for the selected polarity when no matrix is given.
+#' @param polarity Character string defining the ion mode. When `NULL`, infer
+#'   it from a supplied index or MALDI matrix profile, otherwise use positive.
 #' @param tof_resolution Instrument resolving power retained for compatibility;
 #'   it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param maldi_matrix Optional MALDI matrix/reagent profile used for automatic
+#'   rule selection. The `adducts` argument remains an optional restriction.
 #' @param ... Additional indexed annotation/scoring arguments passed to
 #'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
@@ -1233,12 +1290,18 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #' #results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative")
 #' #cardinal_subset <- Cardinal::subset(cardinal, mz %in% results$observed_mz)
 #' #SpaMTP_data <- CardinalToSeurat(cardinal_subset)
-AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL, polarity = "positive", tof_resolution = 30000, verbose = TRUE, ...){
+AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL,
+                            polarity = NULL, tof_resolution = 30000,
+                            verbose = TRUE, maldi_matrix = NULL, ...){
   mz_df <- data.frame(mz = mzs)
   mz_df$row_id <- seq(1, length(mz_df[["mz"]]))
   mz_df <- mz_df[c("row_id", "mz")]
 
-  annotations <- annotateTable(mz_df, db = db, ppm_error = ppm_error, adducts = adducts, polarity = polarity,tof_resolution = tof_resolution,verbose = verbose, ...)
+  annotations <- annotateTable(
+    mz_df, db = db, ppm_error = ppm_error, adducts = adducts,
+    polarity = polarity, tof_resolution = tof_resolution, verbose = verbose,
+    maldi_matrix = maldi_matrix, ...
+  )
 
   result_df <- annotations %>%
     dplyr::group_by(observed_mz) %>%

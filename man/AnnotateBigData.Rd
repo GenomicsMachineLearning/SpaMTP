@@ -9,9 +9,10 @@ AnnotateBigData(
   db = NULL,
   ppm_error = NULL,
   adducts = NULL,
-  polarity = "positive",
+  polarity = NULL,
   tof_resolution = 30000,
   verbose = TRUE,
+  maldi_matrix = NULL,
   ...
 )
 }
@@ -28,14 +29,19 @@ is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
 \item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
-\code{NULL}, all validated rules for the selected polarity are used.}
+\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or
+all validated general rules for the selected polarity when no matrix is given.}
 
-\item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
+\item{polarity}{Character string defining the ion mode. When \code{NULL}, infer
+it from a supplied index or MALDI matrix profile, otherwise use positive.}
 
 \item{tof_resolution}{Instrument resolving power retained for compatibility;
 it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{maldi_matrix}{Optional MALDI matrix/reagent profile used for automatic
+rule selection. The \code{adducts} argument remains an optional restriction.}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
 \code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}

@@ -12,7 +12,11 @@
   list(
     electron = electron,
     proton = 1.007276466621,
+    carbon = carbon,
     hydrogen = hydrogen,
+    nitrogen = nitrogen,
+    oxygen = oxygen,
+    fluorine = fluorine,
     sodium_ion = 22.9897692820 - electron,
     potassium_ion = 38.9637064864 - electron,
     chloride = 34.968852682 + electron,
@@ -220,6 +224,271 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
   rules
 }
 
+#' List MALDI matrix and on-tissue derivatization profiles
+#'
+#' The registry separates conventional MALDI matrices, reactive matrices, and
+#' derivatization reagents. A registered profile does not necessarily imply
+#' that a universal mass-shift rule is available: some reactions require a
+#' coupling reagent, produce several products, or remain strongly dependent on
+#' the analyte structure and acquisition conditions.
+#'
+#' @param matrix Optional matrix/reagent name or alias. When `NULL`, return the
+#'   complete registry.
+#'
+#' @return A data frame describing supported matrix profiles and their current
+#'   automatic-rule status.
+#' @export
+MALDIMatrixProfiles <- function(matrix = NULL) {
+  profiles <- data.frame(
+    matrix = c(
+      "none", "dhb", "chca", "9aa", "dan", "norharmane",
+      "fmp10", "fmp8", "fmp9", "dpp_tfb", "tmp_tfb", "n_mepyba",
+      "dnph", "coniferyl_aldehyde", "dhba", "dhap", "girard_t",
+      "girard_p", "2_picolylamine", "tmpa", "ampp_hatu", "tahs"
+    ),
+    display_name = c(
+      "No specified MALDI matrix", "2,5-Dihydroxybenzoic acid (DHB)",
+      "alpha-Cyano-4-hydroxycinnamic acid (CHCA)",
+      "9-Aminoacridine (9-AA)", "1,5-Diaminonaphthalene (DAN)",
+      "Norharmane", "FMP-10", "FMP-8", "FMP-9",
+      "2,4-Diphenylpyrylium tetrafluoroborate (DPP-TFB)",
+      "2,4,6-Trimethylpyrylium tetrafluoroborate (TMP-TFB)",
+      "N-Methylpyridinium boronic acid (N-MePyBA)",
+      "2,4-Dinitrophenylhydrazine (DNPH)", "Coniferyl aldehyde (CA)",
+      "2,4-Dihydroxybenzaldehyde (DHBA)",
+      "2,5-Dihydroxyacetophenone (DHAP)", "Girard reagent T",
+      "Girard reagent P", "2-Picolylamine (2-PA)",
+      "N,N,N-Trimethyl-2-(piperazin-1-yl)ethanaminium (TMPA)",
+      "AMPP/HATU", "TAHS"
+    ),
+    category = c(
+      "unspecified", rep("conventional_matrix", 5),
+      rep("reactive_matrix", 10), rep("otcd_reagent", 6)
+    ),
+    default_polarity = c(
+      "positive", "positive", "positive", "negative", "negative", "both",
+      "positive", "positive", "positive", "positive", "positive",
+      "positive", "positive", "positive", "positive", "positive",
+      "positive", "positive", "positive", "positive", "positive", "positive"
+    ),
+    target_groups = c(
+      "none", "none", "none", "none", "none", "none",
+      "primary/secondary amine; phenolic hydroxyl",
+      "primary/secondary amine; phenolic hydroxyl",
+      "primary/secondary amine; phenolic hydroxyl", "primary amine",
+      "primary amine", "catechol/1,2-diol", "aldehyde/ketone",
+      "primary amine", "primary amine", "primary amine",
+      "aldehyde/ketone", "aldehyde/ketone", "carboxylic acid",
+      "carboxylic acid", "carboxylic acid; aldehyde", "catecholamine"
+    ),
+    automatic_rules = c(
+      "standard", "validated_matrix_adduct", "validated_matrix_adduct",
+      "standard", "standard", "standard", "validated_reactive_product",
+      rep("profile_only", 15)
+    ),
+    reference = c(
+      NA_character_, "10.1021/acs.analchem.0c04720",
+      "10.1021/acs.analchem.0c04720", "10.1002/rcm.750",
+      NA_character_, NA_character_, "10.1038/s41592-019-0551-3",
+      "10.1038/s41592-019-0551-3", "10.1038/s41592-019-0551-3",
+      "10.1007/s13361-015-1119-9", NA_character_,
+      "10.1021/acs.analchem.8b03746", NA_character_, NA_character_, NA_character_,
+      NA_character_, NA_character_, NA_character_,
+      "10.1021/acs.analchem.6b01021", "10.1021/acs.analchem.0c02303",
+      "10.1021/jasms.2c00336", NA_character_
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  if (is.null(matrix)) return(profiles)
+  canonical <- vapply(matrix, .normalise_maldi_matrix, character(1))
+  profiles[match(canonical, profiles$matrix), , drop = FALSE]
+}
+
+.normalise_maldi_matrix <- function(matrix) {
+  if (is.null(matrix) || !length(matrix)) return("none")
+  if (length(matrix) != 1L || is.na(matrix) || !nzchar(trimws(matrix))) {
+    stop("maldi_matrix must be one non-empty matrix/reagent name.")
+  }
+  key <- tolower(gsub("[^[:alnum:]]", "", matrix))
+  aliases <- c(
+    none = "none", unspecified = "none", nomatrix = "none",
+    dhb = "dhb", `25dhb` = "dhb", dihydroxybenzoicacid = "dhb",
+    chca = "chca", hcca = "chca", alphacyano4hydroxycinnamicacid = "chca",
+    `9aa` = "9aa", `9aminoacridine` = "9aa",
+    dan = "dan", `15dan` = "dan", diaminonaphthalene = "dan",
+    norharmane = "norharmane", fmp10 = "fmp10", fmp8 = "fmp8",
+    fmp9 = "fmp9", dpptfb = "dpp_tfb", dpp = "dpp_tfb",
+    tmptfb = "tmp_tfb", tmp = "tmp_tfb", nmepyba = "n_mepyba",
+    dnph = "dnph", coniferylaldehyde = "coniferyl_aldehyde",
+    ca = "coniferyl_aldehyde", dhba = "dhba", dhap = "dhap",
+    girardt = "girard_t", gt = "girard_t", girardp = "girard_p",
+    gp = "girard_p", `2picolylamine` = "2_picolylamine",
+    `2pa` = "2_picolylamine", tmpa = "tmpa", ampphatu = "ampp_hatu",
+    ampp = "ampp_hatu", tahs = "tahs"
+  )
+  if (!key %in% names(aliases)) {
+    stop(
+      "Unknown MALDI matrix/reagent '", matrix, "'. See MALDIMatrixProfiles()."
+    )
+  }
+  unname(aliases[[key]])
+}
+
+.resolve_maldi_polarity <- function(polarity = NULL, maldi_matrix = NULL) {
+  if (!is.null(polarity)) {
+    return(match.arg(polarity, c("positive", "negative", "neutral")))
+  }
+  if (is.null(maldi_matrix)) return("positive")
+  profile <- MALDIMatrixProfiles(maldi_matrix)
+  selected <- profile$default_polarity[[1]]
+  if (identical(selected, "both")) {
+    stop(
+      profile$display_name[[1]],
+      " supports both ion modes; supply polarity explicitly."
+    )
+  }
+  selected
+}
+
+.decorate_matrix_rules <- function(rules, matrix, rule_class, source,
+                                   reactive_group = "none",
+                                   min_reactive_sites = 0L,
+                                   site_count_column = NA_character_) {
+  n <- nrow(rules)
+  rules$maldi_matrix <- rep_len(matrix, n)
+  rules$rule_class <- rep_len(rule_class, n)
+  rules$rule_source <- rep_len(source, n)
+  rules$reactive_group <- rep_len(reactive_group, n)
+  rules$min_reactive_sites <- rep_len(as.integer(min_reactive_sites), n)
+  rules$site_count_column <- rep_len(site_count_column, n)
+  rules
+}
+
+.matrix_specific_rules <- function(matrix, polarity) {
+  m <- .spamtp_mass_constants()
+  empty <- .decorate_matrix_rules(
+    AdductRules(polarity)[0, , drop = FALSE], matrix,
+    "matrix_profile", NA_character_
+  )
+  if (polarity != "positive") return(empty)
+
+  if (matrix == "fmp10") {
+    retained_tag <- 20 * m$carbon + 14 * m$hydrogen + m$nitrogen
+    rules <- rbind(
+      .make_adduct_rule(
+        "M+FMP10", "positive", 1, 1, retained_tag,
+        complexity = "matrix_derivative", prior = 0.8
+      ),
+      .make_adduct_rule(
+        "M+2FMP10a", "positive", 1, 1,
+        2 * retained_tag - (m$carbon + 3 * m$hydrogen),
+        complexity = "matrix_derivative", prior = 0.75
+      ),
+      .make_adduct_rule(
+        "M+2FMP10b", "positive", 1, 1,
+        2 * retained_tag - m$proton,
+        complexity = "matrix_derivative", prior = 0.7
+      )
+    )
+    rules <- .decorate_matrix_rules(
+      rules, matrix, "reactive_product",
+      "10.1038/s41592-019-0551-3; 10.1002/cmtd.202500062",
+      "FMP-10-reactive site", c(1L, 2L, 2L), "fmp10_reactive_sites"
+    )
+    return(rules)
+  }
+
+  if (matrix == "dhb") {
+    dhb <- 7 * m$carbon + 6 * m$hydrogen + 4 * m$oxygen
+    dehydrated_dhb <- dhb - m$water
+    rules <- rbind(
+      .make_adduct_rule(
+        "M+(DHB-H2O)+H", "positive", 1, 1,
+        dehydrated_dhb + m$proton, complexity = "matrix_adduct",
+        base_adduct = "M+H", prior = 0.4
+      ),
+      .make_adduct_rule(
+        "M+(DHB-H2O)+Na", "positive", 1, 1,
+        dehydrated_dhb + m$sodium_ion, complexity = "matrix_adduct",
+        base_adduct = "M+Na", contains_metal = TRUE, prior = 0.3
+      ),
+      .make_adduct_rule(
+        "M+2(DHB-H2O)+H", "positive", 1, 1,
+        2 * dehydrated_dhb + m$proton, complexity = "matrix_adduct",
+        base_adduct = "M+H", prior = 0.2
+      )
+    )
+    return(.decorate_matrix_rules(
+      rules, matrix, "matrix_adduct", "10.1021/acs.analchem.0c04720",
+      "amine-enriched; parent-ion support required"
+    ))
+  }
+
+  if (matrix == "chca") {
+    chca <- 10 * m$carbon + 7 * m$hydrogen + m$nitrogen + 3 * m$oxygen
+    rule <- .make_adduct_rule(
+      "M+CHCA+Na", "positive", 1, 1, chca + m$sodium_ion,
+      complexity = "matrix_adduct", base_adduct = "M+Na",
+      contains_metal = TRUE, prior = 0.25
+    )
+    return(.decorate_matrix_rules(
+      rule, matrix, "matrix_adduct", "10.1021/acs.analchem.0c04720",
+      "amine-enriched; parent-ion support required"
+    ))
+  }
+  empty
+}
+
+#' Select annotation rules from the MALDI matrix/reagent profile
+#'
+#' Conventional matrices select ordinary ion rules and, where validated,
+#' matrix-metabolite adducts. Reactive matrices additionally select covalent
+#' product rules. Profiles without a verified universal net transformation are
+#' retained in the registry but do not generate speculative mass shifts.
+#'
+#' @param maldi_matrix Matrix or derivatization reagent name; aliases such as
+#'   `"2,5-DHB"`, `"HCCA"`, `"9-AA"`, and `"FMP-10"` are accepted.
+#' @param polarity `"positive"`, `"negative"`, or `"neutral"`. If `NULL`, use
+#'   the profile default; profiles supporting both modes require an explicit
+#'   choice.
+#' @param include_standard Include the validated ordinary adduct rules.
+#' @param include_matrix_products Include validated matrix-adduct or reactive
+#'   product rules.
+#'
+#' @return A validated adduct/reaction rule data frame accepted by
+#'   [BuildMZAnnotationIndex()].
+#' @export
+MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
+                             include_standard = TRUE,
+                             include_matrix_products = TRUE) {
+  matrix <- .normalise_maldi_matrix(maldi_matrix)
+  profile <- MALDIMatrixProfiles(matrix)
+  polarity <- .resolve_maldi_polarity(polarity, matrix)
+
+  standard <- .decorate_matrix_rules(
+    AdductRules(polarity)[if (isTRUE(include_standard)) TRUE else FALSE, , drop = FALSE],
+    matrix, "standard_adduct", "SpaMTP validated general adduct rules"
+  )
+  specific <- if (isTRUE(include_matrix_products)) {
+    .matrix_specific_rules(matrix, polarity)
+  } else {
+    standard[0, , drop = FALSE]
+  }
+
+  if (isTRUE(include_matrix_products) &&
+      profile$automatic_rules[[1]] == "profile_only") {
+    warning(
+      "The ", profile$display_name[[1]],
+      " profile is registered, but SpaMTP does not yet bundle a universal ",
+      "validated net product-mass rule. Standard adduct rules were selected; ",
+      "supply a study-specific custom rule table when appropriate.",
+      call. = FALSE
+    )
+  }
+  .validate_adduct_rules(rbind(standard, specific))
+}
+
 .normalise_adduct_name <- function(x) {
   x <- gsub("\\s+", "", as.character(x))
   x <- sub("^\\[", "", x)
@@ -240,6 +509,19 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
   if (length(missing_columns)) {
     stop("Adduct rule table is missing: ", paste(missing_columns, collapse = ", "))
   }
+  optional_defaults <- list(
+    maldi_matrix = "unspecified",
+    rule_class = "custom_adduct",
+    rule_source = "user-supplied rule",
+    reactive_group = "none",
+    min_reactive_sites = 0L,
+    site_count_column = NA_character_
+  )
+  for (column in names(optional_defaults)) {
+    if (!column %in% names(rules)) {
+      rules[[column]] <- rep_len(optional_defaults[[column]], nrow(rules))
+    }
+  }
   if (any(!is.finite(rules$n_molecules) | rules$n_molecules < 1)) {
     stop("Every adduct rule must have n_molecules >= 1.")
   }
@@ -255,6 +537,12 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
   }
   if (any(!is.finite(rules$mass_shift)) || any(!is.finite(rules$prior))) {
     stop("Adduct mass shifts and priors must be finite.")
+  }
+  rules$min_reactive_sites <- suppressWarnings(
+    as.integer(rules$min_reactive_sites)
+  )
+  if (any(is.na(rules$min_reactive_sites) | rules$min_reactive_sites < 0L)) {
+    stop("min_reactive_sites must contain non-negative integers.")
   }
   rules
 }
@@ -300,6 +588,11 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
     c("max_exchangeable_protons", "max_protons", "exchangeable_protons"),
     required = FALSE
   )
+  site_columns <- c(
+    "fmp10_reactive_sites", "primary_amine_sites", "secondary_amine_sites",
+    "phenolic_hydroxyl_sites", "catechol_sites", "carbonyl_sites",
+    "carboxyl_sites"
+  )
 
   n <- nrow(db)
   value_or_na <- function(column) {
@@ -319,6 +612,13 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
     },
     stringsAsFactors = FALSE
   )
+  for (column in site_columns) {
+    compounds[[column]] <- if (column %in% names(db)) {
+      suppressWarnings(as.numeric(db[[column]]))
+    } else {
+      rep(NA_real_, n)
+    }
+  }
   keep <- is.finite(compounds$exactmass) & compounds$exactmass > 0 &
     !is.na(compounds$formula) & nzchar(compounds$formula)
   compounds <- compounds[keep, , drop = FALSE]
@@ -329,11 +629,23 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
       format(compounds$exactmass, digits = 17, scientific = FALSE, trim = TRUE),
       ifelse(is.na(compounds$max_exchangeable_protons), "NA",
              compounds$max_exchangeable_protons),
+      do.call(
+        paste,
+        c(
+          lapply(compounds[site_columns], function(x) {
+            ifelse(is.na(x), "NA", format(x, trim = TRUE))
+          }),
+          sep = ":"
+        )
+      ),
       sep = "\r"
     )
     if (anyDuplicated(group_key)) {
       grouped_rows <- split(seq_len(nrow(compounds)), group_key)
       first_row <- vapply(grouped_rows, function(i) i[[1]], integer(1))
+      collapsed_site_values <- lapply(
+        compounds[site_columns], function(x) x[first_row]
+      )
       collapse_column <- function(column) {
         vapply(grouped_rows, function(i) .paste_unique(column[i]), character(1))
       }
@@ -348,6 +660,9 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
           compounds$max_exchangeable_protons[first_row],
         stringsAsFactors = FALSE
       )
+      for (column in site_columns) {
+        compounds[[column]] <- collapsed_site_values[[column]]
+      }
     }
   }
   rownames(compounds) <- NULL
@@ -362,22 +677,39 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
 #'
 #' @param db Metabolite database. Both the legacy SpaMTP five-column/wide
 #'   database and the RaMP `chem_props` schema are supported.
-#' @param polarity `"positive"`, `"negative"`, or `"neutral"`.
+#' @param polarity `"positive"`, `"negative"`, or `"neutral"`. When `NULL`,
+#'   use the matrix-profile default, or positive mode when no profile is given.
 #' @param adducts Optional character vector of adduct names or bracketed
-#'   notations.
+#'   notations. When `NULL`, use the complete automatically selected rule
+#'   space; this is a filter, not a compulsory input.
 #' @param rules Optional custom rule table. See [AdductRules()].
+#' @param maldi_matrix Optional MALDI matrix or derivatization reagent profile.
+#'   When supplied and `rules` is `NULL`, [MALDIMatrixRules()] automatically
+#'   selects standard and validated matrix-specific rules. `adducts` remains an
+#'   optional filter on that selected rule space.
 #' @param collapse_isomers Collapse records sharing formula, exact mass, and
 #'   proton bound before indexing.
 #'
 #' @return An object of class `spamtp_mz_index`.
 #' @export
-BuildMZAnnotationIndex <- function(db, polarity = c("positive", "negative", "neutral"),
+BuildMZAnnotationIndex <- function(db, polarity = NULL,
                                    adducts = NULL, rules = NULL,
+                                   maldi_matrix = NULL,
                                    collapse_isomers = TRUE) {
-  polarity <- match.arg(polarity)
+  polarity <- .resolve_maldi_polarity(polarity, maldi_matrix)
   if (is.null(rules)) {
-    rules <- AdductRules(polarity = polarity)
+    rules <- if (is.null(maldi_matrix)) {
+      AdductRules(polarity = polarity)
+    } else {
+      MALDIMatrixRules(maldi_matrix, polarity = polarity)
+    }
   } else {
+    if (!is.null(maldi_matrix)) {
+      stop(
+        "Supply either maldi_matrix for automatic selection or an explicit ",
+        "rules table, not both."
+      )
+    }
     rules <- as.data.frame(rules, stringsAsFactors = FALSE)
     rules <- rules[rules$polarity == polarity, , drop = FALSE]
   }
@@ -403,6 +735,26 @@ BuildMZAnnotationIndex <- function(db, polarity = c("positive", "negative", "neu
     stop("No valid formula/monoisotopic-mass records were found in db.")
   }
 
+  reactive_columns <- unique(rules$site_count_column[
+    rules$min_reactive_sites > 0L & !is.na(rules$site_count_column)
+  ])
+  missing_reactive_columns <- reactive_columns[vapply(
+    reactive_columns,
+    function(column) {
+      !column %in% names(compounds) || !any(is.finite(compounds[[column]]))
+    },
+    logical(1)
+  )]
+  if (length(missing_reactive_columns)) {
+    warning(
+      "No usable structure-derived reaction-site counts were found in: ",
+      paste(missing_reactive_columns, collapse = ", "), ". Reactive-product ",
+      "candidates will be retained with status 'unknown' and downweighted; ",
+      "add these columns to db for chemical eligibility pruning.",
+      call. = FALSE
+    )
+  }
+
   expected_parts <- vector("list", nrow(rules))
   compound_parts <- vector("list", nrow(rules))
   rule_parts <- vector("list", nrow(rules))
@@ -416,6 +768,15 @@ BuildMZAnnotationIndex <- function(db, polarity = c("positive", "negative", "neu
     have_bound <- !is.na(max_h)
     valid[have_bound] <- valid[have_bound] &
       rule$loss_h <= rule$n_molecules * max_h[have_bound]
+    required_sites <- rule$min_reactive_sites[[1]]
+    site_column <- rule$site_count_column[[1]]
+    if (required_sites > 0L && !is.na(site_column) &&
+        site_column %in% names(compounds)) {
+      site_count <- compounds[[site_column]]
+      known_site_count <- is.finite(site_count)
+      valid[known_site_count] <- valid[known_site_count] &
+        site_count[known_site_count] >= required_sites
+    }
     idx <- which(valid)
     expected_parts[[j]] <- expected[idx]
     compound_parts[[j]] <- idx
@@ -435,7 +796,12 @@ BuildMZAnnotationIndex <- function(db, polarity = c("positive", "negative", "neu
       compounds = compounds,
       rules = rules,
       family_rules = family_rules,
-      polarity = polarity
+      polarity = polarity,
+      maldi_matrix = if (is.null(maldi_matrix)) {
+        "unspecified"
+      } else {
+        .normalise_maldi_matrix(maldi_matrix)
+      }
     ),
     class = "spamtp_mz_index"
   )
@@ -452,8 +818,10 @@ BuildMZAnnotationIndex <- function(db, polarity = c("positive", "negative", "neu
 print.spamtp_mz_index <- function(x, ...) {
   cat("SpaMTP m/z annotation index\n")
   cat("  polarity: ", x$polarity, "\n", sep = "")
+  matrix_profile <- if (is.null(x$maldi_matrix)) "unspecified" else x$maldi_matrix
+  cat("  MALDI matrix profile: ", matrix_profile, "\n", sep = "")
   cat("  metabolites: ", nrow(x$compounds), "\n", sep = "")
-  cat("  adduct rules: ", nrow(x$rules), "\n", sep = "")
+  cat("  ion/reaction rules: ", nrow(x$rules), "\n", sep = "")
   cat("  expected ions: ", length(x$expected_mz), "\n", sep = "")
   invisible(x)
 }
@@ -566,7 +934,7 @@ print.spamtp_mz_index <- function(x, ...) {
 }
 
 .adduct_family_score <- function(neutral_mass, rule, all_rules, spectrum, ppm) {
-  complex_types <- c("multimer", "solvent", "metal_exchange")
+  complex_types <- c("multimer", "solvent", "metal_exchange", "matrix_adduct")
   if (is.null(spectrum) || !rule$complexity %in% complex_types) {
     return(NA_real_)
   }
@@ -589,8 +957,12 @@ print.spamtp_mz_index <- function(x, ...) {
   data.frame(
     observed_mz = numeric(), expected_mz = numeric(), ppm_error = numeric(),
     score = numeric(), mass_score = numeric(), rule_prior = numeric(),
-    chemical_score = numeric(), isotope_score = numeric(),
+    chemical_score = numeric(), reactive_site_score = numeric(),
+    reactive_site_status = character(), isotope_score = numeric(),
     adduct_network_score = numeric(), adduct = character(), charge = integer(),
+    maldi_matrix = character(), rule_class = character(),
+    rule_source = character(), reactive_group = character(),
+    min_reactive_sites = integer(),
     formula = character(), neutral_mass = numeric(), metabolite_ids = character(),
     inchikeys = character(), metabolite_names = character(), ramp_ids = character(),
     stringsAsFactors = FALSE
@@ -665,6 +1037,18 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
         .mass_defect_score(obs, compounds$formula[[j]], rules[j, , drop = FALSE])
       }, numeric(1))
     } else rep(1, length(error))
+    site_status <- vapply(seq_along(error), function(j) {
+      required_sites <- rules$min_reactive_sites[[j]]
+      site_column <- rules$site_count_column[[j]]
+      if (required_sites <= 0L) return("not_required")
+      if (is.na(site_column) || !site_column %in% names(compounds)) {
+        return("unknown")
+      }
+      count <- compounds[[site_column]][[j]]
+      if (!is.finite(count)) return("unknown")
+      if (count >= required_sites) "verified" else "insufficient"
+    }, character(1))
+    reactive_site_score <- ifelse(site_status == "unknown", 0.25, 1)
     isotope_score <- if (isTRUE(check_isotopes)) {
       vapply(seq_along(error), function(j) {
         .isotope_score(expected[[j]], compounds$formula[[j]],
@@ -681,6 +1065,7 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
     evidence_isotope <- ifelse(is.na(isotope_score), 1, isotope_score)
     evidence_network <- ifelse(is.na(network_score), 1, network_score)
     final_score <- mass_score * rules$prior * chemical_score *
+      reactive_site_score *
       evidence_isotope * evidence_network
 
     out <- data.frame(
@@ -691,10 +1076,17 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
       mass_score = mass_score,
       rule_prior = rules$prior,
       chemical_score = chemical_score,
+      reactive_site_score = reactive_site_score,
+      reactive_site_status = site_status,
       isotope_score = isotope_score,
       adduct_network_score = network_score,
       adduct = rules$name,
       charge = rules$charge,
+      maldi_matrix = rules$maldi_matrix,
+      rule_class = rules$rule_class,
+      rule_source = rules$rule_source,
+      reactive_group = rules$reactive_group,
+      min_reactive_sites = rules$min_reactive_sites,
       formula = compounds$formula,
       neutral_mass = compounds$exactmass,
       metabolite_ids = compounds$isomers,
@@ -721,9 +1113,13 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 #' @param observed_mz Numeric vector of observed m/z values.
 #' @param db Metabolite database used when `index` is `NULL`.
 #' @param index Optional pre-built `spamtp_mz_index`.
-#' @param polarity Ion mode.
-#' @param adducts Optional adduct subset.
+#' @param polarity Ion mode. When `NULL`, infer it from `index` or the matrix
+#'   profile, falling back to positive mode.
+#' @param adducts Optional adduct subset. When `NULL`, retain the complete rule
+#'   space selected by the matrix profile or polarity.
 #' @param rules Optional custom rule table.
+#' @param maldi_matrix Optional MALDI matrix/reagent profile used to select
+#'   rules automatically when `rules` is `NULL`.
 #' @param ppm Mass tolerance in ppm.
 #' @param ms1_spectrum Optional contextual spectrum.
 #' @param ... Additional arguments passed to [QueryMZAnnotationIndex()].
@@ -731,15 +1127,29 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 #' @return A ranked candidate data frame.
 #' @export
 AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
-                       polarity = c("positive", "negative", "neutral"),
-                       adducts = NULL, rules = NULL, ppm = 5,
+                       polarity = NULL,
+                       adducts = NULL, rules = NULL, maldi_matrix = NULL,
+                       ppm = 5,
                        ms1_spectrum = NULL, ...) {
-  polarity <- match.arg(polarity)
+  if (!is.null(index) && !inherits(index, "spamtp_mz_index")) {
+    stop("index must be created by BuildMZAnnotationIndex().")
+  }
+  polarity <- if (is.null(polarity) && inherits(index, "spamtp_mz_index")) {
+    index$polarity
+  } else {
+    .resolve_maldi_polarity(polarity, maldi_matrix)
+  }
   if (is.null(index)) {
     if (is.null(db)) stop("Supply either db or a pre-built index.")
     index <- BuildMZAnnotationIndex(
-      db = db, polarity = polarity, adducts = adducts, rules = rules
+      db = db, polarity = polarity, adducts = adducts, rules = rules,
+      maldi_matrix = maldi_matrix
     )
+  } else if (!identical(index$polarity, polarity)) {
+    stop("The supplied index polarity does not match polarity.")
+  } else if (!is.null(maldi_matrix) &&
+             !identical(index$maldi_matrix, .normalise_maldi_matrix(maldi_matrix))) {
+    stop("The supplied index MALDI matrix profile does not match maldi_matrix.")
   }
   QueryMZAnnotationIndex(
     observed_mz = observed_mz, index = index, ppm = ppm,

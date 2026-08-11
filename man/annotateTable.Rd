@@ -9,7 +9,7 @@ annotateTable(
   db = NULL,
   ppm_error = NULL,
   adducts = NULL,
-  polarity = "positive",
+  polarity = NULL,
   tof_resolution = 30000,
   verbose = TRUE,
   index = NULL,
@@ -18,7 +18,8 @@ annotateTable(
   use_mass_defect = TRUE,
   check_isotopes = TRUE,
   check_adduct_network = TRUE,
-  min_score = 0
+  min_score = 0,
+  maldi_matrix = NULL
 )
 }
 \arguments{
@@ -32,9 +33,11 @@ is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
 \item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
-\code{NULL}, all validated rules for the selected polarity are used.}
+\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or
+all validated general rules for the selected polarity when no matrix is given.}
 
-\item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
+\item{polarity}{Character string defining the ion mode. When \code{NULL}, infer
+it from a supplied index or MALDI matrix profile, otherwise use positive.}
 
 \item{tof_resolution}{Instrument resolving power retained for compatibility;
 it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
@@ -57,6 +60,9 @@ contextual spectrum is supplied.}
 family is absent from the contextual spectrum.}
 
 \item{min_score}{Minimum final annotation score to retain.}
+
+\item{maldi_matrix}{Optional MALDI matrix/reagent profile used for automatic
+rule selection. \code{adducts = NULL} keeps the complete selected rule space.}
 }
 \value{
 Generates an intermediate annotated m/z dataframe

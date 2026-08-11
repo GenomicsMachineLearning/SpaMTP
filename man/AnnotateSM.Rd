@@ -11,13 +11,14 @@ AnnotateSM(
   raw.mz.column = "raw_mz",
   ppm_error = NULL,
   adducts = NULL,
-  polarity = "positive",
+  polarity = NULL,
   tof_resolution = 30000,
   filepath = NULL,
   return.only.annotated = TRUE,
   save.intermediate = TRUE,
   min_score = 0,
   verbose = TRUE,
+  maldi_matrix = NULL,
   ...
 )
 }
@@ -37,9 +38,12 @@ is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
 \item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
-\code{NULL}, all validated rules for the selected polarity are used.}
+\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or
+all validated general rules for the selected polarity when no matrix is given.}
 
-\item{polarity}{Character string defining the polarity of adducts to use, either "positive", "negative" or "neutral" (default = "positive").}
+\item{polarity}{Character string defining the ion mode. When \code{NULL}, use
+the MALDI matrix profile default, a supplied index's mode, or positive mode
+when neither is available.}
 
 \item{tof_resolution}{Instrument resolving power retained for compatibility;
 it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
@@ -59,6 +63,11 @@ pathway functions can apply a user-defined threshold without re-running
 annotation.}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{maldi_matrix}{Optional MALDI matrix or derivatization reagent name.
+When supplied, SpaMTP selects validated matrix-specific rules automatically.
+\code{adducts} is optional and only restricts that automatic search space when
+explicitly supplied.}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
 \code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}
