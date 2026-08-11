@@ -15,6 +15,64 @@ spamtp_root <- if (file.exists("DESCRIPTION")) {
 } else {
   stop("Cannot locate the SpaMTP package root for vignette caching.")
 }
+mouse_brain_data_dir <- file.path(
+  normalizePath(spamtp_root), "vignettes", "vignette_data_files", "Mouse_Brain"
+)
+mouse_brain_download_cache <- file.path(
+  normalizePath(spamtp_root), "vignettes", ".knitr-cache", "downloads"
+)
+resolve_mouse_brain_demo_file <- function(relative_path,
+                                           url = NULL,
+                                           expected_md5 = NULL) {
+  is_valid <- function(path) {
+    if (!file.exists(path) || file.info(path)$size <= 0) return(FALSE)
+    is.null(expected_md5) || identical(
+      unname(tools::md5sum(path)), expected_md5
+    )
+  }
+
+  repository_file <- file.path(mouse_brain_data_dir, relative_path)
+  if (is_valid(repository_file)) return(repository_file)
+
+  cached_file <- file.path(mouse_brain_download_cache, basename(relative_path))
+  if (is_valid(cached_file)) return(cached_file)
+  if (is.null(url)) {
+    stop("Missing Mouse Brain demo file: ", repository_file)
+  }
+
+  dir.create(mouse_brain_download_cache, recursive = TRUE, showWarnings = FALSE)
+  partial_file <- paste0(cached_file, ".part")
+  old_timeout <- getOption("timeout")
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  options(timeout = max(1800, old_timeout))
+  last_error <- NULL
+
+  for (attempt in seq_len(5L)) {
+    unlink(partial_file)
+    last_error <- tryCatch(
+      {
+        utils::download.file(
+          url, partial_file, mode = "wb", method = "libcurl", quiet = TRUE
+        )
+        NULL
+      },
+      error = identity
+    )
+    if (is.null(last_error) && is_valid(partial_file)) {
+      if (!file.rename(partial_file, cached_file)) {
+        stop("Could not finalize downloaded demo file: ", cached_file)
+      }
+      return(cached_file)
+    }
+    if (attempt < 5L) Sys.sleep(15L * attempt)
+  }
+
+  stop(
+    "Failed to download or validate ", basename(relative_path),
+    " after 5 attempts",
+    if (!is.null(last_error)) paste0(": ", conditionMessage(last_error)) else ""
+  )
+}
 cache_inputs <- c(
   file.path(spamtp_root, "DESCRIPTION"),
   file.path(spamtp_root, "NAMESPACE"),
@@ -130,12 +188,10 @@ options(timeout = 600)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-# Load directly from file
-#msi <- ReadSM_mtx("./V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
-
-# Load directly from URL
-msi_url <- "https://zenodo.org/records/17246900/files/V11L12-109_B1.Visium.FMP.220826_smamsi.csv?download=1"
-msi <- ReadSM_mtx(mtx.file = msi_url)
+msi_file <- resolve_mouse_brain_demo_file(
+  file.path("SM_data", "V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+)
+msi <- ReadSM_mtx(mtx.file = msi_file)
 ```
 
     Spliting matrix data from column 1 onwards .... 
@@ -215,10 +271,12 @@ vis <- Load10X_Spatial("vignette_data_files/Mouse_Brain/ST_data/outs/")
 
 
 ```{r, include=FALSE}
-options(timeout = 600)
-
-url <- "https://zenodo.org/records/17246900/files/visium.RDS?download=1"
-vis <- readRDS(url(url))
+visium_file <- resolve_mouse_brain_demo_file(
+  file.path("ST_data", "visium.RDS"),
+  url = "https://zenodo.org/api/records/17246900/files/visium.RDS/content",
+  expected_md5 = "fe1beef8631cf16d320334ab3694f58f"
+)
+vis <- readRDS(visium_file)
 vis <- UpdateSeuratObject(vis)
 ```
 
@@ -294,7 +352,10 @@ Parkinson's is heavily associated with dopamine regulation, and thus we will als
 First, we will need to load this additional data.frame containing the custom annotations:
 
 ```{r}
-fmp10_metabolites <- read.csv(url("https://zenodo.org/records/17246900/files/Public_data_FMP10_Annotations.csv?download=1"), row.names = 1)
+fmp10_file <- resolve_mouse_brain_demo_file(
+  file.path("SM_data", "Public_data_FMP10_Annotations.csv")
+)
+fmp10_metabolites <- read.csv(fmp10_file, row.names = 1)
 ```
 
 
@@ -458,7 +519,10 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 
 ```{r, include=FALSE}
 gc()
-msi_transformed <- readRDS(url("https://zenodo.org/records/17246900/files/SpaMTP_msi_transformed.RDS?download=1"))
+msi_transformed_file <- resolve_mouse_brain_demo_file(
+  file.path("SM_data", "SpaMTP_msi_transformed.RDS")
+)
+msi_transformed <- readRDS(msi_transformed_file)
 # The serialized demo predates the scored RaMP annotation store. Re-annotation
 # replaces its legacy @tools$db_3-only result while preserving every feature.
 msi_transformed <- AddFMP10Annotations(
@@ -1102,8 +1166,10 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 
 This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
 ```{r dhb_load_annotation, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=72, cache=TRUE}
-striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"
-striatum.dhb.data <- readRDS(url(striatum_url))
+striatum_file <- resolve_mouse_brain_demo_file(
+  file.path("DHB_data", "striatum.dhb.data.RDS")
+)
+striatum.dhb.data <- readRDS(striatum_file)
 # This object was serialized with SeuratObject 5.0.2. Upgrade its image/assay
 # associations before changing feature metadata so current SpatialPlot methods
 # can validate that every spot still aligns to slice1.

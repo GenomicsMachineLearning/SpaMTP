@@ -81,6 +81,42 @@ jobs:
             vignettes/vignette_data_files/human_brain_tissue_analysis/brain_tumour_combined_pathways.rds
           key: pkgdown-vignette-data-zenodo-18282678-v1
 
+      - name: Restore Mouse Brain Visium data
+        id: mouse-brain-visium
+        uses: actions/cache/restore@v4
+        with:
+          path: vignettes/vignette_data_files/Mouse_Brain/ST_data/visium.RDS
+          key: pkgdown-vignette-data-zenodo-17246900-visium-fe1beef8631cf16d320334ab3694f58f
+
+      - name: Download Mouse Brain Visium data from Zenodo
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          path="vignettes/vignette_data_files/Mouse_Brain/ST_data/visium.RDS"
+          expected_md5="fe1beef8631cf16d320334ab3694f58f"
+          url="https://zenodo.org/api/records/17246900/files/visium.RDS/content"
+
+          if [[ -f "$path" ]] && echo "$expected_md5  $path" | md5sum --check --status; then
+            echo "Using cached $path"
+            exit 0
+          fi
+
+          mkdir -p "$(dirname "$path")"
+          curl --location --fail --show-error \
+            --retry 5 --retry-all-errors --retry-delay 15 \
+            --connect-timeout 30 --max-time 1800 \
+            --output "${path}.part" "$url"
+          echo "$expected_md5  ${path}.part" | md5sum --check
+          mv "${path}.part" "$path"
+
+      - name: Save Mouse Brain Visium data
+        if: steps.mouse-brain-visium.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: vignettes/vignette_data_files/Mouse_Brain/ST_data/visium.RDS
+          key: pkgdown-vignette-data-zenodo-17246900-visium-fe1beef8631cf16d320334ab3694f58f
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
@@ -251,6 +287,13 @@ jobs:
             docs/articles/${{ matrix.article }}.html
             docs/articles/${{ matrix.article }}_files
           key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', '_pkgdown.yml') }}
+
+      - name: Restore Mouse Brain Visium data
+        if: steps.article-cache.outputs.cache-hit != 'true' && matrix.article == 'Multi-Omic_Mouse_Brain'
+        uses: actions/cache/restore@v4
+        with:
+          path: vignettes/vignette_data_files/Mouse_Brain/ST_data/visium.RDS
+          key: pkgdown-vignette-data-zenodo-17246900-visium-fe1beef8631cf16d320334ab3694f58f
 
       - name: Restore partial knitr cache
         id: knitr-cache
