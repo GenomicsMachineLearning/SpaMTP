@@ -110,6 +110,8 @@ reference:
   - AnnotateSM
   - AnnotateMZ
   - AdductRules
+  - MALDIMatrixProfiles
+  - MALDIMatrixRules
   - BuildMZAnnotationIndex
   - QueryMZAnnotationIndex
   - AnnotationInfo
