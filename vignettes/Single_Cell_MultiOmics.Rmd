@@ -8,6 +8,16 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+download_helper_candidates <- c(
+  file.path("vignettes", "vignette_download_utils.R"),
+  "vignette_download_utils.R",
+  file.path("..", "vignettes", "vignette_download_utils.R")
+)
+download_helper <- download_helper_candidates[
+  file.exists(download_helper_candidates)
+][[1]]
+sys.source(download_helper, envir = knitr::knit_global())
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -40,16 +50,22 @@ library(ggplot2)
 
 Here, we will be using the simulated data which has synthetic clustering and cell type names. The gene and metabolite names are also arbitrary, this data is only used to highlight ***SpaMTP's*** functionally with single cell spatial datasets. 
 
-```{r, include=FALSE}
-options(timeout = 600)
-```
-
 ```{r, warning=FALSE, message=FALSE}
-xenium_url <- "https://zenodo.org/records/17247007/files/Sim_Xenium.RDS?download=1"
-maldi_url <- "https://zenodo.org/records/17247007/files/Sim_MALDI.RDS?download=1"
+xenium_file <- resolve_spamtp_vignette_file(
+  article = "Single_Cell_MultiOmics",
+  filename = "Sim_Xenium.RDS",
+  url = "https://zenodo.org/api/records/17247007/files/Sim_Xenium.RDS/content",
+  expected_md5 = "28b74f9a959365352c8e8475846f66a3"
+)
+maldi_file <- resolve_spamtp_vignette_file(
+  article = "Single_Cell_MultiOmics",
+  filename = "Sim_MALDI.RDS",
+  url = "https://zenodo.org/api/records/17247007/files/Sim_MALDI.RDS/content",
+  expected_md5 = "bb5a9d6b2d819ebcce4b06c0f07cacbb"
+)
 
-xenium <- readRDS(url(xenium_url))
-MALDI <- readRDS(url(maldi_url))
+xenium <- readRDS(xenium_file)
+MALDI <- readRDS(maldi_file)
 
 # These Zenodo objects were serialized with SeuratObject 5.0.1/5.0.2.
 # Updating both objects adds slots introduced by newer FOV schemas before any

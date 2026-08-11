@@ -9,6 +9,16 @@ runtime: shiny
 ---
 
 ```{r, include = FALSE}
+download_helper_candidates <- c(
+  file.path("vignettes", "vignette_download_utils.R"),
+  "vignette_download_utils.R",
+  file.path("..", "vignettes", "vignette_download_utils.R")
+)
+download_helper <- download_helper_candidates[
+  file.exists(download_helper_candidates)
+][[1]]
+sys.source(download_helper, envir = knitr::knit_global())
+
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
@@ -51,7 +61,13 @@ library(viridis)
 Here, we will be using already processed, clustered (via spatially-aware Shrunken Centroid) and annotated data. For more information about how the data was processed, please visit [here](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html).
 
 ```{r warning=FALSE, message=FALSE}
-bladder_annotated <- readRDS(url("https://zenodo.org/records/17246684/files/bladder_annotated.RDS?download=1"))
+bladder_annotated_file <- resolve_spamtp_vignette_file(
+  article = "SpaMTP_Additional_Features",
+  filename = "bladder_annotated.RDS",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_annotated.RDS/content",
+  expected_md5 = "68b4a4fb4fb0aaa81fa138410d14ef0f"
+)
+bladder_annotated <- readRDS(bladder_annotated_file)
 
 bladder_annotated <- UpdateSeuratObject(bladder_annotated) # Only Required if SeuratObjects => 5.0.2
 ```    
@@ -269,7 +285,13 @@ knitr::include_graphics("vignette_data_files/Mouse_Urinary_Bladder/H&E_Alignment
 After clicking the return aligned data button a ***SpaMTP*** *Seurat* object with the H&E image added to the `@image$slice1` slot will be returned. Here "fov" is the original SM plotting coordinates and "slice1" has the adjusted coordinates to match the H&E image.
 
 ```{r, include=FALSE}
-bladder_HE <- readRDS(url("https://zenodo.org/records/17246684/files/bladder_HE.RDS?download=1"))
+bladder_he_file <- resolve_spamtp_vignette_file(
+  article = "SpaMTP_Additional_Features",
+  filename = "bladder_HE.RDS",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_HE.RDS/content",
+  expected_md5 = "12748584aff1e9a768577536dd0a678e"
+)
+bladder_HE <- readRDS(bladder_he_file)
 bladder_HE <- UpdateSeuratObject(bladder_HE) # Only Required if SeuratObjects => 5.0.2
 ```  
 
@@ -492,7 +514,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 

@@ -8,6 +8,16 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+download_helper_candidates <- c(
+  file.path("vignettes", "vignette_download_utils.R"),
+  "vignette_download_utils.R",
+  file.path("..", "vignettes", "vignette_download_utils.R")
+)
+download_helper <- download_helper_candidates[
+  file.exists(download_helper_candidates)
+][[1]]
+sys.source(download_helper, envir = knitr::knit_global())
+
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
@@ -73,14 +83,14 @@ This function uses correlations in pathway expression (Metabolite only, Gene onl
 
 Below we will use a [public mouse liver dataset with spotted chemicals standards](https://zenodo.org/records/17289187) to demonstrate this:
 
-```{r, include=FALSE}
-options(timeout = 600)
-```
-
 ```{r warning=FALSE, message=FALSE}
-spotted_url <- "https://zenodo.org/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS?download=1"
-
-spotted <- readRDS(url(spotted_url))
+spotted_file <- resolve_spamtp_vignette_file(
+  article = "Annotation_Refinement",
+  filename = "spotted_Annotated_H_Cl_Adducts.RDS",
+  url = "https://zenodo.org/api/records/17289187/files/spotted_Annotated_H_Cl_Adducts.RDS/content",
+  expected_md5 = "d7b46c8d71b7a3eb95a01a210e010c40"
+)
+spotted <- readRDS(spotted_file)
 ```
 
 ```{r}
@@ -134,7 +144,13 @@ output <- CalculateAnnotationStatistics(data = spotted, mz.assay = "Spatial",pat
 After running `CalculateAnnotationStatistics` the output will be a dataframe containing the most likely annotation for each m/z value based on correlations with pathway expression. Lets subset this output to look at our spiked-in metabolites:
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
-output <- readRDS(url("https://zenodo.org/records/17352749/files/annotation_zscore_output.RDS?download=1"))
+annotation_output_file <- resolve_spamtp_vignette_file(
+  article = "Annotation_Refinement",
+  filename = "annotation_zscore_output.RDS",
+  url = "https://zenodo.org/api/records/17352749/files/annotation_zscore_output.RDS/content",
+  expected_md5 = "b8d4983f97069c562967880588c3a25e"
+)
+output <- readRDS(annotation_output_file)
 ```
 
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}

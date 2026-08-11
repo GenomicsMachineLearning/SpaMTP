@@ -8,6 +8,16 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+download_helper_candidates <- c(
+  file.path("vignettes", "vignette_download_utils.R"),
+  "vignette_download_utils.R",
+  file.path("..", "vignettes", "vignette_download_utils.R")
+)
+download_helper <- download_helper_candidates[
+  file.exists(download_helper_candidates)
+][[1]]
+sys.source(download_helper, envir = knitr::knit_global())
+
 knitr::opts_chunk$set(
   collapse = FALSE,
   comment = "##",
@@ -63,27 +73,6 @@ library(EnhancedVolcano)
 library(viridis)
 ```
 
-```{r, include=FALSE}
-options(timeout = 600)
-retry_download <- function(url, dest, attempts = 3) {
-  for (i in seq_len(attempts)) {
-    ok <- tryCatch({
-      download.file(url, dest, mode = "wb", quiet = TRUE, method = "libcurl")
-      TRUE
-    }, error = function(e) {
-      message("Download failed (attempt ", i, "): ", conditionMessage(e))
-      if (file.exists(dest)) {
-        unlink(dest)
-      }
-      FALSE
-    })
-    if (ok) return(invisible(TRUE))
-    Sys.sleep(i * 2)
-  }
-  stop("Download failed after ", attempts, " attempts: ", url)
-}
-```
-
 <br>
 
 ## Load SM Data using SpaMTP
@@ -100,10 +89,14 @@ The first method is to convert a already loaded *Cardinal* object directly to a 
 # Load directly from file
 #pig206 <- readRDS("./Documents/pig206.RDS")
 
-# Load directly from URL
-pig206_url <- "https://zenodo.org/records/17246555/files/pig206.RDS?download=1"
-
-pig206 <- readRDS(file = url(pig206_url))
+# Resolve a checksum-verified local cache, downloading only when absent.
+pig206_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "pig206.RDS",
+  url = "https://zenodo.org/api/records/17246555/files/pig206.RDS/content",
+  expected_md5 = "d056b5c31c136b6e64ffb975ebca9100"
+)
+pig206 <- readRDS(pig206_file)
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -252,10 +245,13 @@ rcc_spamtp <- LoadSM(file = "./rcc-files/rcc", mass.range = c(150, 1000), multi.
 ```
 
 ```{r, include=FALSE}
-options(timeout = 600)
-url <- "https://zenodo.org/records/17246588/files/rcc.RDS?download=1"
-#download.file(url, destfile = "rcc.RDS", mode = "wb")
-rcc_spamtp <- readRDS(url(url))
+rcc_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "rcc.RDS",
+  url = "https://zenodo.org/api/records/17246588/files/rcc.RDS/content",
+  expected_md5 = "0a7bb6ccc043aab4078f1c9f3fcb3570"
+)
+rcc_spamtp <- readRDS(rcc_file)
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -298,9 +294,14 @@ This dataset will be used for the remainder of the tutorial.
 # Load directly from file
 #bladder <- ReadSM_mtx("./Documents/bladder_csv.csv", mz.prefix = "mz-", feature.start.column = 2)
 
-# Load directly from URL
-bladder_url <- "https://zenodo.org/records/17246684/files/bladder_csv.csv?download=1"
-bladder <- ReadSM_mtx(mtx.file = bladder_url, mz.prefix = "mz-", feature.start.column = 2)
+# Load through the same checksum-verified cache used by the CI build.
+bladder_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "bladder_csv.csv",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_csv.csv/content",
+  expected_md5 = "505fac26445a56ae00cc377b87b03143"
+)
+bladder <- ReadSM_mtx(mtx.file = bladder_file, mz.prefix = "mz-", feature.start.column = 2)
 ```
 
 
@@ -318,8 +319,13 @@ ImageFeaturePlot(bladder, features = "nFeature_Spatial", size = 1) + coord_flip(
 In addition we can also add metadata such as tissue segmentation results from ssc. These segments were generated following parameters specified in [*Cardinal's* V3 Vignette (2023)](https://github.com/Vitek-Lab/Cardinal3-vignettes), with 'r= 2, k=10, s=24' using 'gausian' weights.
 
 ```{r warning=FALSE, message=FALSE}
-metadata_url <- "https://zenodo.org/records/17246684/files/bladder_metadata.csv?download=1"
-bladder_metadata <- read.csv(url(metadata_url), row.names = 1)
+bladder_metadata_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "bladder_metadata.csv",
+  url = "https://zenodo.org/api/records/17246684/files/bladder_metadata.csv/content",
+  expected_md5 = "d2a6fc89ed617a0b29a291b4ecd2b715"
+)
+bladder_metadata <- read.csv(bladder_metadata_file, row.names = 1)
 ```
 
 ```{r, echo=TRUE, results='hide'}
@@ -409,7 +415,13 @@ Another metric to assess is the relative intensity values of each m/z across a s
 
 
 ```{r, fig.width=20, fig.height=5, dpi = 72, warning=FALSE, message=FALSE}
-raw_bladder <- readRDS(url("https://zenodo.org/records/17246684/files/raw_bladder.RDS?download=1"))
+raw_bladder_file <- resolve_spamtp_vignette_file(
+  article = "Mouse_Urinary_Bladder",
+  filename = "raw_bladder.RDS",
+  url = "https://zenodo.org/api/records/17246684/files/raw_bladder.RDS/content",
+  expected_md5 = "a385f37641929a43ef6ab917febaf036"
+)
+raw_bladder <- readRDS(raw_bladder_file)
 ```
 
 
@@ -1320,8 +1332,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
-
 
 
 

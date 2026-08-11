@@ -1,3 +1,4 @@
 *.html
 *.R
+!vignette_download_utils.R
 vignette_data_files/**
