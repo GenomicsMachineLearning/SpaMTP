@@ -84,12 +84,10 @@ intensity and pixel coordinate values.
 
 ``` r
 
-# Load directly from file
-#msi <- ReadSM_mtx("./V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
-
-# Load directly from URL
-msi_url <- "https://zenodo.org/records/17246900/files/V11L12-109_B1.Visium.FMP.220826_smamsi.csv?download=1"
-msi <- ReadSM_mtx(mtx.file = msi_url)
+msi_file <- resolve_mouse_brain_demo_file(
+  file.path("SM_data", "V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+)
+msi <- ReadSM_mtx(mtx.file = msi_file)
 ```
 
     Spliting matrix data from column 1 onwards .... 
@@ -277,7 +275,10 @@ custom annotations:
 
 ``` r
 
-fmp10_metabolites <- read.csv(url("https://zenodo.org/records/17246900/files/Public_data_FMP10_Annotations.csv?download=1"), row.names = 1)
+fmp10_file <- resolve_mouse_brain_demo_file(
+  file.path("SM_data", "Public_data_FMP10_Annotations.csv")
+)
+fmp10_metabolites <- read.csv(fmp10_file, row.names = 1)
 ```
 
 ``` r
@@ -424,54 +425,9 @@ users can align two datasets. This example can also be visualised
 msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 ```
 
-------------------------------------------------------------------------
+### Please Wait
 
-Instructions
-
-------------------------------------------------------------------------
-
-Rotation angle
-
-Move along x axis
-
-Move along y axis
-
-Stretch angle 1
-
-Stretch factor 1
-
-Stretch angle 2
-
-Stretch factor 2
-
-SM spot size
-
-ST point size
-
-Spot shape
-
-circle square
-
-SM plot feature
-
-orig.ident nCount_Spatial nFeature_Spatial
-
-ST plot feature
-
-orig.ident nCount_Spatial nFeature_Spatial lesion region RegionLoupe
-annotations
-
-Show image
-
-Show ST spots
-
-Show SM spots
-
-Mirror along x axis
-
-Mirror along y axis
-
-Return aligned data
+![loading](/__static__/frontend/images/spinner.gif?v=ce6bcde20b2f6c562913c06be83f9e7c8a19b008017407a3094b76fa82bbd6b7f4048e032e07e534d4ab5442b9105294d612863735077ab13a47653a14c5866e)
 
     Loading required package: shiny
 
@@ -1190,8 +1146,10 @@ will be comparing for our multi-modal DHB matrix sample.
 
 ``` r
 
-striatum_url <- "https://zenodo.org/records/17246900/files/striatum.dhb.data.RDS?download=1"
-striatum.dhb.data <- readRDS(url(striatum_url))
+striatum_file <- resolve_mouse_brain_demo_file(
+  file.path("DHB_data", "striatum.dhb.data.RDS")
+)
+striatum.dhb.data <- readRDS(striatum_file)
 # This object was serialized with SeuratObject 5.0.2. Upgrade its image/assay
 # associations before changing feature metadata so current SpatialPlot methods
 # can validate that every spot still aligns to slice1.
@@ -1267,21 +1225,39 @@ PlotRegionalPathways(regpathway = regpathway,selected_pathways = selected_pathwa
 
 One of the significant pathways associated with the lesioned region was
 ‘Dopamine beta-hydroxylase deficiency’. We can use ***SpaMTP’s***
-network plotting function to visualuse the network of this pathway,
+network plotting function to visualise the network of this pathway,
 along with the relative differentially expressed elements that make up
-the activity of this pathway. Lets have a look:
+the activity of this pathway. The embedded viewer below is generated
+from the current RaMP annotations during the vignette build.
 
 ``` r
 
-PathwayNetworkPlots(striatum.dhb.data,ident = "striatum", regpathway =  regpathway, DE.list = list("genes" = deg, "metabolites" = dem), selected_pathways = selected_pathways, path = "vignette_data_files/Mouse_Brain/DHB_data")
-```
+network_asset_dir <- file.path(
+  "Multi-Omic_Mouse_Brain_files", "pathway-network"
+)
+dir.create(network_asset_dir, recursive = TRUE, showWarnings = FALSE)
 
-    Assuming DE.list[1] contains genes results .... 
-    Assuming DE.list[2] contains metabolites results ....     
-    Query necessary data and establish pathway database
-    Query db for addtional matching
-    Constructing DE dataframes.... 
-    File successfully written to vignette_data_files/Mouse_Brain/DHB_data/striatum_2024_10_22_12_23_05_AEST.html
+network_file <- PathwayNetworkPlots(
+  striatum.dhb.data,
+  ident = "striatum",
+  regpathway = regpathway,
+  DE.list = list("genes" = deg, "metabolites" = dem),
+  selected_pathways = selected_pathways,
+  path = network_asset_dir,
+  annotation_score_threshold = pathway_annotation_score_threshold,
+  metabolite_detection = "annotated",
+  max_nodes = 350,
+  label_mode = "detected",
+  max_spatial_points = 10000,
+  layout_mode = "repulsion",
+  verbose = FALSE
+)
+network_src <- gsub("\\\\", "/", network_file)
+cat(sprintf(
+  '<iframe src="%s" width="100%%" height="760px" title="Interactive SpaMTP pathway network" loading="lazy"></iframe>',
+  network_src
+))
+```
 
 One key metabolite that was previously not mentioned by the original
 publication was (R)-S-adenosyl-L-methionine zwitterion. This metabolite
@@ -1295,7 +1271,7 @@ spatially:
 SpatialMZPlot(striatum.dhb.data, mz= 400.14659,plusminus = 0.05, assay = "SPM", pt.size.factor = 2.5, slot = "data") + theme(legend.position = "right")
 ```
 
-![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-71-1.png)
+![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-70-1.png)
 
 We can see that there is much more expression of this metabolite within
 the lesioned hemisphere.
@@ -1317,7 +1293,7 @@ striatum.dhb.data <- BinMetabolites(striatum.dhb.data, mzs, slot = "data", bin_n
 SpatialFeaturePlot(striatum.dhb.data, features = "Dopamine_pathway", pt.size.factor = 2.5) & theme(legend.position = "right") 
 ```
 
-![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-73-1.png)
+![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-72-1.png)
 
 #### GESECA-Based Pathway Analysis
 
@@ -1396,7 +1372,7 @@ plots <- PlotPathwaysSpatially(topPathways, integrated.data, images = c("slice1"
 wrap_plots(plots, ncol = 3)
 ```
 
-![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-76-1.png)
+![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-75-1.png)
 
 We can see these pathways share a similar expression, with particularly
 low levels in the corpus callosum. Lets do the same for our SM data:
@@ -1485,14 +1461,14 @@ p2 <- PlotPathwaysSpatially(key_pathways, integrated.data, images = c("slice1"),
 wrap_plots(p1, ncol = 3)+plot_annotation(title = "ST Pathways")
 ```
 
-![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-83-1.png)
+![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-82-1.png)
 
 ``` r
 
 wrap_plots(p2, ncol = 3)+plot_annotation(title = "SM Pathways")
 ```
 
-![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-83-2.png)
+![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-82-2.png)
 
 There are clear differences between the two modalities, most likely due
 to the incomplete feature lists of each pathway when only using one
@@ -1548,7 +1524,7 @@ p1 <- PlotPathwaysSpatially(selected_pathways, integrated.data, images = c("slic
 wrap_plots(p1, ncol = 3)
 ```
 
-![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-86-1.png)
+![](Multi-Omic_Mouse_Brain_files/figure-html/unnamed-chunk-85-1.png)
 
 Spatially these pathways show differential expression between the
 lesioned and intact striatum regions.
@@ -1588,50 +1564,50 @@ sessionInfo()
     ## [16] BiocParallel_1.46.0    SpaMTP_1.1.0.9000     
     ## 
     ## loaded via a namespace (and not attached):
-    ##   [1] RcppAnnoy_0.0.23       splines_4.6.1          later_1.4.8           
-    ##   [4] tibble_3.3.1           polyclip_1.10-7        fastDummies_1.7.6     
-    ##   [7] lifecycle_1.0.5        sf_1.1-2               edgeR_4.10.1          
-    ##  [10] globals_0.19.1         lattice_0.22-9         MASS_7.3-65           
-    ##  [13] crosstalk_1.2.2        magrittr_2.0.5         limma_3.68.4          
-    ##  [16] plotly_4.12.1          sass_0.4.10            rmarkdown_2.31        
-    ##  [19] jquerylib_0.1.4        yaml_2.3.12            httpuv_1.6.17         
-    ##  [22] otel_0.2.0             sctransform_0.4.3      spam_2.11-4           
-    ##  [25] spatstat.sparse_3.2-0  reticulate_1.46.0      cowplot_1.2.0         
-    ##  [28] pbapply_1.7-4          DBI_1.3.0              RColorBrewer_1.1-3    
-    ##  [31] abind_1.4-8            Rtsne_0.17             purrr_1.2.2           
-    ##  [34] downlit_0.4.5          irlba_2.3.7            listenv_1.0.0         
-    ##  [37] spatstat.utils_3.2-4   units_1.0-1            goftest_1.2-3         
-    ##  [40] RSpectra_0.16-2        spatstat.random_3.5-1  matter_2.14.0         
-    ##  [43] fitdistrplus_1.2-6     parallelly_1.48.0      pkgdown_2.2.1         
-    ##  [46] svglite_2.2.2          codetools_0.2-20       xml2_1.6.0            
-    ##  [49] tidyselect_1.2.1       farver_2.1.2           matrixStats_1.5.0     
-    ##  [52] spatstat.explore_3.8-2 jsonlite_2.0.0         CardinalIO_1.10.0     
-    ##  [55] e1071_1.7-17           progressr_1.0.0        ggridges_0.5.7        
-    ##  [58] survival_3.8-6         systemfonts_1.3.2      tools_4.6.1           
-    ##  [61] ggnewscale_0.5.2       ragg_1.5.2             ica_1.0-3             
-    ##  [64] Rcpp_1.1.2             glue_1.8.1             gridExtra_2.3.1       
-    ##  [67] xfun_0.60              withr_3.0.3            fastmap_1.2.0         
-    ##  [70] shinyjs_2.1.1          digest_0.6.39          R6_2.6.1              
-    ##  [73] mime_0.13              textshaping_1.0.5      scattermore_1.2       
-    ##  [76] tensor_1.5.1           spatstat.data_3.1-9    tidyr_1.3.2           
-    ##  [79] data.table_1.18.4      class_7.3-23           httr_1.4.8            
-    ##  [82] htmlwidgets_1.6.4      ontologyIndex_2.12     whisker_0.4.1         
-    ##  [85] uwot_0.2.4             pkgconfig_2.0.3        gtable_0.3.6          
-    ##  [88] lmtest_0.9-40          S7_0.2.2               htmltools_0.5.9       
-    ##  [91] dotCall64_1.2          fgsea_1.38.0           scales_1.4.0          
-    ##  [94] kableExtra_1.4.1       Biobase_2.72.0         png_0.1-9             
-    ##  [97] spatstat.univar_3.2-0  ggdendro_0.2.0         knitr_1.51            
-    ## [100] rstudioapi_0.19.0      reshape2_1.4.5         nlme_3.1-169          
-    ## [103] proxy_0.4-29           cachem_1.1.0           zoo_1.9-0             
-    ## [106] stringr_1.6.0          KernSmooth_2.23-26     parallel_4.6.1        
-    ## [109] miniUI_0.1.2           desc_1.4.3             pillar_1.11.1         
-    ## [112] grid_4.6.1             vctrs_0.7.3            RANN_2.6.2            
-    ## [115] promises_1.5.0         xtable_1.8-8           cluster_2.1.8.2       
-    ## [118] evaluate_1.0.5         zeallot_0.2.0          cli_3.6.6             
-    ## [121] locfit_1.5-9.12        compiler_4.6.1         rlang_1.3.0           
-    ## [124] future.apply_1.20.2    labeling_0.4.3         classInt_0.4-11       
-    ## [127] plyr_1.8.9             fs_2.1.0               stringi_1.8.9         
-    ## [130] viridisLite_0.4.3      deldir_2.0-4           spatstat.geom_3.8-2   
-    ## [133] Matrix_1.7-5           RcppHNSW_0.7.0         statmod_1.5.2         
-    ## [136] shiny_1.14.0           ROCR_1.0-12            igraph_2.3.3          
-    ## [139] memoise_2.0.1          bslib_0.12.0           fastmatch_1.1-8
+    ##   [1] RColorBrewer_1.1-3     ggdendro_0.2.0         rstudioapi_0.19.0     
+    ##   [4] jsonlite_2.0.0         magrittr_2.0.5         spatstat.utils_3.2-4  
+    ##   [7] farver_2.1.2           rmarkdown_2.31         fs_2.1.0              
+    ##  [10] ragg_1.5.2             vctrs_0.7.3            ROCR_1.0-12           
+    ##  [13] memoise_2.0.1          spatstat.explore_3.8-2 htmltools_0.5.9       
+    ##  [16] sass_0.4.10            sctransform_0.4.3      parallelly_1.48.0     
+    ##  [19] KernSmooth_2.23-26     bslib_0.12.0           htmlwidgets_1.6.4     
+    ##  [22] desc_1.4.3             ica_1.0-3              naturalsort_0.1.3     
+    ##  [25] plyr_1.8.9             plotly_4.12.1          zoo_1.9-0             
+    ##  [28] cachem_1.1.0           whisker_0.4.1          igraph_2.3.3          
+    ##  [31] mime_0.13              lifecycle_1.0.5        pkgconfig_2.0.3       
+    ##  [34] Matrix_1.7-5           R6_2.6.1               fastmap_1.2.0         
+    ##  [37] fitdistrplus_1.2-6     shiny_1.14.0           digest_0.6.39         
+    ##  [40] ggnewscale_0.5.2       tensor_1.5.1           RSpectra_0.16-2       
+    ##  [43] irlba_2.3.7            crosstalk_1.2.2        textshaping_1.0.5     
+    ##  [46] labeling_0.4.3         progressr_1.0.0        spatstat.sparse_3.2-0 
+    ##  [49] httr_1.4.8             polyclip_1.10-7        abind_1.4-8           
+    ##  [52] compiler_4.6.1         proxy_0.4-29           withr_3.0.3           
+    ##  [55] S7_0.2.2               DBI_1.3.0              fastDummies_1.7.6     
+    ##  [58] MASS_7.3-65            classInt_0.4-11        units_1.0-1           
+    ##  [61] tools_4.6.1            lmtest_0.9-40          otel_0.2.0            
+    ##  [64] httpuv_1.6.17          future.apply_1.20.2    goftest_1.2-3         
+    ##  [67] glue_1.8.1             nlme_3.1-169           promises_1.5.0        
+    ##  [70] sf_1.1-2               grid_4.6.1             Rtsne_0.17            
+    ##  [73] cluster_2.1.8.2        reshape2_1.4.5         gtable_0.3.6          
+    ##  [76] spatstat.data_3.1-9    class_7.3-23           tidyr_1.3.2           
+    ##  [79] data.table_1.18.4      xml2_1.6.0             spatstat.geom_3.8-2   
+    ##  [82] RcppAnnoy_0.0.23       RANN_2.6.2             pillar_1.11.1         
+    ##  [85] stringr_1.6.0          spam_2.11-4            RcppHNSW_0.7.0        
+    ##  [88] limma_3.68.4           later_1.4.8            splines_4.6.1         
+    ##  [91] lattice_0.22-9         survival_3.8-6         deldir_2.0-4          
+    ##  [94] tidyselect_1.2.1       CardinalIO_1.10.0      locfit_1.5-9.12       
+    ##  [97] miniUI_0.1.2           pbapply_1.7-4          downlit_0.4.5         
+    ## [100] knitr_1.51             gridExtra_2.3.1        edgeR_4.10.1          
+    ## [103] matter_2.14.0          svglite_2.2.2          scattermore_1.2       
+    ## [106] xfun_0.60              Biobase_2.72.0         statmod_1.5.2         
+    ## [109] matrixStats_1.5.0      stringi_1.8.9          yaml_2.3.12           
+    ## [112] kableExtra_1.4.1       evaluate_1.0.5         codetools_0.2-20      
+    ## [115] tibble_3.3.1           cli_3.6.6              ontologyIndex_2.12    
+    ## [118] uwot_0.2.4             xtable_1.8-8           reticulate_1.46.0     
+    ## [121] systemfonts_1.3.2      jquerylib_0.1.4        Rcpp_1.1.2            
+    ## [124] globals_0.19.1         spatstat.random_3.5-1  zeallot_0.2.0         
+    ## [127] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.1        
+    ## [130] pkgdown_2.2.1          dotCall64_1.2          listenv_1.0.0         
+    ## [133] viridisLite_0.4.3      e1071_1.7-17           scales_1.4.0          
+    ## [136] ggridges_0.5.7         purrr_1.2.2            rlang_1.3.0           
+    ## [139] cowplot_1.2.0          shinyjs_2.1.1
