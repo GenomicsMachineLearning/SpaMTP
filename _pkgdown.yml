@@ -197,6 +197,7 @@ reference:
     data
   contents:
   - MapSpatialOmics
+  - ApplySpatialAlignment
   - AlignSpatialOmics
   - MultiOmicIntegration
   - CreateMergedModalityAssay

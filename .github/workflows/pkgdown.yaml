@@ -304,7 +304,14 @@ jobs:
           # Keep the historical root path so caches produced by the previous
           # monolithic workflow remain restorable. The vignette itself writes
           # only to its Multi-Omic_Mouse_Brain subdirectory.
-          path: vignettes/.knitr-cache
+          #
+          # knitr caches R objects but not the figures a chunk drew. A cached
+          # chunk therefore replays its <img> tag without rewriting the PNG, and
+          # pkgdown aborts on the dangling reference. Carry the rendered figures
+          # alongside the chunk cache so the two always agree.
+          path: |
+            vignettes/.knitr-cache
+            docs/articles/${{ matrix.article }}_files/figure-html
           key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-
@@ -334,7 +341,9 @@ jobs:
         if: always() && steps.article-cache.outputs.cache-hit != 'true' && matrix.article == 'Multi-Omic_Mouse_Brain'
         uses: actions/cache/save@v4
         with:
-          path: vignettes/.knitr-cache
+          path: |
+            vignettes/.knitr-cache
+            docs/articles/${{ matrix.article }}_files/figure-html
           key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save rendered article

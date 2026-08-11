@@ -1165,7 +1165,7 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 
 
 This data object contains the intact and lesioned striatum regions we will be comparing for our multi-modal DHB matrix sample. 
-```{r dhb_load_annotation, warning=FALSE, message=FALSE, fig.width=7, fig.height=4,dpi=72, cache=TRUE}
+```{r dhb_load_annotation, warning=FALSE, message=FALSE, cache=TRUE}
 striatum_file <- resolve_mouse_brain_demo_file(
   file.path("DHB_data", "striatum.dhb.data.RDS")
 )
@@ -1187,7 +1187,12 @@ striatum.dhb.data <- AnnotateSM(
   min_score = 0,
   verbose = FALSE
 )
+```
 
+<!-- Plotting stays outside the cached chunk above. knitr caches R objects but not
+the figure files a chunk writes, so a cached plotting chunk replays its <img> tag
+without rewriting the PNG and pkgdown then aborts on the dangling reference. -->
+```{r dhb_striatum_plot, warning=FALSE, message=FALSE, fig.width=7, fig.height=4, dpi=72}
 SpatialDimPlot(
   striatum.dhb.data,
   group.by = "striatum",

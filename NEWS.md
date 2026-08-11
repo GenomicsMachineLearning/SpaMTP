@@ -1,5 +1,10 @@
 # SpaMTP (developmental)
 
+* Added `ApplySpatialAlignment()` to apply existing SMINT coordinate outputs or
+  homogeneous transforms, estimate landmark-based affine alignment in R, and
+  run the SMINT-compatible STalign LDDMM workflow through an optional Python
+  backend. Alignment provenance and nearest-target diagnostics are retained in
+  the returned SpaMTP object without storing large Python velocity tensors.
 * Pathway enrichment, pathway-assay construction, Fisher analysis of m/z
   inputs, and interactive pathway networks now consume the scored `Ramp_IDs`
   produced by the indexed annotation engine. `AnnotateSM()` defaults to the
