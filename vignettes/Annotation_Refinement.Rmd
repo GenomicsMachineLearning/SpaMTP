@@ -24,8 +24,7 @@ knitr::opts_chunk$set(
   fig.width = 7,       # smaller inches
   fig.height = 4,      # proportionate aspect ratio
   dpi = 72,
-  fig.align = 'center',
-  dev.args = list(png = list(compression = 9))  # max compression
+  fig.align = 'center'
 )
 ```
 
@@ -69,10 +68,8 @@ library(Seurat)
 library(dplyr)
 library(tidyr)
 
-#For plotting + DE plots
+# Plotting
 library(ggplot2)
-library(EnhancedVolcano)
-library(viridis)
 ```
 
 
@@ -159,7 +156,6 @@ output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
 
 ```{r echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 library(knitr)
-library(kableExtra)
 
 df <- output[c(1162,1053,501,626,126,117,251,113,248,637,638,835,836),]
 knitr::kable(

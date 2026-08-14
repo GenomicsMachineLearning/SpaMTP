@@ -303,6 +303,25 @@ test_that("SMILES decomposition recognises explicit metabolite functional groups
   expect_match(structures$structure_evidence[[6]], "carboxyl=2")
 })
 
+test_that("Kekule and aromatic dopamine SMILES give equivalent reactive sites", {
+  dopamine <- DeconvolveSMILES(c(
+    aromatic = "NCCc1ccc(O)c(O)c1",
+    kekule = "NCCC1=CC(O)=C(O)C=C1"
+  ), strict = TRUE)
+
+  expected <- c(
+    "phenolic_hydroxyl_sites", "alcohol_hydroxyl_sites",
+    "primary_amine_sites", "catechol_sites", "fmp10_reactive_sites"
+  )
+  expect_equal(
+    as.numeric(dopamine[1, expected]),
+    as.numeric(dopamine[2, expected])
+  )
+  expect_equal(dopamine$phenolic_hydroxyl_sites, c(2, 2))
+  expect_equal(dopamine$catechol_sites, c(1, 1))
+  expect_equal(dopamine$fmp10_reactive_sites, c(3, 3))
+})
+
 test_that("ion-mode and alkali priors are inferred before mass matching", {
   target <- data.frame(
     formula = c("C5H8O5", "C3H6O"),

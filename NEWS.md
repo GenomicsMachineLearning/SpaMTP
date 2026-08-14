@@ -35,9 +35,11 @@
   result columns.
 * Added dependency-free SMILES graph decomposition, functional-group and atom
   site reporting, mode-specific protonation/deprotonation and alkali-binding
-  priors, and `PredictAdductsFromSMILES()`. Full RaMP runs join an independent
-  precomputed `SpaMTPdb::smiles_features` resource; small custom databases are
-  inferred automatically at runtime.
+  priors, and `PredictAdductsFromSMILES()`. Aromatic functional groups are
+  perceived consistently from both lowercase aromatic and alternating-bond
+  six-membered Kekule SMILES. Full RaMP runs join an independent precomputed
+  `SpaMTPdb::smiles_features` resource; small custom databases are inferred
+  automatically at runtime.
 * `chem_props` can now be used directly as a RaMP-backed annotation database.
 * Rebuilt `PathwayNetworkPlots()` around cached topology lookup, precomputed
   edges, selective sparse-matrix extraction, and JSON serialization. The new

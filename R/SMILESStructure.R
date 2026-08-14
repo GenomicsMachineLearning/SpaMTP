@@ -247,6 +247,75 @@
   )
 }
 
+.smiles_kekule_aromatic_atoms <- function(graph) {
+  n_atoms <- nrow(graph$atoms)
+  perceived <- rep(FALSE, n_atoms)
+  if (n_atoms < 6L || sum(graph$edges$order == 2) < 3L) {
+    return(perceived)
+  }
+
+  allowed <- graph$atoms$element %in% c("C", "N")
+  adjacent_atoms <- vector("list", n_atoms)
+  adjacent_orders <- vector("list", n_atoms)
+  for (i in seq_len(nrow(graph$edges))) {
+    from <- graph$edges$from[[i]]
+    to <- graph$edges$to[[i]]
+    order <- graph$edges$order[[i]]
+    adjacent_atoms[[from]] <- c(adjacent_atoms[[from]], to)
+    adjacent_orders[[from]] <- c(adjacent_orders[[from]], order)
+    adjacent_atoms[[to]] <- c(adjacent_atoms[[to]], from)
+    adjacent_orders[[to]] <- c(adjacent_orders[[to]], order)
+  }
+
+  in_alternating_six_ring <- function(start) {
+    walk <- function(current, path, orders) {
+      if (length(path) == 6L) {
+        closing_index <- match(start, adjacent_atoms[[current]])
+        if (is.na(closing_index)) return(FALSE)
+        complete_orders <- c(
+          orders,
+          adjacent_orders[[current]][[closing_index]]
+        )
+        shifted_orders <- c(complete_orders[-1L], complete_orders[[1L]])
+        return(
+          all(complete_orders %in% c(1, 2)) &&
+            sum(complete_orders == 2) == 3L &&
+            all(complete_orders != shifted_orders)
+        )
+      }
+
+      candidates <- adjacent_atoms[[current]]
+      candidate_orders <- adjacent_orders[[current]]
+      keep <- allowed[candidates] & !candidates %in% path &
+        candidate_orders %in% c(1, 2)
+      if (length(orders)) {
+        keep <- keep & candidate_orders != orders[[length(orders)]]
+      }
+      candidates <- candidates[keep]
+      candidate_orders <- candidate_orders[keep]
+      if (!length(candidates)) return(FALSE)
+
+      any(vapply(seq_along(candidates), function(i) {
+        walk(
+          candidates[[i]],
+          c(path, candidates[[i]]),
+          c(orders, candidate_orders[[i]])
+        )
+      }, logical(1)))
+    }
+
+    walk(start, start, numeric())
+  }
+
+  candidates <- which(allowed)
+  perceived[candidates] <- vapply(
+    candidates,
+    in_alternating_six_ring,
+    logical(1)
+  )
+  perceived
+}
+
 .smiles_hydrogen_count <- function(graph, atom) {
   atom_info <- graph$atoms[atom, , drop = FALSE]
   neighbours <- .smiles_neighbours(graph, atom)
@@ -304,6 +373,8 @@
 
   atoms <- graph$atoms
   atom_ids <- seq_len(nrow(atoms))
+  perceived_aromatic <- atoms$aromatic |
+    .smiles_kekule_aromatic_atoms(graph)
   hydrogen_count <- vapply(
     atom_ids, function(i) .smiles_hydrogen_count(graph, i), numeric(1)
   )
@@ -358,7 +429,7 @@
   }), use.names = FALSE))
   phenolic_oxygen <- hydroxyl_oxygen[vapply(hydroxyl_oxygen, function(i) {
     attached <- heavy_neighbours[[i]]$atom
-    length(attached) == 1L && atoms$aromatic[[attached]] &&
+    length(attached) == 1L && perceived_aromatic[[attached]] &&
       atoms$element[[attached]] == "C"
   }, logical(1))]
   alcohol_oxygen <- setdiff(hydroxyl_oxygen, c(carboxyl_oxygen, phenolic_oxygen))
@@ -368,7 +439,7 @@
     n$atom[atoms$element[n$atom] == "N" & n$order < 1.5]
   }), use.names = FALSE))
   amine_nitrogen <- atom_ids[
-    atoms$element == "N" & !atoms$aromatic & atoms$charge >= 0 &
+    atoms$element == "N" & !perceived_aromatic & atoms$charge >= 0 &
       !atom_ids %in% amide_nitrogen
   ]
   amine_degree <- vapply(amine_nitrogen, function(i) {
@@ -377,8 +448,10 @@
   primary_amine <- sum(amine_degree == 1L & hydrogen_count[amine_nitrogen] >= 1)
   secondary_amine <- sum(amine_degree == 2L & hydrogen_count[amine_nitrogen] >= 1)
   tertiary_amine <- sum(amine_degree >= 3L)
-  aromatic_n <- sum(atoms$element == "N" & atoms$aromatic & atoms$charge <= 0 &
-                      hydrogen_count == 0)
+  aromatic_n <- sum(
+    atoms$element == "N" & perceived_aromatic & atoms$charge <= 0 &
+      hydrogen_count == 0
+  )
 
   acidic_hetero_sites <- function(element, centre, minimum_double_o) {
     centres <- atom_ids[atoms$element == centre]
@@ -444,7 +517,7 @@
     min(1, 0.78 + 0.07 * basic_sites)
   } else if (proton_acceptors > 0L) {
     min(0.72, 0.42 + 0.05 * proton_acceptors)
-  } else if (any(atoms$aromatic)) 0.3 else 0.2
+  } else if (any(perceived_aromatic)) 0.3 else 0.2
   negative_score <- if (strong_acid > 0L) {
     min(1, 0.82 + 0.06 * strong_acid)
   } else if (medium_acid > 0L) {
