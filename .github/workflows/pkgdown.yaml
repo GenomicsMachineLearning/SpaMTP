@@ -125,8 +125,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, local::., github::BCRL-tylu/SpaMTPdb, github::BCRL-tylu/SpaMTPData
           needs: website
+          cache-version: spamtp-companion-packages-v1
           # Preserve the installed library even if a later validation or site
           # preparation step fails, so the next push can restore it.
           cache: always
@@ -262,8 +263,9 @@ jobs:
       # restores that cache here instead of compiling the library from scratch.
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, local::., github::BCRL-tylu/SpaMTPdb, github::BCRL-tylu/SpaMTPData
           needs: website
+          cache-version: spamtp-companion-packages-v1
 
       - name: Download site shell
         uses: actions/download-artifact@v4
@@ -451,8 +453,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, local::., github::BCRL-tylu/SpaMTPdb, github::BCRL-tylu/SpaMTPData
           needs: website
+          cache-version: spamtp-companion-packages-v1
 
       - name: Download site shell
         uses: actions/download-artifact@v4
