@@ -18,6 +18,12 @@
   filtered_fmp10 = "filtered_fmp10"
 )
 
+# Structure features are intentionally separate from the pruned chemical table.
+.spamtp_db_legacy_names <- c(
+  .spamtp_db_legacy_names,
+  smiles_features = "smiles_features"
+)
+
 .spamtp_db_normalise_resources <- function(resources) {
   resources <- tolower(trimws(as.character(resources)))
   resources <- unique(resources[nzchar(resources)])
@@ -152,7 +158,9 @@
       }
       if (is.list(metadata)) as.character(metadata$ramp_version %||% NA_character_) else NA_character_
     },
-    source = resolved_source
+    source = resolved_source,
+    local_dir = local_dir,
+    offline = offline
   )
   assign(key, value, envir = .spamtp_db_cache)
   value

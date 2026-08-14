@@ -117,6 +117,9 @@ reference:
   contents:
   - AnnotateSM
   - AnnotateMZ
+  - DeconvolveSMILES
+  - AnnotateSMILESStructure
+  - PredictAdductsFromSMILES
   - AdductRules
   - MALDIMatrixProfiles
   - MALDIMatrixRules

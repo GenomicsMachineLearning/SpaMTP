@@ -84,6 +84,8 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' @param database_source Database source used when `db = NULL`; see
 #'   [LoadSpaMTPDatabase()].
 #' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param infer_structure,structure_backend,structure_workers,min_structure_score Structure-aware
+#'   rule-selection arguments passed to `BuildMZAnnotationIndex()`.
 #' @param ... Additional indexed annotation/scoring arguments passed to
 #'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
@@ -294,7 +296,13 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
                           maldi_matrix = NULL,
                           database_version = "latest",
                           database_source = c("auto", "spamtpdb", "bundled"),
-                          database_local_dir = NULL) {
+                          database_local_dir = NULL,
+                          infer_structure = c("auto", "never", "always"),
+                          structure_backend = c("auto", "native"),
+                          structure_workers = getOption(
+                            "SpaMTP.smiles_workers", 1L
+                          ),
+                          min_structure_score = 0.05) {
   if (!is.data.frame(mz_df) || !all(c("row_id", "mz") %in% names(mz_df))) {
     stop("mz_df must be a data.frame containing row_id and mz columns.")
   }
@@ -334,7 +342,10 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
     )
     index <- BuildMZAnnotationIndex(
       db = db, polarity = polarity, adducts = adducts, rules = rules,
-      maldi_matrix = maldi_matrix
+      maldi_matrix = maldi_matrix, infer_structure = infer_structure,
+      structure_backend = structure_backend,
+      structure_workers = structure_workers,
+      min_structure_score = min_structure_score
     )
   } else if (!inherits(index, "spamtp_mz_index")) {
     stop("index must be created by BuildMZAnnotationIndex().")
@@ -368,11 +379,17 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
       InchiKeys = character(), IsomerNames = character(),
       Isomers_IDs = character(), Ramp_IDs = character(), Score = numeric(),
       MassScore = numeric(), ChemicalScore = numeric(),
+      StructureScore = numeric(), StructureStatus = character(),
+      StructureRuleEvidence = character(), StructureEvidence = character(),
+      PositiveSiteAtoms = character(), NegativeSiteAtoms = character(),
+      AlkaliSiteAtoms = character(),
       ReactiveSiteScore = numeric(), ReactiveSiteStatus = character(),
       IsotopeScore = numeric(), AdductNetworkScore = numeric(),
       MALDIMatrix = character(), RuleClass = character(),
       RuleSource = character(), ReactiveGroup = character(),
       MinimumReactiveSites = integer(),
+      MatrixTargetGroups = character(), MatrixTargetSites = numeric(),
+      MatrixTargetStatus = character(),
       stringsAsFactors = FALSE
     )
   }
@@ -424,6 +441,13 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
     Score = matched$score,
     MassScore = matched$mass_score,
     ChemicalScore = matched$chemical_score,
+    StructureScore = matched$structure_score,
+    StructureStatus = matched$structure_status,
+    StructureRuleEvidence = matched$structure_rule_evidence,
+    StructureEvidence = matched$structure_evidence,
+    PositiveSiteAtoms = matched$positive_site_atoms,
+    NegativeSiteAtoms = matched$negative_site_atoms,
+    AlkaliSiteAtoms = matched$alkali_site_atoms,
     ReactiveSiteScore = matched$reactive_site_score,
     ReactiveSiteStatus = matched$reactive_site_status,
     IsotopeScore = matched$isotope_score,
@@ -433,6 +457,9 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
     RuleSource = matched$rule_source,
     ReactiveGroup = matched$reactive_group,
     MinimumReactiveSites = matched$min_reactive_sites,
+    MatrixTargetGroups = matched$matrix_target_groups,
+    MatrixTargetSites = matched$matrix_target_sites,
+    MatrixTargetStatus = matched$matrix_target_status,
     row.names = NULL,
     stringsAsFactors = FALSE
   )

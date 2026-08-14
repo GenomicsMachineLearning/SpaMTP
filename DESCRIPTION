@@ -79,6 +79,7 @@ Imports:
     methods,
     MSnbase,
     naturalsort,
+    parallel,
     pbapply,
     pheatmap,
     plotly,

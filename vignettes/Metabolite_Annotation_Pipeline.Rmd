@@ -25,12 +25,14 @@ mass tolerance, and ranks the remaining candidates using optional MS1 context.
 
 The workflow is:
 
-1. Select a metabolite database and ion-mode-specific adduct rules.
-2. Build a reusable sorted annotation index.
-3. Query one or many observed m/z values within a ppm tolerance.
-4. Score candidates using mass accuracy, chemical heuristics, isotope evidence,
-   and adduct-family support.
-5. Store all ppm-valid candidates and choose a score threshold at analysis time.
+1. Decompose database SMILES into functional groups and plausible ionisation
+   or metal-binding sites.
+2. Select ion-mode and matrix rules, then apply molecule-specific structural
+   bounds and priors.
+3. Build a reusable sorted annotation index and query observed m/z values.
+4. Score candidates using structure, mass accuracy, chemical heuristics,
+   isotope evidence, and adduct-family support.
+5. Store the retained candidates and choose a score threshold at analysis time.
 
 This article describes upstream candidate annotation. The
 [`Annotation Refinement`](Annotation_Refinement.html) article covers downstream
@@ -90,8 +92,9 @@ data.frame(column = names(chem_props_current)) |>
 # A small 2-hydroxyglutarate example
 
 The examples below use the RaMP entry for D-2-hydroxyglutaric acid (2HG), with
-neutral monoisotopic mass approximately 148.0372 Da. Two carboxyl groups give
-this demonstration molecule a maximum of two exchangeable protons.
+neutral monoisotopic mass approximately 148.0372 Da. Rather than manually
+declaring its chemistry, SpaMTP decomposes the RaMP `iso_smiles` graph into
+recognisable functional groups and ionisation sites.
 
 ```{r target-database}
 target_db <- chem_props_current[
@@ -99,26 +102,104 @@ target_db <- chem_props_current[
     grepl("HMDB0000606", chem_props_current$chem_source_id),
   c(
     "ramp_id", "chem_data_source", "chem_source_id", "inchi_key",
-    "monoisotop_mass", "common_name", "mol_formula"
+    "monoisotop_mass", "common_name", "mol_formula", "iso_smiles"
   ),
   drop = FALSE
 ]
 stopifnot(nrow(target_db) > 0L)
 target_db <- target_db[1L, , drop = FALSE]
-target_db$max_exchangeable_protons <- 2L
+target_db <- AnnotateSMILESStructure(target_db)
 
 knitr::kable(
   target_db[, c(
     "ramp_id", "chem_source_id", "common_name", "mol_formula",
-    "monoisotop_mass", "max_exchangeable_protons"
+    "monoisotop_mass", "iso_smiles", "carboxyl_sites",
+    "alcohol_hydroxyl_sites", "ketone_sites",
+    "max_exchangeable_protons"
   )],
   digits = 7
 )
 ```
 
-`max_exchangeable_protons` is optional database metadata. When it is present,
-SpaMTP removes impossible proton-loss states before indexing. When it is absent,
-SpaMTP does not infer this property from molecular formula alone.
+The native parser works on molecular connectivity rather than elemental formula:
+for example, it separates a carboxylic acid from an ester and a ketone from the
+carbonyl in a carboxyl group. Existing curated columns are preserved by default;
+missing values are filled from SMILES.
+
+# From functional groups to ion-mode behaviour
+
+`DeconvolveSMILES()` also derives mode-specific, bounded scores. They are
+chemical priors, not calibrated probabilities or substitutes for experimental
+evidence.
+
+```{r structure-priors}
+structure_summary <- target_db[, c(
+  "carboxyl_sites", "hydroxyl_sites", "carbonyl_sites",
+  "acidic_sites", "basic_sites", "proton_acceptor_sites",
+  "alkali_binding_sites", "alkali_chelation_motifs",
+  "positive_mode_score", "negative_mode_score",
+  "alkali_affinity_score", "neutral_mass_score"
+)]
+knitr::kable(structure_summary, digits = 2)
+```
+
+SpaMTP interprets these fields differently for each search mode:
+
+- In **positive mode**, amines and other basic nitrogens support protonation;
+  carbonyl, ether, and related heteroatoms provide weaker proton-acceptor
+  evidence.
+- For **alkali/metal adducts**, oxygen, nitrogen, and sulfur donor atoms are
+  combined with carboxylate, catechol, phosphate, and nearby donor-pair motifs.
+  A molecule with several donors can therefore favour `[M+Na]+` or `[M+K]+`
+  even when it is not strongly basic.
+- In **negative mode**, carboxylic, phosphoric, sulfonic, phenolic, and thiol
+  sites support deprotonation. Ordinary alcohol groups contribute weaker
+  evidence rather than an unconditional exclusion.
+- `neutral` is a neutral-mass matching mode, not a claim that a mass
+  spectrometer directly detected an uncharged molecule. It applies no
+  protonation or metal-binding requirement.
+
+For 2HG, two carboxyl groups support negative-mode deprotonation, while its five
+oxygen donors and multiple local donor motifs give stronger support to an
+alkali adduct than to simple positive-mode protonation. The complete audit text
+is retained in `structure_evidence`:
+
+```{r structure-evidence}
+target_db[, c(
+  "positive_site_atoms", "negative_site_atoms", "alkali_site_atoms",
+  "structure_evidence"
+)]
+```
+
+Atom labels such as `O1` refer to the atom order in the supplied SMILES graph;
+they identify the proposed local sites and are not canonical atom-map numbers.
+
+The structure-only adduct search space can be inspected before any peak is
+queried. No `adducts` argument is required:
+
+```{r predict-adduct-space}
+predicted_spaces <- lapply(
+  c("positive", "negative", "neutral"),
+  function(mode) {
+    x <- PredictAdductsFromSMILES(target_db$iso_smiles, polarity = mode)
+    x <- x[x$retained, ]
+    utils::head(x, 4L)
+  }
+)
+predicted_spaces <- do.call(rbind, predicted_spaces)
+knitr::kable(
+  predicted_spaces[, c(
+    "polarity", "adduct", "structure_score", "proton_bound_status",
+    "combined_prior", "retained"
+  )],
+  digits = 3,
+  row.names = FALSE
+)
+```
+
+This prediction selects plausible *families*; observed mass, isotope,
+co-occurring adducts, spatial evidence, and pseudo-MS/MS still decide whether a
+specific peak supports one of them.
 
 # Validated adduct rules
 
@@ -152,9 +233,11 @@ Custom rule tables must satisfy charge balance before candidate generation.
 
 # Build the reusable index
 
-`BuildMZAnnotationIndex()` performs the expensive expansion once. Expected ion
-masses are sorted, allowing `QueryMZAnnotationIndex()` to use binary interval
-search rather than scanning every database record for every observed peak.
+`BuildMZAnnotationIndex()` performs the expensive expansion once. Before mass
+expansion it applies SMILES-derived, rule-specific priors and chemical bounds;
+expected ions that remain are sorted for binary interval search. Thus the
+engine does not treat every adduct as equally plausible and only rank by m/z
+afterwards.
 
 ```{r build-index}
 positive_index <- BuildMZAnnotationIndex(
@@ -169,6 +252,27 @@ ion_table <- data.frame(
   expected_mz = positive_index$expected_mz
 )
 knitr::kable(ion_table, digits = 9, row.names = FALSE)
+```
+
+The structure contribution for each retained hypothesis is directly
+inspectable:
+
+```{r inspect-structure-prior}
+structure_rank <- QueryMZAnnotationIndex(
+  positive_index$expected_mz,
+  positive_index,
+  ppm = 0,
+  check_isotopes = FALSE,
+  check_adduct_network = FALSE
+)
+knitr::kable(
+  structure_rank[, c(
+    "adduct", "expected_mz", "structure_score", "structure_status",
+    "structure_rule_evidence"
+  )],
+  digits = 3,
+  row.names = FALSE
+)
 ```
 
 For large datasets, build one index for each database, polarity, and adduct set,
@@ -223,7 +327,8 @@ candidates <- QueryMZAnnotationIndex(
 
 candidate_view <- candidates[, c(
   "observed_mz", "expected_mz", "adduct", "ppm_error", "mass_score",
-  "rule_prior", "chemical_score", "isotope_score",
+  "rule_prior", "chemical_score", "structure_score", "structure_status",
+  "isotope_score",
   "adduct_network_score", "score", "ramp_ids"
 )]
 knitr::kable(candidate_view, digits = 4, row.names = FALSE)
@@ -249,8 +354,9 @@ data.frame(
 The final score is multiplicative:
 
 \[
-S = S_{mass} \times P_{rule} \times S_{chemical}
-    \times S_{isotope} \times S_{adduct\ family}.
+S = S_{mass} \times P_{rule} \times S_{chemical} \times S_{structure}
+    \times S_{reaction\ site} \times S_{isotope}
+    \times S_{adduct\ family}.
 \]
 
 Missing optional MS1 context is neutral rather than evidence of absence. When a
@@ -484,14 +590,23 @@ PathwayNetworkPlots(
 
 For one call, `AnnotateSM(db = NULL)` automatically uses the bundled RaMP
 chemical-property table. For repeated calls, explicitly build and reuse an
-index. Restricting the adduct set to ions supported by the experiment reduces
-memory use and false hypotheses.
+index. `adducts` is optional: when it is omitted, SpaMTP selects the full rule
+space for the mode or MALDI matrix and applies molecule-specific SMILES priors.
+An explicit list remains useful when the acquisition protocol rules out known
+ion families.
+
+The `SpaMTPdb::smiles_features` table stores these fields separately
+from the pruned `chem_props` table and is joined by `iso_smiles` on demand. For
+a custom database of up to 5,000 unique structures, `infer_structure = "auto"`
+parses missing features at runtime. Larger un-precomputed inputs emit a warning
+instead of silently adding a long preprocessing delay; use
+`infer_structure = "always"`, `structure_workers`, or precompute with
+`AnnotateSMILESStructure()` when that cost is intentional.
 
 ```{r production-pattern, eval=FALSE}
 ramp_positive_index <- BuildMZAnnotationIndex(
   chem_props,
-  polarity = "positive",
-  adducts = c("M+H", "M+Na", "M+K")
+  polarity = "positive"
 )
 
 object <- AnnotateSM(
@@ -501,7 +616,6 @@ object <- AnnotateSM(
   assay = "SPM",
   polarity = "positive",
   ppm_error = 5,
-  adducts = c("M+H", "M+Na", "M+K"),
   min_score = 0,
   return.only.annotated = FALSE
 )
@@ -515,8 +629,13 @@ object <- AnnotateSM(
 - Isotope and adduct-family checks require a spectrum from an appropriate
   retention-time, pixel, or regional context.
 - The mass-defect rule is a score penalty, not a universal exclusion rule.
-- Exchangeable-proton pruning requires the relevant database property; it is
-  not inferred from elemental formula alone.
+- SMILES priors recognise common explicit functional groups but do not replace
+  pKa, gas-phase proton-affinity, solvent, salt concentration, matrix, or
+  instrument-specific models. Exotic bonding and organometallic SMILES may be
+  returned as unparsed and retain backward-compatible mass-rule scoring.
+- Tautomers and protonation states can change inferred sites. Store a
+  standardised neutral SMILES in a production database and inspect
+  `structure_evidence` for important assignments.
 - Orthogonal evidence such as authentic standards, retention time, ion
   mobility, or MS/MS remains necessary for high-confidence identification.
 

@@ -564,9 +564,105 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
   if (length(x)) paste(x, collapse = "; ") else NA_character_
 }
 
-.normalise_metabolite_db <- function(db, collapse_isomers = TRUE) {
+.normalise_metabolite_db <- function(db, collapse_isomers = TRUE,
+                                     infer_structure = c("auto", "never", "always"),
+                                     structure_backend = c("auto", "native"),
+                                     structure_workers = getOption(
+                                       "SpaMTP.smiles_workers", 1L
+                                     )) {
   if (!is.data.frame(db)) {
     stop("db must be a data.frame or data.table.")
+  }
+  database_metadata <- attr(db, "spamtp_database", exact = TRUE)
+  infer_structure <- match.arg(infer_structure)
+  structure_backend <- match.arg(structure_backend)
+  db <- as.data.frame(db, stringsAsFactors = FALSE)
+  supplied_proton_col <- .first_existing_column(
+    db,
+    c("max_exchangeable_protons", "max_protons", "exchangeable_protons"),
+    required = FALSE
+  )
+  supplied_proton_values <- if (is.null(supplied_proton_col)) {
+    rep(NA_real_, nrow(db))
+  } else {
+    suppressWarnings(as.numeric(db[[supplied_proton_col]]))
+  }
+  supplied_source <- if ("proton_bound_source" %in% names(db)) {
+    as.character(db$proton_bound_source)
+  } else rep(NA_character_, nrow(db))
+  supplied_proton_bound <- if (is.null(supplied_proton_col)) {
+    rep(FALSE, nrow(db))
+  } else {
+    is.finite(supplied_proton_values) &
+      (is.na(supplied_source) | supplied_source != "SMILES-inferred")
+  }
+  smiles_col <- .first_existing_column(
+    db, c("iso_smiles", "canonical_smiles", "smiles", "SMILES"),
+    required = FALSE
+  )
+  needs_precomputed <- !"structure_valid" %in% names(db) ||
+    !any(!is.na(db$structure_valid) & db$structure_valid)
+  if (!is.null(smiles_col) && isTRUE(needs_precomputed) &&
+      is.list(database_metadata) &&
+      identical(database_metadata$source, "spamtpdb")) {
+    precomputed <- tryCatch(
+      .spamtp_db_resource(
+        "smiles_features",
+        version = database_metadata$version %||% "latest",
+        source = "spamtpdb",
+        local_dir = database_metadata$local_dir,
+        offline = isTRUE(database_metadata$offline)
+      ),
+      error = function(e) NULL
+    )
+    if (is.data.frame(precomputed)) {
+      feature_key <- .first_existing_column(
+        precomputed, c("smiles", "structure_smiles", "iso_smiles"),
+        required = FALSE
+      )
+      if (!is.null(feature_key)) {
+        feature_row <- match(as.character(db[[smiles_col]]),
+                             as.character(precomputed[[feature_key]]))
+        feature_columns <- setdiff(names(precomputed), feature_key)
+        for (column in feature_columns) {
+          if (!column %in% names(db)) {
+            db[[column]] <- precomputed[[column]][feature_row]
+          }
+        }
+      }
+    }
+  }
+  if (!is.null(smiles_col) && infer_structure != "never") {
+    has_smiles <- !is.na(db[[smiles_col]]) & nzchar(as.character(db[[smiles_col]]))
+    should_infer <- infer_structure == "always" ||
+      !"structure_valid" %in% names(db) ||
+      any(has_smiles & is.na(db$structure_valid))
+    if (isTRUE(should_infer)) {
+      structure_count <- length(unique(as.character(
+        db[[smiles_col]][!is.na(db[[smiles_col]]) & nzchar(db[[smiles_col]])]
+      )))
+      runtime_limit <- getOption("SpaMTP.max_runtime_smiles", 5000L)
+      runtime_limit <- suppressWarnings(as.integer(runtime_limit))
+      if (length(runtime_limit) != 1L || is.na(runtime_limit) ||
+          runtime_limit < 0L) runtime_limit <- 5000L
+      if (infer_structure == "auto" &&
+          structure_count > runtime_limit) {
+        warning(
+          "Skipping runtime SMILES decomposition for ",
+          format(structure_count, big.mark = ","), " unique structures ",
+          "(SpaMTP.max_runtime_smiles = ", runtime_limit, "). Use a ",
+          "SpaMTPdb resource with precomputed structural fields, set ",
+          "infer_structure = 'always', or raise the option explicitly.",
+          call. = FALSE
+        )
+      } else {
+        db <- AnnotateSMILESStructure(
+          db, smiles_column = smiles_col, backend = structure_backend,
+          overwrite = infer_structure == "always", strict = FALSE,
+          workers = structure_workers
+        )
+      }
+    }
   }
   formula_col <- .first_existing_column(db, c("formula", "mol_formula"))
   mass_col <- .first_existing_column(
@@ -591,10 +687,20 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
   site_columns <- c(
     "fmp10_reactive_sites", "primary_amine_sites", "secondary_amine_sites",
     "phenolic_hydroxyl_sites", "catechol_sites", "carbonyl_sites",
-    "carboxyl_sites"
+    "carboxyl_sites", "hydroxyl_sites", "alcohol_hydroxyl_sites",
+    "ketone_sites", "aldehyde_sites", "tertiary_amine_sites",
+    "aromatic_nitrogen_sites", "amide_sites", "phosphate_acid_sites",
+    "sulfonic_acid_sites", "thiol_sites", "acidic_sites",
+    "weak_acidic_sites", "basic_sites", "proton_acceptor_sites",
+    "alkali_binding_sites", "alkali_chelation_motifs",
+    "positive_mode_score", "negative_mode_score",
+    "alkali_affinity_score", "neutral_mass_score"
   )
 
   n <- nrow(db)
+  valid_structure <- if ("structure_valid" %in% names(db)) {
+    !is.na(db$structure_valid) & as.logical(db$structure_valid)
+  } else rep(FALSE, n)
   value_or_na <- function(column) {
     if (is.null(column)) rep(NA_character_, n) else as.character(db[[column]])
   }
@@ -605,10 +711,39 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
     isomers_inchikey = value_or_na(inchikey_col),
     isomers_names = value_or_na(name_col),
     ramp_ids = value_or_na(ramp_col),
+    smiles = if (is.null(smiles_col)) rep(NA_character_, n) else {
+      as.character(db[[smiles_col]])
+    },
+    structure_valid = if ("structure_valid" %in% names(db)) {
+      as.logical(db$structure_valid)
+    } else rep(NA, n),
+    structure_backend = if ("structure_backend" %in% names(db)) {
+      as.character(db$structure_backend)
+    } else rep(NA_character_, n),
+    structure_evidence = if ("structure_evidence" %in% names(db)) {
+      as.character(db$structure_evidence)
+    } else rep(NA_character_, n),
+    positive_site_atoms = if ("positive_site_atoms" %in% names(db)) {
+      as.character(db$positive_site_atoms)
+    } else rep(NA_character_, n),
+    negative_site_atoms = if ("negative_site_atoms" %in% names(db)) {
+      as.character(db$negative_site_atoms)
+    } else rep(NA_character_, n),
+    alkali_site_atoms = if ("alkali_site_atoms" %in% names(db)) {
+      as.character(db$alkali_site_atoms)
+    } else rep(NA_character_, n),
+    proton_bound_source = ifelse(
+      supplied_proton_bound,
+      "provided",
+      ifelse(valid_structure, "SMILES-inferred", "unavailable")
+    ),
     max_exchangeable_protons = if (is.null(proton_col)) {
       rep(NA_real_, n)
     } else {
-      suppressWarnings(as.numeric(db[[proton_col]]))
+      inferred_or_primary <- suppressWarnings(as.numeric(db[[proton_col]]))
+      inferred_or_primary[supplied_proton_bound] <-
+        supplied_proton_values[supplied_proton_bound]
+      inferred_or_primary
     },
     stringsAsFactors = FALSE
   )
@@ -629,6 +764,7 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
       format(compounds$exactmass, digits = 17, scientific = FALSE, trim = TRUE),
       ifelse(is.na(compounds$max_exchangeable_protons), "NA",
              compounds$max_exchangeable_protons),
+      compounds$proton_bound_source,
       do.call(
         paste,
         c(
@@ -656,6 +792,14 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
         isomers_inchikey = collapse_column(compounds$isomers_inchikey),
         isomers_names = collapse_column(compounds$isomers_names),
         ramp_ids = collapse_column(compounds$ramp_ids),
+        smiles = collapse_column(compounds$smiles),
+        structure_valid = compounds$structure_valid[first_row],
+        structure_backend = collapse_column(compounds$structure_backend),
+        structure_evidence = collapse_column(compounds$structure_evidence),
+        positive_site_atoms = collapse_column(compounds$positive_site_atoms),
+        negative_site_atoms = collapse_column(compounds$negative_site_atoms),
+        alkali_site_atoms = collapse_column(compounds$alkali_site_atoms),
+        proton_bound_source = compounds$proton_bound_source[first_row],
         max_exchangeable_protons =
           compounds$max_exchangeable_protons[first_row],
         stringsAsFactors = FALSE
@@ -667,6 +811,256 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
   }
   rownames(compounds) <- NULL
   compounds
+}
+
+.adduct_structure_prior <- function(compounds, rule) {
+  n <- nrow(compounds)
+  score <- rep(1, n)
+  status <- rep("unavailable", n)
+  rationale <- rep("No parsed SMILES; structure prior not applied", n)
+  parsed <- !is.na(compounds$structure_valid) & compounds$structure_valid
+  if (!any(parsed)) {
+    return(list(score = score, status = status, rationale = rationale))
+  }
+
+  value <- function(column, default = 0) {
+    x <- if (column %in% names(compounds)) compounds[[column]] else rep(NA_real_, n)
+    x[!is.finite(x)] <- default
+    x
+  }
+  positive <- value("positive_mode_score", 0.25)
+  negative <- value("negative_mode_score", 0.15)
+  alkali <- value("alkali_affinity_score", 0.15)
+  neutral <- value("neutral_mass_score", 1)
+  acidic <- value("acidic_sites", 0)
+  weak_acidic <- value("weak_acidic_sites", 0)
+  acceptors <- value("proton_acceptor_sites", 0)
+  basic <- value("basic_sites", 0)
+  donors <- value("alkali_binding_sites", 0)
+
+  selected <- if (rule$polarity[[1]] == "neutral") {
+    neutral
+  } else if (isTRUE(rule$contains_metal[[1]])) {
+    alkali
+  } else if (rule$polarity[[1]] == "positive") {
+    positive
+  } else if (rule$loss_h[[1]] > 0L) {
+    negative
+  } else {
+    pmin(0.9, 0.35 + 0.08 * (acceptors + donors))
+  }
+
+  if (rule$loss_h[[1]] > 0L) {
+    preferred_capacity <- acidic
+    weak_capacity <- acidic + weak_acidic
+    insufficient <- preferred_capacity < rule$loss_h[[1]]
+    selected[insufficient & weak_capacity >= rule$loss_h[[1]]] <-
+      selected[insufficient & weak_capacity >= rule$loss_h[[1]]] * 0.55
+    selected[weak_capacity < rule$loss_h[[1]]] <-
+      selected[weak_capacity < rule$loss_h[[1]]] * 0.05
+  }
+  if (rule$polarity[[1]] == "positive" && abs(rule$charge[[1]]) > 1L &&
+      !isTRUE(rule$contains_metal[[1]])) {
+    capacity <- basic + acceptors
+    selected[capacity < abs(rule$charge[[1]])] <-
+      selected[capacity < abs(rule$charge[[1]])] * 0.25
+  }
+
+  score[parsed] <- pmax(0.01, pmin(1, selected[parsed]))
+  status[parsed] <- ifelse(score[parsed] >= 0.5, "structure-supported",
+                           "structure-weak")
+  family <- if (rule$polarity[[1]] == "neutral") {
+    "neutral-mass state"
+  } else if (isTRUE(rule$contains_metal[[1]])) {
+    "alkali/metal coordination"
+  } else if (rule$polarity[[1]] == "positive") {
+    "positive-mode proton/cation acceptance"
+  } else if (rule$loss_h[[1]] > 0L) {
+    "negative-mode deprotonation"
+  } else {
+    "negative-mode anion attachment"
+  }
+  rationale[parsed] <- paste0(
+    family, ": ", compounds$structure_evidence[parsed]
+  )
+  list(score = score, status = status, rationale = rationale)
+}
+
+.matrix_structure_compatibility <- function(compounds, matrix) {
+  n <- nrow(compounds)
+  matrix <- .normalise_maldi_matrix(matrix)
+  profile <- MALDIMatrixProfiles(matrix)
+  category <- profile$category[[1]]
+  target <- profile$target_groups[[1]]
+  if (!category %in% c("reactive_matrix", "otcd_reagent")) {
+    return(list(
+      sites = rep(NA_real_, n), status = rep("not_reactive", n),
+      target = rep(target, n)
+    ))
+  }
+  value <- function(column) {
+    x <- if (column %in% names(compounds)) compounds[[column]] else rep(NA_real_, n)
+    suppressWarnings(as.numeric(x))
+  }
+  primary <- value("primary_amine_sites")
+  secondary <- value("secondary_amine_sites")
+  phenol <- value("phenolic_hydroxyl_sites")
+  catechol <- value("catechol_sites")
+  aldehyde <- value("aldehyde_sites")
+  ketone <- value("ketone_sites")
+  carboxyl <- value("carboxyl_sites")
+  sites <- switch(
+    matrix,
+    fmp10 = primary + secondary + phenol,
+    fmp8 = primary + secondary + phenol,
+    fmp9 = primary + secondary + phenol,
+    dpp_tfb = primary,
+    tmp_tfb = primary,
+    # Catechol is explicit. Non-adjacent alcohol counts must not be treated as
+    # proof of the 1,2-diol motif targeted by N-MePyBA.
+    n_mepyba = catechol,
+    dnph = aldehyde + ketone,
+    coniferyl_aldehyde = primary,
+    dhba = primary,
+    dhap = primary,
+    girard_t = aldehyde + ketone,
+    girard_p = aldehyde + ketone,
+    `2_picolylamine` = carboxyl,
+    tmpa = carboxyl,
+    ampp_hatu = carboxyl + aldehyde,
+    tahs = pmin(catechol, as.numeric(primary + secondary > 0)),
+    rep(NA_real_, n)
+  )
+  parsed <- !is.na(compounds$structure_valid) & compounds$structure_valid
+  status <- rep("unknown", n)
+  status[parsed & is.finite(sites) & sites > 0] <- "compatible-target"
+  status[parsed & is.finite(sites) & sites <= 0] <- "no-compatible-target"
+  list(sites = sites, status = status, target = rep(target, n))
+}
+
+#' Predict a structure-aware adduct search space from SMILES
+#'
+#' This function applies the same functional-group and ion-mode logic used by
+#' [BuildMZAnnotationIndex()] before any observed m/z is supplied. It is useful
+#' for auditing which protonation, deprotonation, alkali-binding, or reactive
+#' matrix hypotheses SpaMTP will retain for a structure.
+#'
+#' @param smiles Character vector of SMILES strings.
+#' @param polarity `"positive"`, `"negative"`, or `"neutral"`. When `NULL`,
+#'   use the matrix-profile default or positive mode.
+#' @param maldi_matrix Optional MALDI matrix/reagent profile.
+#' @param rules Optional custom rule table. It cannot be combined with
+#'   `maldi_matrix`.
+#' @param min_structure_score Minimum rule-specific structural prior marked as
+#'   retained.
+#' @param backend,workers Passed to [DeconvolveSMILES()].
+#'
+#' @return A ranked data frame with one row per structure/rule combination.
+#' @export
+PredictAdductsFromSMILES <- function(
+    smiles, polarity = NULL, maldi_matrix = NULL, rules = NULL,
+    min_structure_score = 0.05,
+    backend = c("auto", "native"),
+    workers = getOption("SpaMTP.smiles_workers", 1L)) {
+  backend <- match.arg(backend)
+  polarity <- .resolve_maldi_polarity(polarity, maldi_matrix)
+  if (is.null(rules)) {
+    rules <- if (is.null(maldi_matrix)) {
+      AdductRules(polarity)
+    } else {
+      MALDIMatrixRules(maldi_matrix, polarity = polarity)
+    }
+  } else {
+    if (!is.null(maldi_matrix)) {
+      stop("Supply either maldi_matrix or rules, not both.")
+    }
+    rules <- .validate_adduct_rules(as.data.frame(rules))
+    rules <- rules[rules$polarity == polarity, , drop = FALSE]
+  }
+  rules <- .validate_adduct_rules(rules)
+  if (!nrow(rules)) stop("No rules are available for the selected polarity.")
+  if (length(min_structure_score) != 1L || !is.finite(min_structure_score) ||
+      min_structure_score < 0 || min_structure_score > 1) {
+    stop("min_structure_score must be a single number between zero and one.")
+  }
+
+  structures <- DeconvolveSMILES(
+    smiles, backend = backend, strict = FALSE, workers = workers
+  )
+  matrix_profile <- if (is.null(maldi_matrix)) "none" else {
+    .normalise_maldi_matrix(maldi_matrix)
+  }
+  matrix_compatibility <- .matrix_structure_compatibility(
+    structures, matrix_profile
+  )
+  parts <- vector("list", nrow(structures) * nrow(rules))
+  k <- 0L
+  for (i in seq_len(nrow(structures))) {
+    compound <- structures[i, , drop = FALSE]
+    for (j in seq_len(nrow(rules))) {
+      k <- k + 1L
+      rule <- rules[j, , drop = FALSE]
+      prior <- .adduct_structure_prior(compound, rule)
+      site_status <- "not_required"
+      required <- rule$min_reactive_sites[[1]]
+      site_column <- rule$site_count_column[[1]]
+      if (required > 0L) {
+        if (is.na(site_column) || !site_column %in% names(compound) ||
+            !is.finite(compound[[site_column]][[1]])) {
+          site_status <- "unknown"
+        } else if (compound[[site_column]][[1]] >= required) {
+          site_status <- "verified"
+        } else {
+          site_status <- "insufficient"
+        }
+      }
+      site_score <- if (site_status == "unknown") 0.25 else 1
+      proton_bound_status <- "not_required"
+      if (rule$loss_h[[1]] > 0L && isTRUE(compound$structure_valid[[1]])) {
+        preferred <- compound$acidic_sites[[1]]
+        weak <- preferred + compound$weak_acidic_sites[[1]]
+        proton_bound_status <- if (preferred >= rule$loss_h[[1]]) {
+          "preferred-sites"
+        } else if (preferred > 0) {
+          "insufficient"
+        } else if (weak >= rule$loss_h[[1]]) {
+          "weak-sites-only"
+        } else {
+          "insufficient"
+        }
+      }
+      retained <- prior$score[[1]] >= min_structure_score &&
+        site_status != "insufficient" && proton_bound_status != "insufficient"
+      parts[[k]] <- data.frame(
+        smiles = compound$smiles,
+        polarity = polarity,
+        maldi_matrix = rule$maldi_matrix,
+        adduct = rule$name,
+        notation = rule$notation,
+        rule_class = rule$rule_class,
+        rule_prior = rule$prior,
+        structure_score = prior$score[[1]],
+        reactive_site_status = site_status,
+        proton_bound_status = proton_bound_status,
+        matrix_target_groups = matrix_compatibility$target[[i]],
+        matrix_target_sites = matrix_compatibility$sites[[i]],
+        matrix_target_status = matrix_compatibility$status[[i]],
+        combined_prior = rule$prior * prior$score[[1]] * site_score,
+        retained = retained,
+        structure_status = prior$status[[1]],
+        structure_rule_evidence = prior$rationale[[1]],
+        structure_evidence = compound$structure_evidence,
+        stringsAsFactors = FALSE
+      )
+    }
+  }
+  result <- do.call(rbind, parts)
+  result <- result[order(
+    match(result$smiles, unique(as.character(smiles))),
+    !result$retained, -result$combined_prior, result$adduct
+  ), , drop = FALSE]
+  rownames(result) <- NULL
+  result
 }
 
 #' Build a reusable indexed metabolite annotation search space
@@ -689,13 +1083,33 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
 #'   optional filter on that selected rule space.
 #' @param collapse_isomers Collapse records sharing formula, exact mass, and
 #'   proton bound before indexing.
+#' @param infer_structure `"auto"` joins precomputed SpaMTPdb features or
+#'   derives them for at most `getOption("SpaMTP.max_runtime_smiles", 5000)`
+#'   unique SMILES, `"never"` disables inference, and `"always"` forces
+#'   runtime parsing and replaces precomputed structural fields.
+#' @param structure_backend SMILES parser used by [DeconvolveSMILES()].
+#' @param structure_workers Number of workers used for runtime SMILES parsing.
+#' @param min_structure_score Minimum rule-specific structural prior retained
+#'   before m/z indexing. Set to zero to rank without structure-based pruning.
 #'
 #' @return An object of class `spamtp_mz_index`.
 #' @export
 BuildMZAnnotationIndex <- function(db, polarity = NULL,
                                    adducts = NULL, rules = NULL,
                                    maldi_matrix = NULL,
-                                   collapse_isomers = TRUE) {
+                                   collapse_isomers = TRUE,
+                                   infer_structure = c("auto", "never", "always"),
+                                   structure_backend = c("auto", "native"),
+                                   structure_workers = getOption(
+                                     "SpaMTP.smiles_workers", 1L
+                                   ),
+                                   min_structure_score = 0.05) {
+  infer_structure <- match.arg(infer_structure)
+  structure_backend <- match.arg(structure_backend)
+  if (length(min_structure_score) != 1L || !is.finite(min_structure_score) ||
+      min_structure_score < 0 || min_structure_score > 1) {
+    stop("min_structure_score must be a single number between zero and one.")
+  }
   polarity <- .resolve_maldi_polarity(polarity, maldi_matrix)
   if (is.null(rules)) {
     rules <- if (is.null(maldi_matrix)) {
@@ -730,7 +1144,11 @@ BuildMZAnnotationIndex <- function(db, polarity = NULL,
     stop("No adduct rules remain after filtering.")
   }
 
-  compounds <- .normalise_metabolite_db(db, collapse_isomers = collapse_isomers)
+  compounds <- .normalise_metabolite_db(
+    db, collapse_isomers = collapse_isomers,
+    infer_structure = infer_structure, structure_backend = structure_backend,
+    structure_workers = structure_workers
+  )
   if (!nrow(compounds)) {
     stop("No valid formula/monoisotopic-mass records were found in db.")
   }
@@ -766,8 +1184,15 @@ BuildMZAnnotationIndex <- function(db, polarity = NULL,
       abs(rule$charge)
     valid <- is.finite(expected) & expected > 0
     have_bound <- !is.na(max_h)
-    valid[have_bound] <- valid[have_bound] &
-      rule$loss_h <= rule$n_molecules * max_h[have_bound]
+    hard_bound <- have_bound & (
+      compounds$proton_bound_source == "provided" | max_h > 0
+    )
+    valid[hard_bound] <- valid[hard_bound] &
+      rule$loss_h <= rule$n_molecules * max_h[hard_bound]
+    structure_prior <- .adduct_structure_prior(compounds, rule)
+    structure_known <- structure_prior$status != "unavailable"
+    valid[structure_known] <- valid[structure_known] &
+      structure_prior$score[structure_known] >= min_structure_score
     required_sites <- rule$min_reactive_sites[[1]]
     site_column <- rule$site_count_column[[1]]
     if (required_sites > 0L && !is.na(site_column) &&
@@ -801,7 +1226,10 @@ BuildMZAnnotationIndex <- function(db, polarity = NULL,
         "unspecified"
       } else {
         .normalise_maldi_matrix(maldi_matrix)
-      }
+      },
+      infer_structure = infer_structure,
+      structure_backend = structure_backend,
+      min_structure_score = min_structure_score
     ),
     class = "spamtp_mz_index"
   )
@@ -821,6 +1249,9 @@ print.spamtp_mz_index <- function(x, ...) {
   matrix_profile <- if (is.null(x$maldi_matrix)) "unspecified" else x$maldi_matrix
   cat("  MALDI matrix profile: ", matrix_profile, "\n", sep = "")
   cat("  metabolites: ", nrow(x$compounds), "\n", sep = "")
+  parsed <- sum(!is.na(x$compounds$structure_valid) &
+                  x$compounds$structure_valid)
+  cat("  SMILES structures parsed: ", parsed, "\n", sep = "")
   cat("  ion/reaction rules: ", nrow(x$rules), "\n", sep = "")
   cat("  expected ions: ", length(x$expected_mz), "\n", sep = "")
   invisible(x)
@@ -957,12 +1388,18 @@ print.spamtp_mz_index <- function(x, ...) {
   data.frame(
     observed_mz = numeric(), expected_mz = numeric(), ppm_error = numeric(),
     score = numeric(), mass_score = numeric(), rule_prior = numeric(),
-    chemical_score = numeric(), reactive_site_score = numeric(),
+    chemical_score = numeric(), structure_score = numeric(),
+    structure_status = character(), structure_rule_evidence = character(),
+    structure_evidence = character(), reactive_site_score = numeric(),
+    positive_site_atoms = character(), negative_site_atoms = character(),
+    alkali_site_atoms = character(),
     reactive_site_status = character(), isotope_score = numeric(),
     adduct_network_score = numeric(), adduct = character(), charge = integer(),
     maldi_matrix = character(), rule_class = character(),
     rule_source = character(), reactive_group = character(),
     min_reactive_sites = integer(),
+    matrix_target_groups = character(), matrix_target_sites = numeric(),
+    matrix_target_status = character(),
     formula = character(), neutral_mass = numeric(), metabolite_ids = character(),
     inchikeys = character(), metabolite_names = character(), ramp_ids = character(),
     stringsAsFactors = FALSE
@@ -1028,6 +1465,23 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
     error <- error[keep]
     compounds <- index$compounds[index$compound_idx[hit], , drop = FALSE]
     rules <- index$rules[index$rule_idx[hit], , drop = FALSE]
+    structure_prior <- lapply(seq_along(error), function(j) {
+      .adduct_structure_prior(
+        compounds[j, , drop = FALSE], rules[j, , drop = FALSE]
+      )
+    })
+    structure_score <- vapply(
+      structure_prior, function(x) x$score[[1]], numeric(1)
+    )
+    structure_status <- vapply(
+      structure_prior, function(x) x$status[[1]], character(1)
+    )
+    structure_rule_evidence <- vapply(
+      structure_prior, function(x) x$rationale[[1]], character(1)
+    )
+    matrix_compatibility <- .matrix_structure_compatibility(
+      compounds, index$maldi_matrix
+    )
 
     mass_score <- if (ppm == 0) rep(1, length(error)) else {
       exp(-0.5 * (error / (ppm / 3))^2)
@@ -1064,7 +1518,7 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 
     evidence_isotope <- ifelse(is.na(isotope_score), 1, isotope_score)
     evidence_network <- ifelse(is.na(network_score), 1, network_score)
-    final_score <- mass_score * rules$prior * chemical_score *
+    final_score <- mass_score * rules$prior * chemical_score * structure_score *
       reactive_site_score *
       evidence_isotope * evidence_network
 
@@ -1076,6 +1530,13 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
       mass_score = mass_score,
       rule_prior = rules$prior,
       chemical_score = chemical_score,
+      structure_score = structure_score,
+      structure_status = structure_status,
+      structure_rule_evidence = structure_rule_evidence,
+      structure_evidence = compounds$structure_evidence,
+      positive_site_atoms = compounds$positive_site_atoms,
+      negative_site_atoms = compounds$negative_site_atoms,
+      alkali_site_atoms = compounds$alkali_site_atoms,
       reactive_site_score = reactive_site_score,
       reactive_site_status = site_status,
       isotope_score = isotope_score,
@@ -1087,6 +1548,9 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
       rule_source = rules$rule_source,
       reactive_group = rules$reactive_group,
       min_reactive_sites = rules$min_reactive_sites,
+      matrix_target_groups = matrix_compatibility$target,
+      matrix_target_sites = matrix_compatibility$sites,
+      matrix_target_status = matrix_compatibility$status,
       formula = compounds$formula,
       neutral_mass = compounds$exactmass,
       metabolite_ids = compounds$isomers,
@@ -1126,6 +1590,8 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 #' @param database_source Database source used when `db = NULL`; see
 #'   [LoadSpaMTPDatabase()].
 #' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param infer_structure,structure_backend,structure_workers,min_structure_score Structure-aware
+#'   rule-selection arguments passed to [BuildMZAnnotationIndex()].
 #' @param ... Additional arguments passed to [QueryMZAnnotationIndex()].
 #'
 #' @return A ranked candidate data frame.
@@ -1137,7 +1603,13 @@ AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
                        ms1_spectrum = NULL,
                        database_version = "latest",
                        database_source = c("auto", "spamtpdb", "bundled"),
-                       database_local_dir = NULL, ...) {
+                       database_local_dir = NULL,
+                       infer_structure = c("auto", "never", "always"),
+                       structure_backend = c("auto", "native"),
+                       structure_workers = getOption(
+                         "SpaMTP.smiles_workers", 1L
+                       ),
+                       min_structure_score = 0.05, ...) {
   if (!is.null(index) && !inherits(index, "spamtp_mz_index")) {
     stop("index must be created by BuildMZAnnotationIndex().")
   }
@@ -1157,7 +1629,10 @@ AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
     }
     index <- BuildMZAnnotationIndex(
       db = db, polarity = polarity, adducts = adducts, rules = rules,
-      maldi_matrix = maldi_matrix
+      maldi_matrix = maldi_matrix, infer_structure = infer_structure,
+      structure_backend = structure_backend,
+      structure_workers = structure_workers,
+      min_structure_score = min_structure_score
     )
   } else if (!identical(index$polarity, polarity)) {
     stop("The supplied index polarity does not match polarity.")

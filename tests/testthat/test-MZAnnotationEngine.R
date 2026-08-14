@@ -280,3 +280,172 @@ test_that("profile-only reactive matrices do not invent product masses", {
   expect_true(all(rules$rule_class == "standard_adduct"))
   expect_false(any(grepl("DPP", rules$name, fixed = TRUE)))
 })
+
+test_that("SMILES decomposition recognises explicit metabolite functional groups", {
+  structures <- DeconvolveSMILES(c(
+    lactic_acid = "CC(O)C(=O)O",
+    pyruvic_acid = "CC(=O)C(=O)O",
+    acetone = "CC(=O)C",
+    dopamine = "NCCc1ccc(O)c(O)c1",
+    methyl_acetate = "CC(=O)OC",
+    two_hg = "O[C@H](CCC(O)=O)C(O)=O"
+  ), strict = TRUE)
+
+  expect_true(all(structures$structure_valid))
+  expect_equal(structures$carboxyl_sites[c(1, 2, 6)], c(1, 1, 2))
+  expect_equal(structures$ketone_sites[c(2, 3)], c(1, 1))
+  expect_equal(structures$carboxyl_sites[[5]], 0)
+  expect_equal(structures$hydroxyl_sites[[5]], 0)
+  expect_equal(structures$primary_amine_sites[[4]], 1)
+  expect_equal(structures$phenolic_hydroxyl_sites[[4]], 2)
+  expect_equal(structures$catechol_sites[[4]], 1)
+  expect_equal(structures$fmp10_reactive_sites[[4]], 3)
+  expect_match(structures$structure_evidence[[6]], "carboxyl=2")
+})
+
+test_that("ion-mode and alkali priors are inferred before mass matching", {
+  target <- data.frame(
+    formula = c("C5H8O5", "C3H6O"),
+    exactmass = c(148.037173366, 58.041864812),
+    name = c("2HG", "acetone"),
+    iso_smiles = c("O[C@H](CCC(O)=O)C(O)=O", "CC(=O)C")
+  )
+  positive <- BuildMZAnnotationIndex(
+    target, polarity = "positive", adducts = c("M+H", "M+Na"),
+    collapse_isomers = FALSE
+  )
+  two_hg <- positive$compounds$isomers_names == "2HG"
+  expect_true(positive$compounds$alkali_affinity_score[two_hg] >
+                positive$compounds$positive_mode_score[two_hg])
+
+  result <- QueryMZAnnotationIndex(positive$expected_mz, positive, ppm = 0)
+  result_2hg <- result[result$metabolite_names == "2HG", ]
+  expect_gt(
+    result_2hg$structure_score[result_2hg$adduct == "M+Na"],
+    result_2hg$structure_score[result_2hg$adduct == "M+H"]
+  )
+  expect_true(all(result$structure_status %in%
+                    c("structure-supported", "structure-weak")))
+  expect_true(all(nzchar(result$structure_rule_evidence)))
+
+  negative <- BuildMZAnnotationIndex(
+    target, polarity = "negative", adducts = c("M-H", "M-2H", "M-3H"),
+    collapse_isomers = FALSE
+  )
+  indexed <- data.frame(
+    name = negative$compounds$isomers_names[negative$compound_idx],
+    adduct = negative$rules$name[negative$rule_idx]
+  )
+  expect_setequal(indexed$adduct[indexed$name == "2HG"], c("M-H", "M-2H"))
+  expect_false(any(indexed$name == "acetone"))
+
+  neutral <- BuildMZAnnotationIndex(
+    target, polarity = "neutral", collapse_isomers = FALSE
+  )
+  neutral_result <- QueryMZAnnotationIndex(
+    neutral$expected_mz, neutral, ppm = 0
+  )
+  expect_true(all(neutral_result$structure_score == 1))
+})
+
+test_that("SMILES-derived reactive sites automate FMP10 rule eligibility", {
+  dopamine <- data.frame(
+    formula = "C8H11NO2", exactmass = 153.078978601,
+    name = "dopamine", iso_smiles = "NCCc1ccc(O)c(O)c1"
+  )
+  index <- BuildMZAnnotationIndex(
+    dopamine, polarity = "positive", maldi_matrix = "FMP-10",
+    adducts = "M+2FMP10a"
+  )
+  expect_equal(index$compounds$fmp10_reactive_sites, 3)
+  expect_equal(length(index$expected_mz), 1)
+  result <- QueryMZAnnotationIndex(index$expected_mz, index, ppm = 0)
+  expect_equal(result$reactive_site_status, "verified")
+  expect_match(result$structure_evidence, "phenolic-OH=2")
+})
+
+test_that("structure-only adduct prediction is mode-specific and auditable", {
+  two_hg <- "O[C@H](CCC(O)=O)C(O)=O"
+  positive <- PredictAdductsFromSMILES(two_hg, polarity = "positive")
+  negative <- PredictAdductsFromSMILES(two_hg, polarity = "negative")
+  neutral <- PredictAdductsFromSMILES(two_hg, polarity = "neutral")
+
+  expect_true(positive$retained[positive$adduct == "M+Na"])
+  expect_gt(
+    positive$structure_score[positive$adduct == "M+Na"],
+    positive$structure_score[positive$adduct == "M+H"]
+  )
+  expect_true(negative$retained[negative$adduct == "M-H"])
+  expect_true(negative$retained[negative$adduct == "M-2H"])
+  expect_false(negative$retained[negative$adduct == "M-3H"])
+  expect_equal(neutral$adduct, "M")
+  expect_equal(neutral$structure_score, 1)
+
+  acetone <- PredictAdductsFromSMILES("CC(=O)C", polarity = "negative")
+  expect_false(acetone$retained[acetone$adduct == "M-H"])
+  expect_equal(
+    acetone$proton_bound_status[acetone$adduct == "M-H"], "insufficient"
+  )
+
+  dopamine <- PredictAdductsFromSMILES(
+    "NCCc1ccc(O)c(O)c1", maldi_matrix = "FMP-10"
+  )
+  expect_true(dopamine$retained[dopamine$adduct == "M+2FMP10a"])
+  expect_equal(
+    dopamine$reactive_site_status[dopamine$adduct == "M+2FMP10a"],
+    "verified"
+  )
+})
+
+test_that("weak alcohol deprotonation is scored without overriding curated bounds", {
+  glucose <- data.frame(
+    formula = "C6H12O6", exactmass = 180.063388,
+    smiles = "OCC(O)C(O)C(O)CO"
+  )
+  inferred <- AnnotateSMILESStructure(glucose)
+  expect_equal(inferred$max_exchangeable_protons, 0)
+  expect_equal(inferred$proton_bound_source, "SMILES-inferred")
+  expect_length(
+    BuildMZAnnotationIndex(
+      inferred, polarity = "negative", adducts = "M-H"
+    )$expected_mz,
+    1
+  )
+
+  curated <- glucose
+  curated$max_protons <- 0
+  expect_length(
+    BuildMZAnnotationIndex(
+      curated, polarity = "negative", adducts = "M-H"
+    )$expected_mz,
+    0
+  )
+})
+
+test_that("registered reactive matrices report SMILES target compatibility", {
+  dopamine <- "NCCc1ccc(O)c(O)c1"
+  acetone <- "CC(=O)C"
+  two_hg <- "O[C@H](CCC(O)=O)C(O)=O"
+
+  dpp <- suppressWarnings(PredictAdductsFromSMILES(
+    dopamine, maldi_matrix = "DPP-TFB"
+  ))
+  dnph <- suppressWarnings(PredictAdductsFromSMILES(
+    acetone, maldi_matrix = "DNPH"
+  ))
+  picolyl <- suppressWarnings(PredictAdductsFromSMILES(
+    two_hg, maldi_matrix = "2-picolylamine"
+  ))
+  tahs <- suppressWarnings(PredictAdductsFromSMILES(
+    dopamine, maldi_matrix = "TAHS"
+  ))
+  conventional <- PredictAdductsFromSMILES(
+    two_hg, maldi_matrix = "9-AA"
+  )
+
+  expect_true(all(dpp$matrix_target_status == "compatible-target"))
+  expect_true(all(dnph$matrix_target_status == "compatible-target"))
+  expect_true(all(picolyl$matrix_target_status == "compatible-target"))
+  expect_true(all(tahs$matrix_target_status == "compatible-target"))
+  expect_true(all(conventional$matrix_target_status == "not_reactive"))
+})

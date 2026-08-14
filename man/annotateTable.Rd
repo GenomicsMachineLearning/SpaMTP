@@ -22,7 +22,11 @@ annotateTable(
   maldi_matrix = NULL,
   database_version = "latest",
   database_source = c("auto", "spamtpdb", "bundled"),
-  database_local_dir = NULL
+  database_local_dir = NULL,
+  infer_structure = c("auto", "never", "always"),
+  structure_backend = c("auto", "native"),
+  structure_workers = getOption("SpaMTP.smiles_workers", 1L),
+  min_structure_score = 0.05
 )
 }
 \arguments{
@@ -73,6 +77,9 @@ rule selection. \code{adducts = NULL} keeps the complete selected rule space.}
 \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
 \item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+
+\item{infer_structure, structure_backend, structure_workers, min_structure_score}{Structure-aware
+rule-selection arguments passed to \code{BuildMZAnnotationIndex()}.}
 }
 \value{
 Generates an intermediate annotated m/z dataframe
