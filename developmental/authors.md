@@ -2,10 +2,10 @@
 
 ## Authors
 
-- **[Andrew Causer](https://github.com/agc888)**. Author, maintainer.
+- **[Andrew Causer](https://github.com/agc888)**. Author.
   [](https://orcid.org/0009-0001-7341-8366)
 
-- **[Tianyao Lu](https://github.com/BCRL-tylu)**. Author.
+- **[Tianyao Lu](https://github.com/BCRL-tylu)**. Author, maintainer.
 
 - **[Christopher C.J. Fitzgerald](https://github.com/ChemCharles)**.
   Author. [](https://orcid.org/0000-0003-3935-4300)
@@ -34,18 +34,22 @@
 Source:
 [`inst/CITATION`](https://github.com/genomicsmachinelearning/SpaMTP/blob/developmental/inst/CITATION)
 
-Causer A, Lu T, Fitzgerald C, Nguyen VN,, Freytag S (2024). “SpaMTP:
-Integrative Statistical Analysis and Visualisation of Spatial
-Metabolomic and Transcriptomic data.” *...*, **...**(...), ...
-[doi:...](https://doi.org/...).
+Causer A, Lu T, Kriel J, Moffet JJD, Fitzgerald CCJ, Newman A, Vu H, Tan
+X, Vo T, Cui C, Narayana VK, Whittle JR, Best SA, Freytag S, Nguyen Q
+(2026). “SpaMTP: integrative statistical analysis and visualization of
+spatial metabolomics and transcriptomics data.” *Nature Methods*,
+**23**(8), 1501–1506.
+[doi:10.1038/s41592-026-03140-8](https://doi.org/10.1038/s41592-026-03140-8).
+<https://doi.org/10.1038/s41592-026-03140-8>.
 
     @Article{,
-      title = {SpaMTP: Integrative Statistical Analysis and Visualisation of Spatial Metabolomic and Transcriptomic data},
-      author = {Andrew Causer and Tianyao Lu and Christopher Fitzgerald and Vinod Narayana ,Quan Nguyen and Saskia Freytag},
-      journal = {...},
-      year = {2024},
-      volume = {...},
-      number = {...},
-      pages = {...},
-      doi = {...},
+      title = {SpaMTP: integrative statistical analysis and visualization of spatial metabolomics and transcriptomics data},
+      author = {Andrew Causer and Tianyao Lu and Jurgen Kriel and Joel J. D. Moffet and Christopher C. J. Fitzgerald and Andrew Newman and Hani Vu and Xiao Tan and Tuan Vo and Cedric Cui and Vinod K. Narayana and James R. Whittle and Sarah A. Best and Saskia Freytag and Quan Nguyen},
+      journal = {Nature Methods},
+      year = {2026},
+      volume = {23},
+      number = {8},
+      pages = {1501--1506},
+      doi = {10.1038/s41592-026-03140-8},
+      url = {https://doi.org/10.1038/s41592-026-03140-8},
     }
