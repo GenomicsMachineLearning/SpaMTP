@@ -50,8 +50,8 @@ code. `SpaMTPdb` supplies the pruned RaMP annotation/pathway snapshot, while
 `SpaMTPData` supplies the larger experiment objects used by the vignettes:
 
 ``` r
-devtools::install_github("GenomicsMachineLearning/SpaMTPdb")
-devtools::install_github("GenomicsMachineLearning/SpaMTPData")
+devtools::install_github("BCRL-tylu/SpaMTPdb")
+devtools::install_github("BCRL-tylu/SpaMTPData")
 
 db_info <- SpaMTP::SpaMTPDatabaseInfo()
 brain <- SpaMTPData::SpaMTPData("mouse_brain_dhb_striatum")
