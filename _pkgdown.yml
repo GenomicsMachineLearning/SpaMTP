@@ -53,14 +53,22 @@ navbar:
     - news
     right:
     - search
+    - paper
     - development
     - github
     - lightswitch
   components:
+    paper:
+      text: Paper
+      href: https://doi.org/10.1038/s41592-026-03140-8
+      aria-label: SpaMTP Nature Methods paper
     development:
-      text: Development
-      href: https://genomicsmachinelearning.github.io/SpaMTP/developmental/
-      aria-label: Developmental documentation
+      text: Developmental
+      menu:
+      - text: Developmental documentation
+        href: https://genomicsmachinelearning.github.io/SpaMTP/developmental/
+      - text: Developmental source branch
+        href: https://github.com/GenomicsMachineLearning/SpaMTP/tree/developmental
     news:
       text: "Updates"
       href: news/index.html

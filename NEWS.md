@@ -1,5 +1,9 @@
 # SpaMTP (developmental)
 
+* Updated the package citation to the peer-reviewed *Nature Methods* paper,
+  designated Tianyao Lu as the current package maintainer, and added direct
+  links to the developmental documentation and source branch. Andrew Causer
+  remains credited as an original author and former maintainer.
 * Added `ApplySpatialAlignment()` to apply existing SMINT coordinate outputs or
   homogeneous transforms, estimate landmark-based affine alignment in R, and
   run the SMINT-compatible STalign LDDMM workflow through an optional Python

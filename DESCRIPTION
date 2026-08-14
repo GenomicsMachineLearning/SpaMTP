@@ -5,11 +5,11 @@ Version: 1.1.0.9000
 Authors@R: c(
     person("Andrew", "Causer",
             email = "a.causer@uq.edu.au", 
-            role = c("aut", "cre"),
+            role = c("aut"),
             comment = c(ORCID = "0009-0001-7341-8366")),
     person("Tianyao", "Lu",
             email = "lu.t@wehi.edu.au", 
-            role = c("aut")),
+            role = c("aut", "cre")),
     person("Christopher C.J.", "Fitzgerald",
             email = "cfitzgerald@marum.de",
             role = c("aut"),
@@ -25,8 +25,8 @@ Authors@R: c(
     person("WEHI", "Institute",
             role = c("fnd"))
             )
-Maintainer: Andrew Causer <a.causer@uq.edu.au>
-Description: This is an easy-to-use spatial metabolomic data analysis package that harnesses the functionality of Cardinal and Seurat. In addition to easier and quicker plotting, this package contains additional function for various downstream analyses such as differential peak analysis, merging of Metabolomic and Spatial Transcriptomic (Visium) data, m/z metabolite annotation, and others.
+Maintainer: Tianyao Lu <lu.t@wehi.edu.au>
+Description: This is an easy-to-use spatial metabolomic data analysis package that harnesses the functionality of Cardinal and Seurat. In addition to easier and quicker plotting, this package contains additional function for various downstream analyses such as differential peak analysis, merging of Metabolomic and Spatial Transcriptomic (Visium) data, m/z metabolite annotation, and others. SpaMTP is maintained by Tianyao Lu.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -99,7 +99,7 @@ Imports:
     tidyr,
     utils,
     zeallot
-URL: https://github.com/genomicsmachinelearning/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP/developmental
+URL: https://github.com/genomicsmachinelearning/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP, https://genomicsmachinelearning.github.io/SpaMTP/developmental, https://doi.org/10.1038/s41592-026-03140-8
 BugReports: https://github.com/genomicsmachinelearning/SpaMTP/issues
 Depends: 
     R (>= 3.5)

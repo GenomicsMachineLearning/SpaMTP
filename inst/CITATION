@@ -1,11 +1,28 @@
 bibentry(
   bibtype  = "Article",
-  title    = "SpaMTP: Integrative Statistical Analysis and Visualisation of Spatial Metabolomic and Transcriptomic data",
-  author   = "Andrew Causer, Tianyao Lu, Christopher Fitzgerald, Vinod Narayana ,Quan Nguyen, Saskia Freytag",
-  journal  = "...",
-  year     = 2024,
-  volume   = "...",
-  number   = "...",
-  pages    = "...",
-  doi      = "..."
+  title    = "SpaMTP: integrative statistical analysis and visualization of spatial metabolomics and transcriptomics data",
+  author   = c(
+    person("Andrew", "Causer"),
+    person("Tianyao", "Lu"),
+    person("Jurgen", "Kriel"),
+    person(c("Joel", "J.", "D."), "Moffet"),
+    person(c("Christopher", "C.", "J."), "Fitzgerald"),
+    person("Andrew", "Newman"),
+    person("Hani", "Vu"),
+    person("Xiao", "Tan"),
+    person("Tuan", "Vo"),
+    person("Cedric", "Cui"),
+    person(c("Vinod", "K."), "Narayana"),
+    person(c("James", "R."), "Whittle"),
+    person(c("Sarah", "A."), "Best"),
+    person("Saskia", "Freytag"),
+    person("Quan", "Nguyen")
+  ),
+  journal  = "Nature Methods",
+  year     = "2026",
+  volume   = "23",
+  number   = "8",
+  pages    = "1501--1506",
+  doi      = "10.1038/s41592-026-03140-8",
+  url      = "https://doi.org/10.1038/s41592-026-03140-8"
 )
