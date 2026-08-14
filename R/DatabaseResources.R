@@ -38,32 +38,6 @@
   resources
 }
 
-.spamtp_db_load_bundled <- function(resource) {
-  legacy_name <- unname(.spamtp_db_legacy_names[[resource]])
-  package_namespace <- tryCatch(asNamespace("SpaMTP"), error = function(e) NULL)
-  if (!is.null(package_namespace)) {
-    value <- get0(legacy_name, envir = package_namespace, inherits = FALSE)
-    if (!is.null(value)) return(value)
-  }
-
-  data_environment <- new.env(parent = emptyenv())
-  suppressWarnings(utils::data(
-    list = legacy_name,
-    package = "SpaMTP",
-    envir = data_environment
-  ))
-  value <- get0(legacy_name, envir = data_environment, inherits = FALSE)
-  if (is.null(value)) {
-    stop(
-      "Bundled compatibility resource '", legacy_name,
-      "' is unavailable. Install SpaMTPdb or configure its local resource ",
-      "directory.",
-      call. = FALSE
-    )
-  }
-  value
-}
-
 .spamtp_db_cache_key <- function(resource, version, source, local_dir) {
   local_key <- if (is.null(local_dir)) "<default>" else {
     normalizePath(local_dir, mustWork = FALSE)
@@ -86,7 +60,7 @@
 
 .spamtp_db_resource <- function(resource,
                                 version = "latest",
-                                source = c("auto", "spamtpdb", "bundled"),
+                                source = c("auto", "spamtpdb"),
                                 local_dir = NULL,
                                 hub = NULL,
                                 offline = FALSE,
@@ -101,64 +75,31 @@
     return(get(key, envir = .spamtp_db_cache, inherits = FALSE))
   }
 
-  value <- NULL
-  resolved_source <- source
-  external_error <- NULL
-  use_external <- source != "bundled" &&
-    requireNamespace("SpaMTPdb", quietly = TRUE)
-
-  if (source == "spamtpdb" && !use_external) {
+  if (!requireNamespace("SpaMTPdb", quietly = TRUE)) {
     stop(
-      "source = 'spamtpdb' requires the SpaMTPdb package.",
+      "Loading versioned annotation resources requires the SpaMTPdb package. ",
+      "Install SpaMTPdb or supply a named custom database bundle.",
       call. = FALSE
     )
   }
-  if (use_external) {
-    value <- tryCatch(
-      SpaMTPdb::SpaMTPdbResource(
-        resource = resource,
-        version = version,
-        local_dir = local_dir,
-        hub = hub,
-        offline = offline
-      ),
-      error = function(e) {
-        external_error <<- conditionMessage(e)
-        NULL
-      }
-    )
-    resolved_source <- "spamtpdb"
-  }
 
-  if (is.null(value)) {
-    if (source == "spamtpdb") {
-      stop(external_error, call. = FALSE)
-    }
-    value <- .spamtp_db_load_bundled(resource)
-    resolved_source <- "bundled"
-    if (!is.null(external_error)) {
-      warning(
-        "SpaMTPdb could not provide '", resource, "' (", external_error,
-        "); using the bundled compatibility copy.",
-        call. = FALSE
-      )
-    }
-  }
+  value <- SpaMTPdb::SpaMTPdbResource(
+    resource = resource,
+    version = version,
+    local_dir = local_dir,
+    hub = hub,
+    offline = offline
+  )
+  resource_metadata <- SpaMTPdb::SpaMTPdbResource(
+    resource = resource,
+    version = version,
+    metadata = TRUE
+  )
 
   attr(value, "spamtp_database") <- list(
     resource = resource,
-    version = if (resolved_source == "spamtpdb") {
-      as.character(version %||% "latest")
-    } else {
-      metadata <- if (identical(resource, "ramp_db_metadata")) value else {
-        tryCatch(
-          .spamtp_db_load_bundled("ramp_db_metadata"),
-          error = function(e) NULL
-        )
-      }
-      if (is.list(metadata)) as.character(metadata$ramp_version %||% NA_character_) else NA_character_
-    },
-    source = resolved_source,
+    version = as.character(resource_metadata$version[[1L]]),
+    source = "spamtpdb",
     local_dir = local_dir,
     offline = offline
   )
@@ -169,7 +110,7 @@
 .spamtp_db_bundle <- function(resources,
                               database = NULL,
                               version = "latest",
-                              source = c("auto", "spamtpdb", "bundled"),
+                              source = c("auto", "spamtpdb"),
                               local_dir = NULL,
                               hub = NULL,
                               offline = FALSE,
@@ -207,17 +148,17 @@
 
 #' Load versioned SpaMTP annotation resources
 #'
-#' Loads a coherent group of annotation resources from [SpaMTPdb] when it is
-#' installed. During the database-package transition, `source = "auto"` falls
-#' back to compatibility copies bundled with SpaMTP. Retrieved resources are
-#' cached for the current R session.
+#' Loads a coherent group of annotation resources from [SpaMTPdb]. Retrieved
+#' resources are cached for the current R session. A named custom bundle can be
+#' supplied for offline, testing, or user-curated workflows.
 #'
 #' @param resources Character vector of resource names. Use
 #'   [SpaMTPDatabaseInfo()] to list valid names.
 #' @param version SpaMTPdb/RaMP resource version, or `"latest"`.
-#' @param source Database source. `"auto"` prefers SpaMTPdb and falls back to
-#'   bundled compatibility data; `"spamtpdb"` requires SpaMTPdb; `"bundled"`
-#'   explicitly uses the compatibility data.
+#' @param source Database source. `"auto"` and `"spamtpdb"` resolve versioned
+#'   resources through SpaMTPdb.
+#' @param database Optional named list containing the requested resources. When
+#'   supplied, no Hub lookup is performed.
 #' @param local_dir Optional directory containing staged SpaMTPdb `.rds` files.
 #' @param hub Optional pre-created `AnnotationHub` object passed to SpaMTPdb.
 #' @param offline If `TRUE`, do not query AnnotationHub.
@@ -227,20 +168,29 @@
 #' @export
 #'
 #' @examples
-#' database <- LoadSpaMTPDatabase("ramp_db_metadata")
+#' utils::str(formals(LoadSpaMTPDatabase))
+#' example_database <- list(
+#'   ramp_db_metadata = list(ramp_version = "example")
+#' )
+#' database <- LoadSpaMTPDatabase(
+#'   "ramp_db_metadata",
+#'   database = example_database
+#' )
 #' names(database)
 LoadSpaMTPDatabase <- function(
     resources = c(
       "chem_props", "source_df", "analyte", "analytehaspathway", "pathway"
     ),
     version = "latest",
-    source = c("auto", "spamtpdb", "bundled"),
+    source = c("auto", "spamtpdb"),
+    database = NULL,
     local_dir = NULL,
     hub = NULL,
     offline = FALSE,
     refresh = FALSE) {
   .spamtp_db_bundle(
     resources = resources,
+    database = database,
     version = version,
     source = match.arg(source),
     local_dir = local_dir,
@@ -255,20 +205,18 @@ LoadSpaMTPDatabase <- function(
 #' @param version Optional SpaMTPdb resource version. `NULL` lists every
 #'   available external version.
 #'
-#' @return A data frame describing resources in SpaMTPdb, or the bundled
-#'   compatibility mapping when SpaMTPdb is not installed.
+#' @return A data frame describing resources in SpaMTPdb.
 #' @export
 #'
 #' @examples
+#' utils::str(formals(SpaMTPDatabaseInfo))
 #' SpaMTPDatabaseInfo()
 SpaMTPDatabaseInfo <- function(version = NULL) {
-  if (requireNamespace("SpaMTPdb", quietly = TRUE)) {
-    return(SpaMTPdb::SpaMTPdbResources(version = version))
+  if (!requireNamespace("SpaMTPdb", quietly = TRUE)) {
+    stop(
+      "SpaMTPDatabaseInfo() requires the SpaMTPdb package.",
+      call. = FALSE
+    )
   }
-  data.frame(
-    resource = names(.spamtp_db_legacy_names),
-    legacy_object = unname(.spamtp_db_legacy_names),
-    source = "bundled compatibility",
-    stringsAsFactors = FALSE
-  )
+  SpaMTPdb::SpaMTPdbResources(version = version)
 }

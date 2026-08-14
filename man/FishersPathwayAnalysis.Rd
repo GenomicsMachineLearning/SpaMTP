@@ -14,7 +14,7 @@ FishersPathwayAnalysis(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   ...
 )
@@ -61,6 +61,7 @@ a dataframe with the relevant pathway information
 Calculates Significant Metabolic Pathways using a Fisher Exact Test
 }
 \examples{
+utils::str(formals(FishersPathwayAnalysis))
 ## Running in 'mzs' mode:
 # FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)
 

@@ -73,6 +73,7 @@ This is for plotting SM m/z data from a SpaMTP Seurat Object that contains an im
 This function inherits off Seurat::SpatialFeaturePlot(). Look here for more detailed documentation about inputs.
 }
 \examples{
+utils::str(formals(SpatialMZPlot))
 # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 }

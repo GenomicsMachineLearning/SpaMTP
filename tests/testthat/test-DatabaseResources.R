@@ -1,16 +1,38 @@
-test_that("bundled database resources remain available during migration", {
+test_that("custom database resources can be used without a Hub lookup", {
+  example_database <- list(
+    ramp_db_metadata = list(ramp_version = "example")
+  )
   database <- LoadSpaMTPDatabase(
     "ramp_db_metadata",
-    source = "bundled",
+    database = example_database,
     refresh = TRUE
   )
 
   expect_named(database, "ramp_db_metadata")
   expect_type(database$ramp_db_metadata, "list")
+  expect_identical(database$ramp_db_metadata$ramp_version, "example")
+})
+
+test_that("SpaMTPdb resources load from an offline staging directory", {
+  skip_if_not_installed("SpaMTPdb")
+  staging <- tempfile("spamtpdb-")
+  dir.create(staging)
+  on.exit(unlink(staging, recursive = TRUE), add = TRUE)
+  fixture <- list(ramp_version = "3.0.7")
+  saveRDS(fixture, file.path(staging, "ramp_db_metadata.rds"))
+
+  database <- LoadSpaMTPDatabase(
+    "ramp_db_metadata",
+    source = "spamtpdb",
+    local_dir = staging,
+    offline = TRUE,
+    refresh = TRUE
+  )
+
   expect_identical(database$ramp_db_metadata$ramp_version, "3.0.7")
   expect_identical(
     attr(database$ramp_db_metadata, "spamtp_database")$source,
-    "bundled"
+    "spamtpdb"
   )
 })
 
@@ -31,6 +53,7 @@ test_that("custom resource bundles are validated and subset", {
 })
 
 test_that("database registry reports canonical resource names", {
+  skip_if_not_installed("SpaMTPdb")
   registry <- SpaMTPDatabaseInfo()
   expect_s3_class(registry, "data.frame")
   expect_true("resource" %in% names(registry))

@@ -83,7 +83,7 @@ SpatialFeaturePlot(
 
 We extract m/z values from the `SPM` assay and run a basic annotation lookup.
 
-```{r, echo=TRUE, results='hide', message = FALSE, warning = FALSE}
+```{r, eval=FALSE, echo=TRUE, results='hide', message = FALSE, warning = FALSE}
 spm <- data[["SPM"]]
 mz_vals <- as.numeric(sub("^mz-", "", rownames(spm)))
 
@@ -95,11 +95,12 @@ mz_df <- data.frame(
   mz = mz_vals
 )
 
-annoresult <- SpaMTP:::annotateTable(mz_df, db = rbind(HMDB_db, Chebi_db))
+chem_props <- LoadSpaMTPDatabase("chem_props")$chem_props
+annoresult <- annotateTable(mz_df, db = chem_props)
 head(annoresult)
 ```
 
-```{r, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 df <- head(annoresult)
 df %>%
     knitr::kable(format = "html", table.attr = "class='dataframe'", align = "c") %>%

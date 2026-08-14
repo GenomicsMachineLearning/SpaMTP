@@ -28,5 +28,6 @@ Based on rgoslin, this function has the ability to simplify lipid annotations in
 This function can input a data frame containing a column storing the annotation and refine only the entries which are annotated as known lipid structures.
 }
 \examples{
+utils::str(formals(RefineLipids))
 # RefineLipids(DEPs_df)
 }

@@ -10,6 +10,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(SubsetMZFeatures))
 #' # SubsetMZFeatures(SeuratObj, c("mz-160","mz-170","mz-180"))
 SubsetMZFeatures <- function(data, features, assay = "Spatial"){
   feature.metadata <- data[[assay]]@meta.data
@@ -45,13 +46,14 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' Annotates m/z values stored in a SpaMTP Object
 #'
 #' This function assigns each valid m/z peak with one/multiple metabolite names based on the mass difference between the observed value and the theoretical value documented in the reference database.
-#' SpaMTP contains 4 cleaned reference databases to choose from these include HMDB, Lipid Maps, ChEBI and GNPS. These databases can also be combined for increased coverage.
+#' Versioned RaMP, HMDB, LIPID MAPS, ChEBI, and GNPS resources are provided by
+#' SpaMTPdb and can be combined with user-supplied reference tables.
 #'
 #' @param data Seurat Spatial Metabolomic Object containing m/z values for annotation.
 #' @param db Reference metabolite dataset in the form of a data.frame. When
 #'   `NULL`, the versioned SpaMTPdb `chem_props` table is used, unless a
-#'   pre-built `index` is supplied through `...`. A bundled compatibility copy
-#'   is used while SpaMTPdb is unavailable.
+#'   pre-built `index` is supplied through `...`. Versioned resources are loaded
+#'   from SpaMTPdb and may be staged locally for offline use.
 #' @param assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
 #' @param raw.mz.column Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
 #' @param ppm_error Mass tolerance in ppm. If `NULL`, a strict 5 ppm maximum
@@ -84,18 +86,19 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' @param database_source Database source used when `db = NULL`; see
 #'   [LoadSpaMTPDatabase()].
 #' @param database_local_dir Optional staged SpaMTPdb resource directory.
-#' @param infer_structure,structure_backend,structure_workers,min_structure_score Structure-aware
-#'   rule-selection arguments passed to `BuildMZAnnotationIndex()`.
 #' @param ... Additional indexed annotation/scoring arguments passed to
-#'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
+#'   `annotateTable()`, such as `index`, `rules`, `ms1_spectrum`,
+#'   `infer_structure`, `structure_backend`, `structure_workers`, or
+#'   `min_structure_score`.
 #'
 #' @returns A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj`[["Spatial"]][[]]`)
 #' @export
 #'
 #' @examples
+#' utils::str(formals(AnnotateSM))
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
-AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = NULL, tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, min_score = 0, verbose = TRUE, maldi_matrix = NULL, database_version = "latest", database_source = c("auto", "spamtpdb", "bundled"), database_local_dir = NULL, ...){
+AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = NULL, tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, min_score = 0, verbose = TRUE, maldi_matrix = NULL, database_version = "latest", database_source = c("auto", "spamtpdb"), database_local_dir = NULL, ...){
 
   if (is.null(data@assays[[assay]])) {
     stop(paste0("No assay '",assay,"'exists in SpaMTP object! Please check assay name input ..."))
@@ -279,6 +282,13 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
 #' @param database_source Database source used when `db = NULL`; see
 #'   [LoadSpaMTPDatabase()].
 #' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param infer_structure `"auto"` joins precomputed SpaMTPdb structure
+#'   features when possible, `"never"` disables inference, and `"always"`
+#'   parses missing structures at runtime.
+#' @param structure_backend SMILES parser passed to `DeconvolveSMILES()`.
+#' @param structure_workers Number of workers used for runtime SMILES parsing.
+#' @param min_structure_score Minimum rule-specific structural prior retained
+#'   during candidate-index construction.
 #'
 #' @returns Generates an intermediate annotated m/z dataframe
 #'
@@ -295,7 +305,7 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
                           check_adduct_network = TRUE, min_score = 0,
                           maldi_matrix = NULL,
                           database_version = "latest",
-                          database_source = c("auto", "spamtpdb", "bundled"),
+                          database_source = c("auto", "spamtpdb"),
                           database_local_dir = NULL,
                           infer_structure = c("auto", "never", "always"),
                           structure_backend = c("auto", "native"),
@@ -480,6 +490,7 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(getRefinedAnnotations))
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # AnnotatedSeuratObj <- AnnotateSeuratMALDI(SeuratObj, HMDB_db)
 #'
@@ -529,6 +540,7 @@ add_backslashes_to_specialfeatures <- function(input_string) {
 #' @export
 #'
 #' @examples
+#' utils::str(formals(SearchAnnotations))
 #' # SearchAnnotations(SeuratObj, "Glucose", search.exact = TRUE)
 SearchAnnotations <- function (data, metabolite, assay = "Spatial",search.exact = FALSE, column.name = "all_IsomerNames"){
 
@@ -606,6 +618,7 @@ SearchAnnotations <- function (data, metabolite, assay = "Spatial",search.exact 
 #' @export
 #'
 #' @examples
+#' utils::str(formals(FindDuplicateAnnotations))
 #' # FindDuplicateAnnotations(SeuratObj)
 FindDuplicateAnnotations <- function (data, assay = "Spatial"){
   all_annotations <- data[[assay]]@meta.data$all_IsomerNames
@@ -627,6 +640,7 @@ FindDuplicateAnnotations <- function (data, assay = "Spatial"){
 #' @export
 #'
 #' @examples
+#' utils::str(formals(GetMZMetadata))
 #  ##### Example for getting metabolite annotation for a m/z value
 #' # GetMZMetadata(SpaMTP, mz = "mz-100", metadata.column = "all_IsomerNames")
 #'
@@ -772,6 +786,8 @@ db_adduct_filter <- function(db, adduct, polarity = "neg", verbose = TRUE) {
 #' @param formula Character string defining t
 #' @param allowed_elements Vector of character strings defining allowed elements
 #'
+#' @noRd
+#'
 #' @examples
 #' ### Helper function ###
 is_formula_valid <- function(formula,allowed_elements) {
@@ -896,6 +912,8 @@ ppm_range_match <- function(observed_mz, reference_mz, ppm) {
 #'
 #' @return A DataFrame containing matched mz values between the observed and reference dataframes
 #'
+#' @noRd
+#'
 #' @examples
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # mz_df <- SeuratObject[["Spatial"]][["mz"]]
@@ -911,7 +929,8 @@ ppm_range_match <- function(observed_mz, reference_mz, ppm) {
 #' # db_3 <- proc_db(mz_df, db_2, ppm_threshold = 5)
 proc_db <- function(observed_df,
                     reference_df,
-                    ppm_threshold = 10) {
+                    ppm_threshold = 10,
+                    verbose = TRUE) {
   # create an empty list to store matched results.
   result_list <- list()
 
@@ -1024,6 +1043,7 @@ proc_db <- function(observed_df,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(AddCustomMZAnnotations))
 #' # annotated_data <- AddCustomMZAnnotations(SpaMTP.obj, annotation.df)
 AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.only.annotated = FALSE, mass.threshold = 0.05, annotation.column = "all_IsomerNames"){
 
@@ -1109,6 +1129,7 @@ AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.
 #' @export
 #'
 #' @examples
+#' utils::str(formals(AddFMP10Annotations))
 #' # AddFMP10Annotations(spamtp, only.fmp.adduct = FALSE)
 AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
                                 add.custom.annotation = NULL,
@@ -1118,7 +1139,7 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
                                 annotation.column = "all_IsomerNames",
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb", "bundled"),
+                                database_source = c("auto", "spamtpdb"),
                                 database_local_dir = NULL){
 
   database_resources <- .spamtp_db_bundle(
@@ -1353,6 +1374,7 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(AnnotateBigData))
 #' #cardinal <- readImzML("./Test_Data/Spotted/test_data1")
 #' #mzs <- data.frame(Cardinal::featureData(cardinal))$mz
 #' #results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative")
@@ -1362,7 +1384,7 @@ AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL,
                             polarity = NULL, tof_resolution = 30000,
                             verbose = TRUE, maldi_matrix = NULL,
                             database_version = "latest",
-                            database_source = c("auto", "spamtpdb", "bundled"),
+                            database_source = c("auto", "spamtpdb"),
                             database_local_dir = NULL, ...){
   mz_df <- data.frame(mz = mzs)
   mz_df$row_id <- seq(1, length(mz_df[["mz"]]))

@@ -49,6 +49,7 @@ This function run PCA analaysis on a SpaMTP Seurat Object.
 The user can provide a bin/resolution size to increase the bin size and reduce the dimensionality/noise of the SM dataset prior to calculating PCAs.
 }
 \examples{
+utils::str(formals(RunMetabolicPCA))
 ## For running PCA on un-adjusted peak bin sizes
 # spamtp_obj <- RunMetabolicPCA(spamtp_obj, npcs = 50)
 

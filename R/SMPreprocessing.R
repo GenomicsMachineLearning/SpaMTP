@@ -14,6 +14,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(NormalizeSMData))
 #' # normalised_data <- NormalizeSMData(SeuratObject)
 NormalizeSMData <- function(data, normalisation.type = 'TIC', scale.factor = NULL, assay = "Spatial", slot = "counts", verbose = TRUE) {
 
@@ -58,6 +59,7 @@ NormalizeSMData <- function(data, normalisation.type = 'TIC', scale.factor = NUL
 #' @export
 #'
 #' @examples
+#' utils::str(formals(TMMNormalize))
 #' # norm.data <- TMMNormalize(SeuratObj, ident = "samples", refIdent = "sample1", normalisation.type = "CPM")
 TMMNormalize <- function(combined.obj, ident, refIdent, normalisation.type = "CPM", CPM.scale.factor = 1e6, assay = "Spatial", slot = "counts", verbose = FALSE) {
 
@@ -133,6 +135,7 @@ return(merged.data)
 #' @export
 #'
 #' @examples
+#' utils::str(formals(statPlot))
 #' # df <- statPlot(SeuratObj, group.by = "sample", bottom.cutoff = 0.05, top.cutoff = 0.05, log.data = TRUE)
 statPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "counts", bottom.cutoff = NULL, top.cutoff = NULL, log.data = FALSE, verbose = FALSE){
 
@@ -207,9 +210,12 @@ statPlot <- function (seurat.obj, group.by = NULL, assay = "Spatial", slot = "co
 #' @param cols Vector of strings defining the colours to use for plotting. This vector should match the length of unique groups (default = NULL).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).
 #'
+#' @return A `ggplot` ridge-plot object.
+#'
 #' @export
 #'
 #' @examples
+#' utils::str(formals(MZRidgePlot))
 #' # MZRidgePlot(SeuratObj, group.by = "sample")
 MZRidgePlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "RidgePlot", x.lab = "intensity", y.lab = "var", bottom.cutoff = NULL, top.cutoff = NULL, bins = 1000,log.data = FALSE, cols = NULL, verbose = FALSE){
   data <- statPlot(seurat.obj = seurat.obj,
@@ -264,9 +270,12 @@ MZRidgePlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spati
 #' @param cols Vector of strings defining the colours to use for plotting. This vector should match the length of unique groups (default = NULL).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).
 #'
+#' @return A `ggplot` violin-plot object.
+#'
 #' @export
 #'
 #' @examples
+#' utils::str(formals(MZVlnPlot))
 #' # MZVlnPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
 MZVlnPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "VlnPlot", x.lab = "var", y.lab = "intensity", show.points = TRUE, bottom.cutoff = NULL, top.cutoff = NULL,log.data = FALSE, cols = NULL, verbose = FALSE){
 
@@ -327,9 +336,12 @@ MZVlnPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial
 #' @param cols Vector of strings defining the colours to use for plotting. This vector should match the length of unique groups (default = NULL).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).
 #'
+#' @return A `ggplot` box-plot object.
+#'
 #' @export
 #'
 #' @examples
+#' utils::str(formals(MZBoxPlot))
 #' # MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
 MZBoxPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial", slot = "counts", title = "BoxPlot", x.lab = "var", y.lab = "intensity", show.points = TRUE, bottom.cutoff = NULL, top.cutoff = NULL,log.data = FALSE, cols = NULL, verbose = FALSE){
   data <- statPlot(seurat.obj = seurat.obj,
@@ -369,7 +381,6 @@ MZBoxPlot <- function (seurat.obj, group.by = NULL, mzs = NULL, assay = "Spatial
 
   return(box_plot)
 }
-
 
 
 

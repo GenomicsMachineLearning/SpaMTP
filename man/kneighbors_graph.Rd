@@ -30,5 +30,6 @@ A sparse adjacency matrix (\code{dgCMatrix}) representing the k-NN graph.
 Builds a sparse adjacency matrix representing the k-nearest neighbour relationships between spots or cells, using Euclidean distance between spatial coordinates.
 }
 \examples{
+utils::str(formals(kneighbors_graph))
 ### HELPER FUNCTION
 }

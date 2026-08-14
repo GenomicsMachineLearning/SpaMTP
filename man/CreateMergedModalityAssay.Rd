@@ -34,5 +34,6 @@ Useful for integrating multiple modalities (e.g. transcriptomics, proteomics, me
 This function assumes that each specified assay has been processed with \code{Seurat::ScaleData()} (or an alternative scaling method), and that their \code{scale.data} slots contain numeric matrices. The merged assay will use the row-bound \code{scale.data} matrices as the \code{counts}, \code{data}, and \code{scale.data} slots.
 }
 \examples{
+utils::str(formals(CreateMergedModalityAssay))
 # merged_obj <- CreateMergedModalityAssay(SpaMTP = spamtp_obj, assays.to.merge = c("SPM", "SPT"),new.assay = "merged")
 }

@@ -16,7 +16,7 @@ CalculateAnnotationStatistics(
   n_weight = 1,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -63,6 +63,7 @@ This function evaluates the potential biological relevance of an annotation for 
 }
 }
 \examples{
+utils::str(formals(CalculateAnnotationStatistics))
 #CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")
 
 }

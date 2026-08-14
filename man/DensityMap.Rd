@@ -24,5 +24,6 @@ Return a html contains the annotation/average intensity of peakbins/density of d
 This function generates an interactive HTML file that can be used to generate spatial density kernals based on the intensity of any selected m/z value.
 }
 \examples{
+utils::str(formals(DensityMap))
 # DensityMap(SpaMTP.obj)
 }

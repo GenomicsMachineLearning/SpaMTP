@@ -20,9 +20,12 @@
 #' * This can be used for saving data for transfer to python. Can be read in as Anndata using scanpy.read_10x_mtx().
 #' * For saving in R saveRDS() is recommended.
 #'
+#' @return The output-directory path, invisibly.
+#'
 #' @export
 #'
 #' @examples
+#' utils::str(formals(SaveSpaMTPData))
 #' # saveSpaMTPData(SeuratObject, "../output", annotations = TRUE)
 SaveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", image = NULL, annotations = FALSE, generate.h5 = TRUE, verbose = TRUE){
 
@@ -90,6 +93,8 @@ SaveSpaMTPData <- function(data, outdir, assay = "Spatial", slot = "counts", ima
     verbose_message(message_text = "Writing feature metadata annotations to feature_metadata.csv", verbose = verbose)
     data.table::fwrite(data[[assay]]@meta.data, paste0(outdir,"/feature_metadata.csv"))
   }
+
+  invisible(normalizePath(outdir, mustWork = FALSE))
 
 }
 

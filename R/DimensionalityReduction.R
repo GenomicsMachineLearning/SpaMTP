@@ -20,6 +20,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(RunMetabolicPCA))
 #' ## For running PCA on un-adjusted peak bin sizes
 #' # spamtp_obj <- RunMetabolicPCA(spamtp_obj, npcs = 50)
 #'
@@ -234,9 +235,10 @@ RunMetabolicPCA <- function(SpaMTP,
 #' @return A SpaMTP Seurat object with a new graph stored in `@graphs` and spatially-aware PCA reduction values stored in `@reductions`.
 #' @export
 #'
-#' @import Matrix
+#' @rawNamespace import(Matrix, except = c(expand, head, pack, unpack))
 #'
 #' @examples
+#' utils::str(formals(RunSpatialGraphPCA))
 #' # spamtp_obj <- RunSpatialGraphPCA(spamtp_obj, platform = "Visium")
 RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = "scale.data", image = NULL, platform="Visium", lambda=0.5, n_neighbors=NULL, include_self = FALSE, alg = "kd_tree", fast = TRUE, graph_name = "SpatialKNN", reduction_name = "SpatialPCA", verbose = TRUE){
 
@@ -364,6 +366,7 @@ RunSpatialGraphPCA <- function(data, n_components=50, assay = "Spatial", slot = 
 #' @export
 #'
 #' @examples
+#' utils::str(formals(kneighbors_graph))
 #' ### HELPER FUNCTION
 kneighbors_graph <- function(location, n_neighbors, platform, include_self = FALSE, alg = "kd_tree") {
   # Get the k-nearest neighbors using kd_tree (most similar to scikit-learn's default)
@@ -442,6 +445,7 @@ kneighbors_graph <- function(location, n_neighbors, platform, include_self = FAL
 #' @export
 #'
 #' @examples
+#' utils::str(formals(GetKmeanClusters))
 #' # seurat_object <- GetKmeanClusters(spamtp_obj, reduction = "SpatialPCA", centers = 8, cluster.name = "test_clusters")
 #' # SpatialDimPlot(spamtp_obj, group.by = "test_clusters")
 GetKmeanClusters <- function(data, reduction = "SpatialPCA", cluster.name = "spatial_clusters", clusters = 8, iter.max = 10, nstart = 1, algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"), trace = FALSE, seed = 888){
@@ -449,10 +453,18 @@ GetKmeanClusters <- function(data, reduction = "SpatialPCA", cluster.name = "spa
   if (!reduction %in% names(data@reductions)){
     stop("Reduction not present in SpaMTP Seruat Object! ", "'",reduction, "' was not found, please run names(data@reductions) to check possible reductions to use ....")
   }
-  set.seed(seed)
-  res <- stats::kmeans(data[[reduction]]@cell.embeddings, centers = clusters, iter.max = iter.max, nstart = nstart, algorithm = algorithm,  trace = trace)
+  res <- withr::with_seed(
+    seed,
+    stats::kmeans(
+      data[[reduction]]@cell.embeddings,
+      centers = clusters,
+      iter.max = iter.max,
+      nstart = nstart,
+      algorithm = algorithm,
+      trace = trace
+    )
+  )
 
   data[[cluster.name]] <- res$cluster
   return(data)
 }
-

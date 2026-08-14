@@ -20,5 +20,6 @@ A subset Seurat object containing only m/z values that were specified
 Subset a SpaMTP Seurat Spatial Metabolomic object by a list of m/z's
 }
 \examples{
+utils::str(formals(SubsetMZFeatures))
 # SubsetMZFeatures(SeuratObj, c("mz-160","mz-170","mz-180"))
 }

@@ -47,5 +47,6 @@ NOTE: some code parts and args are taken from SeuratObject
 Function params/args:
 }
 \examples{
+utils::str(formals(subset_SPM))
 # sub <- subset_obt(seurat.obj, idents = "Sample1")
 }

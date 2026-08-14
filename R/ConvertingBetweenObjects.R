@@ -13,6 +13,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(CardinalToSeurat))
 #' # CardinalToSeurat(CardinalObj, run_name = "run_1", seurat.coord = NULL)
 CardinalToSeurat <- function(data, multi.run = FALSE, seurat.coord = NULL, assay = "Spatial", verbose = TRUE){
 
@@ -141,6 +142,7 @@ CardinalToSeurat <- function(data, multi.run = FALSE, seurat.coord = NULL, assay
 #' @export
 #'
 #' @examples
+#' utils::str(formals(BinnedCardinalToSeurat))
 #' # CardinalToSeurat(CardinalObj, run_name = "run_1")
 BinnedCardinalToSeurat <- function(data, mtx, multi.run = FALSE,  assay = "Spatial", verbose = TRUE ){
 
@@ -260,6 +262,7 @@ BinnedCardinalToSeurat <- function(data, mtx, multi.run = FALSE,  assay = "Spati
 #' @export
 #'
 #' @examples
+#' utils::str(formals(ConvertSeuratToCardinal))
 #' # cardinal.obj <- ConvertSeuratToCardinal(SeuratObject, feature.metadata = TRUE)
 ConvertSeuratToCardinal <- function(data, assay = "Spatial", slot = "counts", run_col = NULL, feature.metadata = FALSE, verbose = TRUE){
 

@@ -72,6 +72,7 @@ A mass spectrometry plot displaying mean intensity values
 This function plots mean mass spectra intensity values for a given SpaMTP Seurat Object, and groups/splits by categories if supplied.
 }
 \examples{
+utils::str(formals(MassIntensityPlot))
 ## Plot mean of whole tissue section
 # MassIntensityPlot(SeuratObj)
 

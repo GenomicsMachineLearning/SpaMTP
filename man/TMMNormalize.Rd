@@ -39,5 +39,6 @@ Seurat object with count values normalised and corrected for between categories
 This function is mainly used for normalising a merged SpaMTP Seurat Object containing multiple samples.
 }
 \examples{
+utils::str(formals(TMMNormalize))
 # norm.data <- TMMNormalize(SeuratObj, ident = "samples", refIdent = "sample1", normalisation.type = "CPM")
 }

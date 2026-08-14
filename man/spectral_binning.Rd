@@ -30,5 +30,6 @@ Matrix object containing the binned intensity values matching the provided refer
 Spectral binning of intensity values stored in a Matrix object, converted from matter.
 }
 \examples{
+utils::str(formals(spectral_binning))
 #Helper function for binning data in Matrix format
 }

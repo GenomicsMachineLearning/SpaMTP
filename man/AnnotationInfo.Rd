@@ -17,3 +17,6 @@ provenance, and candidate count where available.
 Reports whether downstream pathway functions will use the current indexed,
 scored RaMP annotation pipeline or a legacy mass-match result.
 }
+\examples{
+utils::str(formals(AnnotationInfo))
+}

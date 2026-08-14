@@ -14,6 +14,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(add_ssc_annotation))
 #' # ssc_data <- Cardinal::spatialShrunkenCentroids(CardinalObj, ...)
 #' # new_CardinalObj <- add_ssc_annotation(CardinalObj, ssc_data, resolution ="r=2,k=8,s=32")
 add_ssc_annotation <- function(data, data_ssc, resolution){
@@ -22,7 +23,7 @@ add_ssc_annotation <- function(data, data_ssc, resolution){
 
   if (check_cardinal_version()){
 
-    if(class(data_ssc) != 'ResultsList'){
+    if (!methods::is(data_ssc, "ResultsList")) {
       Cardinal::pixelData(data_bin)[["ssc"]] <- data_ssc$class
     } else {
       message(paste0("Getting cluster segments for resolution ", resolution))
@@ -49,4 +50,3 @@ add_ssc_annotation <- function(data, data_ssc, resolution){
 }
 
 ########################################################################################################################################################################################################################
-

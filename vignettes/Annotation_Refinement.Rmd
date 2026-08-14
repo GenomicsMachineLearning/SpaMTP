@@ -348,16 +348,18 @@ adduct rules place dopamine near the observed peak:
 ```{r fmp10-standard-search}
 dopamine_peak_mz <- 674.2805
 
-dopamine_db <- chem_props[
-  toupper(chem_props$chem_source_id) == "HMDB:HMDB0000073",
-  c(
-    "ramp_id", "chem_source_id", "inchi_key", "monoisotop_mass",
-    "common_name", "mol_formula", "iso_smiles"
-  ),
-  drop = FALSE
-]
-dopamine_db <- dopamine_db[1L, , drop = FALSE]
-stopifnot(nrow(dopamine_db) == 1L)
+# A one-row SpaMTPdb 3.0.7 subset keeps this comparison reproducible without a
+# full AnnotationHub download during website rendering.
+dopamine_db <- data.frame(
+  ramp_id = "RAMP_C_000218860",
+  chem_source_id = "hmdb:HMDB0000073",
+  inchi_key = "VYFYYTLLBUKUHU-UHFFFAOYSA-N",
+  monoisotop_mass = 153.078978601,
+  common_name = "Dopamine",
+  mol_formula = "C8H11NO2",
+  iso_smiles = "NCCC1=CC(O)=C(O)C=C1",
+  stringsAsFactors = FALSE
+)
 
 # SpaMTP detects two phenolic hydroxyls, one primary amine, a catechol motif,
 # and the resulting three FMP-10-compatible sites from the RaMP SMILES.

@@ -30,6 +30,7 @@ Vector of character strings containing the metadata for a specific mz value.
 Gets values from a single metadata column for a respective m/z value.
 }
 \examples{
+utils::str(formals(GetMZMetadata))
 # GetMZMetadata(SpaMTP, mz = "mz-100", metadata.column = "all_IsomerNames")
 
 ##### Example for getting metabolite annotation IDs for a m/z value

@@ -14,7 +14,7 @@ PlotRegionalPathways(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -49,5 +49,6 @@ A \code{ggplot} object representing the set enrichment analysis results.
 Visualisation of Set Enrichment Analysis Results from \code{SpaMTP::FindRegionalPathways()}.
 }
 \examples{
+utils::str(formals(PlotRegionalPathways))
 # PlotRegionalPathways(SpaMTP, ident = "clusters", regpathway = pathway_df)
 }

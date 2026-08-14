@@ -1133,7 +1133,7 @@ Due to the nature of the FMP10 matrix, there are often only a handful of metabol
 # data(combined.dhb.data)
 
 ## Annotate metabolites against databases
-#db = rbind(HMDB_db, Chebi_db)
+# chem_props <- LoadSpaMTPDatabase("chem_props")$chem_props
 #combined.dhb.data = AnnotateSM(combined.dhb.data,assay = "SPM", db = db, polarity = "positive")
 
 ## Normalise ST and SM data 

@@ -19,6 +19,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(FindCorrelatedFeatures))
 #' # result <- FindCorrelatedFeatures(data = SpaMTP, gene = "GeneX", nfeatures = 5)
 FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, SM.assay = "SPM", ST.assay = NULL, SM.slot = "counts", ST.slot = "counts", nfeatures = 10){
 
@@ -141,6 +142,7 @@ FindCorrelatedFeatures <- function(data, mz = NULL, gene = NULL, ident = NULL, S
 #' @export
 #'
 #' @examples
+#' utils::str(formals(FindSpatiallyVariableMetabolites))
 #' # SpaMTP.obj <- FindSpatiallyVariableMetabolites(SpaMTP)
 FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "counts",
                                              image = "slice1", nfeatures = 2000,
@@ -179,17 +181,10 @@ FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "coun
 
   if (!is.null(max_spots) && ncol(data) > max_spots) {
     max_spots <- as.integer(max_spots)
-    had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    if (had_seed) old_seed <- get(".Random.seed", envir = .GlobalEnv)
-    on.exit({
-      if (had_seed) {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    }, add = TRUE)
-    set.seed(as.integer(seed))
-    retained_spots <- sort(sample.int(ncol(data), max_spots))
+    retained_spots <- sort(withr::with_seed(
+      as.integer(seed),
+      sample.int(ncol(data), max_spots)
+    ))
     verbose_message(
       message_text = paste0(
         "Sampling ", max_spots, " of ", ncol(data),
@@ -228,6 +223,7 @@ FindSpatiallyVariableMetabolites <- function(object, assay = "SPM", slot = "coun
 #' @export
 #'
 #' @examples
+#' utils::str(formals(GetSpatiallyVariableMetabolites))
 #' # features <- GetSpatiallyVariableMetabolites(SpaMTP, n = 6)
 GetSpatiallyVariableMetabolites <- function(object, assay = "SPM", n = 10){
 
@@ -277,5 +273,9 @@ list_to_pprcomp <- function(lst) {
 #' @examples
 #' #HELPER FUNCTION
 RowVar <- function(x) {
-  .Call('_Seurat_RowVar', PACKAGE = 'Seurat', x)
+  if (ncol(x) < 2L) {
+    return(rep(NA_real_, nrow(x)))
+  }
+  means <- rowMeans(x)
+  pmax(0, (rowSums(x * x) - ncol(x) * means * means) / (ncol(x) - 1L))
 }

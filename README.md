@@ -57,10 +57,19 @@ db_info <- SpaMTP::SpaMTPDatabaseInfo()
 brain <- SpaMTPData::SpaMTPData("mouse_brain_dhb_striatum")
 ```
 
-Until the data packages complete Bioconductor onboarding, SpaMTP retains a
-bundled database compatibility layer and the experiment package resolves its
-published Zenodo records. This keeps existing scripts working while allowing
-database and example-data releases to be updated independently of SpaMTP.
+During Bioconductor onboarding, install the two companion packages before the
+developmental SpaMTP branch. Annotation databases are no longer duplicated in
+the software package; `SpaMTPData` continues to resolve its immutable published
+records while the ExperimentHub catalogue is being registered.
+
+After Bioconductor acceptance, the supported installation command will be:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("SpaMTP")
+```
 
 For tutorials and more information please visit the [SpaMTP website](https://genomicsmachinelearning.github.io/SpaMTP/)
 
@@ -89,11 +98,6 @@ wget -c https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif
 Verify it download correctly:
 ```
 wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif.md5 | md5sum -c -
-```
-
-Or to create an Apptainer image from scratch (you need the environment-linux.yml, dependencies.R and spamtp.def files):
-```
-apptainer build spamtp.sif spamtp.def
 ```
 
 ### Contributing

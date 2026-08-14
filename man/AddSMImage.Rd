@@ -39,5 +39,6 @@ A SpaMTP Seurat object with the provided image aligned to the SM data. The image
 Manually align an image (e.g. H&E, Immuno) to a SM SpaMTP dataset
 }
 \examples{
+utils::str(formals(AddSMImage))
 # AddSMImage(image_path = "../HnE_image.png", SpaMTP = SpaMTP_obj)
 }

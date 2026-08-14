@@ -14,7 +14,7 @@ AnnotateBigData(
   verbose = TRUE,
   maldi_matrix = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   ...
 )
@@ -64,6 +64,7 @@ This function assigns each valid m/z peak with one/multiple metabolite names bas
 This function is to be used when dealing with large datasets as a preprocessing step. Users can annotate m/z values first and then subset their data accordinly before loading it into a SpaMTP Seurat Object.
 }
 \examples{
+utils::str(formals(AnnotateBigData))
 #cardinal <- readImzML("./Test_Data/Spotted/test_data1")
 #mzs <- data.frame(Cardinal::featureData(cardinal))$mz
 #results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative")

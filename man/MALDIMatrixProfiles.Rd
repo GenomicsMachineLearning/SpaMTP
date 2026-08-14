@@ -21,3 +21,6 @@ that a universal mass-shift rule is available: some reactions require a
 coupling reagent, produce several products, or remain strongly dependent on
 the analyte structure and acquisition conditions.
 }
+\examples{
+utils::str(formals(MALDIMatrixProfiles))
+}

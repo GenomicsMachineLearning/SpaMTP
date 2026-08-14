@@ -15,7 +15,7 @@ PlotPathways(
   guide = "colourbar",
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   ...
 )
@@ -55,5 +55,6 @@ A ggplot object visualizing the score of each pathway across the relative reduct
 This function has been adapted from fgsea package. For more detail about function inputs please visit their \href{https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31}{documentation}.
 }
 \examples{
+utils::str(formals(PlotPathways))
 #PlotPathways(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj, reduction = "umap"))
 }

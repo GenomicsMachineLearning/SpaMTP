@@ -22,7 +22,7 @@ FindRegionalPathways(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -80,5 +80,6 @@ A SpaMTP object with set enrichment on given analyte types.
 This the function used to compute the gene/metabolites set enrichment for multi-omics spatial data
 }
 \examples{
+utils::str(formals(FindRegionalPathways))
 # SpaMTP = FindRegionalPathways(SpaMTP, polarity = "positive")
 }

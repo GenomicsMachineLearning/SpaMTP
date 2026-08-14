@@ -16,5 +16,6 @@ plot where spots are in pixel layout rather then spot
 Helper function for converting Seurat Class ggplots from spot to pixel layout
 }
 \examples{
+utils::str(formals(pixelPlot))
 #pixelPlot(SpatialFeaturPlot(SpaMTP.obj, features = "nFeature_Spatial"))
 }

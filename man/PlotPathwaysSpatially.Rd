@@ -28,7 +28,7 @@ PlotPathwaysSpatially(
   image.labels = NULL,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -91,5 +91,6 @@ A ggplot object visualizing the pathway score spatially.
 This function has been adapted from fgsea package. For more detail about function inputs please visit their \href{https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31}{documentation}.
 }
 \examples{
+utils::str(formals(PlotPathwaysSpatially))
 #PlotPathwaysSpatially(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj)
 }

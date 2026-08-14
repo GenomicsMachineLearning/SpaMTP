@@ -3,8 +3,8 @@
 * Split versioned resources from the analysis code: `SpaMTPdb` now supplies
   the pruned RaMP annotation and pathway snapshot, and `SpaMTPData` provides
   named access to large experiment/vignette objects. `LoadSpaMTPDatabase()`
-  and `SpaMTPDatabaseInfo()` form the public database interface. Existing
-  bundled data remain available as a temporary compatibility fallback.
+  and `SpaMTPDatabaseInfo()` form the public database interface. The software
+  package retains only the small adduct and reaction-style constant tables.
 * Updated the package citation to the peer-reviewed *Nature Methods* paper,
   designated Tianyao Lu as the current package maintainer, and added direct
   links to the developmental documentation and source branch. Andrew Causer
@@ -16,17 +16,19 @@
   the returned SpaMTP object without storing large Python velocity tensors.
 * Pathway enrichment, pathway-assay construction, Fisher analysis of m/z
   inputs, and interactive pathway networks now consume the scored `Ramp_IDs`
-  produced by the indexed annotation engine. `AnnotateSM()` defaults to the
-  bundled RaMP 3.0.7 chemical-property table, records annotation provenance in
-  `@tools$mz_annotation`, and retains `@tools$db_3` only for compatibility.
+  produced by the indexed annotation engine. `AnnotateSM()` resolves the
+  versioned RaMP 3.0.7 chemical-property table through `SpaMTPdb`, records
+  annotation provenance in `@tools$mz_annotation`, and retains `@tools$db_3`
+  only for compatibility.
   Legacy annotations require an explicit `annotation_source` fallback.
 * Annotation candidates can now be stored once with `AnnotateSM(min_score =
   0)` and filtered later with `annotation_score_threshold`. Interactive
   pathway networks add `metabolite_detection = "annotated"` to display
   score-filtered pathway metabolites without requiring DE significance, while
   retaining separate leading-edge evidence in node styling and tooltips.
-* Updated the bundled pruned RaMP snapshot from 2.5.4 to 3.0.7, with explicit
-  upstream/source version metadata and a reproducible `data-raw` build script.
+* Moved the pruned RaMP snapshot from 2.5.4 to versioned SpaMTPdb 3.0.7
+  resources, with explicit upstream/source metadata and reproducible resource
+  staging scripts.
 * Added a chemically validated adduct rule table and reusable sorted m/z index.
 * Added ppm pruning, proton/charge bounds, mass-defect scoring, isotope checks,
   and contextual adduct-family scoring while retaining the legacy annotation
@@ -48,7 +50,7 @@
   when the focused view changes.
 * Added interactive repulsion, balanced-force, radial, and gene/metabolite
   pathway layouts, with a more widely spaced repulsion layout as the default.
-* Harmonised all bundled pathway-graph node IDs with RaMP-DB 3.0.7, added a
+* Harmonised all versioned pathway-graph node IDs with RaMP-DB 3.0.7, added a
   reproducible cross-version graph updater/auditor, and added stable source-ID
   labels when RaMP itself has no common name.
 

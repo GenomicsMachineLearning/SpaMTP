@@ -13,8 +13,8 @@ DEMsHeatmap(
   order.by = "FDR",
   scale = "row",
   color = (grDevices::colorRampPalette(c("navy", "white", "red")))(50),
-  cluster_cols = F,
-  cluster_rows = T,
+  cluster_cols = FALSE,
+  cluster_rows = TRUE,
   fontsize_row = 15,
   fontsize_col = 15,
   cutree_cols = 9,
@@ -44,9 +44,9 @@ DEMsHeatmap(
 
 \item{color}{A vector of colors used in heatmap (default = grDevices::colorRampPalette(c("navy", "white", "red"))(50)).}
 
-\item{cluster_cols}{Boolean value determining if columns should be clustered or hclust object (default = F).}
+\item{cluster_cols}{Boolean value determining if columns should be clustered or hclust object (default = FALSE).}
 
-\item{cluster_rows}{Boolean value determining if rows should be clustered or hclust object (default = T).}
+\item{cluster_rows}{Boolean value determining if rows should be clustered or hclust object (default = TRUE).}
 
 \item{fontsize_row}{A numeric value defining the fontsize of rownames (default = 15).}
 
@@ -76,6 +76,7 @@ Generates a heatmap of DEMs generated from edgeR analysis run using \code{FindAl
 This function uses \code{pheatmap} to plot data.
 }
 \examples{
+utils::str(formals(DEMsHeatmap))
 # DEMs <- FindAllDEMs(SeuratObj, "sample")
 
 # DEMsHeatmap(DEMs)

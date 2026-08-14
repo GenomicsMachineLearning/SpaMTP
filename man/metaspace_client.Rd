@@ -18,5 +18,6 @@ A list containing functions for querying METASPACE data.
 Creates a client object with methods to interact with the METASPACE GraphQL API.
 }
 \examples{
+utils::str(formals(metaspace_client))
 # ms <- metaspace_client()
 }

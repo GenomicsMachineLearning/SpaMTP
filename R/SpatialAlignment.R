@@ -91,8 +91,8 @@
 #'
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
+#' utils::str(formals(ApplySpatialAlignment))
 #' # Apply coordinates already exported by the SMINT/STalign notebook.
 #' aligned_sm <- ApplySpatialAlignment(
 #'   SM.data = sm,
@@ -117,7 +117,6 @@
 #'   return = "result"
 #' )
 #' fit$diagnostics
-#' }
 ApplySpatialAlignment <- function(
     SM.data,
     ST.data = NULL,
@@ -951,7 +950,7 @@ ApplySpatialAlignment <- function(
     pointsI = pointsI,
     pointsJ = pointsJ,
     L = initial_L,
-    T = initial_T,
+    "T" = initial_T,
     niter = as.integer(niter),
     epV = as.numeric(epV),
     device = selected_device

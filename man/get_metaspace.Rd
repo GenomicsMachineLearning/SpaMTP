@@ -36,5 +36,6 @@ A list with two elements: \code{annotations} (data.frame) and \code{images} (lis
 The main user-facing function to download annotations and ion images for a METASPACE dataset.
 }
 \examples{
+utils::str(formals(get_metaspace))
 # get_metaspace(dataset_id = "2020-12-07_03h16m14s", fdr = 0.1, database= c("HMDB", "v4"), relative = TRUE)
 }

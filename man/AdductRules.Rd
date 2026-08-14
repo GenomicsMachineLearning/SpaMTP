@@ -25,3 +25,6 @@ stores the molecular multiplier, total numerator mass shift, charge, number
 of protons removed from the analyte, and the charge contributed by added
 species. This allows rules to be checked before candidate generation.
 }
+\examples{
+utils::str(formals(AdductRules))
+}

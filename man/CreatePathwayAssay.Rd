@@ -15,7 +15,7 @@ CreatePathwayAssay(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -55,6 +55,7 @@ A SpaMTP object with a new assay added, containing respective gene/metabolite da
 This function creates a new assay within the provided SpaMTP Seurat object which contains features (either genes or metabolites) labeled by their respective RAMP ID. This assay can be used for running feature set co-regulation analysis (based on \href{https://doi.org/10.1093/bioinformatics/btp502}{GSCA}).
 }
 \examples{
+utils::str(formals(CreatePathwayAssay))
 ## Create a pathway assay from metabolite data
 #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "metabolites", assay = "SPM", new_assay = "pathway")
 

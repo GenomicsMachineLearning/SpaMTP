@@ -17,7 +17,7 @@ RunRAMPgeseca(
   nPermSimple = 1000,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -58,6 +58,7 @@ A table with GESECA results. Each row corresponds to a tested RAMP_DB pathway.
 This function is adapted from the \href{https://github.com/alserglab/fgsea/blob/master/R/geseca-multilevel.R}{fgsea::geseca} package to identify significantly expressed RAMP_DB pathways based on an expression/feature embedding matrix.
 }
 \examples{
+utils::str(formals(RunRAMPgeseca))
 # E <- SpaMTP@reductions$pca.rev@feature.loadings
 # sig_pathways <- RunRAMPgeseca(E, minSize=15, maxSize=500)
 }

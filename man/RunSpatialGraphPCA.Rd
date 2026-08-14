@@ -60,5 +60,6 @@ Computes a graph-regularised PCA using spatial coordinates and scaled expression
 Note: This method has been adapted from \href{https://doi.org/10.1186/s13059-024-03429-x}{GraphPCA} python package.
 }
 \examples{
+utils::str(formals(RunSpatialGraphPCA))
 # spamtp_obj <- RunSpatialGraphPCA(spamtp_obj, platform = "Visium")
 }

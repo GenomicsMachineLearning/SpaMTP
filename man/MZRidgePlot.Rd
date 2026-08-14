@@ -50,9 +50,13 @@ MZRidgePlot(
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 }
+\value{
+A \code{ggplot} ridge-plot object.
+}
 \description{
 Generates a ridge plot of spatial metabolic intensity data
 }
 \examples{
+utils::str(formals(MZRidgePlot))
 # MZRidgePlot(SeuratObj, group.by = "sample")
 }

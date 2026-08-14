@@ -23,6 +23,7 @@
 #' @import grid
 #'
 #' @examples
+#' utils::str(formals(VisualisePathways))
 #' #SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 VisualisePathways = function(SpaMTP,
                              pathway_df,
@@ -34,19 +35,9 @@ VisualisePathways = function(SpaMTP,
                              verbose = TRUE,
                              database = NULL,
                              database_version = "latest",
-                             database_source = c("auto", "spamtpdb", "bundled"),
+                             database_source = c("auto", "spamtpdb"),
                              database_local_dir = NULL,
                              ...) {
-  database_resources <- .spamtp_db_bundle(
-    c("analytehaspathway", "pathway"),
-    database = database,
-    version = database_version,
-    source = match.arg(database_source),
-    local_dir = database_local_dir
-  )
-  analytehaspathway <- database_resources$analytehaspathway
-  pathway <- database_resources$pathway
-
   no_pathways_plot <- function(reason) {
     verbose_message(message_text = reason, verbose = verbose)
     ggplot2::ggplot() +
@@ -257,6 +248,16 @@ VisualisePathways = function(SpaMTP,
     return(gg_bar1)
   }
 
+  database_resources <- .spamtp_db_bundle(
+    c("analytehaspathway", "pathway"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  analytehaspathway <- database_resources$analytehaspathway
+  pathway <- database_resources$pathway
+
   # Adding the dendrogram
 
   # data(pathway, package = "SpaMTP")
@@ -355,6 +356,7 @@ VisualisePathways = function(SpaMTP,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(PlotRegionalPathways))
 #' # PlotRegionalPathways(SpaMTP, ident = "clusters", regpathway = pathway_df)
 PlotRegionalPathways <- function(regpathway,
                                  ident.column = "Cluster_id",
@@ -365,7 +367,7 @@ PlotRegionalPathways <- function(regpathway,
                                  verbose = TRUE,
                                  database = NULL,
                                  database_version = "latest",
-                                 database_source = c("auto", "spamtpdb", "bundled"),
+                                 database_source = c("auto", "spamtpdb"),
                                  database_local_dir = NULL) {
 
   database_resources <- .spamtp_db_bundle(
@@ -402,13 +404,13 @@ PlotRegionalPathways <- function(regpathway,
   ) %>% dplyr::mutate(group_importance = sum(abs(NES)))
 
   if (is.null(selected_pathways)) {
-    regpathway = regpathway %>%  dplyr::filter(group_importance %in% sort(unique(regpathway$group_importance), decreasing = T)[1:(num_display %||% min(10, length(unique(
+    regpathway = regpathway %>%  dplyr::filter(group_importance %in% sort(unique(regpathway$group_importance), decreasing = TRUE)[1:(num_display %||% min(10, length(unique(
       regpathway$pathwayName
     ))))])
   } else{
     regpathway = regpathway %>% dplyr::filter((pathwayName %in% selected_pathways) |
                                                 (sourceId %in% selected_pathways))
-    regpathway = regpathway %>%  dplyr::filter(group_importance %in% sort(unique(regpathway$group_importance), decreasing = T)[1:(num_display %||% min(10, length(unique(
+    regpathway = regpathway %>%  dplyr::filter(group_importance %in% sort(unique(regpathway$group_importance), decreasing = TRUE)[1:(num_display %||% min(10, length(unique(
       regpathway$pathwayName
     ))))])
   }
@@ -562,6 +564,7 @@ PlotRegionalPathways <- function(regpathway,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(PlotPathways))
 #' #PlotPathways(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj, reduction = "umap"))
 PlotPathways <- function(pathways, object, title=NULL,
                          assay=DefaultAssay(object),
@@ -571,7 +574,7 @@ PlotPathways <- function(pathways, object, title=NULL,
                          guide="colourbar",
                          database = NULL,
                          database_version = "latest",
-                         database_source = c("auto", "spamtpdb", "bundled"),
+                         database_source = c("auto", "spamtpdb"),
                          database_local_dir = NULL,
                          ...) {
 
@@ -641,6 +644,7 @@ PlotPathways <- function(pathways, object, title=NULL,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(PlotSinglePathway))
 #' #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
 #' #PlotSinglePathway(glycolysis_list, spamtp_obj, reduction = "umap")
 PlotSinglePathway <- function(pathway, object, title=NULL,
@@ -719,6 +723,7 @@ PlotSinglePathway <- function(pathway, object, title=NULL,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(PlotPathwaysSpatially))
 #' #PlotPathwaysSpatially(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj)
 PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alpha = 1,
                                   assay=SeuratObject::DefaultAssay(object), slot="scale.data",
@@ -738,7 +743,7 @@ PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alp
                                   image.labels = NULL,
                                   database = NULL,
                                   database_version = "latest",
-                                  database_source = c("auto", "spamtpdb", "bundled"),
+                                  database_source = c("auto", "spamtpdb"),
                                   database_local_dir = NULL
 ) {
 
@@ -826,6 +831,7 @@ PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alp
 #' @export
 #'
 #' @examples
+#' utils::str(formals(PlotSinglePathwaySpatially))
 #' #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
 #' #PlotSinglePathwaySpatially(glycolysis_list, spamtp_obj)
 PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, image.alpha= 1,
@@ -849,7 +855,7 @@ PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, imag
   obj2 <- addGesecaScores(list(pathway_x=pathway), object, assay=assay, slot=slot, scale=TRUE)
 
 
-  if (class(obj2@images[[images]]) == "FOV"){
+  if (methods::is(obj2@images[[images]], "FOV")){
     p <- Seurat::ImageFeaturePlot(
       obj2,
       features="pathway_x",
@@ -977,8 +983,6 @@ addGesecaScores <- function(pathways,
 
   return(res)
 }
-
-
 
 
 

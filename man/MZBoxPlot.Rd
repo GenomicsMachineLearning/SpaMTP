@@ -50,9 +50,13 @@ MZBoxPlot(
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 }
+\value{
+A \code{ggplot} box-plot object.
+}
 \description{
 Generates a Boxplot of spatial metabolic intensity data
 }
 \examples{
+utils::str(formals(MZBoxPlot))
 # MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
 }

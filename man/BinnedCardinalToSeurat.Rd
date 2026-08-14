@@ -30,5 +30,6 @@ A Seurat Object containing the mz count data of the supplied Cardinal Object
 This function is used by \code{LoadSM()} when \code{bin_package} is set to 'SpaMTP'.
 }
 \examples{
+utils::str(formals(BinnedCardinalToSeurat))
 # CardinalToSeurat(CardinalObj, run_name = "run_1")
 }

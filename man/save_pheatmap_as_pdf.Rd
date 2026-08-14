@@ -15,9 +15,13 @@ save_pheatmap_as_pdf(pheatmap, filename, width = 20, height = 20)
 
 \item{height}{Integer value representing the height of the saved pdf plot (default = 20).}
 }
+\value{
+The generated PDF path, invisibly.
+}
 \description{
 Saves a DEMsHeatmap as a PDF
 }
 \examples{
+utils::str(formals(save_pheatmap_as_pdf))
 # save_pheatmap_as_pdf(pheatmap, filename = "/Documents/plots/pheatmap1")
 }

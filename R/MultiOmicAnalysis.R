@@ -14,6 +14,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(MultiOmicIntegration))
 #' # SpaMTP.obj <- MultiOmicIntegration(SpaMTP.obj, weight.list = list(0.5, 0.5), reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))
 MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30), return.intermediate = FALSE, verbose = FALSE, ...){
 
@@ -71,6 +72,7 @@ MultiOmicIntegration <- function (multiomic.data, weight.list = NULL, reduction.
 #' This function assumes that each specified assay has been processed with `Seurat::ScaleData()` (or an alternative scaling method), and that their `scale.data` slots contain numeric matrices. The merged assay will use the row-bound `scale.data` matrices as the `counts`, `data`, and `scale.data` slots.
 #'
 #' @examples
+#' utils::str(formals(CreateMergedModalityAssay))
 #' # merged_obj <- CreateMergedModalityAssay(SpaMTP = spamtp_obj, assays.to.merge = c("SPM", "SPT"),new.assay = "merged")
 CreateMergedModalityAssay <- function(SpaMTP, assays.to.merge, new.assay = "merged", return.original = TRUE, verbose = FALSE){
 

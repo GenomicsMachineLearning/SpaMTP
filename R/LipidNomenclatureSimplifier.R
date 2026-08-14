@@ -15,6 +15,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(RefineLipids))
 #' # RefineLipids(DEPs_df)
 RefineLipids <- function(data, annotation.column = "annotations", database = "HMDB", lipid_info = "simple"){
 

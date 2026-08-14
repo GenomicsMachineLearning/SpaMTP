@@ -12,6 +12,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(spectral_binning))
 #' #Helper function for binning data in Matrix format
 spectral_binning <- function(matrix, ref, index, method = c("sum", "mean", "max", "min"), tolerance) {
   # Ensure method is valid
@@ -98,6 +99,7 @@ spectral_binning <- function(matrix, ref, index, method = c("sum", "mean", "max"
 #' @export
 #'
 #' @examples
+#' utils::str(formals(BinSpaMTP))
 #' #BinSpaMTP(spamtp.obj, resolution = 10, units = "ppm", return.only.mtx = TRUE)
 BinSpaMTP <- function(data, resolution, units = "ppm", assay = "Spatial",slot = "counts", method = c("sum"), return.only.mtx = FALSE){
 
@@ -116,7 +118,14 @@ BinSpaMTP <- function(data, resolution, units = "ppm", assay = "Spatial",slot = 
 
 
   if(bin_class == "relative"){
-    ref <- seq_rel(min_ref, max_ref, by=resolution)
+    if (min_ref <= 0) {
+      stop("Relative ppm binning requires positive m/z values.")
+    }
+    ref <- exp(seq.default(
+      from = log(min_ref),
+      to = log(max_ref),
+      by = log1p(resolution)
+    ))
   } else {
     ref <- seq.default(min_ref, max_ref, by=resolution)
   }
@@ -148,7 +157,6 @@ BinSpaMTP <- function(data, resolution, units = "ppm", assay = "Spatial",slot = 
     return(data)
   }
 }
-
 
 
 

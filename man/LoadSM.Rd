@@ -37,5 +37,6 @@ This function loads raw spatial metabolic data in a .imzML and .ibd format and g
 This function adapts the \code{readImzML} function implmented in Cardinal to correctly import large data.
 }
 \examples{
+utils::str(formals(LoadSM))
 # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 }

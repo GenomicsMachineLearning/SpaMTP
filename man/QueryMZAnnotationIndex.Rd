@@ -44,3 +44,6 @@ Candidates are pruned by ppm tolerance and proton/charge validity during
 index construction, then ranked using mass error, rule prior, mass-defect,
 isotope, and contextual adduct-family evidence.
 }
+\examples{
+utils::str(formals(QueryMZAnnotationIndex))
+}

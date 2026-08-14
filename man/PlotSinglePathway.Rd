@@ -42,6 +42,7 @@ A ggplot object visualizing the pathway score spatially.
 NOTE: This is a helper function for \code{PlotPathways}. This function has been adapted from fgsea package. For more detail about function inputs please visit their \href{https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31}{documentation}.
 }
 \examples{
+utils::str(formals(PlotSinglePathway))
 #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
 #PlotSinglePathway(glycolysis_list, spamtp_obj, reduction = "umap")
 }

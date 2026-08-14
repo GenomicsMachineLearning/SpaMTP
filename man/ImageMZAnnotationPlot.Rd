@@ -121,6 +121,7 @@ This function inputs the metabolite name such as 'Glutamine' rather then a speci
 For m/z values please use \code{ImageMZPlot()}.This function inherits off Seurat::ImageFeaturePlot().
 }
 \examples{
+utils::str(formals(ImageMZAnnotationPlot))
 # ImageMZPlot(SeuratObj, mzs = c("Glucose", "Glutamine"))
 # ImageMZPlot(SeuratObj, mzs = c("Glucose", "Glutamine"), plusminus = 0.05)
 }

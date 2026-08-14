@@ -48,5 +48,6 @@ A SpaMTP Seurat Object containing SM data with transformed coordinated to match 
 Shiny app allowing for manual alignment of SM pixel coordinates to the same coordinate system of the provided ST data.
 }
 \examples{
+utils::str(formals(AlignSpatialOmics))
 # SM_Transformed <- AlignSpatialOmics(SM.data, ST.data)
 }

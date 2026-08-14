@@ -36,5 +36,6 @@ A 2D scatter plot showing the relative spatial locations of the ST and SM data p
 Checks the alignment of two spatial datasets by plotting their relative coordinates on the same graph
 }
 \examples{
+utils::str(formals(CheckAlignment))
 # CheckAlignment(SM.data, ST.data)
 }

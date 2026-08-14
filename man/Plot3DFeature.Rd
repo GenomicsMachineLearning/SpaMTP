@@ -74,5 +74,6 @@ These features can include a combination of metabolites and/or genes expression 
 Features must be numeric values. Please see \verb{ SpaMTP Additional Features} vignette for instructions on how to plot catagorical data, or > 2 features.
 }
 \examples{
+utils::str(formals(Plot3DFeature))
 # Plot3DFeature(data = my_data, features = c("gene1", "gene2"), assays = c("SPT", "SPM"), show.image = "slice1")
 }

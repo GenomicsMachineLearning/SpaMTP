@@ -36,5 +36,6 @@ Either a binned intensity matrix or a SpaMTP object contatining the binned inten
 Bins m/z peaks of a specified SpaMTP object to reduce dimensionality and remove noise.
 }
 \examples{
+utils::str(formals(BinSpaMTP))
 #BinSpaMTP(spamtp.obj, resolution = 10, units = "ppm", return.only.mtx = TRUE)
 }

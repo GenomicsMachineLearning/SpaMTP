@@ -34,5 +34,6 @@ This function can be used for normalising data already stored in a SpaMTP Seurat
 Normalisation methods include total ion count (TIC), log normalisation and counts per million (RC).
 }
 \examples{
+utils::str(formals(NormalizeSMData))
 # normalised_data <- NormalizeSMData(SeuratObject)
 }

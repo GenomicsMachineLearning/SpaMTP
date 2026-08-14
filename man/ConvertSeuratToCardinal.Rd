@@ -33,5 +33,6 @@ A Cardinal object containing intensity values and feature metadata (annotations)
 Converts a SpaMTP Seurat object to a Cardinal object, including annotations and metadata
 }
 \examples{
+utils::str(formals(ConvertSeuratToCardinal))
 # cardinal.obj <- ConvertSeuratToCardinal(SeuratObject, feature.metadata = TRUE)
 }

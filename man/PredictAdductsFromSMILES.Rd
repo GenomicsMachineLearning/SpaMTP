@@ -17,8 +17,8 @@ PredictAdductsFromSMILES(
 \arguments{
 \item{smiles}{Character vector of SMILES strings.}
 
-\item{polarity}{\code{"positive"}, \code{"negative"}, or \code{"neutral"}. When
-\code{NULL}, use the matrix-profile default or positive mode.}
+\item{polarity}{\code{"positive"}, \code{"negative"}, or \code{"neutral"}. When \code{NULL},
+use the matrix-profile default or positive mode.}
 
 \item{maldi_matrix}{Optional MALDI matrix/reagent profile.}
 
@@ -28,15 +28,17 @@ PredictAdductsFromSMILES(
 \item{min_structure_score}{Minimum rule-specific structural prior marked as
 retained.}
 
-\item{backend, workers}{Passed to
-\code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
+\item{backend, workers}{Passed to \code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
 }
 \value{
 A ranked data frame with one row per structure/rule combination.
 }
 \description{
-Applies the same functional-group and ion-mode logic used by
-\code{\link[=BuildMZAnnotationIndex]{BuildMZAnnotationIndex()}} before any observed
-m/z is supplied. This audits which protonation, deprotonation, alkali-binding,
-or reactive-matrix hypotheses SpaMTP will retain for a structure.
+This function applies the same functional-group and ion-mode logic used by
+\code{\link[=BuildMZAnnotationIndex]{BuildMZAnnotationIndex()}} before any observed m/z is supplied. It is useful
+for auditing which protonation, deprotonation, alkali-binding, or reactive
+matrix hypotheses SpaMTP will retain for a structure.
+}
+\examples{
+utils::str(formals(PredictAdductsFromSMILES))
 }

@@ -36,5 +36,6 @@ SpaMTP Seurat class object containing a weighted nearest neighbours graph which 
 This function performs multi-omic integration of Spatial Metabolomics and Spatial Transcriptomics data using Seurat's Weighted Nearest Neighbours function.
 }
 \examples{
+utils::str(formals(MultiOmicIntegration))
 # SpaMTP.obj <- MultiOmicIntegration(SpaMTP.obj, weight.list = list(0.5, 0.5), reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))
 }

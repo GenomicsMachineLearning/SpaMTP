@@ -42,6 +42,7 @@ A SpaMTP Seurat object with a new metadata column containing the K-means cluster
 This function runs K-means clustering on a specified reduction in a SpaMTP Seurat object and adds the cluster assignments to the object metadata.
 }
 \examples{
+utils::str(formals(GetKmeanClusters))
 # seurat_object <- GetKmeanClusters(spamtp_obj, reduction = "SpatialPCA", centers = 8, cluster.name = "test_clusters")
 # SpatialDimPlot(spamtp_obj, group.by = "test_clusters")
 }

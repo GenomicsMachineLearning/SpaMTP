@@ -79,6 +79,7 @@ This is for plotting values of annotated metabolites stored in a SpaMTP Seurat O
 This function inherits off Seurat::ImageFeaturePlot(). Look here for more detailed documentation about inputs.
 }
 \examples{
+utils::str(formals(SpatialMZAnnotationPlot))
 # SpatialMZAnnotationPlot(SeuratObj, mzs = c("Glucose", "Glutamine"))
 # SpatialMZAnnotationPlot(SeuratObj, mzs = c("Glucose", "Glutamine"), plusminus = 0.05)
 }

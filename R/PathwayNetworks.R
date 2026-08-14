@@ -63,6 +63,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(PathwayNetworkPlots))
 #' # PathwayNetworkPlots(
 #' #   SpaMTP, ident = "Custom_ident", regpathway = regpathway,
 #' #   DE.list = DE.list, selected_pathways = "WP1902"
@@ -92,7 +93,7 @@ PathwayNetworkPlots <- function(SpaMTP,
                                 layout_mode = c("repulsion", "force", "radial", "bipartite"),
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb", "bundled"),
+                                database_source = c("auto", "spamtpdb"),
                                 database_local_dir = NULL) {
   analyte_types <- match.arg(
     analyte_types, c("genes", "metabolites"), several.ok = TRUE

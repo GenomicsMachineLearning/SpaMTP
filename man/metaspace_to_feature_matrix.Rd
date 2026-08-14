@@ -20,5 +20,6 @@ A numeric matrix where rows are molecular features (m/z) and columns are spatial
 Transforms the list of 2D ion image matrices from \code{get_metaspace} into a single matrix suitable for spatial analysis packages.
 }
 \examples{
+utils::str(formals(metaspace_to_feature_matrix))
 # metaspace_to_feature_matrix(mtx, transform = TRUE)
 }

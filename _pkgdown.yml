@@ -237,31 +237,10 @@ reference:
   desc: Function to export SpaMTP data in .mtx, barcodes.csv, features.csv, metadata.csv,
     and feature.metadata.csv files
   contents: SaveSpaMTPData
-- title: Reference Metabolite Datasets
-  desc: Metabolite datasets used for annotating m/z masses
-  contents:
-  - HMDB_db
-  - Lipidmaps_db
-  - Chebi_db
-  - GNPS_db
-  - filtered_fmp10
-- title: Metabolic Pathway Datasets
-  desc: Various datasets required for pathway analysis
+- title: Bundled Annotation and Network Constants
+  desc: Small compatibility tables used by annotation and pathway visualisation
   contents:
   - adduct_file
-  - analyte
-  - analytehaspathway
-  - chem_props
-  - pathway
-  - source_df
-  - ramp_db_metadata
-- title: Pathway Network Datasets
-  desc: Various datasets required for generated pathway network plots
-  contents:
-  - RAMP_hmdb
-  - RAMP_Reactome
-  - RAMP_kegg
-  - RAMP_wikipathway
   - reaction_type
 - title: Cardinal Wrapper Functions
   desc: Functions used to alter Cardinal Objects.
@@ -269,7 +248,6 @@ reference:
 - title: Additional Worker Functions
   desc: Various helper functions used by SpaMTP
   contents:
-  - verbose_message
   - subset_SPM
   - check_cardinal_version
 - title: Utility Functions
@@ -294,12 +272,10 @@ reference:
   - add_backslashes_to_specialfeatures
   - check_and_truncate_adduct_vector
   - db_adduct_filter
-  - is_formula_valid
   - formula_filter
   - calculate_bounds
   - ppm_error
   - ppm_range_match
-  - proc_db
 - subtitle: METASPACE Loader helper functions
   desc: Helper functions required for running 'Load_METASPACE()'
   contents:
@@ -327,14 +303,6 @@ reference:
   - get_square_coordinates
   - lowresMapping
   - hiresMapping
-  - translate
-  - mirror
-  - stretch
-  - rigid.rot
-  - rigid.transf
-  - rigid.transl
-  - rigid.refl
-  - rigid.stretch
   - combine.tr
 - subtitle: Pre-Processing Helper Functions
   desc: Helper functions for generating pre-processing plots

@@ -10,6 +10,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(FindNearestMZ))
 #' # FindNearestMZ(SeuratObj, target_mz = 400.01)
 FindNearestMZ <- function(data, target_mz, assay = NULL){
   if (is.null(assay)){
@@ -36,6 +37,7 @@ FindNearestMZ <- function(data, target_mz, assay = NULL){
 #' @export
 #'
 #' @examples
+#' utils::str(formals(BinMetabolites))
 #' # SpaMPT.obj <- BinMetabolites(SpaMPT.obj, mz = c('mz-740.471557617188','mz-784.528564453125','mz-897.603637695312'), bin_name = "Lipids")
 BinMetabolites <- function(data, mzs, assay = "Spatial", slot = "data", bin_name = "Binned_Metabolites"){
 
@@ -186,6 +188,7 @@ check_column_type <- function(col) {
 #' @export
 #'
 #' @examples
+#' utils::str(formals(pixelPlot))
 #' #pixelPlot(SpatialFeaturPlot(SpaMTP.obj, features = "nFeature_Spatial"))
 pixelPlot <- function(plot){
 
@@ -264,6 +267,7 @@ pixelPlot <- function(plot){
 #' @export
 #'
 #' @examples
+#' utils::str(formals(ImageMZPlot))
 #' # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 #' # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 ImageMZPlot <- function(object,
@@ -461,6 +465,7 @@ ImageMZPlot <- function(object,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(ImageMZAnnotationPlot))
 #' # ImageMZPlot(SeuratObj, mzs = c("Glucose", "Glutamine"))
 #' # ImageMZPlot(SeuratObj, mzs = c("Glucose", "Glutamine"), plusminus = 0.05)
 ImageMZAnnotationPlot <- function(object,
@@ -711,6 +716,7 @@ ImageMZAnnotationPlot <- function(object,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(SpatialMZPlot))
 #' # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 #' # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 SpatialMZPlot <- function(object,
@@ -859,6 +865,7 @@ SpatialMZPlot <- function(object,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(SpatialMZAnnotationPlot))
 #' # SpatialMZAnnotationPlot(SeuratObj, mzs = c("Glucose", "Glutamine"))
 #' # SpatialMZAnnotationPlot(SeuratObj, mzs = c("Glucose", "Glutamine"), plusminus = 0.05)
 SpatialMZAnnotationPlot <- function(object,
@@ -977,11 +984,12 @@ SpatialMZAnnotationPlot <- function(object,
 #' @return A mass spectrometry plot displaying mean intensity values
 #' @export
 #'
-#' @import ggplot2
+#' @rawNamespace import(ggplot2, except = last_plot)
 #' @import dplyr
-#' @import tidyr
+#' @rawNamespace import(tidyr, except = c(expand, pack, unpack))
 #'
 #' @examples
+#' utils::str(formals(MassIntensityPlot))
 #' ## Plot mean of whole tissue section
 #' # MassIntensityPlot(SeuratObj)
 #'
@@ -1246,9 +1254,10 @@ MassIntensityPlot <- function (data,
 #' @return A 3D Plotly plot
 #' @export
 #'
-#' @import plotly
+#' @rawNamespace import(plotly, except = last_plot)
 #'
 #' @examples
+#' utils::str(formals(Plot3DFeature))
 #' # Plot3DFeature(data = my_data, features = c("gene1", "gene2"), assays = c("SPT", "SPM"), show.image = "slice1")
 Plot3DFeature <- function(data,
                           features,
@@ -1360,7 +1369,7 @@ Plot3DFeature <- function(data,
                                 name = default_names[2],
                                 marker = list(color = feature_data[[2]],
                                               coloraxis = 'coloraxis2')) %>%
-    layout(autosize = F,
+    layout(autosize = FALSE,
            scene = list(
              aspectmode = "data",
              xaxis = list(title = x.axis.label, showticklabels = show.x.ticks),
@@ -1449,6 +1458,7 @@ Plot3DFeature <- function(data,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(DensityMap))
 #' # DensityMap(SpaMTP.obj)
 DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),...){
 
@@ -1880,7 +1890,9 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 #' @param slot Character defining the Seurat object assay slot to extract the intensity data from (default = "counts").
 #' @param image Character defining the the name of the image to use for tissue coordinates and spatial plotting (default = "slice1").
 #'
-#' @import shiny
+#' @return A Shiny application object.
+#'
+#' @rawNamespace import(shiny, except = runExample)
 #' @importFrom shinyjs useShinyjs reset
 #' @importFrom plotly plotlyOutput renderPlotly plot_ly add_bars add_lines layout
 #' @importFrom ggplot2 theme_void
@@ -1888,6 +1900,7 @@ DensityMap = function(object, assay = "SPM", slot = "counts", folder = getwd(),.
 #' @export
 #'
 #' @examples
+#' utils::str(formals(InteractiveSpatialPlot))
 #' #InteractiveSpatialPlot(spamtp)
 InteractiveSpatialPlot <- function(obj, assay = "Spatial", slot = "counts", image = "slice1"){
 
@@ -2047,5 +2060,3 @@ InteractiveSpatialPlot <- function(obj, assay = "Spatial", slot = "counts", imag
 
 
 ########################################################################################################################################################################################################################
-
-

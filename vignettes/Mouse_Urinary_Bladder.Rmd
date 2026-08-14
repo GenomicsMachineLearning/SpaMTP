@@ -446,7 +446,7 @@ One of the major steps in the analysis of metabolomics is the identification/ann
 
 *SpaMTP* has a user-friendly function that assigns possible annotations to each m/z value based on a few variables:
 
-* db: Database to query. The default `NULL` uses the bundled RaMP 3.0 chemical-property table and preserves current `RAMP_C_*` identifiers for pathway analysis. A custom database can still be supplied.
+* db: Database to query. The default `NULL` resolves the versioned RaMP 3.0 chemical-property table through `SpaMTPdb` and preserves current `RAMP_C_*` identifiers for pathway analysis. A custom database can still be supplied.
 * polarity: Polarity mode the experiment was run in -> either "positive" or "negative"
 * adducts: Specify different adduct ions that are likely formed or lost during the mass spectrometry imaging. 
 
@@ -478,7 +478,7 @@ bladder_annotated <- AnnotateSM(
 bladder_annotated
 ```
 
-The indexed annotation uses the current bundled RaMP chemical properties. All ppm-valid candidates are stored (`min_score = 0`), so downstream pathway analysis and the interactive network viewer can apply a user-defined score threshold without re-running annotation.
+The indexed annotation uses the current versioned RaMP chemical properties from `SpaMTPdb`. All ppm-valid candidates are stored (`min_score = 0`), so downstream pathway analysis and the interactive network viewer can apply a user-defined score threshold without re-running annotation.
 
 These annotations are stored in the feature meta.data slot within our SpaMTP Object, lets take a look:
 
@@ -1332,7 +1332,6 @@ sessionInfo()
 gc()
 rm(list = ls())
 ```
-
 
 
 

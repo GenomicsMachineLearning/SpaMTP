@@ -21,7 +21,7 @@ annotateTable(
   min_score = 0,
   maldi_matrix = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   infer_structure = c("auto", "never", "always"),
   structure_backend = c("auto", "native"),
@@ -78,8 +78,16 @@ rule selection. \code{adducts = NULL} keeps the complete selected rule space.}
 
 \item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
-\item{infer_structure, structure_backend, structure_workers, min_structure_score}{Structure-aware
-rule-selection arguments passed to \code{BuildMZAnnotationIndex()}.}
+\item{infer_structure}{\code{"auto"} joins precomputed SpaMTPdb structure
+features when possible, \code{"never"} disables inference, and \code{"always"}
+parses missing structures at runtime.}
+
+\item{structure_backend}{SMILES parser passed to \code{DeconvolveSMILES()}.}
+
+\item{structure_workers}{Number of workers used for runtime SMILES parsing.}
+
+\item{min_structure_score}{Minimum rule-specific structural prior retained
+during candidate-index construction.}
 }
 \value{
 Generates an intermediate annotated m/z dataframe

@@ -14,7 +14,7 @@ AddFMP10Annotations(
   annotation.column = "all_IsomerNames",
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -49,5 +49,6 @@ SpaMTP Seurat object containing the relative metabolite annotations stored in th
 Adds metabolite annotations to respective m/z values generated using an FMP10 matrix. This is done based on a curated FMP10 matrix database.
 }
 \examples{
+utils::str(formals(AddFMP10Annotations))
 # AddFMP10Annotations(spamtp, only.fmp.adduct = FALSE)
 }

@@ -2,6 +2,7 @@
 #'
 #' @param message_text Character string containing the message being shown
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the messsage will be suppressed (default = TRUE).
+#' @noRd
 verbose_message <- function(message_text, verbose) {
   if (verbose) {
     message(message_text)
@@ -36,6 +37,7 @@ NULL
 #' @export
 #'
 #' @examples
+#' utils::str(formals(subset_SPM))
 #' # sub <- subset_obt(seurat.obj, idents = "Sample1")
 subset_SPM <- function(
     object = NULL,
@@ -66,10 +68,11 @@ subset_SPM <- function(
     verbose_message(message_text = "Extracting cells matched to `subset` and/or `idents`", verbose = verbose)
   }
 
-  if (class(obj_subset) == "FOV") {
+  is_fov <- methods::is(obj_subset, "FOV")
+  if (is_fov) {
     verbose_message(message_text = "object class is `FOV` ", verbose = verbose)
     cells <- Cells(obj_subset)
-  } else if (!class(obj_subset) == "FOV" && !missing(subset)) {
+  } else if (!is_fov && !missing(subset)) {
     subset <- enquo(arg = subset)
     # cells to keep in the object
     cells <-
@@ -78,7 +81,7 @@ subset_SPM <- function(
                  idents = idents,
                  expression = subset,
                  return.null = TRUE, ...)
-  } else if (!class(obj_subset) == "FOV" && !is.null(idents)) {
+  } else if (!is_fov && !is.null(idents)) {
     cells <-
       WhichCells(object = obj_subset,
                  cells = cells,
@@ -89,7 +92,7 @@ subset_SPM <- function(
   }
 
   # added support for object class `FOV`
-  if (class(obj_subset) == "FOV") {
+  if (is_fov) {
     verbose_message(message_text = "Matching cells for object class `FOV`..", verbose = verbose)
     cells_check <- any(obj_subset %>% Cells %in% cells)
   } else {
@@ -161,7 +164,7 @@ subset_SPM <- function(
                    ...)
   }
 
-  if (Update.object && !class(obj_subset) == "FOV") {
+  if (Update.object && !is_fov) {
     verbose_message(message_text = "Updating object..", verbose = verbose)
     if (verbose){
       obj_subset %<>% UpdateSeuratObject()

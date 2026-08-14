@@ -29,6 +29,7 @@
 #' @import stringr
 #'
 #' @examples
+#' utils::str(formals(FishersPathwayAnalysis))
 #' ## Running in 'mzs' mode:
 #' # FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)
 #'
@@ -46,7 +47,7 @@ FishersPathwayAnalysis <- function (Analyte,
                                     verbose = TRUE,
                                     database = NULL,
                                     database_version = "latest",
-                                    database_source = c("auto", "spamtpdb", "bundled"),
+                                    database_source = c("auto", "spamtpdb"),
                                     database_local_dir = NULL,
                                     ...)
 {
@@ -73,15 +74,15 @@ FishersPathwayAnalysis <- function (Analyte,
 
   if ("metabolites" %in% names(Analyte)) {
     analytes_met = Analyte[["metabolites"]]
-    source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C") == T),]
-    analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
-    analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),]
+    source_met = source_df[which(grepl(source_df$rampId, pattern = "RAMP_C")),]
+    analytehaspathway_met = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C")),]
+    analyte_met = analyte[which(grepl(analyte$rampId, pattern = "RAMP_C")),]
   }
   if ("genes" %in% names(Analyte)) {
     analytes_rna = Analyte[["genes"]]
-    source_rna = source_df[which(grepl(source_df$rampId, pattern = "RAMP_G") == T),]
-    analytehaspathway_rna = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_G") == T),]
-    analyte_rna = analyte[which(grepl(analyte$rampId, pattern = "RAMP_G") == T),]
+    source_rna = source_df[which(grepl(source_df$rampId, pattern = "RAMP_G")),]
+    analytehaspathway_rna = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_G")),]
+    analyte_rna = analyte[which(grepl(analyte$rampId, pattern = "RAMP_G")),]
   }
 
   if ("mzs" %in% names(Analyte)) {
@@ -132,7 +133,7 @@ FishersPathwayAnalysis <- function (Analyte,
       adducts_db3 <- expanded$Adduct
       source_mz <- source_df[grepl("^RAMP_C_", source_df$rampId), , drop = FALSE]
     }
-    analytehaspathway_mz = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C") == T),]
+    analytehaspathway_mz = analytehaspathway[which(grepl(analytehaspathway$rampId, pattern = "RAMP_C")),]
   }
 
   verbose_message(message_text = "Parsing the information of given analytes class" , verbose = verbose)
@@ -141,7 +142,7 @@ FishersPathwayAnalysis <- function (Analyte,
   analytes_new = mz_array = adducts_array = c()
   if("mzs" %in% names(Analyte)){
     analyte_new = rbind(analyte_new,
-                        analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
+                        analyte[which(grepl(analyte$rampId, pattern = "RAMP_C")),])
     analytehaspathway_new = rbind(analytehaspathway_new,
                                   analytehaspathway_mz)
     source_new = rbind(source_new,
@@ -154,7 +155,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
   if("metabolites" %in% names(Analyte)){
     analyte_new = rbind(analyte_new,
-                        analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
+                        analyte[which(grepl(analyte$rampId, pattern = "RAMP_C")),])
     analytehaspathway_new = rbind(analytehaspathway_new,
                                   analytehaspathway_met)
     source_new = rbind(source_new,
@@ -167,7 +168,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
   if("genes" %in% names(Analyte)){
     analyte_new = rbind(analyte_new,
-                        analyte[which(grepl(analyte$rampId, pattern = "RAMP_C") == T),])
+                        analyte[which(grepl(analyte$rampId, pattern = "RAMP_C")),])
 
     analytehaspathway_new = rbind(analytehaspathway_new,
                                   analytehaspathway_rna)
@@ -221,7 +222,7 @@ FishersPathwayAnalysis <- function (Analyte,
   analytehaspathway_full =analytehaspathway_full[which(analytehaspathway_full$total_in_pathways>= min_path_size & analytehaspathway_full$total_in_pathways <= max_path_size),]
 
   # Generate a dataframe contains: the list of  IDs, the list of  names, the number of elements in pathway, the number of elements in our dataset, for each pathway
-  if(pathway_all_info == T){
+  if (isTRUE(pathway_all_info)) {
     unipathids = unique(pathway_rampids_count$pathwayRampId)
     sub_src = source_non_duplicated[which(source_non_duplicated$rampId  %in% pathway_rampids_count$rampId),]
     src_rid = sub_src$rampId
@@ -321,7 +322,7 @@ FishersPathwayAnalysis <- function (Analyte,
   verbose_message(message_text = "Done!" , verbose = verbose)
 
 
-  if(pathway_all_info == F){
+  if (!isTRUE(pathway_all_info)) {
     return =enrichment_df %>% dplyr::select(-c(pathwayRampId,rampId.y, pathwaySource.y)) %>% dplyr::select(pathwayName,
                                                                                                            sourceId,
                                                                                                            type,
@@ -416,6 +417,7 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @importFrom rlang %||%
 #'
 #' @examples
+#' utils::str(formals(FindRegionalPathways))
 #' # SpaMTP = FindRegionalPathways(SpaMTP, polarity = "positive")
 FindRegionalPathways = function(SpaMTP,
                                 ident,
@@ -434,7 +436,7 @@ FindRegionalPathways = function(SpaMTP,
                                 verbose = TRUE,
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb", "bundled"),
+                                database_source = c("auto", "spamtpdb"),
                                 database_local_dir = NULL) {
   annotation_source <- match.arg(annotation_source)
   database_resources <- .spamtp_db_bundle(
@@ -663,9 +665,9 @@ FindRegionalPathways = function(SpaMTP,
           leadingEdge_metabolites_id = if("metabolites" %in% analyte_types){paste0(temp_ref$chem_source_id, collapse = ";")}else{""},
           leadingEdge_genes = if("genes" %in% analyte_types){paste0(temp_rna$commonName, collapse = ";")}else{""},
           met_regulation = if("metabolites" %in% analyte_types){paste0(ifelse(ranks[which((names(ranks) %in% temp) &
-                                                       (grepl(names(ranks), pattern = "RAMP_C")))] >= 0, "↑", "↓"), collapse = ";")}else{""},
+                                                       (grepl(names(ranks), pattern = "RAMP_C")))] >= 0, "\u2191", "\u2193"), collapse = ";")}else{""},
           rna_regulation = if("genes" %in% names(DE.list)){paste0(ifelse(ranks[which((names(ranks) %in% temp) &
-                                                       (grepl(names(ranks), pattern = "RAMP_G")))] >= 0, "↑", "↓"), collapse = ";")}else{""}
+                                                       (grepl(names(ranks), pattern = "RAMP_G")))] >= 0, "\u2191", "\u2193"), collapse = ";")}else{""}
         )
       )
     }))
@@ -710,6 +712,7 @@ FindRegionalPathways = function(SpaMTP,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(RunRAMPgeseca))
 #' # E <- SpaMTP@reductions$pca.rev@feature.loadings
 #' # sig_pathways <- RunRAMPgeseca(E, minSize=15, maxSize=500)
 RunRAMPgeseca <- function(E,
@@ -724,7 +727,7 @@ RunRAMPgeseca <- function(E,
                           nPermSimple = 1000,
                           database = NULL,
                           database_version = "latest",
-                          database_source = c("auto", "spamtpdb", "bundled"),
+                          database_source = c("auto", "spamtpdb"),
                           database_local_dir = NULL){
 
   database_resources <- .spamtp_db_bundle(
@@ -781,12 +784,13 @@ RunRAMPgeseca <- function(E,
 #' @importFrom SeuratObject CreateAssay5Object
 #'
 #' @examples
+#' utils::str(formals(CreatePathwayAssay))
 #' ## Create a pathway assay from metabolite data
 #' #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "metabolites", assay = "SPM", new_assay = "pathway")
 #'
 #' ## Create a pathway assay from gene data with verbose output
 #' #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "genes", assay = "SPT", new_assay = "gene_pathway", verbose = TRUE)
-CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", annotation_score_threshold = 0.05, annotation_source = c("current", "auto", "legacy"), verbose = TRUE, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb", "bundled"), database_local_dir = NULL){
+CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", annotation_score_threshold = 0.05, annotation_source = c("current", "auto", "legacy"), verbose = TRUE, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb"), database_local_dir = NULL){
 
   annotation_source <- match.arg(annotation_source)
   database_resources <- .spamtp_db_bundle(
@@ -955,6 +959,7 @@ CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Sp
 #' @export
 #'
 #' @examples
+#' utils::str(formals(CreatePathwayObject))
 #' #object <- CreatePathwayObject(seurat_obj, assay = "RNA", slot = "scale.data")
 CreatePathwayObject <- function(object,
                                 assay=SeuratObject::DefaultAssay(object),
@@ -963,7 +968,7 @@ CreatePathwayObject <- function(object,
                                 remove.nans = TRUE,
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb", "bundled"),
+                                database_source = c("auto", "spamtpdb"),
                                 database_local_dir = NULL
 ) {
 

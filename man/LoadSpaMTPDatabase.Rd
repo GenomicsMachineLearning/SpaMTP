@@ -7,7 +7,8 @@
 LoadSpaMTPDatabase(
   resources = c("chem_props", "source_df", "analyte", "analytehaspathway", "pathway"),
   version = "latest",
-  source = c("auto", "spamtpdb", "bundled"),
+  source = c("auto", "spamtpdb"),
+  database = NULL,
   local_dir = NULL,
   hub = NULL,
   offline = FALSE,
@@ -20,9 +21,11 @@ LoadSpaMTPDatabase(
 
 \item{version}{SpaMTPdb/RaMP resource version, or \code{"latest"}.}
 
-\item{source}{Database source. \code{"auto"} prefers SpaMTPdb and falls back to
-bundled compatibility data; \code{"spamtpdb"} requires SpaMTPdb; \code{"bundled"}
-explicitly uses the compatibility data.}
+\item{source}{Database source. \code{"auto"} and \code{"spamtpdb"} resolve versioned
+resources through SpaMTPdb.}
+
+\item{database}{Optional named list containing the requested resources. When
+supplied, no Hub lookup is performed.}
 
 \item{local_dir}{Optional directory containing staged SpaMTPdb \code{.rds} files.}
 
@@ -36,12 +39,18 @@ explicitly uses the compatibility data.}
 A named list containing the requested resources.
 }
 \description{
-Loads a coherent group of annotation resources from \link{SpaMTPdb} when it is
-installed. During the database-package transition, \code{source = "auto"} falls
-back to compatibility copies bundled with SpaMTP. Retrieved resources are
-cached for the current R session.
+Loads a coherent group of annotation resources from \link[SpaMTPdb:SpaMTPdb]{SpaMTPdb}. Retrieved
+resources are cached for the current R session. A named custom bundle can be
+supplied for offline, testing, or user-curated workflows.
 }
 \examples{
-database <- LoadSpaMTPDatabase("ramp_db_metadata")
+utils::str(formals(LoadSpaMTPDatabase))
+example_database <- list(
+  ramp_db_metadata = list(ramp_version = "example")
+)
+database <- LoadSpaMTPDatabase(
+  "ramp_db_metadata",
+  database = example_database
+)
 names(database)
 }

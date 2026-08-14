@@ -66,6 +66,7 @@ A SpaMTP Seurat object with Spatial Metabolomic data mapped to equivalent Spatia
 Maps Spatial Metabolomic (MALDI) data to corresponding Spatial Transcriptomics data and coordinates.
 }
 \examples{
+utils::str(formals(MapSpatialOmics))
 
 ## Mapping MALDI data to equivalent Visium spots
 # MapSpatialOmics(VisiumObj, SeuratObj, ST.scale.factor = "hires", SM.assay = "Spatial", ST.assay = "Spatial")

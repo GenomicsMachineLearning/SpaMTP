@@ -20,5 +20,6 @@ Vector containing m/z feature names corresponding to the top n number of spatial
 This function returns the names of the top n number of spatially variable features.
 }
 \examples{
+utils::str(formals(GetSpatiallyVariableMetabolites))
 # features <- GetSpatiallyVariableMetabolites(SpaMTP, n = 6)
 }

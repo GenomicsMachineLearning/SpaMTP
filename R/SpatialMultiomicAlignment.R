@@ -13,6 +13,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(get_square_coordinates))
 #' get_square_coordinates(center_x = 5, center_y = 5, width = 4, name = "MySquare")
 get_square_coordinates <- function(center_x, center_y, width, name) {
   # Calculate half width
@@ -57,6 +58,7 @@ get_square_coordinates <- function(center_x, center_y, width, name) {
 #' @export
 #'
 #' @examples
+#' utils::str(formals(MapSpatialOmics))
 #'
 #' ## Mapping MALDI data to equivalent Visium spots
 #' # MapSpatialOmics(VisiumObj, SeuratObj, ST.scale.factor = "hires", SM.assay = "Spatial", ST.assay = "Spatial")
@@ -589,13 +591,15 @@ hiresMapping <- function(SM.data, ST.data,
 #' @return A SpaMTP Seurat Object containing SM data with transformed coordinated to match the aligned ST data
 #' @export
 #'
-#' @importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput checkboxInput selectInput actionButton plotOutput reactive
-#' renderPlot eventReactive observe stopApp h4 numericInput HTML showModal
+#' @importFrom shiny runApp fluidPage modalDialog fluidRow column sliderInput
+#'   checkboxInput selectInput actionButton plotOutput reactive renderPlot
+#'   eventReactive observe stopApp h4 numericInput HTML showModal
 #' @importFrom shinyjs useShinyjs reset
 #' @importFrom zeallot %<-%
 #'
 #'
 #' @examples
+#' utils::str(formals(AlignSpatialOmics))
 #' # SM_Transformed <- AlignSpatialOmics(SM.data, ST.data)
 AlignSpatialOmics <- function (
     sm.data,
@@ -1068,6 +1072,7 @@ rotate <- function (
 #' in 2D
 #'
 #' @param translate.x,translate.y translation of x, y coordinates
+#' @noRd
 
 translate <- function (
     translate.x,
@@ -1086,6 +1091,7 @@ translate <- function (
 #' object should be reflected
 #' @param center.cur Coordinates of the current center of mass
 #'
+#' @noRd
 
 mirror <- function (
     mirror.x = FALSE,
@@ -1109,6 +1115,7 @@ mirror <- function (
 #' @param alpha angle
 #' @param center.cur Coordinates of the current center of mass
 #'
+#' @noRd
 
 stretch <- function(r, alpha, center.cur) {
   center.cur <- c(center.cur, 0)
@@ -1128,6 +1135,7 @@ stretch <- function(r, alpha, center.cur) {
 #' @param alpha rotation angle
 #' @param forward should the rotation be done in forward direction?
 #'
+#' @noRd
 
 rigid.rot <- function (
     alpha = 0,
@@ -1149,6 +1157,7 @@ rigid.rot <- function (
 #' @param k Numeric: offset along y axis
 #' @param alpha rotation angle
 #'
+#' @noRd
 
 rigid.transf <- function (
     h = 0,
@@ -1164,6 +1173,7 @@ rigid.transf <- function (
 #' @param h Numeric: offset along x axis
 #' @param k Numeric: offset along y axis
 #'
+#' @noRd
 
 rigid.transl <- function (
     h = 0,
@@ -1180,6 +1190,7 @@ rigid.transl <- function (
 #' Points are assumed to be centered at (0, 0)
 #'
 #' @param mirror.x,mirror.y Logical: mirrors x or y axis if set to TRUE
+#' @noRd
 
 rigid.refl <- function (
     mirror.x,
@@ -1201,6 +1212,7 @@ rigid.refl <- function (
 #' along the x axis.
 #'
 #' @param r stretching factor
+#' @noRd
 
 rigid.stretch <- function (
     r
@@ -1218,47 +1230,19 @@ rigid.stretch <- function (
 #' @param center.cur (x, y) image pixel coordinates specifying the current center of the tissue (stored in slot "tools" as "centers")
 #' @param center.new (x, y) image pixel coordinates specifying the new center (image center)
 #' @param alpha Rotation angle
+#' @param mirror.x,mirror.y Logical values indicating reflection across the x
+#'   or y axis before rotation.
 #'
-#' @inheritParams rigid.transf
-#' @inheritParams rigid.transl
-#' @inheritParams rigid.refl
+#' @return A 3-by-3 homogeneous affine-transformation matrix.
 #'
 #' @examples
-#' \dontrun{
-#' library(imager)
-#' library(tidyverse)
-#' im <- load.image("https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Aster_Tataricus.JPG/1024px-Aster_Tataricus.JPG")
-#' d <- sRGBtoLab(im) %>% as.data.frame(wide="c")%>%
-#'   dplyr::select(-x,-y)
-#'
-#' km <- kmeans(d, 2)
-#'
-#' # Run a segmentation to extract flower
-#' seg <- as.cimg(abs(km$cluster - 2), dim = c(dim(im)[1:2], 1, 1))
-#' plot(seg); highlight(seg == 1)
-#'
-#' # Detect edges
-#' dx <- imgradient(seg, "x")
-#' dy <- imgradient(seg, "y")
-#' grad.mag <- sqrt(dx^2 + dy^2)
-#' plot(grad.mag)
-#'
-#' # Extract points at edges
-#' edges.px <- which(grad.mag > max(grad.mag[, , 1, 1])/2, arr.ind = TRUE)
-#' points(edges.px, col = "green", cex = 0.1)
-#'
-#' # Apply transformations to point set
-#' tr1 <- combine.tr(center.cur = apply(edges.px[, 1:2], 2, mean),
-#'                   center.new = c(1200, 1200), alpha = 90)
-#' tr2 <- combine.tr(center.cur = apply(edges.px[, 1:2], 2, mean),
-#'                   center.new = c(500, 1200), mirror.x = T, alpha = 30)
-#' tr3 <- combine.tr(center.cur = apply(edges.px[, 1:2], 2, mean),
-#'                   center.new = c(1200, 500), mirror.y = T, alpha = 270)
-#' plot(edges.px, xlim = c(0, 1700), ylim = c(0, 1700), cex = 0.1)
-#' points(t(tr1%*%t(edges.px[, 1:3])), cex = 0.1, col = "red")
-#' points(t(tr2%*%t(edges.px[, 1:3])), cex = 0.1, col = "yellow")
-#' points(t(tr3%*%t(edges.px[, 1:3])), cex = 0.1, col = "blue")
-#' }
+#' utils::str(formals(combine.tr))
+#' transformation <- combine.tr(
+#'   center.cur = c(0, 0),
+#'   center.new = c(10, 20),
+#'   alpha = 90
+#' )
+#' stopifnot(identical(dim(transformation), c(3L, 3L)))
 #'
 #' @export
 
@@ -1279,6 +1263,7 @@ combine.tr <- function (
 
   # rotate and translate to new center
   tr <- rigid.transf(center.new[1], center.new[2], alpha)%*%tr
+  tr
 }
 
 
@@ -1321,9 +1306,11 @@ generate.map.affine <- function (
 #'
 #' @export
 #'
-#' @import shiny shinyjs
+#' @rawNamespace import(shiny, except = runExample)
+#' @rawNamespace import(shinyjs, except = c(runExample, show))
 #'
 #' @examples
+#' utils::str(formals(AddSMImage))
 #' # AddSMImage(image_path = "../HnE_image.png", SpaMTP = SpaMTP_obj)
 AddSMImage <- function(image_path, SpaMTP, fov = "fov", grey.scale = 0.5, plot.greyscale = FALSE, seed = 123, n.spots = NULL, ...) {
 
@@ -1354,21 +1341,35 @@ AddSMImage <- function(image_path, SpaMTP, fov = "fov", grey.scale = 0.5, plot.g
   image_height <- dim(img_array)[1]
   image_width <- dim(img_array)[2]
 
-  set.seed(seed)  # for reproducibility
   if (is.null(n.spots)){
     n_spots <- dim(SpaMTP)[2]
   } else {
     n_spots <- as.numeric(n.spots)
   }
 
-  sampled_coords <- tissue_coords[sample(1:nrow(tissue_coords), n_spots), ]
+  n_genes <- 200  # Number of genes
+  random_draws <- withr::with_seed(seed, {
+    sampled_coords <- tissue_coords[
+      sample.int(nrow(tissue_coords), n_spots),
+      ,
+      drop = FALSE
+    ]
+    list(
+      sampled_coords = sampled_coords,
+      expression = matrix(
+        stats::rnorm(n_spots * n_genes),
+        nrow = n_genes,
+        ncol = n_spots
+      )
+    )
+  })
+  sampled_coords <- random_draws$sampled_coords
   x_coords <- sampled_coords[, 2]  # X coordinates (column index)
   y_coords <- sampled_coords[, 1]  # Y coordinates (row index)
 
 
   ## Create fake gene expression data
-  n_genes <- 200  # Number of genes
-  fake_expr_matrix <- matrix(rnorm(n_spots * n_genes), nrow = n_genes, ncol = n_spots)
+  fake_expr_matrix <- random_draws$expression
 
   ## Create a data frame with spatial coordinates
   metadata <- data.frame(
@@ -1460,6 +1461,7 @@ AddSMImage <- function(image_path, SpaMTP, fov = "fov", grey.scale = 0.5, plot.g
 #' @export
 #'
 #' @examples
+#' utils::str(formals(CheckAlignment))
 #' # CheckAlignment(SM.data, ST.data)
 CheckAlignment <- function(SM.data, ST.data, image.res = NULL, names = c("SM", "ST"), cols = NULL, image.slice = "slice1", size = 0.5){
 

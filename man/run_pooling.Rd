@@ -29,5 +29,6 @@ Runs pooling of a SpaMTP dataset to generate pseudo-replicates for each unique i
 This function is used by \code{FindAllDEMs()}.
 }
 \examples{
+utils::str(formals(run_pooling))
 # run_pooling <- list(seuratObj, idents = "sample", n = 3, assay = "Spatial", slot = "counts")
 }

@@ -14,8 +14,8 @@ DeconvolveSMILES(
 \arguments{
 \item{smiles}{Character vector of SMILES strings.}
 
-\item{backend}{Currently \code{"auto"} and \code{"native"} both use SpaMTP's
-native parser. The argument reserves a stable extension point for optional
+\item{backend}{Currently \code{"auto"} and \code{"native"} both use SpaMTP's native
+parser. The argument reserves a stable extension point for optional
 chemistry toolkits.}
 
 \item{strict}{Stop when any SMILES cannot be parsed. When \code{FALSE}, invalid
@@ -26,8 +26,8 @@ supporting \code{parallel::mclapply()}. The default is controlled by
 \code{options(SpaMTP.smiles_workers = 1)}.}
 }
 \value{
-A data frame with functional-group counts, ion-mode scores, proposed atom
-sites, and a human-readable \code{structure_evidence} field.
+A data frame with functional-group counts, ion-mode scores, and a
+human-readable \code{structure_evidence} field.
 }
 \description{
 A lightweight, dependency-free SMILES graph parser identifies common
@@ -36,4 +36,7 @@ negative-ion, alkali-binding, and neutral-mass priors. The parser is intended
 for candidate prioritisation rather than pKa, proton-affinity, or quantum
 chemistry calculations. Stereochemistry is accepted but does not change the
 counts.
+}
+\examples{
+utils::str(formals(DeconvolveSMILES))
 }

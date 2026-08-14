@@ -12,7 +12,7 @@ CreatePathwayObject(
   remove.nans = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -47,5 +47,6 @@ is calculated as the scaled mean expression of the analytes associated with
 that pathway, adjusted by the square root of the pathway size.
 }
 \examples{
+utils::str(formals(CreatePathwayObject))
 #object <- CreatePathwayObject(seurat_obj, assay = "RNA", slot = "scale.data")
 }

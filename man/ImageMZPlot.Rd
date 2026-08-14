@@ -114,6 +114,7 @@ This is for plotting SM data from a SpaMTP Seurat Object that does not contain a
 This function inherits from Seurat::ImageFeaturePlot().
 }
 \examples{
+utils::str(formals(ImageMZPlot))
 # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 }

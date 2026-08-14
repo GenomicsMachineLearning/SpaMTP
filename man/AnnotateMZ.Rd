@@ -15,7 +15,7 @@ AnnotateMZ(
   ppm = 5,
   ms1_spectrum = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   infer_structure = c("auto", "never", "always"),
   structure_backend = c("auto", "native"),
@@ -54,8 +54,7 @@ rules automatically when \code{rules} is \code{NULL}.}
 \item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{infer_structure, structure_backend, structure_workers, min_structure_score}{Structure-aware
-rule-selection arguments passed to
-\code{\link[=BuildMZAnnotationIndex]{BuildMZAnnotationIndex()}}.}
+rule-selection arguments passed to \code{\link[=BuildMZAnnotationIndex]{BuildMZAnnotationIndex()}}.}
 
 \item{...}{Additional arguments passed to \code{\link[=QueryMZAnnotationIndex]{QueryMZAnnotationIndex()}}.}
 }
@@ -65,4 +64,7 @@ A ranked candidate data frame.
 \description{
 Convenience wrapper that builds an index when one is not supplied. Reuse a
 pre-built index for repeated or large searches.
+}
+\examples{
+utils::str(formals(AnnotateMZ))
 }

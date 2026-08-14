@@ -20,7 +20,7 @@ AnnotateSM(
   verbose = TRUE,
   maldi_matrix = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   ...
 )
@@ -30,8 +30,8 @@ AnnotateSM(
 
 \item{db}{Reference metabolite dataset in the form of a data.frame. When
 \code{NULL}, the versioned SpaMTPdb \code{chem_props} table is used, unless a
-pre-built \code{index} is supplied through \code{...}. A bundled compatibility copy
-is used while SpaMTPdb is unavailable.}
+pre-built \code{index} is supplied through \code{...}. Versioned resources are loaded
+from SpaMTPdb and may be staged locally for offline use.}
 
 \item{assay}{Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").}
 
@@ -81,16 +81,20 @@ search space when explicitly supplied.}
 \item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
-\code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}
+\code{annotateTable()}, such as \code{index}, \code{rules}, \code{ms1_spectrum},
+\code{infer_structure}, \code{structure_backend}, \code{structure_workers}, or
+\code{min_structure_score}.}
 }
 \value{
 A Seurat Object with m/z values annotated. These annotations are stored in the relative assay's meta.data (e.g. SeuratObj\verb{[["Spatial"]][[]]})
 }
 \description{
 This function assigns each valid m/z peak with one/multiple metabolite names based on the mass difference between the observed value and the theoretical value documented in the reference database.
-SpaMTP contains 4 cleaned reference databases to choose from these include HMDB, Lipid Maps, ChEBI and GNPS. These databases can also be combined for increased coverage.
+Versioned RaMP, HMDB, LIPID MAPS, ChEBI, and GNPS resources are provided by
+SpaMTPdb and can be combined with user-supplied reference tables.
 }
 \examples{
+utils::str(formals(AnnotateSM))
 # HMDB_db <- load("data/HMDB_1_names.rds")
 # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
 }

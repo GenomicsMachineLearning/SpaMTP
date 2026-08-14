@@ -21,6 +21,7 @@ Used to subset dataset to only include annotations that have n number of entries
 For example some peaks can have multiple annotations. Peaks which have above n number of annotations assigned will be removed from Seurat Object.
 }
 \examples{
+utils::str(formals(getRefinedAnnotations))
 # HMDB_db <- load("data/HMDB_1_names.rds")
 # AnnotatedSeuratObj <- AnnotateSeuratMALDI(SeuratObj, HMDB_db)
 

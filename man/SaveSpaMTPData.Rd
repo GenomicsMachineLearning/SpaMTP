@@ -38,11 +38,15 @@ SaveSpaMTPData(
 }
 }}
 }
+\value{
+The output-directory path, invisibly.
+}
 \description{
 This function saves a SpaMTP Seurat Object into a standard single-cell/spatial file format.
 This includes a filtered_feature_bc_matrix folder containing files storing the features, barcode/pixels and intensity matrix.
 Metadata and sapatial files (such as scale factors and hires/lowres images) are also stored.
 }
 \examples{
+utils::str(formals(SaveSpaMTPData))
 # saveSpaMTPData(SeuratObject, "../output", annotations = TRUE)
 }

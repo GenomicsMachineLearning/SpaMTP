@@ -30,6 +30,8 @@
 #' @importFrom plotly plotlyOutput renderPlotly plot_ly add_trace layout event_data
 #' @importFrom sf st_polygon st_sfc st_make_valid st_as_sf st_within
 #' @importFrom dplyr %>%
+#' @examples
+#' utils::str(formals(SelectROIs))
 #' @export
 SelectROIs <- function(seurat_obj, image = "fov") {
 

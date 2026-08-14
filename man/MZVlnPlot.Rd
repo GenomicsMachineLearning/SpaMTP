@@ -50,9 +50,13 @@ MZVlnPlot(
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).}
 }
+\value{
+A \code{ggplot} violin-plot object.
+}
 \description{
 Generates a violin plot of spatial metabolic intensity data
 }
 \examples{
+utils::str(formals(MZVlnPlot))
 # MZVlnPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
 }

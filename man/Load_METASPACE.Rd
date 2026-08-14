@@ -36,5 +36,6 @@ A Seurat object initialized with the METASPACE data in the 'Spatial' assay.
 Downloads METASPACE data, converts it to a feature matrix, and packages it into a Seurat object with spatial metadata.
 }
 \examples{
+utils::str(formals(Load_METASPACE))
 # Load_METASPACE(dataset_id = "2020-12-07_03h16m14s", fdr = 0.1, database= c("HMDB", "v4"), relative = TRUE)
 }

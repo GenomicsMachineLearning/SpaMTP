@@ -1,0 +1,109 @@
+---
+title: "SpaMTP: Spatial Metabolite Annotation"
+author: "Tianyao Lu"
+output:
+  BiocStyle::html_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{SpaMTP: Spatial Metabolite Annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "##",
+  fig.align = "center"
+)
+```
+
+# Overview
+
+`SpaMTP` provides analysis and visualisation methods for spatial metabolomics
+and paired spatial multi-omics experiments. It uses standard Seurat, Cardinal,
+and Bioconductor infrastructure while keeping versioned annotation resources in
+the companion `SpaMTPdb` package and experiment objects in `SpaMTPData`.
+
+This vignette demonstrates a small, fully reproducible accurate-mass annotation
+workflow. It deliberately uses an in-memory database so that package checking
+does not require a network connection or a large data download.
+
+```{r load-package, message=FALSE}
+library(SpaMTP)
+```
+
+# Inspect available database resources
+
+`SpaMTPDatabaseInfo()` reads the lightweight SpaMTPdb registry without
+downloading any annotation table.
+
+```{r database-registry}
+database_registry <- SpaMTPDatabaseInfo(version = "latest")
+database_registry[
+  database_registry$resource %in% c("chem_props", "smiles_features"),
+  c("resource", "version", "category", "rows", "columns")
+]
+```
+
+# Create a small structure-aware database
+
+The example contains D-2-hydroxyglutaric acid and glucose. SMILES connectivity
+is decomposed into interpretable functional groups and ionisation sites before
+candidate generation.
+
+```{r demo-database}
+demo_database <- data.frame(
+  ramp_id = c("RAMP_C_2HG", "RAMP_C_GLUCOSE"),
+  chem_source_id = c("HMDB:HMDB0000606", "HMDB:HMDB0000122"),
+  common_name = c("D-2-hydroxyglutaric acid", "D-glucose"),
+  monoisotop_mass = c(148.037173, 180.063388),
+  mol_formula = c("C5H8O5", "C6H12O6"),
+  iso_smiles = c("O=C(O)CC(O)C(=O)O", "OCC1OC(O)C(O)C(O)C1O"),
+  stringsAsFactors = FALSE
+)
+
+demo_database <- AnnotateSMILESStructure(demo_database)
+demo_database[, c(
+  "common_name", "carboxyl_sites", "hydroxyl_sites",
+  "max_exchangeable_protons", "positive_mode_score",
+  "negative_mode_score", "alkali_affinity_score"
+)]
+```
+
+# Build and query an indexed search space
+
+Candidate masses are generated once and sorted. Repeated observed peaks can
+then be queried using a binary range search rather than scanning the full
+database for every peak.
+
+```{r indexed-search}
+annotation_index <- BuildMZAnnotationIndex(
+  db = demo_database,
+  polarity = "negative",
+  adducts = c("[M-H]-", "[2M-H]-"),
+  infer_structure = "always"
+)
+
+observed_mz <- 147.02935
+candidates <- QueryMZAnnotationIndex(
+  observed_mz = observed_mz,
+  index = annotation_index,
+  ppm = 5
+)
+
+candidates[, c(
+  "observed_mz", "expected_mz", "metabolite_names", "adduct",
+  "ppm_error", "score"
+)]
+```
+
+# Reproducibility
+
+For production analyses, record the database version returned by
+`SpaMTPDatabaseInfo()` together with ion mode, matrix profile, adduct rules,
+mass tolerance, and annotation-score threshold.
+
+```{r session-info}
+sessionInfo()
+```

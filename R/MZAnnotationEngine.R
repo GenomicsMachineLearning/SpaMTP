@@ -77,6 +77,8 @@
 #'   and multiply charged ions.
 #'
 #' @return A data frame containing validated adduct rules.
+#' @examples
+#' utils::str(formals(AdductRules))
 #' @export
 AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
                         include_complex = TRUE) {
@@ -237,6 +239,8 @@ AdductRules <- function(polarity = c("both", "positive", "negative", "neutral"),
 #'
 #' @return A data frame describing supported matrix profiles and their current
 #'   automatic-rule status.
+#' @examples
+#' utils::str(formals(MALDIMatrixProfiles))
 #' @export
 MALDIMatrixProfiles <- function(matrix = NULL) {
   profiles <- data.frame(
@@ -458,6 +462,8 @@ MALDIMatrixProfiles <- function(matrix = NULL) {
 #'
 #' @return A validated adduct/reaction rule data frame accepted by
 #'   [BuildMZAnnotationIndex()].
+#' @examples
+#' utils::str(formals(MALDIMatrixRules))
 #' @export
 MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
                              include_standard = TRUE,
@@ -956,6 +962,8 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
 #' @param backend,workers Passed to [DeconvolveSMILES()].
 #'
 #' @return A ranked data frame with one row per structure/rule combination.
+#' @examples
+#' utils::str(formals(PredictAdductsFromSMILES))
 #' @export
 PredictAdductsFromSMILES <- function(
     smiles, polarity = NULL, maldi_matrix = NULL, rules = NULL,
@@ -1093,6 +1101,8 @@ PredictAdductsFromSMILES <- function(
 #'   before m/z indexing. Set to zero to rank without structure-based pruning.
 #'
 #' @return An object of class `spamtp_mz_index`.
+#' @examples
+#' utils::str(formals(BuildMZAnnotationIndex))
 #' @export
 BuildMZAnnotationIndex <- function(db, polarity = NULL,
                                    adducts = NULL, rules = NULL,
@@ -1426,6 +1436,8 @@ print.spamtp_mz_index <- function(x, ...) {
 #' @param min_score Minimum final score to retain.
 #'
 #' @return A ranked candidate data frame.
+#' @examples
+#' utils::str(formals(QueryMZAnnotationIndex))
 #' @export
 QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
                                    ms1_spectrum = NULL,
@@ -1595,6 +1607,8 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 #' @param ... Additional arguments passed to [QueryMZAnnotationIndex()].
 #'
 #' @return A ranked candidate data frame.
+#' @examples
+#' utils::str(formals(AnnotateMZ))
 #' @export
 AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
                        polarity = NULL,
@@ -1602,7 +1616,7 @@ AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
                        ppm = 5,
                        ms1_spectrum = NULL,
                        database_version = "latest",
-                       database_source = c("auto", "spamtpdb", "bundled"),
+                       database_source = c("auto", "spamtpdb"),
                        database_local_dir = NULL,
                        infer_structure = c("auto", "never", "always"),
                        structure_backend = c("auto", "native"),

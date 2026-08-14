@@ -130,7 +130,7 @@ immutable files from the [*SpaMTP* Zenodo community](https://zenodo.org/communit
 
 ``` r
 SpaMTPData::SpaMTPDataResources()
-striatum <- SpaMTPData::SpaMTPData("striatum_dhb")
+striatum <- SpaMTPData::SpaMTPData("mouse_brain_dhb_striatum")
 ```
 
 The separate `SpaMTPdb` package contains versioned, pruned RaMP database
@@ -294,5 +294,4 @@ install.packages("Seruat")
 ```
 
 For other issue please flag on github under *Issues*.
-
 

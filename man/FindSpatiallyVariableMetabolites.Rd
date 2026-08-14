@@ -44,5 +44,6 @@ Finds metabolites that display strong spatial patterns using MoransI.
 Each m/z value is ranked by MoransI score and the results are stored in the SpaMTP Seurat Object feature metadata.
 }
 \examples{
+utils::str(formals(FindSpatiallyVariableMetabolites))
 # SpaMTP.obj <- FindSpatiallyVariableMetabolites(SpaMTP)
 }

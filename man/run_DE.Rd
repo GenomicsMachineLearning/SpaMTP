@@ -49,6 +49,7 @@ Worker function for calculating differentially abundant metabolites per pooling 
 This function is used by by \code{FindAllDEMs()}.
 }
 \examples{
+utils::str(formals(run_DE))
 # pooled_obj <- run_pooling(SeuratObj, "sample", n = 3)
 # run_DE(pooled_obj, SeuratObj, "sample", "~/Documents/DE_output/", "run_1", n = 3, logFC_threshold = 1.2, annotation.column = "all_IsomerNames", assay = "Spatial")
 }

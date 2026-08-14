@@ -16,7 +16,7 @@ CalculateSingleAnnotationStatistics(
   n_weight = 1,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -70,6 +70,7 @@ This function evaluates the potential biological relevance of an annotation for 
 }
 }
 \examples{
+utils::str(formals(CalculateSingleAnnotationStatistics))
 #data <- CreatePathwayObject(data,assay="SPT_pathway",slot = "scale.data")
 #CalculateSingleAnnotationStatistics(mz = "mz-674.2805",data = data,mz.assay = "SPM",pathway.assay = "pathway",mz.slot = "scale.data")
 

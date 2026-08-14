@@ -22,5 +22,6 @@ A data frame with columns \code{Selection}, \code{X}, and \code{Y} representing 
 This function computes the coordinates of a square's four corners based on a given center point and width.
 }
 \examples{
+utils::str(formals(get_square_coordinates))
 get_square_coordinates(center_x = 5, center_y = 5, width = 4, name = "MySquare")
 }

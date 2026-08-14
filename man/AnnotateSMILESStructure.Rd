@@ -26,13 +26,14 @@ missing values are filled.}
 
 \item{strict}{Passed to \code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
 
-\item{workers}{Parallel workers passed to
-\code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
+\item{workers}{Parallel workers passed to \code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
 }
 \value{
 \code{db} with structure-derived columns appended or completed.
 }
 \description{
-Adds common functional-group counts, proposed ionisation/coordination atom
-sites, and mode-specific chemical priors derived from a SMILES column.
+Add SMILES-derived structural features to a metabolite database
+}
+\examples{
+utils::str(formals(AnnotateSMILESStructure))
 }

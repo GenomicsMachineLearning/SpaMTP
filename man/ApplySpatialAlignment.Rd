@@ -161,7 +161,8 @@ entirely in R. The backend summary records STalign's affine component as
 \code{affine_yx}; it is not the complete nonlinear LDDMM transformation.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+utils::str(formals(ApplySpatialAlignment))
 # Apply coordinates already exported by the SMINT/STalign notebook.
 aligned_sm <- ApplySpatialAlignment(
   SM.data = sm,
@@ -186,5 +187,5 @@ fit <- ApplySpatialAlignment(
   return = "result"
 )
 fit$diagnostics
-}
+\dontshow{\}) # examplesIf}
 }

@@ -33,3 +33,6 @@ The app includes options to:
 
 Spatial selection uses \code{sf} geometry tools. The plot is rendered using \code{plotly}.
 }
+\examples{
+utils::str(formals(SelectROIs))
+}

@@ -17,6 +17,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(metaspace_client))
 #' # ms <- metaspace_client()
 metaspace_client <- function(host = "https://metaspace2020.org", api_key = NULL) {
   graphql_url <- paste0(host, "/graphql")
@@ -36,7 +37,7 @@ metaspace_client <- function(host = "https://metaspace2020.org", api_key = NULL)
     if (!is.null(res$errors)) {
       msg <- res$errors[[1]]$message
       if (status_code(resp) == 401)
-        stop("Authentication required – get your key at https://metaspace2020.org/user/me")
+        stop("Authentication required - get your key at https://metaspace2020.org/user/me")
       stop("GraphQL error: ", msg)
     }
     res$data
@@ -301,6 +302,7 @@ metaspace_client <- function(host = "https://metaspace2020.org", api_key = NULL)
 #' @export
 #'
 #' @examples
+#' utils::str(formals(get_metaspace))
 #' # get_metaspace(dataset_id = "2020-12-07_03h16m14s", fdr = 0.1, database= c("HMDB", "v4"), relative = TRUE)
 get_metaspace <- function(dataset_id,
                           fdr = 0.1,
@@ -320,7 +322,7 @@ get_metaspace <- function(dataset_id,
 
   images <- NULL
   if (include_images) {
-    message("Downloading ", nrow(ann_df), " ion images (full matrices) …")
+    message("Downloading ", nrow(ann_df), " ion images (full matrices) ...")
     mats <- vector("list", nrow(ann_df))
     names(mats) <- mz_names
     pb <- txtProgressBar(0, nrow(ann_df), style = 3)
@@ -362,6 +364,7 @@ get_metaspace <- function(dataset_id,
 #' @export
 #'
 #' @examples
+#' utils::str(formals(metaspace_to_feature_matrix))
 #' # metaspace_to_feature_matrix(mtx, transform = TRUE)
 metaspace_to_feature_matrix <- function(metaspace_data, transform = FALSE, verbose = TRUE) {
 
@@ -452,6 +455,7 @@ metaspace_to_feature_matrix <- function(metaspace_data, transform = FALSE, verbo
 #' @export
 #'
 #' @examples
+#' utils::str(formals(Load_METASPACE))
 #' # Load_METASPACE(dataset_id = "2020-12-07_03h16m14s", fdr = 0.1, database= c("HMDB", "v4"), relative = TRUE)
 Load_METASPACE <- function(dataset_id, fdr = 0.1, database = c("HMDB", "v4"), api_key= NULL, relative = FALSE, transform = FALSE, verbose = TRUE){
 

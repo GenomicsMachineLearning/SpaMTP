@@ -11,12 +11,12 @@ SpaMTPDatabaseInfo(version = NULL)
 available external version.}
 }
 \value{
-A data frame describing resources in SpaMTPdb, or the bundled
-compatibility mapping when SpaMTPdb is not installed.
+A data frame describing resources in SpaMTPdb.
 }
 \description{
 Inspect SpaMTP database resources
 }
 \examples{
+utils::str(formals(SpaMTPDatabaseInfo))
 SpaMTPDatabaseInfo()
 }

@@ -100,7 +100,13 @@ Using the function `AnnotateBigData` we can find m/z values that were successful
 mzs <- data.frame(Cardinal::featureData(spotted_large))$mz
 
 ## Annotate each m/z value
-results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative") 
+results <- AnnotateBigData(
+  mzs,
+  db = NULL,
+  ppm_error = 3,
+  adducts = c("M-H", "M+Cl"),
+  polarity = "negative"
+)
 ```
 
 ```{r, eval=FALSE}

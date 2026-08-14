@@ -2,8 +2,12 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^dependencies\.R$
+^environment-linux\.yml$
 inst/figures/$
-^vignettes/
+^vignettes/(Annotation_Refinement|Big_Data|Metabolite_Annotation_Pipeline|Mouse_Urinary_Bladder|Multi-Omic_Mouse_Brain|Single_Cell_MultiOmics|SpaMTP|SpaMTP_Additional_Features|human_brain_tissue_analysis)\.Rmd$
+^vignettes/(\.gitignore|\.knitr-cache|assets|vignette_data_files|vignette_download_manifests)$
+^vignettes/(get_started\.yaml|vignette_download_utils\.R)$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
@@ -11,5 +15,7 @@ inst/figures/$
 ^\.github$
 ^\.git
 ^data-raw$
+^inst/Publication_Files$
 .*\.Rcheck$
+.*\.BiocCheck$
 .*\.tar\.gz$

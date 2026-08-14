@@ -50,5 +50,6 @@ All other columns should be the relative m/z values containing the intensity val
 }
 }
 \examples{
+utils::str(formals(ReadSM_mtx))
 # msi_data <- ReadSM_mtx("~/Documents/msi_mtx.csv")
 }

@@ -21,6 +21,7 @@ Add Spatial Shrunked Centroid (ssc) results from a non-intensity based Cardinal 
 This function is additional functionality that can only be run on \code{Cardinal} Objects ONLY.
 }
 \examples{
+utils::str(formals(add_ssc_annotation))
 # ssc_data <- Cardinal::spatialShrunkenCentroids(CardinalObj, ...)
 # new_CardinalObj <- add_ssc_annotation(CardinalObj, ssc_data, resolution ="r=2,k=8,s=32")
 }

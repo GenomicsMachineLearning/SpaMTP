@@ -30,7 +30,7 @@ PathwayNetworkPlots(
   layout_mode = c("repulsion", "force", "radial", "bipartite"),
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL
 )
 }
@@ -125,6 +125,7 @@ differential-expression matching, and matrix extraction are indexed so they
 are not repeated for every cluster-pathway pair.
 }
 \examples{
+utils::str(formals(PathwayNetworkPlots))
 # PathwayNetworkPlots(
 #   SpaMTP, ident = "Custom_ident", regpathway = regpathway,
 #   DE.list = DE.list, selected_pathways = "WP1902"

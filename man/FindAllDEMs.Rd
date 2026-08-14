@@ -51,5 +51,6 @@ Returns an list() contains the EdgeR DE results. Pseudo-bulk counts are stored i
 Finds differentially expressed m/z values/metabolites between all comparison groups.
 }
 \examples{
+utils::str(formals(FindAllDEMs))
 # FindAllDEMs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)
 }

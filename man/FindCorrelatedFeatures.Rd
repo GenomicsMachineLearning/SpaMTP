@@ -44,5 +44,6 @@ The specified feature to corrleate against can be either a m/z value, gene or an
 For multi-omic data, both a metabolic and transcriptomic assay can be specified to calculate correlation of both metabolites and genes.
 }
 \examples{
+utils::str(formals(FindCorrelatedFeatures))
 # result <- FindCorrelatedFeatures(data = SpaMTP, gene = "GeneX", nfeatures = 5)
 }

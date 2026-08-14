@@ -15,7 +15,7 @@ VisualisePathways(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb", "bundled"),
+  database_source = c("auto", "spamtpdb"),
   database_local_dir = NULL,
   ...
 )
@@ -55,5 +55,6 @@ A combined gg, ggplot object with pathway and dendrogram
 Displays the pathway analysis results form running the 'FishersPathwayAnalysis()' function
 }
 \examples{
+utils::str(formals(VisualisePathways))
 #SpaMTP:::VisualisePathways(SpaMTP =seurat,pathway_df = pathway_df,p_val_threshold = 0.1,assay = "Spatial",slot = "counts")
 }

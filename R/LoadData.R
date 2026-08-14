@@ -16,6 +16,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(LoadSM))
 #' # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 LoadSM <- function (file, mass.range = NULL, resolution = NA, units = "ppm", verbose = TRUE, assay = "Spatial", multi.run = FALSE){
 
@@ -83,6 +84,7 @@ LoadSM <- function (file, mass.range = NULL, resolution = NA, units = "ppm", ver
 #' @export
 #'
 #' @examples
+#' utils::str(formals(ReadSM_mtx))
 #' # msi_data <- ReadSM_mtx("~/Documents/msi_mtx.csv")
 ReadSM_mtx <- function(mtx.file, assay = "Spatial", verbose = TRUE, feature.start.column = 1, mz.prefix = NULL, project.name = "SpaMTP"){
 

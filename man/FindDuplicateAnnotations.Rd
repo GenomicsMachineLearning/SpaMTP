@@ -18,5 +18,6 @@ Vector of character strings describing metabolites that are assigned to multiple
 Finds if any metabolite is duplicated across multiple m/z values.
 }
 \examples{
+utils::str(formals(FindDuplicateAnnotations))
 # FindDuplicateAnnotations(SeuratObj)
 }

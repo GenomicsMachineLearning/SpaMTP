@@ -31,5 +31,6 @@ This function inputs any vector of m/z values and combines their intensity value
 This 'binned' data is stored in the SpaMTP Object's \verb{@meta.data} slot.
 }
 \examples{
+utils::str(formals(BinMetabolites))
 # SpaMPT.obj <- BinMetabolites(SpaMPT.obj, mz = c('mz-740.471557617188','mz-784.528564453125','mz-897.603637695312'), bin_name = "Lipids")
 }

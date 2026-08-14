@@ -33,5 +33,6 @@ SpaMTP Seurat object containing the custom annotations stored in the feature met
 Adds custom metabolite annotations to respective m/z values (ideal for specific matrices such as FMP10).
 }
 \examples{
+utils::str(formals(AddCustomMZAnnotations))
 # annotated_data <- AddCustomMZAnnotations(SpaMTP.obj, annotation.df)
 }

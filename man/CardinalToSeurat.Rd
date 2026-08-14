@@ -30,5 +30,6 @@ A Seurat Object containing the mz count data of the supplied Cardinal Object
 Converts a Cardinal Object into a SpaMTP Seurat Object
 }
 \examples{
+utils::str(formals(CardinalToSeurat))
 # CardinalToSeurat(CardinalObj, run_name = "run_1", seurat.coord = NULL)
 }

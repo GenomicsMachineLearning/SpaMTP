@@ -43,8 +43,7 @@ derives them for at most \code{getOption("SpaMTP.max_runtime_smiles", 5000)}
 unique SMILES, \code{"never"} disables inference, and \code{"always"} forces
 runtime parsing and replaces precomputed structural fields.}
 
-\item{structure_backend}{SMILES parser used by
-\code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
+\item{structure_backend}{SMILES parser used by \code{\link[=DeconvolveSMILES]{DeconvolveSMILES()}}.}
 
 \item{structure_workers}{Number of workers used for runtime SMILES parsing.}
 
@@ -58,4 +57,7 @@ An object of class \code{spamtp_mz_index}.
 Expected adduct m/z values are generated once, sorted, and queried by binary
 interval search. This is the one-dimensional equivalent of an interval tree
 and avoids scanning every database row for every observed peak.
+}
+\examples{
+utils::str(formals(BuildMZAnnotationIndex))
 }

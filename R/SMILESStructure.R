@@ -550,6 +550,8 @@
 #'
 #' @return A data frame with functional-group counts, ion-mode scores, and a
 #'   human-readable `structure_evidence` field.
+#' @examples
+#' utils::str(formals(DeconvolveSMILES))
 #' @export
 DeconvolveSMILES <- function(smiles, backend = c("auto", "native"),
                              strict = FALSE,
@@ -611,6 +613,8 @@ DeconvolveSMILES <- function(smiles, backend = c("auto", "native"),
 #' @param workers Parallel workers passed to [DeconvolveSMILES()].
 #'
 #' @return `db` with structure-derived columns appended or completed.
+#' @examples
+#' utils::str(formals(AnnotateSMILESStructure))
 #' @export
 AnnotateSMILESStructure <- function(db, smiles_column = NULL,
                                     backend = c("auto", "native"),

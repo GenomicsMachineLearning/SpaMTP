@@ -39,5 +39,6 @@ A data.frame containing the relative transformed and sum counts required for var
 Helper function for QC plots by generating intensity count data
 }
 \examples{
+utils::str(formals(statPlot))
 # df <- statPlot(SeuratObj, group.by = "sample", bottom.cutoff = 0.05, top.cutoff = 0.05, log.data = TRUE)
 }

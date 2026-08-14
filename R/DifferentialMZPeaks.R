@@ -20,6 +20,7 @@
 #' @export
 #'
 #' @examples
+#' utils::str(formals(run_pooling))
 #' # run_pooling <- list(seuratObj, idents = "sample", n = 3, assay = "Spatial", slot = "counts")
 run_pooling <- function(data.filt, idents, n, assay, slot, seed = 1234, verbose = TRUE) {
 
@@ -29,11 +30,13 @@ run_pooling <- function(data.filt, idents, n, assay, slot, seed = 1234, verbose 
   verbose_message(message_text = paste0("Pooling one sample into ", n ," replicates..."), verbose = verbose)
 
   nrg <- n
-  for(i in c(1:length(samples))){
-    set.seed(seed+i)
+  for(i in seq_along(samples)){
     wo<-which(cell_metadata[[idents]]== samples[i])
-    cell_metadata[wo,'orig.ident2']<-paste(samples[i],sample(c(1:n),length(wo)
-                                                             ,replace=T,prob=rep(1/nrg,nrg)),sep='_')
+    pooled_ids <- withr::with_seed(
+      seed + i,
+      sample(seq_len(n), length(wo), replace = TRUE, prob = rep(1 / nrg, nrg))
+    )
+    cell_metadata[wo,'orig.ident2']<-paste(samples[i], pooled_ids, sep='_')
   }
   gene_data <- row.names(data.filt)
   filtered.sce <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = data.filt[[assay]][slot]),
@@ -81,9 +84,10 @@ run_pooling <- function(data.filt, idents, n, assay, slot, seed = 1234, verbose 
 #' @returns A modified edgeR object which contains the relative pseudo-bulking analysis outputs, including a DEMs data.frame with a list of differential expressed m/z metabolites
 #' @export
 #'
-#' @import limma
+#' @rawNamespace import(limma, except = show)
 #'
 #' @examples
+#' utils::str(formals(run_DE))
 #' # pooled_obj <- run_pooling(SeuratObj, "sample", n = 3)
 #' # run_DE(pooled_obj, SeuratObj, "sample", "~/Documents/DE_output/", "run_1", n = 3, logFC_threshold = 1.2, annotation.column = "all_IsomerNames", assay = "Spatial")
 run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, logFC_threshold, annotation.column, assay, return.individual = FALSE, verbose = TRUE){
@@ -225,6 +229,7 @@ run_DE <- function(pooled_data, seurat_data, ident, output_dir, run_name, n, log
 #' @export
 #'
 #' @examples
+#' utils::str(formals(FindAllDEMs))
 #' # FindAllDEMs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)
 FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir = NULL, run_name = "FindAllDEMs", annotation.column = NULL, assay = "Spatial", slot = "counts", return.individual = FALSE, verbose = TRUE, seed = 1234){
 
@@ -268,8 +273,8 @@ FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
 #' @param order.by Character string defining which parameter to order markers by, options are either 'FDR' or 'logFC' (default = "FDR").
 #' @param scale A character string indicating if the values should be centered and scaled in either the row direction or the column direction, or none. Corresponding values are "row", "column" and "none"
 #' @param color A vector of colors used in heatmap (default = grDevices::colorRampPalette(c("navy", "white", "red"))(50)).
-#' @param cluster_cols Boolean value determining if columns should be clustered or hclust object (default = F).
-#' @param cluster_rows Boolean value determining if rows should be clustered or hclust object (default = T).
+#' @param cluster_cols Boolean value determining if columns should be clustered or hclust object (default = FALSE).
+#' @param cluster_rows Boolean value determining if rows should be clustered or hclust object (default = TRUE).
 #' @param fontsize_row A numeric value defining the fontsize of rownames (default = 15).
 #' @param fontsize_col A numeric value defining the fontsize of colnames (default = 15).
 #' @param cutree_cols A numeric value defining the number of clusters the columns are divided into, based on the hierarchical clustering(using cutree), if cols are not clustered, the argument is ignored (default = 9).
@@ -287,6 +292,7 @@ FindAllDEMs <- function(data, ident, n = 3, logFC_threshold = 1.2, DE_output_dir
 #' @import dplyr
 #'
 #' @examples
+#' utils::str(formals(DEMsHeatmap))
 #' # DEMs <- FindAllDEMs(SeuratObj, "sample")
 #'
 #' # DEMsHeatmap(DEMs)
@@ -298,8 +304,8 @@ DEMsHeatmap <- function(edgeR_output,
                          order.by = "FDR",
                          scale ="row",
                          color = grDevices::colorRampPalette(c("navy", "white", "red"))(50),
-                         cluster_cols = F,
-                         cluster_rows = T,
+                         cluster_cols = FALSE,
+                         cluster_rows = TRUE,
                          fontsize_row = 15,
                          fontsize_col = 15,
                          cutree_cols = 9,
@@ -403,16 +409,21 @@ DEMsHeatmap <- function(edgeR_output,
 #' @param width Integer value representing the width of the saved pdf plot (default = 20).
 #' @param height Integer value representing the height of the saved pdf plot (default = 20).
 #'
+#' @return The generated PDF path, invisibly.
+#'
 #' @export
 #'
 #' @examples
+#' utils::str(formals(save_pheatmap_as_pdf))
 #' # save_pheatmap_as_pdf(pheatmap, filename = "/Documents/plots/pheatmap1")
 save_pheatmap_as_pdf <- function(pheatmap, filename, width=20, height=20){
 
-  pdf(paste0(filename,".pdf"), width=width, height=height)
+  output_file <- paste0(filename,".pdf")
+  pdf(output_file, width=width, height=height)
   grid::grid.newpage()
   grid::grid.draw(pheatmap$gtable)
   dev.off()
+  invisible(output_file)
 }
 
 

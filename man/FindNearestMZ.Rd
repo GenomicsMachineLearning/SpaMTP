@@ -20,5 +20,6 @@ String of the closest m/z value within the given dataset
 Finds the nearest m/z peak to a given value in a SpaMTP Object
 }
 \examples{
+utils::str(formals(FindNearestMZ))
 # FindNearestMZ(SeuratObj, target_mz = 400.01)
 }
