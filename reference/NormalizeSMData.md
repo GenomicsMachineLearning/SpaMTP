@@ -1,0 +1,66 @@
+# Normalizes m/z intensity data stored in a SpaMTP Seurat Object
+
+This function can be used for normalising data already stored in a
+SpaMTP Seurat Object. Normalisation methods include total ion count
+(TIC), log normalisation and counts per million (RC).
+
+## Usage
+
+``` r
+NormalizeSMData(
+  data,
+  normalisation.type = "TIC",
+  scale.factor = NULL,
+  assay = "Spatial",
+  slot = "counts",
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- data:
+
+  Seurat Object to be normalized.
+
+- normalisation.type:
+
+  Character string defining the normalization method to run. Options are
+  either c("TIC", "LogNormalize", "RC") which represent Total Ion
+  Current (TIC) normalization, Log Normalization or counts per million
+  (RC), respectively (default = "TIC").
+
+- scale.factor:
+
+  Numeric value that sets the scale factor for pixel/spot level
+  normalization. Following normalization the total intensity value
+  across each pixel will equal this value. If scale.factor = NULL, TIC
+  normalization will use a scale factor = number of m/z and Log
+  Normalisation will use a scale factor = 10000 (default = NULL).
+
+- assay:
+
+  Character string defining the name of the Seurat Object assay to pull
+  the corresponding intensity data from (default = "Spatial").
+
+- slot:
+
+  Character string defining the name of the slot within the Seurat
+  Object assay to pull the corresponding intensity data from (default =
+  "counts").
+
+- verbose:
+
+  Boolean indicating whether to show the message. If TRUE the message
+  will be show, else the message will be suppressed (default = TRUE).
+
+## Value
+
+A Seurat Object with intensity values normalized. Normalized data is
+stored in the \$data slot of the specified assay
+
+## Examples
+
+``` r
+# normalised_data <- NormalizeSMData(SeuratObject)
+```

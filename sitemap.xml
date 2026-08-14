@@ -4,8 +4,10 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/LICENSE.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Annotation_Refinement.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Big_Data.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Metabolite_Annotation_Pipeline.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Multi-Omic_Mouse_Brain.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Multi-Omic_Mouse_Brain_files/pathway-network/striatum_2026_08_14_02_18_03.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/Single_Cell_MultiOmics.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/SpaMTP.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/articles/SpaMTP_Additional_Features.html</loc></url>
@@ -23,12 +25,17 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AddCustomMZAnnotations.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AddFMP10Annotations.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AddSMImage.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AdductRules.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AlignSpatialOmics.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AnnotateBigData.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AnnotateMZ.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AnnotateSM.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/AnnotationInfo.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ApplySpatialAlignment.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/BinMetabolites.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/BinSpaMTP.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/BinnedCardinalToSeurat.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/BuildMZAnnotationIndex.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateAnnotationStatistics.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CalculateSingleAnnotationStatistics.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/CardinalToSeurat.html</loc></url>
@@ -58,6 +65,8 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Lipidmaps_db.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/LoadSM.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Load_METASPACE.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MALDIMatrixProfiles.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MALDIMatrixRules.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZBoxPlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZRidgePlot.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/MZVlnPlot.html</loc></url>
@@ -73,6 +82,7 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PlotSinglePathway.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/PlotSinglePathwaySpatially.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/Pseudo_msms.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/QueryMZAnnotationIndex.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_Reactome.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_hmdb.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_kegg.html</loc></url>
@@ -128,7 +138,9 @@
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/plusminus.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_error.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ppm_range_match.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/print.spamtp_mz_index.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/proc_db.html</loc></url>
+<url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/ramp_db_metadata.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/reaction_type.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.refl.html</loc></url>
 <url><loc>https://genomicsmachinelearning.github.io/SpaMTP/reference/rigid.rot.html</loc></url>

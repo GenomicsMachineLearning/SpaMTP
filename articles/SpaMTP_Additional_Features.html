@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="SpaMTP: Additional Analysis Features">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../articles/SpaMTP.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/Mouse_Urinary_Bladder.html">Spatial Metabolomics Analysis</a></li>
@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/human_brain_tissue_analysis.html">Single Cell Multi-Omics Analysis (MTP)</a></li>
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
+    <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul>
@@ -54,6 +55,14 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://doi.org/10.1038/s41592-026-03140-8" aria-label="SpaMTP Nature Methods paper">Paper</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-developmental" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Developmental</button>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-developmental">
+<li><a class="dropdown-item" href="https://genomicsmachinelearning.github.io/SpaMTP/developmental/">Developmental documentation</a></li>
+    <li><a class="external-link dropdown-item" href="https://github.com/GenomicsMachineLearning/SpaMTP/tree/developmental">Developmental source branch</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/GenomicsMachineLearning/SpaMTP" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
@@ -78,7 +87,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>SpaMTP: Additional Analysis Features</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/HEAD/vignettes/SpaMTP_Additional_Features.Rmd" class="external-link"><code>vignettes/SpaMTP_Additional_Features.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/genomicsmachinelearning/SpaMTP/blob/main/vignettes/SpaMTP_Additional_Features.Rmd" class="external-link"><code>vignettes/SpaMTP_Additional_Features.Rmd</code></a></small>
       <div class="d-none name"><code>SpaMTP_Additional_Features.Rmd</code></div>
     </div>
 
@@ -93,7 +102,7 @@ analysed extensively <a href="https://genomicsmachinelearning.github.io/SpaMTP/a
 <div class="sourceCode" id="section-cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Install SpaMTP if not previously installed</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://github.com/genomicsmachinelearning/SpaMTP" class="external-link">"SpaMTP"</a></span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span>
+<span>    <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"GenomicsMachineLearning/SpaMTP"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#General Libraries</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/genomicsmachinelearning/SpaMTP" class="external-link">SpaMTP</a></span><span class="op">)</span></span>
@@ -112,7 +121,13 @@ analysed extensively <a href="https://genomicsmachinelearning.github.io/SpaMTP/a
 spatially-aware Shrunken Centroid) and annotated data. For more
 information about how the data was processed, please visit <a href="https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.html">here</a>.</p>
 <div class="sourceCode" id="section-cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bladder_annotated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/records/17246684/files/bladder_annotated.RDS?download=1"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bladder_annotated_file</span> <span class="op">&lt;-</span> <span class="fu">resolve_spamtp_vignette_file</span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"SpaMTP_Additional_Features"</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"bladder_annotated.RDS"</span>,</span>
+<span>  url <span class="op">=</span> <span class="st">"https://zenodo.org/api/records/17246684/files/bladder_annotated.RDS/content"</span>,</span>
+<span>  expected_md5 <span class="op">=</span> <span class="st">"68b4a4fb4fb0aaa81fa138410d14ef0f"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">bladder_annotated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">bladder_annotated_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bladder_annotated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/UpdateSeuratObject.html" class="external-link">UpdateSeuratObject</a></span><span class="op">(</span><span class="va">bladder_annotated</span><span class="op">)</span> <span class="co"># Only Required if SeuratObjects =&gt; 5.0.2</span></span></code></pre></div>
 </div>
@@ -830,7 +845,7 @@ Below, we will plot the expression of the m/z 741.530578613281 using
 we use ggplot helper functions to orientate the image correctly.</p>
 <div class="sourceCode" id="section-cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, features <span class="op">=</span> <span class="st">"mz-741.530578613281"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-16-1.png" width="792" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="792" style="display: block; margin: auto;"></p>
 <p>Comparatively, the <strong><em>SpaMTP</em></strong> function
 <em>ImageMZPlot()</em> provides more SM-based functionality,
 including:</p>
@@ -842,7 +857,7 @@ including:</p>
 </ul>
 <div class="sourceCode" id="section-cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZPlot.html">ImageMZPlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, mz <span class="op">=</span> <span class="fl">741.53057</span>, plusminus <span class="op">=</span> <span class="fl">1</span>, size <span class="op">=</span> <span class="fl">1</span>, plot.pixel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-17-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="section-plotting-a-metabolite-name">Plotting a Metabolite Name<a class="anchor" aria-label="anchor" href="#section-plotting-a-metabolite-name"></a>
@@ -867,12 +882,12 @@ name (as described above using plot.exact = <code>FALSE</code>).</li>
 <p>Lets plot them individually:</p>
 <div class="sourceCode" id="section-cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, metabolites <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(3'-sulfo)Galbeta-Cer(d18:1/22:0(2OH))"</span>, <span class="st">"(3'-sulfo)Galbeta-Cer(d18:1/24:0(2OH))"</span><span class="op">)</span>, slot <span class="op">=</span> <span class="st">"counts"</span>, plot.exact <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-19-1.png" width="2112" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="2112" style="display: block; margin: auto;"></p>
 <p>Lets plot them combined:</p>
 <div class="sourceCode" id="section-cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, metabolites <span class="op">=</span> <span class="st">"Galbeta-Cer"</span>, slot <span class="op">=</span> <span class="st">"counts"</span>, plot.exact <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-20-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 <p>There are equivalent functions for <strong><em>SpaMTP</em></strong>
 <em>Seurat</em> objects that contain images these being
 <em>SpatialMZPlot()</em> and <em>SpatialMZAnnotationPlot()</em>.
@@ -891,7 +906,7 @@ these plots and also label peaks with selected metabolites.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/MassIntensityPlot.html">MassIntensityPlot</a></span><span class="op">(</span><span class="va">ROI</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, label.annotations <span class="op">=</span> <span class="cn">TRUE</span>, metabolite.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC(34:1)"</span><span class="op">)</span>, annotation.column <span class="op">=</span> <span class="st">"Species.Name.Simple"</span>,labelAdj <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  labelOffset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-21-1.png" width="1920" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="1920" style="display: block; margin: auto;"></p>
 <p>Based on this plot, we can see that our metabolite “PC(34:1)” has
 been annotated on the plot. The plot looks quite crowded though. We can
 either change the mass range to only show the specific region on the
@@ -900,11 +915,11 @@ will show both approaches below:</p>
 <p>Change the mass range:</p>
 <div class="sourceCode" id="section-cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/MassIntensityPlot.html">MassIntensityPlot</a></span><span class="op">(</span><span class="va">ROI</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, mass.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">750</span>, <span class="fl">850</span><span class="op">)</span>, label.annotations <span class="op">=</span> <span class="cn">TRUE</span>, metabolite.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC(34:1)"</span><span class="op">)</span>, annotation.column <span class="op">=</span> <span class="st">"Species.Name.Simple"</span>,labelAdj <span class="op">=</span> <span class="fl">0</span>, labelOffset <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-22-1.png" width="1920" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="" width="1920" style="display: block; margin: auto;"></p>
 <p>Generate individual plots per cluster:</p>
 <div class="sourceCode" id="section-cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/MassIntensityPlot.html">MassIntensityPlot</a></span><span class="op">(</span><span class="va">ROI</span>, split.by  <span class="op">=</span> <span class="st">"ssc"</span>, label.annotations <span class="op">=</span> <span class="cn">TRUE</span>, metabolite.labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC(34:1)"</span><span class="op">)</span>, annotation.column <span class="op">=</span> <span class="st">"Species.Name.Simple"</span>,labelAdj <span class="op">=</span> <span class="fl">2</span>, labelOffset <span class="op">=</span> <span class="fl">0</span>,labelCex <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-23-1.png" width="1920" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="1920" style="display: block; margin: auto;"></p>
 <p>Now we can clearly see that this metabolite is highly expressed by
 cluster 6!</p>
 <p>There are various additional visualisation techniques such as 3D
@@ -1144,7 +1159,7 @@ mouse-bladder-peaks
 results:</p>
 <div class="sourceCode" id="section-cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageFeaturePlot.html" class="external-link">ImageFeaturePlot</a></span><span class="op">(</span><span class="va">bladder_annotated</span>, features <span class="op">=</span> <span class="st">"Binned_GPs"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 <p>We can see that there is high expression of GP’s in the urothelium
 and adventitia layers of the bladder. This feature is especially useful
 to combine metabolites that are all up expressed in a specific
@@ -1168,7 +1183,7 @@ object’s metadata to plot. This can help assist the alignment process,
 in particular by using clustering results.</p>
 <p>Here is an example of what the alignment GUI looks like, and also the
 perimeters we used to align the H&amp;E image:</p>
-<p><img src="vignette_data_files/Mouse_Urinary_Bladder/H%26E_Alignment.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="vignette_data_files/Mouse_Urinary_Bladder/H%26E_Alignment.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 <p>After clicking the return aligned data button a
 <strong><em>SpaMTP</em></strong> <em>Seurat</em> object with the H&amp;E
 image added to the <code>@image$slice1</code> slot will be returned.
@@ -1191,7 +1206,7 @@ adjusted coordinates to match the H&amp;E image.</p>
 <div class="sourceCode" id="section-cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ImageDimPlot.html" class="external-link">ImageDimPlot</a></span><span class="op">(</span><span class="va">bladder_HE</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, fov <span class="op">=</span> <span class="st">"fov"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_reverse</a></span><span class="op">(</span><span class="op">)</span> <span class="op">)</span><span class="op">/</span> </span>
 <span>  <span class="op">(</span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html" class="external-link">SpatialDimPlot</a></span><span class="op">(</span><span class="va">bladder_HE</span>, group.by <span class="op">=</span> <span class="st">"ssc"</span>, images <span class="op">=</span> <span class="st">"slice1"</span>, pt.size.factor <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">&amp;</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 <p>This also means that we can now visualise our data using the
 <em>Plot3D()</em> function with a H&amp;E image:</p>
 <div class="sourceCode" id="section-cb29"><pre class="downlit sourceCode r">
@@ -1567,7 +1582,7 @@ L-Glutamine; Ureidoisobutyric acid; D-Glutamine; Alanylglycine
 visualise <code>Glutathione</code>:</p>
 <div class="sourceCode" id="section-cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ImageMZAnnotationPlot.html">ImageMZAnnotationPlot</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">metaspace</span>, metabolites <span class="op">=</span> <span class="st">"Glutathione"</span>,column.name <span class="op">=</span> <span class="st">"moleculeNames"</span>, dark.background <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colours <span class="op">=</span> <span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.5</span><span class="op">)</span>, na.value <span class="op">=</span> <span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">[</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-46-1.png" width="360" style="display: block; margin: auto;"></p>
+<p><img src="SpaMTP_Additional_Features_files/figure-html/unnamed-chunk-46-1.png" class="r-plt" alt="" width="360" style="display: block; margin: auto;"></p>
 <p>We can compare these results to the actual METASPACE page below</p>
 <iframe src="https://metaspace2020.org/annotations?db_id=38&amp;ds=2020-12-07_03h16m14s" width="100%" height="600px">
 </iframe>
@@ -1577,80 +1592,81 @@ visualise <code>Glutathione</code>:</p>
 </h2>
 <div class="sourceCode" id="section-cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
-<span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 15.5</span></span>
+<pre><code><span><span class="co">## R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">## Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
-<span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
-<span><span class="co">## LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0</span></span>
+<span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## locale:</span></span>
-<span><span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span><span class="co">##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## time zone: Europe/Oslo</span></span>
-<span><span class="co">## tzcode source: internal</span></span>
+<span><span class="co">## time zone: UTC</span></span>
+<span><span class="co">## tzcode source: system (glibc)</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## attached base packages:</span></span>
 <span><span class="co">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] kableExtra_1.4.0       knitr_1.50             viridis_0.6.5         </span></span>
-<span><span class="co">##  [4] viridisLite_0.4.2      EnhancedVolcano_1.24.0 ggrepel_0.9.6         </span></span>
-<span><span class="co">##  [7] ggplot2_4.0.0          dplyr_1.1.4            Seurat_5.3.0          </span></span>
-<span><span class="co">## [10] SeuratObject_5.2.0     sp_2.2-0               Cardinal_3.8.3        </span></span>
-<span><span class="co">## [13] S4Vectors_0.44.0       ProtGenerics_1.38.0    BiocGenerics_0.52.0   </span></span>
-<span><span class="co">## [16] BiocParallel_1.40.2    SpaMTP_1.1.0          </span></span>
+<span><span class="co">##  [1] kableExtra_1.4.1       knitr_1.51             viridis_0.6.5         </span></span>
+<span><span class="co">##  [4] viridisLite_0.4.3      EnhancedVolcano_1.30.0 ggrepel_0.9.8         </span></span>
+<span><span class="co">##  [7] ggplot2_4.0.3          dplyr_1.2.1            Seurat_5.5.1          </span></span>
+<span><span class="co">## [10] SeuratObject_5.4.0     sp_2.2-3               Cardinal_3.14.0       </span></span>
+<span><span class="co">## [13] S4Vectors_0.50.1       ProtGenerics_1.44.0    BiocGenerics_0.58.1   </span></span>
+<span><span class="co">## [16] generics_0.1.4         BiocParallel_1.46.0    SpaMTP_1.1.0.9000     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] RcppAnnoy_0.0.22       splines_4.4.1          later_1.4.4           </span></span>
-<span><span class="co">##   [4] bitops_1.0-9           tibble_3.3.0           polyclip_1.10-7       </span></span>
-<span><span class="co">##   [7] fastDummies_1.7.5      lifecycle_1.0.4        sf_1.0-21             </span></span>
-<span><span class="co">##  [10] globals_0.18.0         lattice_0.22-7         MASS_7.3-65           </span></span>
-<span><span class="co">##  [13] magrittr_2.0.4         limma_3.62.2           plotly_4.11.0         </span></span>
-<span><span class="co">##  [16] sass_0.4.10            rmarkdown_2.29         jquerylib_0.1.4       </span></span>
-<span><span class="co">##  [19] yaml_2.3.10            httpuv_1.6.16          sctransform_0.4.2     </span></span>
-<span><span class="co">##  [22] spam_2.11-1            spatstat.sparse_3.1-0  reticulate_1.43.0     </span></span>
-<span><span class="co">##  [25] cowplot_1.2.0          pbapply_1.7-4          DBI_1.2.3             </span></span>
-<span><span class="co">##  [28] RColorBrewer_1.1-3     abind_1.4-8            Rtsne_0.17            </span></span>
-<span><span class="co">##  [31] purrr_1.1.0            RCurl_1.98-1.17        irlba_2.3.5.1         </span></span>
-<span><span class="co">##  [34] listenv_0.9.1          spatstat.utils_3.2-0   units_0.8-7           </span></span>
-<span><span class="co">##  [37] goftest_1.2-3          RSpectra_0.16-2        spatstat.random_3.4-2 </span></span>
-<span><span class="co">##  [40] matter_2.8.0           fitdistrplus_1.2-4     parallelly_1.45.1     </span></span>
-<span><span class="co">##  [43] pkgdown_2.1.3          svglite_2.2.1          codetools_0.2-20      </span></span>
-<span><span class="co">##  [46] xml2_1.4.0             tidyselect_1.2.1       farver_2.1.2          </span></span>
-<span><span class="co">##  [49] matrixStats_1.5.0      spatstat.explore_3.5-3 jsonlite_2.0.0        </span></span>
-<span><span class="co">##  [52] CardinalIO_1.4.0       e1071_1.7-16           progressr_0.16.0      </span></span>
-<span><span class="co">##  [55] ggridges_0.5.7         survival_3.8-3         systemfonts_1.2.3     </span></span>
-<span><span class="co">##  [58] tools_4.4.1            ragg_1.5.0             ica_1.0-3             </span></span>
-<span><span class="co">##  [61] Rcpp_1.1.0             glue_1.8.0             gridExtra_2.3         </span></span>
-<span><span class="co">##  [64] xfun_0.53              EBImage_4.48.0         withr_3.0.2           </span></span>
-<span><span class="co">##  [67] fastmap_1.2.0          shinyjs_2.1.0          digest_0.6.37         </span></span>
-<span><span class="co">##  [70] R6_2.6.1               mime_0.13              textshaping_1.0.3     </span></span>
-<span><span class="co">##  [73] scattermore_1.2        tensor_1.5.1           jpeg_0.1-11           </span></span>
-<span><span class="co">##  [76] spatstat.data_3.1-8    tidyr_1.3.1            generics_0.1.4        </span></span>
-<span><span class="co">##  [79] data.table_1.17.8      class_7.3-23           httr_1.4.7            </span></span>
-<span><span class="co">##  [82] htmlwidgets_1.6.4      ontologyIndex_2.12     uwot_0.2.3            </span></span>
-<span><span class="co">##  [85] pkgconfig_2.0.3        gtable_0.3.6           lmtest_0.9-40         </span></span>
-<span><span class="co">##  [88] S7_0.2.0               htmltools_0.5.8.1      dotCall64_1.2         </span></span>
-<span><span class="co">##  [91] fftwtools_0.9-11       scales_1.4.0           Biobase_2.66.0        </span></span>
-<span><span class="co">##  [94] png_0.1-8              spatstat.univar_3.1-4  rstudioapi_0.17.1     </span></span>
-<span><span class="co">##  [97] reshape2_1.4.4         nlme_3.1-168           curl_7.0.0            </span></span>
-<span><span class="co">## [100] proxy_0.4-27           cachem_1.1.0           zoo_1.8-14            </span></span>
-<span><span class="co">## [103] stringr_1.5.2          KernSmooth_2.23-26     parallel_4.4.1        </span></span>
-<span><span class="co">## [106] miniUI_0.1.2           desc_1.4.3             pillar_1.11.1         </span></span>
-<span><span class="co">## [109] grid_4.4.1             vctrs_0.6.5            RANN_2.6.2            </span></span>
-<span><span class="co">## [112] promises_1.3.3         xtable_1.8-4           cluster_2.1.8.1       </span></span>
-<span><span class="co">## [115] evaluate_1.0.5         zeallot_0.2.0          cli_3.6.5             </span></span>
-<span><span class="co">## [118] locfit_1.5-9.12        compiler_4.4.1         rlang_1.1.6           </span></span>
-<span><span class="co">## [121] future.apply_1.20.0    labeling_0.4.3         classInt_0.4-11       </span></span>
-<span><span class="co">## [124] plyr_1.8.9             fs_1.6.6               stringi_1.8.7         </span></span>
-<span><span class="co">## [127] deldir_2.0-4           lazyeval_0.2.2         tiff_0.1-12           </span></span>
-<span><span class="co">## [130] spatstat.geom_3.6-0    Matrix_1.7-4           RcppHNSW_0.6.0        </span></span>
-<span><span class="co">## [133] patchwork_1.3.2        future_1.67.0          statmod_1.5.0         </span></span>
-<span><span class="co">## [136] shiny_1.11.1           ROCR_1.0-11            igraph_2.1.4          </span></span>
-<span><span class="co">## [139] bslib_0.9.0</span></span></code></pre>
+<span><span class="co">##   [1] RColorBrewer_1.1-3     rstudioapi_0.19.0      jsonlite_2.0.0        </span></span>
+<span><span class="co">##   [4] magrittr_2.0.5         spatstat.utils_3.2-4   farver_2.1.2          </span></span>
+<span><span class="co">##   [7] rmarkdown_2.31         fs_2.1.0               ragg_1.5.2            </span></span>
+<span><span class="co">##  [10] vctrs_0.7.3            ROCR_1.0-12            memoise_2.0.1         </span></span>
+<span><span class="co">##  [13] spatstat.explore_3.8-2 htmltools_0.5.9        curl_7.1.0            </span></span>
+<span><span class="co">##  [16] sass_0.4.10            sctransform_0.4.3      parallelly_1.48.0     </span></span>
+<span><span class="co">##  [19] KernSmooth_2.23-26     bslib_0.12.0           htmlwidgets_1.6.4     </span></span>
+<span><span class="co">##  [22] desc_1.4.3             ica_1.0-3              plyr_1.8.9            </span></span>
+<span><span class="co">##  [25] plotly_4.12.1          zoo_1.9-0              cachem_1.1.0          </span></span>
+<span><span class="co">##  [28] whisker_0.4.1          igraph_2.3.3           mime_0.13             </span></span>
+<span><span class="co">##  [31] lifecycle_1.0.5        pkgconfig_2.0.3        Matrix_1.7-5          </span></span>
+<span><span class="co">##  [34] R6_2.6.1               fastmap_1.2.0          fitdistrplus_1.2-6    </span></span>
+<span><span class="co">##  [37] future_1.75.0          shiny_1.14.0           digest_0.6.39         </span></span>
+<span><span class="co">##  [40] patchwork_1.3.2        tensor_1.5.1           RSpectra_0.16-2       </span></span>
+<span><span class="co">##  [43] irlba_2.3.7            textshaping_1.0.5      labeling_0.4.3        </span></span>
+<span><span class="co">##  [46] progressr_1.0.0        spatstat.sparse_3.2-0  httr_1.4.8            </span></span>
+<span><span class="co">##  [49] polyclip_1.10-7        abind_1.4-8            compiler_4.6.1        </span></span>
+<span><span class="co">##  [52] proxy_0.4-29           withr_3.0.3            S7_0.2.2              </span></span>
+<span><span class="co">##  [55] DBI_1.3.0              fastDummies_1.7.6      MASS_7.3-65           </span></span>
+<span><span class="co">##  [58] classInt_0.4-11        units_1.0-1            tools_4.6.1           </span></span>
+<span><span class="co">##  [61] lmtest_0.9-40          otel_0.2.0             httpuv_1.6.17         </span></span>
+<span><span class="co">##  [64] future.apply_1.20.2    goftest_1.2-3          glue_1.8.1            </span></span>
+<span><span class="co">##  [67] nlme_3.1-169           promises_1.5.0         sf_1.1-2              </span></span>
+<span><span class="co">##  [70] grid_4.6.1             Rtsne_0.17             cluster_2.1.8.2       </span></span>
+<span><span class="co">##  [73] reshape2_1.4.5         gtable_0.3.6           spatstat.data_3.1-9   </span></span>
+<span><span class="co">##  [76] class_7.3-23           tidyr_1.3.2            data.table_1.18.4     </span></span>
+<span><span class="co">##  [79] xml2_1.6.0             spatstat.geom_3.8-2    RcppAnnoy_0.0.23      </span></span>
+<span><span class="co">##  [82] RANN_2.6.2             pillar_1.11.1          stringr_1.6.0         </span></span>
+<span><span class="co">##  [85] spam_2.11-4            RcppHNSW_0.7.0         limma_3.68.5          </span></span>
+<span><span class="co">##  [88] later_1.4.8            splines_4.6.1          lattice_0.22-9        </span></span>
+<span><span class="co">##  [91] survival_3.8-6         deldir_2.0-4           tidyselect_1.2.1      </span></span>
+<span><span class="co">##  [94] CardinalIO_1.10.0      miniUI_0.1.2           pbapply_1.7-4         </span></span>
+<span><span class="co">##  [97] downlit_0.4.5          gridExtra_2.3.1        matter_2.14.0         </span></span>
+<span><span class="co">## [100] svglite_2.2.2          scattermore_1.2        xfun_0.60             </span></span>
+<span><span class="co">## [103] Biobase_2.72.0         statmod_1.5.2          matrixStats_1.5.0     </span></span>
+<span><span class="co">## [106] stringi_1.8.9          yaml_2.3.12            evaluate_1.0.5        </span></span>
+<span><span class="co">## [109] codetools_0.2-20       tibble_3.3.1           cli_3.6.6             </span></span>
+<span><span class="co">## [112] ontologyIndex_2.12     uwot_0.2.4             xtable_1.8-8          </span></span>
+<span><span class="co">## [115] reticulate_1.46.0      systemfonts_1.3.2      jquerylib_0.1.4       </span></span>
+<span><span class="co">## [118] Rcpp_1.1.2             globals_0.19.1         spatstat.random_3.5-1 </span></span>
+<span><span class="co">## [121] zeallot_0.2.0          png_0.1-9              spatstat.univar_3.2-0 </span></span>
+<span><span class="co">## [124] parallel_4.6.1         pkgdown_2.2.1          dotCall64_1.2         </span></span>
+<span><span class="co">## [127] listenv_1.0.0          e1071_1.7-17           scales_1.4.0          </span></span>
+<span><span class="co">## [130] ggridges_0.5.7         purrr_1.2.2            rlang_1.3.0           </span></span>
+<span><span class="co">## [133] cowplot_1.2.0          shinyjs_2.1.1</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -1663,7 +1679,7 @@ visualise <code>Glutathione</code>:</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
