@@ -9,7 +9,11 @@ CreatePathwayObject(
   assay = SeuratObject::DefaultAssay(object),
   slot = "scale.data",
   new.assay = "pathway",
-  remove.nans = TRUE
+  remove.nans = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -22,6 +26,15 @@ CreatePathwayObject(
 \item{new.assay}{Character. Name of the new assay where pathway scores will be stored (defaults = "pathway").}
 
 \item{remove.nans}{Logical. Whether to remove pathways with all NaN values (e.g., no matched analytes) (defaults = TRUE).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 A SpaMTP Seurat object with a new assay containing pathway-level expression scores.

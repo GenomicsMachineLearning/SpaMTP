@@ -17,9 +17,8 @@ BuildMZAnnotationIndex(
 \item{db}{Metabolite database. Both the legacy SpaMTP five-column/wide
 database and the RaMP \code{chem_props} schema are supported.}
 
-\item{polarity}{\code{"positive"}, \code{"negative"}, or \code{"neutral"}.
-When \code{NULL}, use the matrix-profile default, or positive mode when no
-profile is given.}
+\item{polarity}{\code{"positive"}, \code{"negative"}, or \code{"neutral"}. When \code{NULL},
+use the matrix-profile default, or positive mode when no profile is given.}
 
 \item{adducts}{Optional character vector of adduct names or bracketed
 notations. When \code{NULL}, use the complete automatically selected rule
@@ -28,9 +27,8 @@ space; this is a filter, not a compulsory input.}
 \item{rules}{Optional custom rule table. See \code{\link[=AdductRules]{AdductRules()}}.}
 
 \item{maldi_matrix}{Optional MALDI matrix or derivatization reagent profile.
-When supplied and \code{rules} is \code{NULL},
-\code{\link[=MALDIMatrixRules]{MALDIMatrixRules()}} automatically selects
-standard and validated matrix-specific rules. \code{adducts} remains an
+When supplied and \code{rules} is \code{NULL}, \code{\link[=MALDIMatrixRules]{MALDIMatrixRules()}} automatically
+selects standard and validated matrix-specific rules. \code{adducts} remains an
 optional filter on that selected rule space.}
 
 \item{collapse_isomers}{Collapse records sharing formula, exact mass, and

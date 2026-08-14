@@ -25,7 +25,11 @@ PlotPathwaysSpatially(
   stroke = NA,
   interactive = FALSE,
   information = NULL,
-  image.labels = NULL
+  image.labels = NULL,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -70,6 +74,15 @@ PlotPathwaysSpatially(
 \item{information}{An optional data.frame or matrix of extra information to be displayed on hover. NOTE: this functionality is implemented through \code{Seurat::SpatialFeaturePlot} (default = NULL).}
 
 \item{image.labels}{Character vector specifying optional labels for multiple images (default = NULL).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 A ggplot object visualizing the pathway score spatially.

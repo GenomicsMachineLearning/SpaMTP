@@ -13,12 +13,11 @@ MALDIMatrixRules(
 }
 \arguments{
 \item{maldi_matrix}{Matrix or derivatization reagent name; aliases such as
-\code{"2,5-DHB"}, \code{"HCCA"}, \code{"9-AA"}, and \code{"FMP-10"} are
-accepted.}
+\code{"2,5-DHB"}, \code{"HCCA"}, \code{"9-AA"}, and \code{"FMP-10"} are accepted.}
 
-\item{polarity}{\code{"positive"}, \code{"negative"}, or \code{"neutral"}.
-If \code{NULL}, use the profile default; profiles supporting both modes require
-an explicit choice.}
+\item{polarity}{\code{"positive"}, \code{"negative"}, or \code{"neutral"}. If \code{NULL}, use
+the profile default; profiles supporting both modes require an explicit
+choice.}
 
 \item{include_standard}{Include the validated ordinary adduct rules.}
 

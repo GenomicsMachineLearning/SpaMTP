@@ -13,6 +13,10 @@ VisualisePathways(
   p_val_threshold = 0.1,
   method = "ward.D2",
   verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL,
   ...
 )
 }
@@ -32,6 +36,15 @@ VisualisePathways(
 \item{method}{Character string defining the statistical method used to calculate hclust (default = "ward.D2").}
 
 \item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{...}{The arguments pass to stats::hclust}
 }

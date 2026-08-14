@@ -11,7 +11,11 @@ AddFMP10Annotations(
   assay = "Spatial",
   return.only.annotated = FALSE,
   mass.threshold = 0.05,
-  annotation.column = "all_IsomerNames"
+  annotation.column = "all_IsomerNames",
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -28,6 +32,15 @@ AddFMP10Annotations(
 \item{mass.threshold}{Numeric value defining the acceptable threshold (plus-minus) between the custom annotations and the actual m/z values contained within the SpaMTP object (default = 0.05).}
 
 \item{annotation.column}{Character string defining the feature meta.data column name that will contain the assigned annotations (default = "all_IsomerNames").}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for annotation lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 SpaMTP Seurat object containing the relative metabolite annotations stored in the feature metadata dataframe.

@@ -45,6 +45,23 @@ devtools::install_github(
 )
 ```
 
+The developmental release separates versioned resources from the analysis
+code. `SpaMTPdb` supplies the pruned RaMP annotation/pathway snapshot, while
+`SpaMTPData` supplies the larger experiment objects used by the vignettes:
+
+``` r
+devtools::install_github("GenomicsMachineLearning/SpaMTPdb")
+devtools::install_github("GenomicsMachineLearning/SpaMTPData")
+
+db_info <- SpaMTP::SpaMTPDatabaseInfo()
+brain <- SpaMTPData::SpaMTPData("mouse_brain_dhb_striatum")
+```
+
+Until the data packages complete Bioconductor onboarding, SpaMTP retains a
+bundled database compatibility layer and the experiment package resolves its
+published Zenodo records. This keeps existing scripts working while allowing
+database and example-data releases to be updated independently of SpaMTP.
+
 For tutorials and more information please visit the [SpaMTP website](https://genomicsmachinelearning.github.io/SpaMTP/)
 
 ## Citation

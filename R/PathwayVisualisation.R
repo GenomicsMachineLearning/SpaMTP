@@ -10,6 +10,11 @@
 #' @param p_val_threshold The p-val cutoff to keep the pathways generated from fisher exact test (default = "0.1").
 #' @param method Character string defining the statistical method used to calculate hclust (default = "ward.D2").
 #' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #' @param ... The arguments pass to stats::hclust
 #'
 #' @return A combined gg, ggplot object with pathway and dendrogram
@@ -27,7 +32,21 @@ VisualisePathways = function(SpaMTP,
                              p_val_threshold = 0.1,
                              method = "ward.D2",
                              verbose = TRUE,
+                             database = NULL,
+                             database_version = "latest",
+                             database_source = c("auto", "spamtpdb", "bundled"),
+                             database_local_dir = NULL,
                              ...) {
+  database_resources <- .spamtp_db_bundle(
+    c("analytehaspathway", "pathway"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  analytehaspathway <- database_resources$analytehaspathway
+  pathway <- database_resources$pathway
+
   no_pathways_plot <- function(reason) {
     verbose_message(message_text = reason, verbose = verbose)
     ggplot2::ggplot() +
@@ -326,6 +345,11 @@ VisualisePathways = function(SpaMTP,
 #' @param num_display An integer specifying the number of pathways to display in the plot. If set to null will plot the smaller of either 10 pathways or the number of unique pathways provided in 'regpathway' (default = NULL).
 #' @param text_size A numeric value controlling the size of the text elements in the plot. If NULL the default text size is 12 (default = NULL).
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @return A `ggplot` object representing the set enrichment analysis results.
 #' @export
@@ -338,7 +362,21 @@ PlotRegionalPathways <- function(regpathway,
                                  sig_cutoff = NULL,
                                  num_display = NULL,
                                  text_size = NULL,
-                                 verbose = TRUE) {
+                                 verbose = TRUE,
+                                 database = NULL,
+                                 database_version = "latest",
+                                 database_source = c("auto", "spamtpdb", "bundled"),
+                                 database_local_dir = NULL) {
+
+  database_resources <- .spamtp_db_bundle(
+    c("analytehaspathway", "pathway"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  analytehaspathway <- database_resources$analytehaspathway
+  pathway <- database_resources$pathway
 
   ## Checks for ident column
   if (!is.null(regpathway)){
@@ -513,6 +551,11 @@ PlotRegionalPathways <- function(regpathway,
 #' @param reduction Character string defining which dimensionality reduction to use. If not specified, first searches for 'umap', then 'tsne', then 'pca' (default = NULL).
 #' @param colors Vector of colors for the gradient (default = c("darkblue", "lightgrey", "darkred")).
 #' @param guide Character string stating the type of legend to display (default = "colourbar").
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #' @param ... Additional inputs taken by `Seurat::FeaturePlot()`. Check the relative documentation for more infomation.
 #'
 #' @return A ggplot object visualizing the score of each pathway across the relative reduction.
@@ -526,7 +569,21 @@ PlotPathways <- function(pathways, object, title=NULL,
                          reduction=NULL,
                          colors=c("darkblue", "lightgrey", "darkred"),
                          guide="colourbar",
+                         database = NULL,
+                         database_version = "latest",
+                         database_source = c("auto", "spamtpdb", "bundled"),
+                         database_local_dir = NULL,
                          ...) {
+
+  database_resources <- .spamtp_db_bundle(
+    c("analytehaspathway", "pathway"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  analytehaspathway <- database_resources$analytehaspathway
+  pathway <- database_resources$pathway
 
   chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
   pathway_db <- split(chempathway$rampId, chempathway$pathwayName)
@@ -652,6 +709,11 @@ PlotSinglePathway <- function(pathway, object, title=NULL,
 #' @param interactive Boolean logical indicating whether to create interactive plots. NOTE: this functionality is implemented through `Seurat::SpatialFeaturePlot` (default = FALSE).
 #' @param information An optional data.frame or matrix of extra information to be displayed on hover. NOTE: this functionality is implemented through `Seurat::SpatialFeaturePlot` (default = NULL).
 #' @param image.labels Character vector specifying optional labels for multiple images (default = NULL).
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @return A ggplot object visualizing the pathway score spatially.
 #' @export
@@ -673,8 +735,22 @@ PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alp
                                   stroke = NA,
                                   interactive = FALSE,
                                   information = NULL,
-                                  image.labels = NULL
+                                  image.labels = NULL,
+                                  database = NULL,
+                                  database_version = "latest",
+                                  database_source = c("auto", "spamtpdb", "bundled"),
+                                  database_local_dir = NULL
 ) {
+
+  database_resources <- .spamtp_db_bundle(
+    c("analytehaspathway", "pathway"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  analytehaspathway <- database_resources$analytehaspathway
+  pathway <- database_resources$pathway
 
   chempathway = merge(analytehaspathway, pathway, by = "pathwayRampId")
   pathway_db <- split(chempathway$rampId, chempathway$pathwayName)
@@ -901,7 +977,6 @@ addGesecaScores <- function(pathways,
 
   return(res)
 }
-
 
 
 

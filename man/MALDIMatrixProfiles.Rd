@@ -7,8 +7,8 @@
 MALDIMatrixProfiles(matrix = NULL)
 }
 \arguments{
-\item{matrix}{Optional matrix/reagent name or alias. When \code{NULL}, return
-the complete registry.}
+\item{matrix}{Optional matrix/reagent name or alias. When \code{NULL}, return the
+complete registry.}
 }
 \value{
 A data frame describing supported matrix profiles and their current
@@ -16,8 +16,8 @@ automatic-rule status.
 }
 \description{
 The registry separates conventional MALDI matrices, reactive matrices, and
-derivatization reagents. A registered profile does not necessarily imply that
-a universal mass-shift rule is available: some reactions require a coupling
-reagent, produce several products, or depend strongly on analyte structure and
-acquisition conditions.
+derivatization reagents. A registered profile does not necessarily imply
+that a universal mass-shift rule is available: some reactions require a
+coupling reagent, produce several products, or remain strongly dependent on
+the analyte structure and acquisition conditions.
 }

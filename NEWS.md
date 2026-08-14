@@ -1,5 +1,10 @@
 # SpaMTP (developmental)
 
+* Split versioned resources from the analysis code: `SpaMTPdb` now supplies
+  the pruned RaMP annotation and pathway snapshot, and `SpaMTPData` provides
+  named access to large experiment/vignette objects. `LoadSpaMTPDatabase()`
+  and `SpaMTPDatabaseInfo()` form the public database interface. Existing
+  bundled data remain available as a temporary compatibility fallback.
 * Updated the package citation to the peer-reviewed *Nature Methods* paper,
   designated Tianyao Lu as the current package maintainer, and added direct
   links to the developmental documentation and source branch. Andrew Causer

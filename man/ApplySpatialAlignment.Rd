@@ -48,16 +48,16 @@ when applying final coordinates supplied through \code{alignment}.}
 \item{alignment}{Optional precomputed alignment. Accepted inputs are a data
 frame or matrix of final coordinates; a 2-by-3 or 3-by-3 homogeneous
 transformation matrix; a list containing \code{aligned_coordinates},
-\code{coordinates}, \code{transformation}, or \code{matrix}; a CSV/TSV/RDS/JSON
-file; or a SMINT output directory containing \code{aligned_coordinates.csv}
-and optionally \code{transformation.json}. Coordinate columns produced by the
-existing SpaMTP and SMINT notebooks (\code{x_transformed}, \code{x_new}, and
-\code{x_final}, with their y counterparts) are detected automatically.}
+\code{coordinates}, \code{transformation}, or \code{matrix}; a CSV/TSV/RDS/JSON file; or a
+SMINT output directory containing \code{aligned_coordinates.csv} and optionally
+\code{transformation.json}. Coordinate columns produced by the existing SpaMTP
+and SMINT notebooks (\code{x_transformed}, \code{x_new}, and \code{x_final}, with their y
+counterparts) are detected automatically.}
 
-\item{method}{Alignment method used when \code{alignment} is \code{NULL}.
-\code{"affine"} estimates a six-degree-of-freedom transformation from paired
-landmarks in R. \code{"lddmm"} runs STalign's landmark-guided affine plus
-diffeomorphic registration through Python.}
+\item{method}{Alignment method used when \code{alignment} is \code{NULL}. \code{"affine"}
+estimates a six-degree-of-freedom transformation from paired landmarks in
+R. \code{"lddmm"} runs STalign's landmark-guided affine plus diffeomorphic
+registration through Python.}
 
 \item{SM.fov}{Name of the FOV containing the moving SM centroids. By default,
 the first image in \code{SM.data} is used.}
@@ -70,13 +70,13 @@ default, the first image in \code{ST.data} is used.}
 \item{SM.landmarks, ST.landmarks}{Matched landmark coordinates as two-column
 matrices or data frames in x-y order. At least three non-collinear pairs are
 required for \code{method = "affine"}. Landmarks are optional but strongly
-recommended for \code{method = "lddmm"} when sections are not already close.
+recommended for \code{method = "lddmm"} when the sections are not already close.
 ST landmarks must use the target coordinate system after any
 \code{ST.scale.factor} has been applied.}
 
 \item{landmark.order}{Coordinate-column order in both landmark inputs.
-\code{"xy"} is the R/SpaMTP convention. Use \code{"yx"} for row-column arrays
-saved by the notebook's point annotator.}
+\code{"xy"} is the R/SpaMTP convention. Use \code{"yx"} for row-column arrays saved
+by the notebook's point annotator.}
 
 \item{SM.landmark.space}{Whether SM landmarks use the \code{"original"} FOV
 coordinates or the \code{"preprocessed"} coordinates after source scaling,
@@ -86,12 +86,12 @@ landmarks made from the rasterized notebook output are preprocessed.}
 \item{coordinate.columns}{Optional names or integer positions of the x and y
 columns in a precomputed coordinate table.}
 
-\item{cell.column}{Optional name or integer position of the cell/spot ID column
-in a precomputed coordinate table. When no IDs are available, rows must already
-be in the same order as the moving SM centroids.}
+\item{cell.column}{Optional name or integer position of the cell/spot ID
+column in a precomputed coordinate table. When no IDs are available, rows
+must already be in the same order as the moving SM centroids.}
 
-\item{ST.scale.factor}{Optional fixed-coordinate scale factor. Supply a numeric
-value or a scale-factor name such as \code{"hires"} or \code{"lowres"} for
+\item{ST.scale.factor}{Optional fixed-coordinate scale factor. Supply a
+numeric value or a scale-factor name such as \code{"hires"} or \code{"lowres"} for
 Visium images. \code{NULL} uses full-resolution coordinates.}
 
 \item{source.scale}{Numeric scalar or x-y vector applied to moving coordinates
@@ -116,16 +116,16 @@ only where necessary so that their minima are at least this value. Use
 
 \item{epV}{Velocity-field gradient step passed to \code{STalign.LDDMM()}.}
 
-\item{device}{One of \code{"auto"}, \code{"cpu"}, or \code{"cuda"}.
-\code{"auto"} uses CUDA when Torch reports that it is available.}
+\item{device}{One of \code{"auto"}, \code{"cpu"}, or \code{"cuda"}. \code{"auto"} uses CUDA
+when Torch reports that it is available.}
 
 \item{seed}{Random seed set for NumPy and Torch before LDDMM.}
 
 \item{lddmm.args}{Named list of additional arguments passed to
 \code{STalign.LDDMM()}. Values here override \code{niter} and \code{epV}.}
 
-\item{python}{Optional path to a Python executable containing \code{STalign}
-and \code{torch}. It must be selected before reticulate initialises Python.}
+\item{python}{Optional path to a Python executable containing \code{STalign} and
+\code{torch}. It must be selected before reticulate initialises Python.}
 
 \item{alignment.name}{Name used to store alignment provenance in
 \code{SM.data@tools$spatial_alignment}.}
@@ -133,12 +133,12 @@ and \code{torch}. It must be selected before reticulate initialises Python.}
 \item{store}{Logical; store lightweight provenance and diagnostics in the
 returned object.}
 
-\item{return}{Either \code{"object"} (default) or \code{"result"}. The latter
-returns a list containing the object, coordinate tables, diagnostics,
-parameters, and lightweight backend information.}
+\item{return}{Either \code{"object"} (default) or \code{"result"}. The latter returns a
+list containing the object, coordinate tables, diagnostics, parameters, and
+lightweight backend information.}
 
-\item{diagnostics.max.points}{Maximum number of moving and fixed points used for
-nearest-neighbour diagnostics.}
+\item{diagnostics.max.points}{Maximum number of moving and fixed points used
+for nearest-neighbour diagnostics.}
 
 \item{verbose}{Logical; print progress messages.}
 }
@@ -149,18 +149,16 @@ details.
 }
 \description{
 Aligns a moving Spatial Metabolomics (SM) Seurat object to a fixed Spatial
-Transcriptomics (ST) object. The function can apply coordinates exported by the
-SMINT workflow, apply a homogeneous transformation matrix, estimate an affine
-transform from paired landmarks, or run the STalign LDDMM backend used by SMINT
-through \code{reticulate}.
+Transcriptomics (ST) object. The function can apply coordinates exported by
+the SMINT workflow, apply a homogeneous transformation matrix, estimate an
+affine transform from paired landmarks, or run the STalign LDDMM backend used
+by SMINT through \code{reticulate}.
 }
 \details{
 Python is only required when \code{method = "lddmm"} and \code{alignment = NULL}.
-Precomputed SMINT coordinates and affine landmark alignment are handled entirely
-in R. Lightweight provenance and quality diagnostics can be stored in the
-returned object's \code{@tools$spatial_alignment} entry.
-The backend summary records STalign's affine component as \code{affine_yx}; it
-is not the complete nonlinear LDDMM transformation.
+Precomputed SMINT coordinates and affine landmark alignment are handled
+entirely in R. The backend summary records STalign's affine component as
+\code{affine_yx}; it is not the complete nonlinear LDDMM transformation.
 }
 \examples{
 \dontrun{
@@ -180,7 +178,7 @@ fit <- ApplySpatialAlignment(
   SM.landmarks = sm_landmarks,
   ST.landmarks = st_landmarks,
   landmark.order = "yx",             # point-annotator row/column order
-  SM.landmark.space = "preprocessed", # selected after rasterization
+  SM.landmark.space = "preprocessed", # landmarks selected after rasterization
   source.scale = 10,
   source.rotate = 90,
   source.origin = c(0, 0),

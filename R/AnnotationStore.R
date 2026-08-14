@@ -2,7 +2,10 @@
 .spamtp_annotation_engine <- "indexed-chemical-v2"
 
 .annotation_ramp_version <- function() {
-  metadata <- get0("ramp_db_metadata", inherits = TRUE)
+  metadata <- tryCatch(
+    .spamtp_db_resource("ramp_db_metadata"),
+    error = function(e) get0("ramp_db_metadata", inherits = TRUE)
+  )
   if (is.list(metadata) && length(metadata$ramp_version) == 1L) {
     return(as.character(metadata$ramp_version))
   }

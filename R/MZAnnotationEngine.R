@@ -1122,6 +1122,10 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 #'   rules automatically when `rules` is `NULL`.
 #' @param ppm Mass tolerance in ppm.
 #' @param ms1_spectrum Optional contextual spectrum.
+#' @param database_version SpaMTPdb/RaMP version used when `db = NULL`.
+#' @param database_source Database source used when `db = NULL`; see
+#'   [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #' @param ... Additional arguments passed to [QueryMZAnnotationIndex()].
 #'
 #' @return A ranked candidate data frame.
@@ -1130,7 +1134,10 @@ AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
                        polarity = NULL,
                        adducts = NULL, rules = NULL, maldi_matrix = NULL,
                        ppm = 5,
-                       ms1_spectrum = NULL, ...) {
+                       ms1_spectrum = NULL,
+                       database_version = "latest",
+                       database_source = c("auto", "spamtpdb", "bundled"),
+                       database_local_dir = NULL, ...) {
   if (!is.null(index) && !inherits(index, "spamtp_mz_index")) {
     stop("index must be created by BuildMZAnnotationIndex().")
   }
@@ -1140,7 +1147,14 @@ AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
     .resolve_maldi_polarity(polarity, maldi_matrix)
   }
   if (is.null(index)) {
-    if (is.null(db)) stop("Supply either db or a pre-built index.")
+    if (is.null(db)) {
+      db <- .spamtp_db_resource(
+        "chem_props",
+        version = database_version,
+        source = match.arg(database_source),
+        local_dir = database_local_dir
+      )
+    }
     index <- BuildMZAnnotationIndex(
       db = db, polarity = polarity, adducts = adducts, rules = rules,
       maldi_matrix = maldi_matrix

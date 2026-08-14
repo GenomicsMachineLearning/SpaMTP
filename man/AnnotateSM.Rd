@@ -19,6 +19,9 @@ AnnotateSM(
   min_score = 0,
   verbose = TRUE,
   maldi_matrix = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL,
   ...
 )
 }
@@ -26,8 +29,9 @@ AnnotateSM(
 \item{data}{Seurat Spatial Metabolomic Object containing m/z values for annotation.}
 
 \item{db}{Reference metabolite dataset in the form of a data.frame. When
-\code{NULL}, the bundled current RaMP \code{chem_props} table is used, unless a
-pre-built \code{index} is supplied through \code{...}.}
+\code{NULL}, the versioned SpaMTPdb \code{chem_props} table is used, unless a
+pre-built \code{index} is supplied through \code{...}. A bundled compatibility copy
+is used while SpaMTPdb is unavailable.}
 
 \item{assay}{Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").}
 
@@ -38,11 +42,11 @@ is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
 \item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
-\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or
-all validated general rules for the selected polarity when no matrix is given.}
+\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or all
+validated general rules for the selected polarity when no matrix is given.}
 
-\item{polarity}{Character string defining the ion mode. When \code{NULL}, use
-the MALDI matrix profile default, a supplied index's mode, or positive mode
+\item{polarity}{Character string defining the ion mode. When \code{NULL}, use the
+MALDI matrix profile default, a supplied index's mode, or positive mode
 when neither is available.}
 
 \item{tof_resolution}{Instrument resolving power retained for compatibility;
@@ -65,9 +69,16 @@ annotation.}
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
 
 \item{maldi_matrix}{Optional MALDI matrix or derivatization reagent name.
-When supplied, SpaMTP selects validated matrix-specific rules automatically.
-\code{adducts} is optional and only restricts that automatic search space when
-explicitly supplied.}
+When supplied, SpaMTP selects validated matrix-specific rules
+automatically. \code{adducts} is optional and only restricts that automatic
+search space when explicitly supplied.}
+
+\item{database_version}{SpaMTPdb/RaMP version used when \code{db = NULL}.}
+
+\item{database_source}{Database source used when \code{db = NULL}; see
+\code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
 \code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}

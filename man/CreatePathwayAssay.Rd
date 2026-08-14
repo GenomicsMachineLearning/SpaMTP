@@ -12,7 +12,11 @@ CreatePathwayAssay(
   new_assay = "pathway",
   annotation_score_threshold = 0.05,
   annotation_source = c("current", "auto", "legacy"),
-  verbose = TRUE
+  verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -34,6 +38,15 @@ requires the indexed, scored RaMP output; \code{"auto"} and \code{"legacy"} enab
 compatibility with older serialized SpaMTP objects.}
 
 \item{verbose}{Boolean logical value indicating whether to print verbose messages during execution. (default = TRUE).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 A SpaMTP object with a new assay added, containing respective gene/metabolite data formatted based on RAMP_db IDs.

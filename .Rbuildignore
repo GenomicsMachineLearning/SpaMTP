@@ -11,3 +11,5 @@ inst/figures/$
 ^\.github$
 ^\.git
 ^data-raw$
+.*\.Rcheck$
+.*\.tar\.gz$

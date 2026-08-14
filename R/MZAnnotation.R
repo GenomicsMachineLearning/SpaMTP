@@ -49,8 +49,9 @@ labels_to_show <- function(annotation_column, n = 3) {
 #'
 #' @param data Seurat Spatial Metabolomic Object containing m/z values for annotation.
 #' @param db Reference metabolite dataset in the form of a data.frame. When
-#'   `NULL`, the bundled current RaMP `chem_props` table is used, unless a
-#'   pre-built `index` is supplied through `...`.
+#'   `NULL`, the versioned SpaMTPdb `chem_props` table is used, unless a
+#'   pre-built `index` is supplied through `...`. A bundled compatibility copy
+#'   is used while SpaMTPdb is unavailable.
 #' @param assay Character string defining the Seurat assay which contains the mz counts being annotated (default = "Spatial").
 #' @param raw.mz.column Character string defining the Seurat assay slot which contains the raw mz values, this is without the 'mz-' and are a vector of integers. This is setup by default when running the cardinal_to_seurat() function (default = "raw_mz").
 #' @param ppm_error Mass tolerance in ppm. If `NULL`, a strict 5 ppm maximum
@@ -79,6 +80,10 @@ labels_to_show <- function(annotation_column, n = 3) {
 #'   When supplied, SpaMTP selects validated matrix-specific rules
 #'   automatically. `adducts` is optional and only restricts that automatic
 #'   search space when explicitly supplied.
+#' @param database_version SpaMTPdb/RaMP version used when `db = NULL`.
+#' @param database_source Database source used when `db = NULL`; see
+#'   [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #' @param ... Additional indexed annotation/scoring arguments passed to
 #'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
@@ -88,7 +93,7 @@ labels_to_show <- function(annotation_column, n = 3) {
 #' @examples
 #' # HMDB_db <- load("data/HMDB_1_names.rds")
 #' # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
-AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = NULL, tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, min_score = 0, verbose = TRUE, maldi_matrix = NULL, ...){
+AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_mz", ppm_error = NULL, adducts = NULL, polarity = NULL, tof_resolution = 30000, filepath = NULL, return.only.annotated = TRUE, save.intermediate = TRUE, min_score = 0, verbose = TRUE, maldi_matrix = NULL, database_version = "latest", database_source = c("auto", "spamtpdb", "bundled"), database_local_dir = NULL, ...){
 
   if (is.null(data@assays[[assay]])) {
     stop(paste0("No assay '",assay,"'exists in SpaMTP object! Please check assay name input ..."))
@@ -109,14 +114,16 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
   } else {
     "unspecified"
   }
-  bundled_ramp <- is.null(db) && is.null(supplied_index)
-  if (bundled_ramp) {
-    db <- chem_props
+  default_ramp <- is.null(db) && is.null(supplied_index)
+  if (default_ramp) {
+    db <- .spamtp_db_resource(
+      "chem_props",
+      version = database_version,
+      source = match.arg(database_source),
+      local_dir = database_local_dir
+    )
     verbose_message(
-      message_text = paste0(
-        "Using bundled RaMP ", .annotation_ramp_version(),
-        " chemical properties for annotation ... "
-      ),
+      message_text = paste0("Using ", .spamtp_db_label(db), " for annotation ... "),
       verbose = verbose
     )
   }
@@ -157,8 +164,8 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
             "automatically selected from MALDI matrix profile"
           }
         } else adducts,
-        database = if (bundled_ramp) {
-          paste0("bundled RaMP ", .annotation_ramp_version(), " chem_props")
+        database = if (default_ramp) {
+          .spamtp_db_label(db)
         } else if (!is.null(supplied_index)) {
           "pre-built annotation index"
         } else {
@@ -266,6 +273,10 @@ AnnotateSM <- function(data, db = NULL, assay = "Spatial", raw.mz.column = "raw_
 #' @param min_score Minimum final annotation score to retain.
 #' @param maldi_matrix Optional MALDI matrix/reagent profile used for automatic
 #'   rule selection. `adducts = NULL` keeps the complete selected rule space.
+#' @param database_version SpaMTPdb/RaMP version used when `db = NULL`.
+#' @param database_source Database source used when `db = NULL`; see
+#'   [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @returns Generates an intermediate annotated m/z dataframe
 #'
@@ -280,7 +291,10 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
                           ms1_spectrum = NULL, use_mass_defect = TRUE,
                           check_isotopes = TRUE,
                           check_adduct_network = TRUE, min_score = 0,
-                          maldi_matrix = NULL) {
+                          maldi_matrix = NULL,
+                          database_version = "latest",
+                          database_source = c("auto", "spamtpdb", "bundled"),
+                          database_local_dir = NULL) {
   if (!is.data.frame(mz_df) || !all(c("row_id", "mz") %in% names(mz_df))) {
     stop("mz_df must be a data.frame containing row_id and mz columns.")
   }
@@ -307,7 +321,12 @@ annotateTable <- function(mz_df, db = NULL, ppm_error = NULL, adducts = NULL,
 
   if (is.null(index)) {
     if (is.null(db)) {
-      stop("Supply either db or a pre-built index.")
+      db <- .spamtp_db_resource(
+        "chem_props",
+        version = database_version,
+        source = match.arg(database_source),
+        local_dir = database_local_dir
+      )
     }
     verbose_message(
       message_text = "Building sorted adduct candidate index ... ",
@@ -1053,6 +1072,11 @@ AddCustomMZAnnotations <- function(data, annotations, assay = "Spatial", return.
 #' @param return.only.annotated Boolean defining whether to return a SpaMTP Seurat object containing only successfully annotated m/z values (default = FALSE).
 #' @param mass.threshold Numeric value defining the acceptable threshold (plus-minus) between the custom annotations and the actual m/z values contained within the SpaMTP object (default = 0.05).
 #' @param annotation.column Character string defining the feature meta.data column name that will contain the assigned annotations (default = "all_IsomerNames").
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for annotation lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @return SpaMTP Seurat object containing the relative metabolite annotations stored in the feature metadata dataframe.
 #' @export
@@ -1064,7 +1088,21 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
                                 assay = "Spatial",
                                 return.only.annotated = FALSE,
                                 mass.threshold = 0.05,
-                                annotation.column = "all_IsomerNames"){
+                                annotation.column = "all_IsomerNames",
+                                database = NULL,
+                                database_version = "latest",
+                                database_source = c("auto", "spamtpdb", "bundled"),
+                                database_local_dir = NULL){
+
+  database_resources <- .spamtp_db_bundle(
+    c("filtered_fmp10", "chem_props"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  filtered_fmp10 <- database_resources$filtered_fmp10
+  chem_props <- database_resources$chem_props
 
   if (!is.null(mass.threshold) &&
       (!is.numeric(mass.threshold) || length(mass.threshold) != 1L ||
@@ -1141,8 +1179,7 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
       assay = assay,
       mass_tolerance_da = mass.threshold,
       database = paste0(
-        "curated FMP10 panel mapped to bundled RaMP ",
-        .annotation_ramp_version()
+        "curated FMP10 panel mapped to ", .spamtp_db_label(chem_props)
       ),
       mapped_candidates = sum(nzchar(current_annotations$Ramp_IDs))
     )
@@ -1278,6 +1315,10 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #' @param maldi_matrix Optional MALDI matrix/reagent profile used for automatic
 #'   rule selection. The `adducts` argument remains an optional restriction.
+#' @param database_version SpaMTPdb/RaMP version used when `db = NULL`.
+#' @param database_source Database source used when `db = NULL`; see
+#'   [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #' @param ... Additional indexed annotation/scoring arguments passed to
 #'   `annotateTable()`, such as `index`, `rules`, or `ms1_spectrum`.
 #'
@@ -1292,7 +1333,10 @@ AddFMP10Annotations <- function(obj,  only.fmp.adduct = FALSE,
 #' #SpaMTP_data <- CardinalToSeurat(cardinal_subset)
 AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL,
                             polarity = NULL, tof_resolution = 30000,
-                            verbose = TRUE, maldi_matrix = NULL, ...){
+                            verbose = TRUE, maldi_matrix = NULL,
+                            database_version = "latest",
+                            database_source = c("auto", "spamtpdb", "bundled"),
+                            database_local_dir = NULL, ...){
   mz_df <- data.frame(mz = mzs)
   mz_df$row_id <- seq(1, length(mz_df[["mz"]]))
   mz_df <- mz_df[c("row_id", "mz")]
@@ -1300,7 +1344,9 @@ AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL,
   annotations <- annotateTable(
     mz_df, db = db, ppm_error = ppm_error, adducts = adducts,
     polarity = polarity, tof_resolution = tof_resolution, verbose = verbose,
-    maldi_matrix = maldi_matrix, ...
+    maldi_matrix = maldi_matrix, database_version = database_version,
+    database_source = match.arg(database_source),
+    database_local_dir = database_local_dir, ...
   )
 
   result_df <- annotations %>%

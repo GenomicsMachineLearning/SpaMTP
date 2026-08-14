@@ -53,6 +53,11 @@
 #' @param max_spatial_points Maximum number of spatial points embedded in the
 #'   HTML. Larger datasets are deterministically downsampled for responsive
 #'   browser rendering. Use `Inf` to retain all points.
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @return Invisibly returns the generated HTML file path.
 #' @export
@@ -84,7 +89,11 @@ PathwayNetworkPlots <- function(SpaMTP,
                                 max_nodes = 500L,
                                 label_mode = c("detected", "all", "none"),
                                 max_spatial_points = 50000L,
-                                layout_mode = c("repulsion", "force", "radial", "bipartite")) {
+                                layout_mode = c("repulsion", "force", "radial", "bipartite"),
+                                database = NULL,
+                                database_version = "latest",
+                                database_source = c("auto", "spamtpdb", "bundled"),
+                                database_local_dir = NULL) {
   analyte_types <- match.arg(
     analyte_types, c("genes", "metabolites"), several.ok = TRUE
   )
@@ -93,6 +102,21 @@ PathwayNetworkPlots <- function(SpaMTP,
   metabolite_detection <- match.arg(metabolite_detection)
   label_mode <- match.arg(label_mode)
   layout_mode <- match.arg(layout_mode)
+  database_source <- match.arg(database_source)
+  database_resources <- .spamtp_db_bundle(
+    c(
+      "chem_props", "source_df", "analytehaspathway", "pathway",
+      "ramp_db_metadata"
+    ),
+    database = database,
+    version = database_version,
+    source = database_source,
+    local_dir = database_local_dir
+  )
+  chem_props <- database_resources$chem_props
+  source_df <- database_resources$source_df
+  analytehaspathway <- database_resources$analytehaspathway
+  pathway <- database_resources$pathway
   if (!is.character(ident) || length(ident) != 1L || !nzchar(ident)) {
     stop("ident must be one metadata column name.")
   }
@@ -148,7 +172,10 @@ PathwayNetworkPlots <- function(SpaMTP,
         "explicitly select annotation_source = 'legacy'."
       )
     }
-    current_ramp <- .annotation_ramp_version()
+    current_ramp <- as.character(
+      database_resources$ramp_db_metadata$ramp_version %||%
+        .annotation_ramp_version()
+    )
     if (!identical(regpathway_annotation$ramp_version, current_ramp)) {
       stop(
         "regpathway uses RaMP ", regpathway_annotation$ramp_version %||% "unknown",
@@ -166,11 +193,23 @@ PathwayNetworkPlots <- function(SpaMTP,
   if (anyNA(requested_sources)) {
     requested_sources <- c("wiki", "reactome", "kegg", "hmdb")
   }
+  topology_resource_names <- c(
+    wiki = "ramp_wikipathway",
+    reactome = "ramp_reactome",
+    kegg = "ramp_kegg",
+    hmdb = "ramp_hmdb"
+  )[requested_sources]
+  topology_resources <- .spamtp_db_bundle(
+    unname(topology_resource_names),
+    database = database,
+    version = database_version,
+    source = database_source,
+    local_dir = database_local_dir
+  )
   topology_sources <- list()
-  if ("wiki" %in% requested_sources) topology_sources[["wiki"]] <- RAMP_wikipathway
-  if ("reactome" %in% requested_sources) topology_sources[["reactome"]] <- RAMP_Reactome
-  if ("kegg" %in% requested_sources) topology_sources[["kegg"]] <- RAMP_kegg
-  if ("hmdb" %in% requested_sources) topology_sources[["hmdb"]] <- RAMP_hmdb
+  for (source_name in names(topology_resource_names)) {
+    topology_sources[[source_name]] <- topology_resources[[topology_resource_names[[source_name]]]]
+  }
   catalog <- .pn_topology_catalog(topology_sources)
   resolved <- .pn_resolve_topologies(pathway_rows, catalog, topology_sources)
   if (any(!resolved$found)) {

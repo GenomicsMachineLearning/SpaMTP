@@ -123,7 +123,19 @@ make_vignette_card_section(vdat = vdat)
 
 ## SpaMTP Public Datasets
 
-To access and download all our datasets used in the vignettes you can vist the [*SpaMTP* zenodo page](https://zenodo.org/communities/spamtp/records).  
+The companion `SpaMTPData` package provides named, cached access to the
+experiment objects used in these vignettes through ExperimentHub-compatible
+metadata. Until its Bioconductor resources are published, it resolves the same
+immutable files from the [*SpaMTP* Zenodo community](https://zenodo.org/communities/spamtp/records).
+
+``` r
+SpaMTPData::SpaMTPDataResources()
+striatum <- SpaMTPData::SpaMTPData("striatum_dhb")
+```
+
+The separate `SpaMTPdb` package contains versioned, pruned RaMP database
+resources. SpaMTP loads it automatically when installed; use
+`SpaMTPDatabaseInfo()` to inspect the active resource catalogue.
 
 
 ## Installation
@@ -282,6 +294,5 @@ install.packages("Seruat")
 ```
 
 For other issue please flag on github under *Issues*.
-
 
 

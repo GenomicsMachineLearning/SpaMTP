@@ -42,6 +42,8 @@ Suggests:
     patchwork,
     reticulate,
     rmarkdown,
+    SpaMTPData,
+    SpaMTPdb,
     testthat (>= 3.0.0),
     viridis,
     yaml

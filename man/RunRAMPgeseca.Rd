@@ -14,7 +14,11 @@ RunRAMPgeseca(
   eps = 1e-50,
   nproc = 0,
   BPPARAM = NULL,
-  nPermSimple = 1000
+  nPermSimple = 1000,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -37,6 +41,15 @@ RunRAMPgeseca(
 \item{BPPARAM}{Parallelization parameter used in bplapply (default = NULL).}
 
 \item{nPermSimple}{Number of permutations in the simple geseca implementation for preliminary estimation of P-values (default = 1000).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 A table with GESECA results. Each row corresponds to a tested RAMP_DB pathway.

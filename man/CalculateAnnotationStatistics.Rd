@@ -13,7 +13,11 @@ CalculateAnnotationStatistics(
   return.top = TRUE,
   corr_theshold = 0,
   corr_weight = 1,
-  n_weight = 1
+  n_weight = 1,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -34,6 +38,15 @@ CalculateAnnotationStatistics(
 \item{corr_weight}{Numeric weight applied to correlation score in z-score calculation. If significance should be based more on the correlation, increase this value (default = 1).}
 
 \item{n_weight}{Numeric weight applied to number of correlated pathways in z-score calculation (default = 1).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{mz}{Character or numeric. The target m/z feature. If numeric, the closest matching m/z in the dataset will be selected.}
 }

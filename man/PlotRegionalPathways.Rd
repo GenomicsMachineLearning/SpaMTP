@@ -11,7 +11,11 @@ PlotRegionalPathways(
   sig_cutoff = NULL,
   num_display = NULL,
   text_size = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -28,6 +32,15 @@ PlotRegionalPathways(
 \item{text_size}{A numeric value controlling the size of the text elements in the plot. If NULL the default text size is 12 (default = NULL).}
 
 \item{verbose}{Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 A \code{ggplot} object representing the set enrichment analysis results.

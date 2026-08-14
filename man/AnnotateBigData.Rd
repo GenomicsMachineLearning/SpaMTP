@@ -13,6 +13,9 @@ AnnotateBigData(
   tof_resolution = 30000,
   verbose = TRUE,
   maldi_matrix = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL,
   ...
 )
 }
@@ -29,8 +32,8 @@ is used (or a smaller value inferred from \code{tof_resolution}). Set to zero
 for exact numerical matches.}
 
 \item{adducts}{Optional adduct names/notations; see \code{AdductRules()}. If
-\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or
-all validated general rules for the selected polarity when no matrix is given.}
+\code{NULL}, use the complete rule space selected from \code{maldi_matrix}, or all
+validated general rules for the selected polarity when no matrix is given.}
 
 \item{polarity}{Character string defining the ion mode. When \code{NULL}, infer
 it from a supplied index or MALDI matrix profile, otherwise use positive.}
@@ -42,6 +45,13 @@ it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 
 \item{maldi_matrix}{Optional MALDI matrix/reagent profile used for automatic
 rule selection. The \code{adducts} argument remains an optional restriction.}
+
+\item{database_version}{SpaMTPdb/RaMP version used when \code{db = NULL}.}
+
+\item{database_source}{Database source used when \code{db = NULL}; see
+\code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
 \code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}

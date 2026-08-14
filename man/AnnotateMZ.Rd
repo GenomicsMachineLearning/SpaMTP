@@ -14,6 +14,9 @@ AnnotateMZ(
   maldi_matrix = NULL,
   ppm = 5,
   ms1_spectrum = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL,
   ...
 )
 }
@@ -24,11 +27,11 @@ AnnotateMZ(
 
 \item{index}{Optional pre-built \code{spamtp_mz_index}.}
 
-\item{polarity}{Ion mode. When \code{NULL}, infer it from \code{index} or the
-matrix profile, falling back to positive mode.}
+\item{polarity}{Ion mode. When \code{NULL}, infer it from \code{index} or the matrix
+profile, falling back to positive mode.}
 
-\item{adducts}{Optional adduct subset. When \code{NULL}, retain the complete
-rule space selected by the matrix profile or polarity.}
+\item{adducts}{Optional adduct subset. When \code{NULL}, retain the complete rule
+space selected by the matrix profile or polarity.}
 
 \item{rules}{Optional custom rule table.}
 
@@ -38,6 +41,13 @@ rules automatically when \code{rules} is \code{NULL}.}
 \item{ppm}{Mass tolerance in ppm.}
 
 \item{ms1_spectrum}{Optional contextual spectrum.}
+
+\item{database_version}{SpaMTPdb/RaMP version used when \code{db = NULL}.}
+
+\item{database_source}{Database source used when \code{db = NULL}; see
+\code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{...}{Additional arguments passed to \code{\link[=QueryMZAnnotationIndex]{QueryMZAnnotationIndex()}}.}
 }

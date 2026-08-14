@@ -19,7 +19,11 @@ FindRegionalPathways(
   pval_cutoff_genes = 0.05,
   annotation_score_threshold = 0.05,
   annotation_source = c("current", "auto", "legacy"),
-  verbose = TRUE
+  verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -59,6 +63,15 @@ pipeline. \code{"auto"} permits a warned fallback to legacy \verb{@tools$db_3},
 while \code{"legacy"} explicitly requests that compatibility path.}
 
 \item{verbose}{Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 A SpaMTP object with set enrichment on given analyte types.

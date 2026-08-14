@@ -27,7 +27,11 @@ PathwayNetworkPlots(
   max_nodes = 500L,
   label_mode = c("detected", "all", "none"),
   max_spatial_points = 50000L,
-  layout_mode = c("repulsion", "force", "radial", "bipartite")
+  layout_mode = c("repulsion", "force", "radial", "bipartite"),
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL
 )
 }
 \arguments{
@@ -101,6 +105,15 @@ browser rendering. Use \code{Inf} to retain all points.}
 \code{"force"} uses a balanced force-directed layout, \code{"radial"} separates
 analyte classes into rings, and \code{"bipartite"} separates genes and
 metabolites vertically. It can also be changed interactively.}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 }
 \value{
 Invisibly returns the generated HTML file path.

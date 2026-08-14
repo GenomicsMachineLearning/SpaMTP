@@ -16,6 +16,11 @@
 #' @param corr_theshold Numeric value stating the correlation threshold to consider a pathway as significantly colocalized. If set to `0`, all pathways will be counted (default = 0).
 #' @param corr_weight Numeric weight applied to correlation score in z-score calculation. If significance should be based more on the correlation, increase this value (default = 1).
 #' @param n_weight Numeric weight applied to number of correlated pathways in z-score calculation (default = 1).
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @return A tibble with the ranked annotations for the m/z value, containing:
 #' \describe{
@@ -40,10 +45,20 @@
 #' #CalculateSingleAnnotationStatistics(mz = "mz-674.2805",data = data,mz.assay = "SPM",pathway.assay = "pathway",mz.slot = "scale.data")
 #'
 #' @export
-CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assay = "pathway", mz.slot= "scale.data", pathway.slot = "scale.data", corr_theshold = 0, corr_weight = 1, n_weight = 1){
+CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assay = "pathway", mz.slot= "scale.data", pathway.slot = "scale.data", corr_theshold = 0, corr_weight = 1, n_weight = 1, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb", "bundled"), database_local_dir = NULL){
+
+  database_resources <- .spamtp_db_bundle(
+    c("source_df", "analytehaspathway"),
+    database = database,
+    version = database_version,
+    source = match.arg(database_source),
+    local_dir = database_local_dir
+  )
+  source_df <- database_resources$source_df
+  analytehaspathway <- database_resources$analytehaspathway
 
   if(is.numeric(mz)){
-    mz <- FindNearestMZ(data = data, target_mz = mz, assay = SM.assay)
+    mz <- FindNearestMZ(data = data, target_mz = mz, assay = mz.assay)
   }
 
   DefaultAssay(data) <- pathway.assay
@@ -217,6 +232,11 @@ CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assa
 #' @param corr_theshold Numeric value stating the correlation threshold to consider a pathway as significantly colocalized. If set to `0`, all pathways will be counted (default = 0).
 #' @param corr_weight Numeric weight applied to correlation score in z-score calculation. If significance should be based more on the correlation, increase this value (default = 1).
 #' @param n_weight Numeric weight applied to number of correlated pathways in z-score calculation (default = 1).
+#' @param database Optional named list of database resources, normally created
+#'   by [LoadSpaMTPDatabase()].
+#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_source Database source; see [LoadSpaMTPDatabase()].
+#' @param database_local_dir Optional staged SpaMTPdb resource directory.
 #'
 #' @return Either a data.frame containing the original annotations for all m/z values and their corresponding most likely metabolite, or a list contating statistics for each m/z value.
 #'
@@ -231,12 +251,27 @@ CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assa
 #' #CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")
 #'
 #' @export
-CalculateAnnotationStatistics <- function(data, mz.assay, pathway.assay, mz.slot= "scale.data", pathway.slot = "scale.data", return.top = TRUE, corr_theshold = 0, corr_weight = 1, n_weight = 1){
+CalculateAnnotationStatistics <- function(data, mz.assay, pathway.assay, mz.slot= "scale.data", pathway.slot = "scale.data", return.top = TRUE, corr_theshold = 0, corr_weight = 1, n_weight = 1, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb", "bundled"), database_local_dir = NULL){
+
+  database_source <- match.arg(database_source)
+  database_resources <- .spamtp_db_bundle(
+    c("source_df", "analytehaspathway", "pathway"),
+    database = database,
+    version = database_version,
+    source = database_source,
+    local_dir = database_local_dir
+  )
+  source_df <- database_resources$source_df
+  analytehaspathway <- database_resources$analytehaspathway
 
   message("creating pathway expression object")
   y <- CreatePathwayObject(data,
                            assay=pathway.assay,
-                           slot = pathway.slot)
+                           slot = pathway.slot,
+                           database = database_resources,
+                           database_version = database_version,
+                           database_source = database_source,
+                           database_local_dir = database_local_dir)
 
 
   ## 1. get pathways for each ramp_id

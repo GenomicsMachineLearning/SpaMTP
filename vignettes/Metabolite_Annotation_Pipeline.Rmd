@@ -42,10 +42,22 @@ library(SpaMTP)
 
 # RaMP snapshot and identifiers
 
-SpaMTP contains a deliberately pruned RaMP snapshot. The annotation table keeps
-chemical structures, formulae, monoisotopic masses, names, source identifiers,
-and current `RAMP_C_*` identifiers; pathway tables retain only fields required
-by SpaMTP's pathway and network functions.
+SpaMTP uses a deliberately pruned, versioned RaMP snapshot. `SpaMTPdb` stores
+the annotation and pathway resources independently of the analysis code: the
+chemical table keeps structures, formulae, monoisotopic masses, names, source
+identifiers, and current `RAMP_C_*` identifiers, while pathway tables retain
+only fields required by SpaMTP's enrichment and network functions. During the
+database-package transition, `source = "auto"` prefers `SpaMTPdb` and falls back
+to the compatibility snapshot bundled with SpaMTP.
+
+```{r load-ramp-resources}
+ramp_resources <- LoadSpaMTPDatabase(
+  resources = c("chem_props", "ramp_db_metadata"),
+  source = "auto"
+)
+chem_props_current <- ramp_resources$chem_props
+ramp_metadata_current <- ramp_resources$ramp_db_metadata
+```
 
 ```{r ramp-summary}
 ramp_summary <- data.frame(
@@ -56,13 +68,13 @@ ramp_summary <- data.frame(
     "Stale graph IDs remaining"
   ),
   value = c(
-    ramp_db_metadata$ramp_version,
-    format(ramp_db_metadata$snapshot_counts[["chem_props"]], big.mark = ","),
+    ramp_metadata_current$ramp_version,
+    format(ramp_metadata_current$snapshot_counts[["chem_props"]], big.mark = ","),
     format(
-      ramp_db_metadata$graph_harmonisation$graph_nodes_after,
+      ramp_metadata_current$graph_harmonisation$graph_nodes_after,
       big.mark = ","
     ),
-    ramp_db_metadata$graph_harmonisation$stale_ids_remaining
+    ramp_metadata_current$graph_harmonisation$stale_ids_remaining
   )
 )
 knitr::kable(ramp_summary, align = c("l", "r"))
@@ -71,7 +83,7 @@ knitr::kable(ramp_summary, align = c("l", "r"))
 The bundled chemical table can be used directly:
 
 ```{r chem-props-columns}
-data.frame(column = names(chem_props)) |>
+data.frame(column = names(chem_props_current)) |>
   knitr::kable(align = "l")
 ```
 
@@ -82,9 +94,9 @@ neutral monoisotopic mass approximately 148.0372 Da. Two carboxyl groups give
 this demonstration molecule a maximum of two exchangeable protons.
 
 ```{r target-database}
-target_db <- chem_props[
-  chem_props$ramp_id == "RAMP_C_000219574" &
-    grepl("HMDB0000606", chem_props$chem_source_id),
+target_db <- chem_props_current[
+  chem_props_current$ramp_id == "RAMP_C_000219574" &
+    grepl("HMDB0000606", chem_props_current$chem_source_id),
   c(
     "ramp_id", "chem_data_source", "chem_source_id", "inchi_key",
     "monoisotop_mass", "common_name", "mol_formula"

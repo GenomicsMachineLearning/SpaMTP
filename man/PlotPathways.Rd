@@ -13,6 +13,10 @@ PlotPathways(
   reduction = NULL,
   colors = c("darkblue", "lightgrey", "darkred"),
   guide = "colourbar",
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "spamtpdb", "bundled"),
+  database_local_dir = NULL,
   ...
 )
 }
@@ -32,6 +36,15 @@ PlotPathways(
 \item{colors}{Vector of colors for the gradient (default = c("darkblue", "lightgrey", "darkred")).}
 
 \item{guide}{Character string stating the type of legend to display (default = "colourbar").}
+
+\item{database}{Optional named list of database resources, normally created
+by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+
+\item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
+
+\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
 
 \item{...}{Additional inputs taken by \code{Seurat::FeaturePlot()}. Check the relative documentation for more infomation.}
 }
