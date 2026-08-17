@@ -1,4 +1,15 @@
 *.html
 *.R
 !vignette_download_utils.R
-vignette_data_files/**
+!vignette_data_files/**/*.html
+
+# The developmental branch tracks its vignette data so the illustrated articles
+# render from a plain clone. (The Bioconductor package lives on bioc-main, whose
+# tarball never carried these files anyway -- .Rbuildignore drops the whole
+# directory.) Only build-time downloads stay ignored: CI fetches these into the
+# working tree, see .github/workflows/pkgdown.yaml.
+vignette_data_files/Mouse_Brain/ST_data/visium.RDS
+vignette_data_files/human_brain_tissue_analysis/
+
+# Local scratch output from inst/examples/pathway_network_mouse_brain_demo.R.
+vignette_data_files/Mouse_Brain/DHB_data/pathway_network_demo_output/

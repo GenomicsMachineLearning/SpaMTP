@@ -189,7 +189,12 @@ options(timeout = 600)
 
 ```{r, warning=FALSE, message=FALSE}
 msi_file <- resolve_mouse_brain_demo_file(
-  file.path("SM_data", "V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+  file.path("SM_data", "V11L12-109_B1.Visium.FMP.220826_smamsi.csv"),
+  url = paste0(
+    "https://zenodo.org/api/records/17246900/files/",
+    "V11L12-109_B1.Visium.FMP.220826_smamsi.csv/content"
+  ),
+  expected_md5 = "d30790cd62b5fe88441ae4a63fa787e7"
 )
 msi <- ReadSM_mtx(mtx.file = msi_file)
 ```
@@ -353,7 +358,12 @@ First, we will need to load this additional data.frame containing the custom ann
 
 ```{r}
 fmp10_file <- resolve_mouse_brain_demo_file(
-  file.path("SM_data", "Public_data_FMP10_Annotations.csv")
+  file.path("SM_data", "Public_data_FMP10_Annotations.csv"),
+  url = paste0(
+    "https://zenodo.org/api/records/17246900/files/",
+    "Public_data_FMP10_Annotations.csv/content"
+  ),
+  expected_md5 = "5885b3ff385ef5ad3aad24100b75949a"
 )
 fmp10_metabolites <- read.csv(fmp10_file, row.names = 1)
 ```
@@ -520,7 +530,12 @@ msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 ```{r, include=FALSE}
 gc()
 msi_transformed_file <- resolve_mouse_brain_demo_file(
-  file.path("SM_data", "SpaMTP_msi_transformed.RDS")
+  file.path("SM_data", "SpaMTP_msi_transformed.RDS"),
+  url = paste0(
+    "https://zenodo.org/api/records/17246900/files/",
+    "SpaMTP_msi_transformed.RDS/content"
+  ),
+  expected_md5 = "4c9e3db3412df2a255a58fc6939e37de"
 )
 msi_transformed <- readRDS(msi_transformed_file)
 # The serialized demo predates the scored RaMP annotation store. Re-annotation
