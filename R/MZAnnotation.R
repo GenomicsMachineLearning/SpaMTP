@@ -885,8 +885,10 @@ ppm_error <- function(observed_mz, reference_mz, ppm) {
 
 
 
-#' Calculates the ppm range and check if mz values are within the range
-#'    -  Returns TRUE if match is found and false if no match.
+#' Check whether m/z values match within a ppm tolerance
+#'
+#' Calculates the absolute ppm difference between observed and reference m/z
+#' values and returns whether each comparison satisfies the tolerance.
 #'
 #' @param observed_mz Numeric value defining the observed mz value.
 #' @param reference_mz Numeric value defining the reference mz value.
@@ -1428,17 +1430,17 @@ AnnotateBigData <- function(mzs, db = NULL, ppm_error = NULL, adducts = NULL,
 #' restricting to a global precursor-mz range.
 #'
 #' @param raw_mz         Numeric vector of length n_peaks
-#' @param counts         Numeric matrix n_peaks × n_pixels
+#' @param counts         Numeric matrix n_peaks x n_pixels
 #' @param spectra10_list   List of Spectrum2 objects (length N_lib)
-#' @param ppm_tol        Precursor‐matching tolerance in ppm (default 10)
-#' @param frag_tol_da    Fragment‐matching tolerance in Da (default 0.01)
+#' @param ppm_tol        Precursor-matching tolerance in ppm (default 10)
+#' @param frag_tol_da    Fragment-matching tolerance in Da (default 0.01)
 #' @param cos_threshold  Minimum cosine similarity to report (default 0.7)
 #' @param min_precursor  Minimum allowed precursor m/z (default = 0, i.e. no lower bound)
 #' @param max_precursor  Maximum allowed precursor m/z (default = Inf, i.e. no upper bound)
 #'
 #' @return A list of length n_peaks. Each element is an integer vector giving
 #'         the indices in spectra10_list of all library spectra10 with
-#'         cosine ≥ cos_threshold (or integer(0) if none).
+#'         cosine >= cos_threshold (or integer(0) if none).
 Pseudo_msms <- function(raw_mz,
                                counts,
                                spectra10_list,
@@ -1448,7 +1450,7 @@ Pseudo_msms <- function(raw_mz,
                                min_precursor = 0,
                                max_precursor = Inf) {
   stopifnot(length(raw_mz) == nrow(counts))
-  # extract library precursor m/z’s, and keep only those within [min, max]
+  # extract library precursor m/z's, and keep only those within [min, max]
   prec_all<- vapply(spectra10_list, function(sp)
     sp@precursorMz, numeric(1))
   ok_lib<- (prec_all >= min_precursor) &
@@ -1457,7 +1459,7 @@ Pseudo_msms <- function(raw_mz,
     stop("No library spectra10 within the specified precursor range.")
   }
 
-  # filter down to the “in-range” subset
+  # filter down to the "in-range" subset
   spectra10_names <- names(spectra10_list)
   spectra10_sub   <- mget(spectra10_names[ok_lib], envir = spectra10_list)
   prec_sub    <- prec_all[ok_lib]
@@ -1524,7 +1526,7 @@ Pseudo_msms <- function(raw_mz,
       cosine(int_img, int_lib2)
     }, numeric(1))
 
-    # collect all whose cosine ≥ threshold
+    # collect all whose cosine >= threshold
     good <- which(!is.na(cos_vals) & (cos_vals >= cos_threshold))
     # map back to the original spectra10_list indices
     if (length(good) > 0) {

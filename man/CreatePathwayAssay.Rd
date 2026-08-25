@@ -52,7 +52,7 @@ by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 A SpaMTP object with a new assay added, containing respective gene/metabolite data formatted based on RAMP_db IDs.
 }
 \description{
-This function creates a new assay within the provided SpaMTP Seurat object which contains features (either genes or metabolites) labeled by their respective RAMP ID. This assay can be used for running feature set co-regulation analysis (based on \href{https://doi.org/10.1093/bioinformatics/btp502}{GSCA}).
+This function creates a new assay within the provided SpaMTP Seurat object which contains features (either genes or metabolites) labeled by their respective RAMP ID. This assay can be used for running feature set co-regulation analysis (based on GSCA; \doi{10.1093/bioinformatics/btp502}).
 }
 \examples{
 utils::str(formals(CreatePathwayAssay))

@@ -57,7 +57,8 @@ A SpaMTP Seurat object with a new graph stored in \verb{@graphs} and spatially-a
 Computes a graph-regularised PCA using spatial coordinates and scaled expression data. A k-nearest neighbour (k-NN) graph is computed using spatial locations and used to regularise the PCA decomposition via a graph Laplacian. The result are stored in the \verb{@reductions} section of the returned SpaMTP Seurat object.
 }
 \details{
-Note: This method has been adapted from \href{https://doi.org/10.1186/s13059-024-03429-x}{GraphPCA} python package.
+Note: This method has been adapted from the GraphPCA Python package
+(\doi{10.1186/s13059-024-03429-x}).
 }
 \examples{
 utils::str(formals(RunSpatialGraphPCA))

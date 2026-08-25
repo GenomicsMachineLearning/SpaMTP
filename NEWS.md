@@ -1,5 +1,15 @@
 # SpaMTP (developmental)
 
+* Vignette builds no longer depend on AnnotationHub having ingested `SpaMTPdb`.
+  The documentation workflow stages the RaMP 3.0.7 resources once from their
+  immutable Zenodo deposition (`doi:10.5281/zenodo.22045311`), verifies each
+  file against the manifest size and MD5, and exposes the directory to every
+  article through `SPAMTPDB_RESOURCE_DIR`.
+* Documentation fixes for `R CMD check`: DOI references use `\doi{}` rather
+  than raw `\href{}` links, `ppm_range_match()` has a single-line title, and
+  the R sources and `.Rd` files are ASCII-only.
+* Declared the `Transcriptomics` and `Alignment` biocViews.
+
 * Split versioned resources from the analysis code: `SpaMTPdb` now supplies
   the pruned RaMP annotation and pathway snapshot, and `SpaMTPData` provides
   named access to large experiment/vignette objects. `LoadSpaMTPDatabase()`

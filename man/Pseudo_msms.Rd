@@ -19,13 +19,13 @@ Pseudo_msms(
 \arguments{
 \item{raw_mz}{Numeric vector of length n_peaks}
 
-\item{counts}{Numeric matrix n_peaks × n_pixels}
+\item{counts}{Numeric matrix n_peaks x n_pixels}
 
 \item{spectra10_list}{List of Spectrum2 objects (length N_lib)}
 
-\item{ppm_tol}{Precursor‐matching tolerance in ppm (default 10)}
+\item{ppm_tol}{Precursor-matching tolerance in ppm (default 10)}
 
-\item{frag_tol_da}{Fragment‐matching tolerance in Da (default 0.01)}
+\item{frag_tol_da}{Fragment-matching tolerance in Da (default 0.01)}
 
 \item{cos_threshold}{Minimum cosine similarity to report (default 0.7)}
 
@@ -36,7 +36,7 @@ Pseudo_msms(
 \value{
 A list of length n_peaks. Each element is an integer vector giving
 the indices in spectra10_list of all library spectra10 with
-cosine ≥ cos_threshold (or integer(0) if none).
+cosine >= cos_threshold (or integer(0) if none).
 }
 \description{
 Find all library spectra10 above a cosine threshold for each imaging peak,

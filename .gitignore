@@ -10,3 +10,4 @@ vignettes/.knitr-cache/
 .idea
 *.Rcheck/
 *.tar.gz
+.spamtpdb-resources/

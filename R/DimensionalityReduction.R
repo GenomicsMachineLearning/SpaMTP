@@ -215,7 +215,8 @@ RunMetabolicPCA <- function(SpaMTP,
 #'
 #' Computes a graph-regularised PCA using spatial coordinates and scaled expression data. A k-nearest neighbour (k-NN) graph is computed using spatial locations and used to regularise the PCA decomposition via a graph Laplacian. The result are stored in the `@reductions` section of the returned SpaMTP Seurat object.
 #'
-#' Note: This method has been adapted from [GraphPCA](https://doi.org/10.1186/s13059-024-03429-x) python package.
+#' Note: This method has been adapted from the GraphPCA Python package
+#' (\doi{10.1186/s13059-024-03429-x}).
 #'
 #' @param data A SpaMTP Seurat object containing spatial data (feature data and spatial coordinates).
 #' @param n_components Integer specifying the number of principal components to compute (default = 50).

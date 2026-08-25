@@ -68,7 +68,7 @@ LoadSM <- function (file, mass.range = NULL, resolution = NA, units = "ppm", ver
 #' **NOTE:** The input file must be in a format similar to the table below:
 #'
 #' ```r
-#' A data.frame: 5 × 5
+#' A data.frame: 5 x 5
 #'    x   y   mz1  mz2  mz3
 #' 1  0   1    0    0   11
 #' 2  0   2    0    0    0

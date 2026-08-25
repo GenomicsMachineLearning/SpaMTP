@@ -19,3 +19,4 @@ inst/figures/$
 .*\.Rcheck$
 .*\.BiocCheck$
 .*\.tar\.gz$
+^\.spamtpdb-resources$

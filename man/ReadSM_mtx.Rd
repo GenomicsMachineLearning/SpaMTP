@@ -36,7 +36,7 @@ All other columns should be the relative m/z values containing the intensity val
 \details{
 \strong{NOTE:} The input file must be in a format similar to the table below:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{A data.frame: 5 × 5
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{A data.frame: 5 x 5
    x   y   mz1  mz2  mz3
 1  0   1    0    0   11
 2  0   2    0    0    0

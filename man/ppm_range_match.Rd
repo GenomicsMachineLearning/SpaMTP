@@ -2,10 +2,7 @@
 % Please edit documentation in R/MZAnnotation.R
 \name{ppm_range_match}
 \alias{ppm_range_match}
-\title{Calculates the ppm range and check if mz values are within the range
-\itemize{
-\item Returns TRUE if match is found and false if no match.
-}}
+\title{Check whether m/z values match within a ppm tolerance}
 \usage{
 ppm_range_match(observed_mz, reference_mz, ppm)
 }
@@ -20,10 +17,8 @@ ppm_range_match(observed_mz, reference_mz, ppm)
 Boolean value indicating if a match is found (TRUE) or not (FALSE)
 }
 \description{
-Calculates the ppm range and check if mz values are within the range
-\itemize{
-\item Returns TRUE if match is found and false if no match.
-}
+Calculates the absolute ppm difference between observed and reference m/z
+values and returns whether each comparison satisfies the tolerance.
 }
 \examples{
 ### Helper Function ###
