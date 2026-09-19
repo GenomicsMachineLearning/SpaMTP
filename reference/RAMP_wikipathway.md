@@ -34,33 +34,42 @@ RAMP_wikipathway
 
 - protEdges:
 
-  A data frame with 1 row and 4 variables for protein edges, including
-  `src`, `dest`, `directed`, and `reaction_type` (various types)
+  Protein interactions: a data frame with `src`, `dest`, `directed`,
+  `reaction_type`, and `source_reaction_type`. Row counts vary by
+  pathway.
 
 - protPropEdges:
 
-  A data frame with 747 rows and 4 variables for protein-protein
-  interactions: `src` (character), `dest` (character), `directed`
-  (integer), and `reaction_type` (integer)
+  Propagated protein interactions: a data frame with `src`, `dest`,
+  `directed`, `reaction_type`, and `source_reaction_type`. Row counts
+  vary by pathway.
 
 - metabolEdges:
 
-  A data frame with 1 row and 4 variables for metabolite edges,
-  including `src`, `dest`, `directed`, and `reaction_type` (various
-  types)
+  Metabolite interactions: a data frame with `src`, `dest`, `directed`,
+  `reaction_type`, and `source_reaction_type`. Row counts vary by
+  pathway.
 
 - metabolPropEdges:
 
-  A data frame with 88 rows and 4 variables for metabolite interactions:
-  `src` (character), `dest` (character), `directed` (integer), and
-  `reaction_type` (integer)
+  Propagated metabolite interactions: a data frame with `src`, `dest`,
+  `directed`, `reaction_type`, and `source_reaction_type`. Row counts
+  vary by pathway.
 
 - mixedEdges:
 
-  A data frame with 311 rows and 4 variables for mixed interactions
-  between proteins and metabolites: `src` (character), `dest`
-  (character), `directed` (integer), and `reaction_type` (integer)
+  Protein-metabolite interactions: a data frame with `src`, `dest`,
+  `directed`, `reaction_type`, and `source_reaction_type`. Row counts
+  vary by pathway.
 
 - timestamp:
 
   The date of data extraction (Date)
+
+## Details
+
+Interaction labels and directions were restored from the pinned graphite
+archive. Edge tables retain the exact label in `source_reaction_type`;
+`spamtp_interaction_repair` records the repair provenance on the
+collection. See
+[`vignette("Pathway_Database_Integration", package = "SpaMTP")`](https://genomicsmachinelearning.github.io/SpaMTP/articles/Pathway_Database_Integration.md).

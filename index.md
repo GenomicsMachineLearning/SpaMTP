@@ -117,3 +117,7 @@ environment:
     conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioconductor-hdf5array bioconductor-rhdf5 bioconductor-rhdf5lib --y
     conda install --no-update-deps -c bioconda bioconductor-msnbase bioconductor-ebimage==4.48.0-0 --y
     Rscript dependencies.R
+
+Pathway membership, topology provenance, the interaction-code
+correction, and rebuild instructions are documented in [Pathway Database
+Integration](https://genomicsmachinelearning.github.io/SpaMTP/vignettes/Pathway_Database_Integration.Rmd).

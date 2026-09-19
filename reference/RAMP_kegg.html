@@ -25,6 +25,7 @@
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -85,19 +86,19 @@
 <dd><p>Species (character)</p></dd>
 
 <dt>protEdges</dt>
-<dd><p>A data frame with 1 row and 4 variables for protein edges, including <code>src</code>, <code>dest</code>, <code>directed</code>, and <code>reaction_type</code> (various types)</p></dd>
+<dd><p>Protein interactions: a data frame with <code>src</code>, <code>dest</code>, <code>directed</code>, <code>reaction_type</code>, and <code>source_reaction_type</code>. Row counts vary by pathway.</p></dd>
 
 <dt>protPropEdges</dt>
-<dd><p>A data frame with 747 rows and 4 variables for protein-protein interactions: <code>src</code> (character), <code>dest</code> (character), <code>directed</code> (integer), and <code>reaction_type</code> (integer)</p></dd>
+<dd><p>Propagated protein interactions: a data frame with <code>src</code>, <code>dest</code>, <code>directed</code>, <code>reaction_type</code>, and <code>source_reaction_type</code>. Row counts vary by pathway.</p></dd>
 
 <dt>metabolEdges</dt>
-<dd><p>A data frame with 1 row and 4 variables for metabolite edges, including <code>src</code>, <code>dest</code>, <code>directed</code>, and <code>reaction_type</code> (various types)</p></dd>
+<dd><p>Metabolite interactions: a data frame with <code>src</code>, <code>dest</code>, <code>directed</code>, <code>reaction_type</code>, and <code>source_reaction_type</code>. Row counts vary by pathway.</p></dd>
 
 <dt>metabolPropEdges</dt>
-<dd><p>A data frame with 88 rows and 4 variables for metabolite interactions: <code>src</code> (character), <code>dest</code> (character), <code>directed</code> (integer), and <code>reaction_type</code> (integer)</p></dd>
+<dd><p>Propagated metabolite interactions: a data frame with <code>src</code>, <code>dest</code>, <code>directed</code>, <code>reaction_type</code>, and <code>source_reaction_type</code>. Row counts vary by pathway.</p></dd>
 
 <dt>mixedEdges</dt>
-<dd><p>A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: <code>src</code> (character), <code>dest</code> (character), <code>directed</code> (integer), and <code>reaction_type</code> (integer)</p></dd>
+<dd><p>Protein-metabolite interactions: a data frame with <code>src</code>, <code>dest</code>, <code>directed</code>, <code>reaction_type</code>, and <code>source_reaction_type</code>. Row counts vary by pathway.</p></dd>
 
 <dt>timestamp</dt>
 <dd><p>The date of data extraction (Date)</p></dd>
@@ -105,6 +106,13 @@
 
 </dl></div>
 
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Interaction labels and directions were restored from the pinned graphite
+archive. Edge tables retain the exact label in <code>source_reaction_type</code>;
+<code>spamtp_interaction_repair</code> records the repair provenance on the collection.
+See <code><a href="../articles/Pathway_Database_Integration.html">vignette("Pathway_Database_Integration", package = "SpaMTP")</a></code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

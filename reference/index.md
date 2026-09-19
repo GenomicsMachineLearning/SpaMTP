@@ -330,7 +330,7 @@ Various datasets required for generated pathway network plots
 
 - [`RAMP_hmdb`](https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_hmdb.md)
   : RAMP_hmdb: A list containing network plot information about pathways
-  from the HMDB database
+  from the SMPDB database
 - [`RAMP_Reactome`](https://genomicsmachinelearning.github.io/SpaMTP/reference/RAMP_Reactome.md)
   : RAMP_Reactome: A list containing network plot information about
   pathways from the Reactome database
@@ -341,7 +341,7 @@ Various datasets required for generated pathway network plots
   : RAMP_wikipathway: A list containing network plot information about
   pathways from the Wiki database
 - [`reaction_type`](https://genomicsmachinelearning.github.io/SpaMTP/reference/reaction_type.md)
-  : reaction_type: data.frame containing reaction type mappings
+  : Pathway-network reaction styles
 
 ## Cardinal Wrapper Functions
 

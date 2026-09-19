@@ -15,6 +15,8 @@
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/articles/Mouse_Urinary_Bladder.md):
 - [SpaMTP: Spatial Multi-Omics
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/articles/Multi-Omic_Mouse_Brain.md):
+- [Pathway databases, interaction provenance, and rebuilding
+  graphs](https://genomicsmachinelearning.github.io/SpaMTP/articles/Pathway_Database_Integration.md):
 - [SpaMTP: Simulated Single Cell Multi-Omics
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/articles/Single_Cell_MultiOmics.md):
 - [SpaMTP: Additional Analysis
