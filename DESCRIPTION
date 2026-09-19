@@ -57,6 +57,7 @@ Imports:
     Cardinal,
     cowplot,
     data.table,
+    digest,
     dplyr,
     DropletUtils,
     EBImage,

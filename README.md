@@ -116,3 +116,7 @@ conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioco
 conda install --no-update-deps -c bioconda bioconductor-msnbase bioconductor-ebimage==4.48.0-0 --y
 Rscript dependencies.R
 ```
+
+Pathway membership, topology provenance, the interaction-code correction, and
+rebuild instructions are documented in
+[Pathway Database Integration](vignettes/Pathway_Database_Integration.Rmd).

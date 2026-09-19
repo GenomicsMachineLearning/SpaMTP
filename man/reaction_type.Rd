@@ -5,9 +5,9 @@
 \alias{reaction_type}
 \title{Pathway-network reaction styles}
 \format{
-A data frame with 11 rows and 5 variables:
+A data frame with 18 rows and 5 variables:
 \describe{
-\item{reaction_type}{Integer reaction code.}
+\item{reaction_type}{Stable SpaMTP style code; not a database-specific factor index.}
 \item{reaction_name}{Human-readable reaction type.}
 \item{linetype}{Line style.}
 \item{arrowhead}{Arrowhead style.}
@@ -21,7 +21,7 @@ data(reaction_type)
 A data frame of pathway-network reaction styles.
 }
 \description{
-A small lookup table mapping RaMP reaction codes to visual properties used
+A small lookup table mapping SpaMTP interaction style codes to visual properties used
 by the interactive pathway-network viewer.
 }
 \keyword{datasets}

@@ -1,5 +1,18 @@
 # SpaMTP (developmental)
 
+* Fixed pathway interaction corruption in the graphite-derived RaMP 3.0.7
+  graphs. A pinned, checksum-guarded correction restores per-edge source labels,
+  directions, and parallel interactions for KEGG, Reactome, WikiPathways and
+  SMPDB. Interaction styles now use label semantics across databases, and
+  undirected edges have no arrowhead. The original published resource bytes
+  retain their checksums; SpaMTP applies corrections when loading them.
+* Added the Pathway Database Integration vignette, a reproducible correction
+  builder, source checksums, and regression tests for the Cell Cycle report.
+* Parallel pathway interactions now use separate curves, including reciprocal
+  edges and self-loops, so each restored interaction can be inspected by hover.
+  Routes remain stable when switching between focused and full networks.
+
+
 * Vignette builds no longer depend on AnnotationHub having ingested `SpaMTPdb`.
   The documentation workflow stages the RaMP 3.0.7 resources once from their
   immutable Zenodo deposition (`doi:10.5281/zenodo.22045311`), verifies each

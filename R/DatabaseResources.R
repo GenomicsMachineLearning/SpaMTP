@@ -96,6 +96,7 @@
     metadata = TRUE
   )
 
+  value <- .spamtp_repair_pathway_interactions(value, resource)
   attr(value, "spamtp_database") <- list(
     resource = resource,
     version = as.character(resource_metadata$version[[1L]]),
@@ -129,7 +130,10 @@
       )
     }
     names(database) <- tolower(names(database))
-    return(database[resources])
+    values <- lapply(resources, function(resource) {
+      .spamtp_repair_pathway_interactions(database[[resource]], resource)
+    })
+    return(stats::setNames(values, resources))
   }
 
   values <- lapply(resources, function(resource) {
@@ -151,6 +155,15 @@
 #' Loads a coherent group of annotation resources from [SpaMTPdb]. Retrieved
 #' resources are cached for the current R session. A named custom bundle can be
 #' supplied for offline, testing, or user-curated workflows.
+#'
+#' @details
+#' Exact affected RaMP 3.0.7 topology resources receive a checksum-guarded
+#' correction for historical interaction-code and direction recycling. Source
+#' labels are retained in `source_reaction_type`; the resource attribute
+#' `spamtp_interaction_repair` records the correction separately from the
+#' original download metadata. Published files are unchanged. See
+#' `vignette("Pathway_Database_Integration", package = "SpaMTP")` for provenance
+#' and reproducible build instructions.
 #'
 #' @param resources Character vector of resource names. Use
 #'   [SpaMTPDatabaseInfo()] to list valid names.

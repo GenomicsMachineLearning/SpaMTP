@@ -43,6 +43,15 @@ Loads a coherent group of annotation resources from \link[SpaMTPdb:SpaMTPdb]{Spa
 resources are cached for the current R session. A named custom bundle can be
 supplied for offline, testing, or user-curated workflows.
 }
+\details{
+Exact affected RaMP 3.0.7 topology resources receive a checksum-guarded
+correction for historical interaction-code and direction recycling. Source
+labels are retained in \code{source_reaction_type}; the resource attribute
+\code{spamtp_interaction_repair} records the correction separately from the
+original download metadata. Published files are unchanged. See
+\code{vignette("Pathway_Database_Integration", package = "SpaMTP")} for provenance
+and reproducible build instructions.
+}
 \examples{
 utils::str(formals(LoadSpaMTPDatabase))
 example_database <- list(
