@@ -1,5 +1,15 @@
 # SpaMTP (developmental)
 
+* Restored per-edge source labels, directions and parallel interactions in
+  the bundled RaMP 3.0.7 KEGG, Reactome, WikiPathways and SMPDB graphs. Both
+  direct data access and pathway network plots now use corrected graphs.
+  Source labels and repair provenance accompany the rebuilt data.
+* Parallel interactions, reciprocal edges and self-loops now use separate
+  curves; undirected edges have no arrowhead. Each source label can be
+  inspected independently by hover.
+* Documented pathway database integration and the pinned rebuilding recipe,
+  with regression tests for the Cell Cycle interaction report.
+
 * Updated the package citation to the peer-reviewed *Nature Methods* paper,
   designated Tianyao Lu as the current package maintainer, and added direct
   links to the developmental documentation and source branch. Andrew Causer

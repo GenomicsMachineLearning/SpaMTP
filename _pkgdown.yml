@@ -91,6 +91,8 @@ navbar:
         href: articles/Big_Data.html
       - text: Indexed Metabolite Annotation with RaMP 3.0
         href: articles/Metabolite_Annotation_Pipeline.html
+      - text: Pathway Database Integration and Interaction Provenance
+        href: articles/Pathway_Database_Integration.html
       - text: Refining Metabolite Annotations
         href: articles/Annotation_Refinement.html
       - text: Simulated scMulti-Omics Analysis

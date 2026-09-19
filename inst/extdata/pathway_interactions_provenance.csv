@@ -1,0 +1,12 @@
+file,url,md5
+hsapiens-kegg-19.rds,https://graphiteweb.bio.unipd.it/pathways/19/hsapiens-kegg.rds,1357b0e2c1dabf0ad8e3a68883ddbd9a
+hsapiens-reactome-19.rds,https://graphiteweb.bio.unipd.it/pathways/19/hsapiens-reactome.rds,d66f457c0cb04a9ebfe6b35e844e33e8
+hsapiens-wikipathways-19.rds,https://graphiteweb.bio.unipd.it/pathways/19/hsapiens-wikipathways.rds,646c7000e68dfc5c704746f70dcb2d1e
+hsapiens-smpdb-19.rds,https://graphiteweb.bio.unipd.it/pathways/19/hsapiens-smpdb.rds,b48e23cb166cca45a53599bb534151e2
+initial-source_df.rda,https://raw.githubusercontent.com/GenomicsMachineLearning/SpaMTP/9ef87f7257c01500c087f0b7a717edd730e19d29/data/source_df.rda,72a8e012302fa1a1de52e58518f75194
+source_df.rds,https://zenodo.org/records/22045311/files/source_df.rds?download=1,5cc8fc44c759ba103f39c0f53b9dc438
+analyte.rds,https://zenodo.org/records/22045311/files/analyte.rds?download=1,e694b953ad4b61276132273a7eb4f26b
+ramp_kegg.rds,https://zenodo.org/records/22045311/files/ramp_kegg.rds?download=1,c400509696d779a962cd0b4360620900
+ramp_reactome.rds,https://zenodo.org/records/22045311/files/ramp_reactome.rds?download=1,a5d64439c1f6b8717fb517fbb1bc70b4
+ramp_wikipathway.rds,https://zenodo.org/records/22045311/files/ramp_wikipathway.rds?download=1,8c6cc59150f60d999f3ab13f97f42904
+ramp_hmdb.rds,https://zenodo.org/records/22045311/files/ramp_hmdb.rds?download=1,1fd1e7814bd6fd3a8815445a1d60143c

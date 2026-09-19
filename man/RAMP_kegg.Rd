@@ -12,11 +12,11 @@
 \item{title}{Pathway title (character)}
 \item{database}{Source database (character)}
 \item{species}{Species (character)}
-\item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-\item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-\item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-\item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-\item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+\item{protEdges}{Protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+\item{protPropEdges}{Propagated protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+\item{metabolEdges}{Metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+\item{metabolPropEdges}{Propagated metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+\item{mixedEdges}{Protein-metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
 \item{timestamp}{The date of data extraction (Date)}
 }
 }
@@ -26,5 +26,11 @@ RAMP_kegg
 }
 \description{
 This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
+}
+\details{
+Interaction labels and directions were restored from the pinned graphite
+archive. Edge tables retain the exact label in \code{source_reaction_type};
+\code{spamtp_interaction_repair} records the repair provenance on the collection.
+See \code{vignette("Pathway_Database_Integration", package = "SpaMTP")}.
 }
 \keyword{datasets}

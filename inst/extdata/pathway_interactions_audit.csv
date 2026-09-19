@@ -1,0 +1,5 @@
+"resource","pathways","tables","edges_before","edges_after"
+"ramp_kegg",325,1625,209112,215713
+"ramp_reactome",2460,12300,2370735,2568277
+"ramp_wikipathway",685,3425,86869,88284
+"ramp_hmdb",48671,243355,2868043,2868575

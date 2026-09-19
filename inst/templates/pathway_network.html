@@ -132,6 +132,7 @@
     }
     .network-label-undetected { fill: #52617a; font-size: 10.5px; font-weight: 500; }
     .network-link { fill: none; opacity: .62; }
+    .network-link:hover { opacity: 1; }
     .card { margin-bottom: 16px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
     .card h3 { margin: 0 0 8px; font-size: 13px; }
     .card p { margin: 5px 0; color: var(--muted); font-size: 12px; }
@@ -437,6 +438,7 @@
         return copy;
       });
       let links = (raw.links || []).map(link => ({...link}));
+      assignEdgeRoutes(links);
       if (!state.focused) return {nodes, links};
 
       const detected = new Set(nodes.filter(node => node.detected).map(node => node.id));
@@ -527,8 +529,8 @@
         .attr("stroke", edge => edge.colour || "#64748b")
         .attr("stroke-width", edge => 1 + Math.min(1.5, Math.log1p(+edge.weight || 1) / 3))
         .attr("stroke-dasharray", edge => edge.style === "dashed" ? "5 4" : null)
-        .attr("marker-end", edge => `url(#${markerKey(edge)})`)
-        .on("mousemove", (event, edge) => showTooltip(event, edge.reaction || "Interaction"))
+        .attr("marker-end", edge => edge.head === "none" ? null : `url(#${markerKey(edge)})`)
+        .on("mousemove", (event, edge) => showTooltip(event, escapeHtml(edge.reaction || "Interaction")))
         .on("mouseleave", hideTooltip);
 
       const node = viewport.append("g")
@@ -675,6 +677,35 @@
         }));
     }
 
+    function assignEdgeRoutes(links) {
+      // Group both directions together so reciprocal edges cannot share a curve.
+      // Assign before filtering to keep routes stable when switching views.
+      const groups = new Map();
+      const endpointId = endpoint => String(endpoint.id ?? endpoint);
+      links.forEach(edge => {
+        const source = endpointId(edge.source);
+        const target = endpointId(edge.target);
+        const key = JSON.stringify([source, target].sort());
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(edge);
+        edge.routeDirection = source <= target ? 1 : -1;
+      });
+      const sortKey = edge => JSON.stringify([
+        endpointId(edge.source), endpointId(edge.target),
+        edge.reaction, edge.head, edge.style, edge.colour
+      ]);
+      groups.forEach(group => {
+        group.sort((a, b) => {
+          const left = sortKey(a), right = sortKey(b);
+          return left < right ? -1 : left > right ? 1 : 0;
+        });
+        group.forEach((edge, index) => {
+          edge.routeIndex = index;
+          edge.routeCount = group.length;
+        });
+      });
+    }
+
     function edgePath(edge) {
       const sourceX = edge.source.x;
       const sourceY = edge.source.y;
@@ -683,11 +714,20 @@
       if (sourceX === targetX && sourceY === targetY) {
         targetX += 1;
         targetY += 1;
-        return `M${sourceX},${sourceY}C${sourceX + 30},${sourceY - 35} ${sourceX - 30},${sourceY - 35} ${targetX},${targetY}`;
+        const size = 30 + (edge.routeIndex || 0) * 18;
+        return `M${sourceX},${sourceY}C${sourceX + size},${sourceY - size * 1.4} ${sourceX - size},${sourceY - size * 1.4} ${targetX},${targetY}`;
       }
       const dx = targetX - sourceX;
       const dy = targetY - sourceY;
-      const radius = Math.max(1, Math.hypot(dx, dy) * 1.8);
+      const distance = Math.max(1, Math.hypot(dx, dy));
+      if (edge.routeCount > 1) {
+        const gap = Math.max(32, Math.min(64, distance * 0.2));
+        const offset = (edge.routeIndex - (edge.routeCount - 1) / 2) * gap * edge.routeDirection;
+        const controlX = (sourceX + targetX) / 2 - dy / distance * offset;
+        const controlY = (sourceY + targetY) / 2 + dx / distance * offset;
+        return `M${sourceX},${sourceY}Q${controlX},${controlY} ${targetX},${targetY}`;
+      }
+      const radius = distance * 1.8;
       return `M${sourceX},${sourceY}A${radius},${radius} 0 0,1 ${targetX},${targetY}`;
     }
 

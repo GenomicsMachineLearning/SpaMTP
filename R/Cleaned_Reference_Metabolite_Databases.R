@@ -337,21 +337,27 @@
 
 
 
-#' @title RAMP_hmdb: A list containing network plot information about pathways from the HMDB database
+#' @title RAMP_hmdb: A list containing network plot information about pathways from the SMPDB database
 #'
-#' @description This object contains a collection of information for each RAMP HMDB network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
+#' @description This object contains a collection of information for each graphite SMPDB network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
+#'
+#' @details Interaction labels and directions were restored from the pinned
+#' graphite archive. Edge tables retain the exact label in
+#' `source_reaction_type`; `spamtp_interaction_repair` records the repair
+#' provenance on the collection. See
+#' `vignette("Pathway_Database_Integration", package = "SpaMTP")`.
 #'
 #' @format ## A list with 10 elements:
 #' \describe{
-#'   \item{id}{HMDB pathway identifier (character)}
+#'   \item{id}{SMPDB pathway identifier (character)}
 #'   \item{title}{Pathway title (character)}
 #'   \item{database}{Source database (character)}
 #'   \item{species}{Species (character)}
-#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{protEdges}{Protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{protPropEdges}{Propagated protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolEdges}{Metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolPropEdges}{Propagated metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{mixedEdges}{Protein-metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
 #'   \item{timestamp}{The date of data extraction (Date)}
 #' }
 #'
@@ -363,17 +369,23 @@
 #'
 #' @description This object contains a collection of information for each RAMP KEGG network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
+#' @details Interaction labels and directions were restored from the pinned
+#' graphite archive. Edge tables retain the exact label in
+#' `source_reaction_type`; `spamtp_interaction_repair` records the repair
+#' provenance on the collection. See
+#' `vignette("Pathway_Database_Integration", package = "SpaMTP")`.
+#'
 #' @format ## A list with 10 elements:
 #' \describe{
 #'   \item{id}{KEGG pathway identifier (character)}
 #'   \item{title}{Pathway title (character)}
 #'   \item{database}{Source database (character)}
 #'   \item{species}{Species (character)}
-#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{protEdges}{Protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{protPropEdges}{Propagated protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolEdges}{Metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolPropEdges}{Propagated metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{mixedEdges}{Protein-metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
 #'   \item{timestamp}{The date of data extraction (Date)}
 #' }
 #'
@@ -384,17 +396,23 @@
 #'
 #' @description This object contains a collection of information for each RAMP Wiki network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
+#' @details Interaction labels and directions were restored from the pinned
+#' graphite archive. Edge tables retain the exact label in
+#' `source_reaction_type`; `spamtp_interaction_repair` records the repair
+#' provenance on the collection. See
+#' `vignette("Pathway_Database_Integration", package = "SpaMTP")`.
+#'
 #' @format ## A list with 10 elements:
 #' \describe{
 #'   \item{id}{Wiki pathway identifier (character)}
 #'   \item{title}{Pathway title (character)}
 #'   \item{database}{Source database (character)}
 #'   \item{species}{Species (character)}
-#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{protEdges}{Protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{protPropEdges}{Propagated protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolEdges}{Metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolPropEdges}{Propagated metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{mixedEdges}{Protein-metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
 #'   \item{timestamp}{The date of data extraction (Date)}
 #' }
 #'
@@ -404,17 +422,23 @@
 #'
 #' @description This object contains a collection of information for each RAMP Reactome network, including their source, destination, direction, and reaction type for both proteins and metabolites. Topology sources were retrieved on 2022-11-01; node identifiers were re-harmonised and integrity-checked against the bundled RaMP-DB 3.0.7 snapshot.
 #'
+#' @details Interaction labels and directions were restored from the pinned
+#' graphite archive. Edge tables retain the exact label in
+#' `source_reaction_type`; `spamtp_interaction_repair` records the repair
+#' provenance on the collection. See
+#' `vignette("Pathway_Database_Integration", package = "SpaMTP")`.
+#'
 #' @format ## A list with 10 elements:
 #' \describe{
 #'   \item{id}{Reactome pathway identifier (character)}
 #'   \item{title}{Pathway title (character)}
 #'   \item{database}{Source database (character)}
 #'   \item{species}{Species (character)}
-#'   \item{protEdges}{A data frame with 1 row and 4 variables for protein edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{protPropEdges}{A data frame with 747 rows and 4 variables for protein-protein interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{metabolEdges}{A data frame with 1 row and 4 variables for metabolite edges, including \code{src}, \code{dest}, \code{directed}, and \code{reaction_type} (various types)}
-#'   \item{metabolPropEdges}{A data frame with 88 rows and 4 variables for metabolite interactions: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
-#'   \item{mixedEdges}{A data frame with 311 rows and 4 variables for mixed interactions between proteins and metabolites: \code{src} (character), \code{dest} (character), \code{directed} (integer), and \code{reaction_type} (integer)}
+#'   \item{protEdges}{Protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{protPropEdges}{Propagated protein interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolEdges}{Metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{metabolPropEdges}{Propagated metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
+#'   \item{mixedEdges}{Protein-metabolite interactions: a data frame with \code{src}, \code{dest}, \code{directed}, \code{reaction_type}, and \code{source_reaction_type}. Row counts vary by pathway.}
 #'   \item{timestamp}{The date of data extraction (Date)}
 #' }
 #'
@@ -422,19 +446,21 @@
 
 
 
-#' @title reaction_type: data.frame containing reaction type mappings
+#' Pathway-network reaction styles
 #'
-#' @description This data frame provides a mapping between reaction types and their associated attributes, such as the reaction name, linetype, arrowhead type, and colour used for network visualization.
+#' A small lookup table mapping SpaMTP interaction style codes to visual properties used
+#' by the interactive pathway-network viewer.
 #'
-#' @format ## A data frame with 11 rows and 5 variables:
+#' @format A data frame with 18 rows and 5 variables:
 #' \describe{
-#'   \item{reaction_type}{Numerical code representing the type of reaction (integer)}
-#'   \item{reaction_name}{Description of the reaction process (character)}
-#'   \item{linetype}{Line type used to represent the reaction in network plots (character)}
-#'   \item{arrowhead}{Arrowhead type indicating the direction of the reaction (character)}
-#'   \item{colour}{Colour used to represent the reaction in network plots (character)}
+#'   \item{reaction_type}{Stable SpaMTP style code; not a database-specific factor index.}
+#'   \item{reaction_name}{Human-readable reaction type.}
+#'   \item{linetype}{Line style.}
+#'   \item{arrowhead}{Arrowhead style.}
+#'   \item{colour}{Edge colour.}
 #' }
-#'
+#' @return A data frame of pathway-network reaction styles.
+#' @keywords datasets
 "reaction_type"
 
 

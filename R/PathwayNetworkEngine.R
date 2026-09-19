@@ -136,7 +136,11 @@
         !all(c("src", "dest", "reaction_type") %in% names(edge))) {
       return(NULL)
     }
-    edge[, intersect(c("src", "dest", "directed", "reaction_type"), names(edge)), drop = FALSE]
+    edge <- edge[, intersect(c("src", "dest", "directed", "reaction_type",
+                                "source_reaction_type"), names(edge)), drop = FALSE]
+    if (!"directed" %in% names(edge)) edge$directed <- NA_integer_
+    if (!"source_reaction_type" %in% names(edge)) edge$source_reaction_type <- NA_character_
+    edge
   })
   parts <- Filter(Negate(is.null), parts)
   if (!length(parts)) return(.pn_empty_links())
@@ -159,9 +163,13 @@
     value
   }
   edges$reaction_name <- lookup("reaction_name", "Interaction")
+  labelled <- !is.na(edges$source_reaction_type) & nzchar(edges$source_reaction_type)
+  edges$reaction_name[labelled] <- as.character(edges$source_reaction_type[labelled])
   edges$linetype <- lookup("linetype", "solid")
   edges$arrowhead <- lookup("arrowhead", "arrow")
   edges$colour <- lookup("colour", "#64748b")
+  # graphite direction code 2 is undirected; do not imply a causal arrow.
+  edges$arrowhead[!is.na(edges$directed) & edges$directed == 2L] <- "none"
 
   degree <- table(c(edges$src, edges$dest))
   edges$weight <- as.integer(degree[edges$src]) + as.integer(degree[edges$dest])
