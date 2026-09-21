@@ -7,7 +7,7 @@
 LoadSpaMTPDatabase(
   resources = c("chem_props", "source_df", "analyte", "analytehaspathway", "pathway"),
   version = "latest",
-  source = c("auto", "spamtpdb"),
+  source = c("auto", "bundled", "local"),
   database = NULL,
   local_dir = NULL,
   hub = NULL,
@@ -19,19 +19,24 @@ LoadSpaMTPDatabase(
 \item{resources}{Character vector of resource names. Use
 \code{\link[=SpaMTPDatabaseInfo]{SpaMTPDatabaseInfo()}} to list valid names.}
 
-\item{version}{SpaMTPdb/RaMP resource version, or \code{"latest"}.}
+\item{version}{Database snapshot version, or \code{"latest"} for the bundled
+snapshot. For local files, declared metadata must match an explicit version.}
 
-\item{source}{Database source. \code{"auto"} and \code{"spamtpdb"} resolve versioned
-resources through SpaMTPdb.}
+\item{source}{Database source. \code{"auto"} uses bundled data unless \code{local_dir}
+is supplied. \code{"bundled"} uses installed data; \code{"local"} requires local RDS
+files and never falls back to another source.}
 
 \item{database}{Optional named list containing the requested resources. When
 supplied, no Hub lookup is performed.}
 
-\item{local_dir}{Optional directory containing staged SpaMTPdb \code{.rds} files.}
+\item{local_dir}{Optional directory containing \verb{<resource>.rds} files,
+either directly or in a version-named subdirectory. Without local version
+metadata, \code{"latest"} files are labelled \code{"unversioned"}.}
 
-\item{hub}{Optional pre-created \code{AnnotationHub} object passed to SpaMTPdb.}
+\item{hub}{Retained for call compatibility; must be \code{NULL} in this release.}
 
-\item{offline}{If \code{TRUE}, do not query AnnotationHub.}
+\item{offline}{Retained for call compatibility. All resource loading is
+offline, regardless of this argument.}
 
 \item{refresh}{If \code{TRUE}, bypass SpaMTP's in-session resource cache.}
 }
@@ -39,12 +44,14 @@ supplied, no Hub lookup is performed.}
 A named list containing the requested resources.
 }
 \description{
-Loads a coherent group of annotation resources from \link[SpaMTPdb:SpaMTPdb]{SpaMTPdb}. Retrieved
-resources are cached for the current R session. A named custom bundle can be
-supplied for offline, testing, or user-curated workflows.
+Loads annotation resources bundled with SpaMTP without another data package,
+a Hub lookup, or a download. Resources are cached for the current R session.
+A named custom bundle or local RDS directory can be supplied for
+user-curated workflows.
 }
 \details{
-Exact affected RaMP 3.0.7 topology resources receive a checksum-guarded
+Bundled RaMP 3.0.7 graphs already include corrected interaction labels and
+directions. Exact affected local or custom topology resources receive a checksum-guarded
 correction for historical interaction-code and direction recycling. Source
 labels are retained in \code{source_reaction_type}; the resource attribute
 \code{spamtp_interaction_repair} records the correction separately from the

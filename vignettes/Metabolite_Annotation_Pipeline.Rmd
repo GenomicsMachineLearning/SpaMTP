@@ -44,15 +44,14 @@ library(SpaMTP)
 
 # RaMP snapshot and identifiers
 
-SpaMTP uses a deliberately pruned, versioned RaMP snapshot. `SpaMTPdb` stores
-the annotation and pathway resources independently of the analysis code: the
+SpaMTP bundles a deliberately pruned, versioned RaMP snapshot. The
 chemical table keeps structures, formulae, monoisotopic masses, names, source
 identifiers, and current `RAMP_C_*` identifiers, while pathway tables retain
 only fields required by SpaMTP's enrichment and network functions. The
-`source = "auto"` setting resolves these versioned resources through
-`SpaMTPdb`; a local staged resource directory can be used offline. The registry
-itself is package metadata, so it can be inspected without downloading the
-large chemical table.
+`source = "auto"` setting reads bundled resources unless an explicit local RDS
+directory is supplied. Neither a companion package nor a network connection is
+needed. The registry is lightweight package metadata, so it can be inspected
+without loading the large chemical table.
 
 ```{r load-ramp-resources}
 ramp_registry <- SpaMTPDatabaseInfo()
@@ -81,8 +80,8 @@ ramp_summary <- data.frame(
 knitr::kable(ramp_summary, align = c("l", "r"))
 ```
 
-The complete table is retrieved only when it is needed. Its versioned schema is
-listed in the companion package registry and documented by `SpaMTPdb`:
+The complete table is loaded only when it is needed. Its versioned schema and
+source-package file checksum are listed in the bundled registry:
 
 ```{r chem-props-columns}
 chem_props_registry[, c(
@@ -100,8 +99,8 @@ recognisable functional groups and ionisation sites.
 
 ```{r target-database}
 # This one-row subset is embedded in the article so every example is runnable
-# without downloading the 289,754-row resource. The identifiers and structure
-# are copied verbatim from SpaMTPdb 3.0.7.
+# without loading the 289,754-row resource. The identifiers and structure
+# are copied verbatim from the bundled RaMP 3.0.7 snapshot.
 target_db <- data.frame(
   ramp_id = "RAMP_C_000219574",
   chem_data_source = "hmdb",
@@ -593,15 +592,15 @@ PathwayNetworkPlots(
 
 # Production use with the complete RaMP table
 
-For one call, `AnnotateSM(db = NULL)` automatically resolves the current RaMP
-chemical-property table through `SpaMTPdb`. For repeated calls, explicitly
+For one call, `AnnotateSM(db = NULL)` automatically loads the bundled RaMP
+chemical-property table. For repeated calls, explicitly
 load the table, then build and reuse an index. `adducts` is optional: when it is
 omitted, SpaMTP selects the full rule
 space for the mode or MALDI matrix and applies molecule-specific SMILES priors.
 An explicit list remains useful when the acquisition protocol rules out known
 ion families.
 
-The `SpaMTPdb::smiles_features` table stores these fields separately
+The bundled `smiles_features` table stores these fields separately
 from the pruned `chem_props` table and is joined by `iso_smiles` on demand. For
 a custom database of up to 5,000 unique structures, `infer_structure = "auto"`
 parses missing features at runtime. Larger un-precomputed inputs emit a warning

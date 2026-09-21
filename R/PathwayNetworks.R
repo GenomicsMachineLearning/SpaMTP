@@ -55,9 +55,9 @@
 #'   browser rendering. Use `Inf` to retain all points.
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return Invisibly returns the generated HTML file path.
 #' @export
@@ -93,7 +93,7 @@ PathwayNetworkPlots <- function(SpaMTP,
                                 layout_mode = c("repulsion", "force", "radial", "bipartite"),
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb"),
+                                database_source = c("auto", "bundled", "local"),
                                 database_local_dir = NULL) {
   analyte_types <- match.arg(
     analyte_types, c("genes", "metabolites"), several.ok = TRUE

@@ -46,7 +46,6 @@ Suggests:
     patchwork,
     reticulate,
     rmarkdown,
-    SpaMTPData,
     testthat (>= 3.0.0),
     viridis,
     yaml
@@ -101,7 +100,6 @@ Imports:
     shiny,
     shinyjs,
     SingleCellExperiment,
-    SpaMTPdb,
     sp,
     stats,
     stringr,
@@ -114,5 +112,8 @@ URL: https://github.com/genomicsmachinelearning/SpaMTP, https://genomicsmachinel
 BugReports: https://github.com/genomicsmachinelearning/SpaMTP/issues
 Depends: 
     R (>= 4.6.0)
+LazyData: true
+LazyDataCompression: xz
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.0
+RoxygenNote: 7.3.3

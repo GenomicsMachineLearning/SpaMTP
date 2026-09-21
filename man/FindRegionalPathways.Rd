@@ -22,7 +22,7 @@ FindRegionalPathways(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb"),
+  database_source = c("auto", "bundled", "local"),
   database_local_dir = NULL
 )
 }
@@ -67,11 +67,11 @@ while \code{"legacy"} explicitly requests that compatibility path.}
 \item{database}{Optional named list of database resources, normally created
 by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+\item{database_version}{Database snapshot version used for pathway lookup.}
 
 \item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+\item{database_local_dir}{Optional local RDS resource directory.}
 }
 \value{
 A SpaMTP object with set enrichment on given analyte types.

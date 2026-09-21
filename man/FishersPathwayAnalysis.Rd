@@ -14,7 +14,7 @@ FishersPathwayAnalysis(
   verbose = TRUE,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb"),
+  database_source = c("auto", "bundled", "local"),
   database_local_dir = NULL,
   ...
 )
@@ -37,11 +37,11 @@ FishersPathwayAnalysis(
 \item{database}{Optional named list of database resources, normally created
 by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+\item{database_version}{Database snapshot version used for pathway lookup.}
 
 \item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+\item{database_local_dir}{Optional local RDS resource directory.}
 
 \item{...}{Additional parameters that can be passed through to \code{annotateTable()} when running \code{mz}-based analysis. Please see documentation for \code{annotateTable()} for more details.
 \subsection{Details}{
@@ -50,7 +50,7 @@ by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 \item Supported \code{genes} data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 \item Supported \code{mzs} format: any string or numeric vector containing m/z. If
 \code{mzs} values are provided, the current indexed annotation pipeline and the
-versioned SpaMTPdb \code{chem_props} table is used by default.
+bundled RaMP \code{chem_props} table is used by default.
 }
 }}
 }

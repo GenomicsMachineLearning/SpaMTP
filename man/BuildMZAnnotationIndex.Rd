@@ -38,7 +38,7 @@ optional filter on that selected rule space.}
 \item{collapse_isomers}{Collapse records sharing formula, exact mass, and
 proton bound before indexing.}
 
-\item{infer_structure}{\code{"auto"} joins precomputed SpaMTPdb features or
+\item{infer_structure}{\code{"auto"} joins bundled precomputed features or
 derives them for at most \code{getOption("SpaMTP.max_runtime_smiles", 5000)}
 unique SMILES, \code{"never"} disables inference, and \code{"always"} forces
 runtime parsing and replaces precomputed structural fields.}

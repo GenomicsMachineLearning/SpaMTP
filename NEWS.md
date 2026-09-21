@@ -1,5 +1,13 @@
 # SpaMTP (developmental)
 
+* Restored standalone resource loading for the public GitHub release. RaMP
+  databases and corrected topology collections are bundled, along with
+  precomputed SMILES features. Installation, default annotation and pkgdown
+  builds no longer require `SpaMTPdb`, `SpaMTPData`, or Hub registration.
+  `LoadSpaMTPDatabase()` keeps support for custom bundles and local RDS files;
+  `SpaMTPDatabaseInfo()` now describes the bundled snapshot. The separate
+  Bioconductor submission retains its companion-package architecture.
+
 * Fixed pathway interaction corruption in the graphite-derived RaMP 3.0.7
   graphs. A pinned, checksum-guarded correction restores per-edge source labels,
   directions, and parallel interactions for KEGG, Reactome, WikiPathways and

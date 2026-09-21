@@ -21,7 +21,7 @@ annotateTable(
   min_score = 0,
   maldi_matrix = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb"),
+  database_source = c("auto", "bundled", "local"),
   database_local_dir = NULL,
   infer_structure = c("auto", "never", "always"),
   structure_backend = c("auto", "native"),
@@ -71,14 +71,14 @@ family is absent from the contextual spectrum.}
 \item{maldi_matrix}{Optional MALDI matrix/reagent profile used for automatic
 rule selection. \code{adducts = NULL} keeps the complete selected rule space.}
 
-\item{database_version}{SpaMTPdb/RaMP version used when \code{db = NULL}.}
+\item{database_version}{Database snapshot version used when \code{db = NULL}.}
 
 \item{database_source}{Database source used when \code{db = NULL}; see
 \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+\item{database_local_dir}{Optional local RDS resource directory.}
 
-\item{infer_structure}{\code{"auto"} joins precomputed SpaMTPdb structure
+\item{infer_structure}{\code{"auto"} joins bundled precomputed structure
 features when possible, \code{"never"} disables inference, and \code{"always"}
 parses missing structures at runtime.}
 

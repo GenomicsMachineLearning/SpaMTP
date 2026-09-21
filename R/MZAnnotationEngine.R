@@ -610,12 +610,12 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
     !any(!is.na(db$structure_valid) & db$structure_valid)
   if (!is.null(smiles_col) && isTRUE(needs_precomputed) &&
       is.list(database_metadata) &&
-      identical(database_metadata$source, "spamtpdb")) {
+      isTRUE(database_metadata$source %in% c("bundled", "local"))) {
     precomputed <- tryCatch(
       .spamtp_db_resource(
         "smiles_features",
         version = database_metadata$version %||% "latest",
-        source = "spamtpdb",
+        source = database_metadata$source,
         local_dir = database_metadata$local_dir,
         offline = isTRUE(database_metadata$offline)
       ),
@@ -657,7 +657,7 @@ MALDIMatrixRules <- function(maldi_matrix, polarity = NULL,
           "Skipping runtime SMILES decomposition for ",
           format(structure_count, big.mark = ","), " unique structures ",
           "(SpaMTP.max_runtime_smiles = ", runtime_limit, "). Use a ",
-          "SpaMTPdb resource with precomputed structural fields, set ",
+          "database with precomputed structural fields, set ",
           "infer_structure = 'always', or raise the option explicitly.",
           call. = FALSE
         )
@@ -1091,7 +1091,7 @@ PredictAdductsFromSMILES <- function(
 #'   optional filter on that selected rule space.
 #' @param collapse_isomers Collapse records sharing formula, exact mass, and
 #'   proton bound before indexing.
-#' @param infer_structure `"auto"` joins precomputed SpaMTPdb features or
+#' @param infer_structure `"auto"` joins bundled precomputed features or
 #'   derives them for at most `getOption("SpaMTP.max_runtime_smiles", 5000)`
 #'   unique SMILES, `"never"` disables inference, and `"always"` forces
 #'   runtime parsing and replaces precomputed structural fields.
@@ -1598,10 +1598,10 @@ QueryMZAnnotationIndex <- function(observed_mz, index, ppm = 5,
 #'   rules automatically when `rules` is `NULL`.
 #' @param ppm Mass tolerance in ppm.
 #' @param ms1_spectrum Optional contextual spectrum.
-#' @param database_version SpaMTPdb/RaMP version used when `db = NULL`.
+#' @param database_version Database snapshot version used when `db = NULL`.
 #' @param database_source Database source used when `db = NULL`; see
 #'   [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #' @param infer_structure,structure_backend,structure_workers,min_structure_score Structure-aware
 #'   rule-selection arguments passed to [BuildMZAnnotationIndex()].
 #' @param ... Additional arguments passed to [QueryMZAnnotationIndex()].
@@ -1616,7 +1616,7 @@ AnnotateMZ <- function(observed_mz, db = NULL, index = NULL,
                        ppm = 5,
                        ms1_spectrum = NULL,
                        database_version = "latest",
-                       database_source = c("auto", "spamtpdb"),
+                       database_source = c("auto", "bundled", "local"),
                        database_local_dir = NULL,
                        infer_structure = c("auto", "never", "always"),
                        structure_backend = c("auto", "native"),

@@ -22,8 +22,9 @@ knitr::opts_chunk$set(
 
 `SpaMTP` provides analysis and visualisation methods for spatial metabolomics
 and paired spatial multi-omics experiments. It uses standard Seurat, Cardinal,
-and Bioconductor infrastructure while keeping versioned annotation resources in
-the companion `SpaMTPdb` package and experiment objects in `SpaMTPData`.
+and Bioconductor infrastructure. This standalone release bundles its annotation
+databases; example experiments are available from the tutorial download links.
+It does not require companion resource packages.
 
 This vignette demonstrates a small, fully reproducible accurate-mass annotation
 workflow. It deliberately uses an in-memory database so that package checking
@@ -35,8 +36,8 @@ library(SpaMTP)
 
 # Inspect available database resources
 
-`SpaMTPDatabaseInfo()` reads the lightweight SpaMTPdb registry without
-downloading any annotation table.
+`SpaMTPDatabaseInfo()` reads the lightweight bundled registry without loading
+the large annotation tables or accessing the network.
 
 ```{r database-registry}
 database_registry <- SpaMTPDatabaseInfo(version = "latest")

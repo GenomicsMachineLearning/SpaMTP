@@ -12,9 +12,9 @@
 #' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #' @param ... The arguments pass to stats::hclust
 #'
 #' @return A combined gg, ggplot object with pathway and dendrogram
@@ -35,7 +35,7 @@ VisualisePathways = function(SpaMTP,
                              verbose = TRUE,
                              database = NULL,
                              database_version = "latest",
-                             database_source = c("auto", "spamtpdb"),
+                             database_source = c("auto", "bundled", "local"),
                              database_local_dir = NULL,
                              ...) {
   no_pathways_plot <- function(reason) {
@@ -348,9 +348,9 @@ VisualisePathways = function(SpaMTP,
 #' @param verbose Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = TRUE).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A `ggplot` object representing the set enrichment analysis results.
 #' @export
@@ -367,7 +367,7 @@ PlotRegionalPathways <- function(regpathway,
                                  verbose = TRUE,
                                  database = NULL,
                                  database_version = "latest",
-                                 database_source = c("auto", "spamtpdb"),
+                                 database_source = c("auto", "bundled", "local"),
                                  database_local_dir = NULL) {
 
   database_resources <- .spamtp_db_bundle(
@@ -555,9 +555,9 @@ PlotRegionalPathways <- function(regpathway,
 #' @param guide Character string stating the type of legend to display (default = "colourbar").
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #' @param ... Additional inputs taken by `Seurat::FeaturePlot()`. Check the relative documentation for more infomation.
 #'
 #' @return A ggplot object visualizing the score of each pathway across the relative reduction.
@@ -574,7 +574,7 @@ PlotPathways <- function(pathways, object, title=NULL,
                          guide="colourbar",
                          database = NULL,
                          database_version = "latest",
-                         database_source = c("auto", "spamtpdb"),
+                         database_source = c("auto", "bundled", "local"),
                          database_local_dir = NULL,
                          ...) {
 
@@ -715,9 +715,9 @@ PlotSinglePathway <- function(pathway, object, title=NULL,
 #' @param image.labels Character vector specifying optional labels for multiple images (default = NULL).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A ggplot object visualizing the pathway score spatially.
 #' @export
@@ -743,7 +743,7 @@ PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alp
                                   image.labels = NULL,
                                   database = NULL,
                                   database_version = "latest",
-                                  database_source = c("auto", "spamtpdb"),
+                                  database_source = c("auto", "bundled", "local"),
                                   database_local_dir = NULL
 ) {
 
@@ -983,7 +983,6 @@ addGesecaScores <- function(pathways,
 
   return(res)
 }
-
 
 
 

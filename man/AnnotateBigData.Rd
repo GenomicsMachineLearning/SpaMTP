@@ -14,7 +14,7 @@ AnnotateBigData(
   verbose = TRUE,
   maldi_matrix = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb"),
+  database_source = c("auto", "bundled", "local"),
   database_local_dir = NULL,
   ...
 )
@@ -46,12 +46,12 @@ it can only tighten, not widen, the default 5 ppm mass-accuracy threshold.}
 \item{maldi_matrix}{Optional MALDI matrix/reagent profile used for automatic
 rule selection. The \code{adducts} argument remains an optional restriction.}
 
-\item{database_version}{SpaMTPdb/RaMP version used when \code{db = NULL}.}
+\item{database_version}{Database snapshot version used when \code{db = NULL}.}
 
 \item{database_source}{Database source used when \code{db = NULL}; see
 \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+\item{database_local_dir}{Optional local RDS resource directory.}
 
 \item{...}{Additional indexed annotation/scoring arguments passed to
 \code{annotateTable()}, such as \code{index}, \code{rules}, or \code{ms1_spectrum}.}

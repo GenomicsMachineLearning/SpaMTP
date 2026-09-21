@@ -17,11 +17,6 @@ env:
   PKGDOWN_CACHE_VERSION: v2
   PKGDOWN_VARIANT: ${{ github.ref_name == 'developmental' && 'developmental' || 'stable' }}
   PKGDOWN_SITE_URL: ${{ github.ref_name == 'developmental' && 'https://genomicsmachinelearning.github.io/SpaMTP/developmental' || 'https://genomicsmachinelearning.github.io/SpaMTP' }}
-  # SpaMTPdb is not in Bioconductor yet, so AnnotationHub holds none of its
-  # records. Without a staged directory every article probes the Hub, fails, and
-  # falls back to a per-resource Zenodo download. Stage the resources once and
-  # point SpaMTPdb at the directory so the matrix takes neither path.
-  SPAMTPDB_RESOURCE_DIR: ${{ github.workspace }}/.spamtpdb-resources
 
 jobs:
   dependencies:
@@ -130,83 +125,12 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::., github::BCRL-tylu/SpaMTPdb, github::BCRL-tylu/SpaMTPData
+          extra-packages: any::pkgdown, local::.
           needs: website
-          cache-version: spamtp-companion-packages-v2
+          cache-version: spamtp-bundled-resources-v3
           # Preserve the installed library even if a later validation or site
           # preparation step fails, so the next push can restore it.
           cache: always
-
-      # The manifest records the Zenodo record, byte size and MD5 of every
-      # resource, so its own checksum is the natural cache key: publishing a new
-      # Zenodo version of SpaMTPdb invalidates the staged copy automatically.
-      - name: Resolve SpaMTPdb resource manifest
-        id: spamtpdb-manifest
-        shell: Rscript {0}
-        run: |
-          manifest <- system.file(
-            "manifest", "resource_manifest.csv", package = "SpaMTPdb"
-          )
-          if (!nzchar(manifest)) stop("SpaMTPdb resource manifest is missing.")
-          cat(
-            sprintf("key=%s\n", unname(tools::md5sum(manifest))),
-            file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE
-          )
-
-      - name: Restore staged SpaMTPdb resources
-        id: spamtpdb-resources
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.SPAMTPDB_RESOURCE_DIR }}
-          key: spamtpdb-resources-${{ steps.spamtpdb-manifest.outputs.key }}
-
-      - name: Stage SpaMTPdb resources from Zenodo
-        if: steps.spamtpdb-resources.outputs.cache-hit != 'true'
-        shell: Rscript {0}
-        run: |
-          manifest <- SpaMTPdb::SpaMTPdbResources(version = "latest")
-          target <- file.path(
-            Sys.getenv("SPAMTPDB_RESOURCE_DIR"), manifest$version[[1L]]
-          )
-          dir.create(target, recursive = TRUE, showWarnings = FALSE)
-          options(timeout = max(3600, as.numeric(getOption("timeout", 60))))
-          verified <- function(path, row) {
-            file.exists(path) &&
-              file.info(path)$size == as.numeric(row$bytes) &&
-              identical(unname(tools::md5sum(path)), tolower(row$md5))
-          }
-          for (i in seq_len(nrow(manifest))) {
-            row <- manifest[i, ]
-            destination <- file.path(target, row$file_name)
-            if (verified(destination, row)) {
-              message("cached: ", row$file_name)
-              next
-            }
-            url <- paste0(row$location_prefix, row$rdata_path)
-            for (attempt in 1:3) {
-              try(
-                utils::download.file(
-                  url, destination, mode = "wb", method = "libcurl",
-                  quiet = TRUE
-                ),
-                silent = TRUE
-              )
-              if (verified(destination, row)) break
-              unlink(destination)
-              if (attempt == 3L) {
-                stop("Failed to stage ", row$file_name, " from ", url)
-              }
-              Sys.sleep(15 * attempt)
-            }
-            message("staged: ", row$file_name)
-          }
-
-      - name: Save staged SpaMTPdb resources
-        if: steps.spamtpdb-resources.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.SPAMTPDB_RESOURCE_DIR }}
-          key: spamtpdb-resources-${{ steps.spamtpdb-manifest.outputs.key }}
 
       - name: Parse all vignette chunks
         shell: Rscript {0}
@@ -339,32 +263,9 @@ jobs:
       # restores that cache here instead of compiling the library from scratch.
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::., github::BCRL-tylu/SpaMTPdb, github::BCRL-tylu/SpaMTPData
+          extra-packages: any::pkgdown, local::.
           needs: website
-          cache-version: spamtp-companion-packages-v2
-
-      # The manifest records the Zenodo record, byte size and MD5 of every
-      # resource, so its own checksum is the natural cache key: publishing a new
-      # Zenodo version of SpaMTPdb invalidates the staged copy automatically.
-      - name: Resolve SpaMTPdb resource manifest
-        id: spamtpdb-manifest
-        shell: Rscript {0}
-        run: |
-          manifest <- system.file(
-            "manifest", "resource_manifest.csv", package = "SpaMTPdb"
-          )
-          if (!nzchar(manifest)) stop("SpaMTPdb resource manifest is missing.")
-          cat(
-            sprintf("key=%s\n", unname(tools::md5sum(manifest))),
-            file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE
-          )
-
-      - name: Restore staged SpaMTPdb resources
-        id: spamtpdb-resources
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.SPAMTPDB_RESOURCE_DIR }}
-          key: spamtpdb-resources-${{ steps.spamtpdb-manifest.outputs.key }}
+          cache-version: spamtp-bundled-resources-v3
 
       - name: Download site shell
         uses: actions/download-artifact@v4
@@ -388,7 +289,7 @@ jobs:
           path: |
             docs/articles/${{ matrix.article }}.html
             docs/articles/${{ matrix.article }}_files
-          key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', '_pkgdown.yml') }}
+          key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'inst/extdata/bundled_database_manifest.csv', '_pkgdown.yml') }}
 
       - name: Restore checksum-verified vignette downloads
         id: vignette-downloads
@@ -474,9 +375,9 @@ jobs:
           path: |
             vignettes/.knitr-cache
             docs/articles/${{ matrix.article }}_files/figure-html
-          key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'inst/extdata/bundled_database_manifest.csv') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-
+            pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'inst/extdata/bundled_database_manifest.csv') }}-
             pkgdown-knitr-${{ runner.os }}-
 
       - name: Build article
@@ -506,7 +407,7 @@ jobs:
           path: |
             vignettes/.knitr-cache
             docs/articles/${{ matrix.article }}_files/figure-html
-          key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: pkgdown-knitr-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'inst/extdata/bundled_database_manifest.csv') }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save rendered article
         if: steps.article-cache.outputs.cache-hit != 'true'
@@ -515,7 +416,7 @@ jobs:
           path: |
             docs/articles/${{ matrix.article }}.html
             docs/articles/${{ matrix.article }}_files
-          key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', '_pkgdown.yml') }}
+          key: pkgdown-article-${{ env.PKGDOWN_CACHE_VERSION }}-${{ env.PKGDOWN_VARIANT }}-${{ runner.os }}-${{ matrix.article }}-${{ hashFiles(format('vignettes/{0}.Rmd', matrix.article), 'DESCRIPTION', 'NAMESPACE', 'R/**/*.R', 'inst/extdata/bundled_database_manifest.csv', '_pkgdown.yml') }}
 
       - name: Upload rendered article
         uses: actions/upload-artifact@v4
@@ -552,9 +453,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::., github::BCRL-tylu/SpaMTPdb, github::BCRL-tylu/SpaMTPData
+          extra-packages: any::pkgdown, local::.
           needs: website
-          cache-version: spamtp-companion-packages-v2
+          cache-version: spamtp-bundled-resources-v3
 
       - name: Download site shell
         uses: actions/download-artifact@v4

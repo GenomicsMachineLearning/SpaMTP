@@ -18,9 +18,9 @@
 #' @param n_weight Numeric weight applied to number of correlated pathways in z-score calculation (default = 1).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A tibble with the ranked annotations for the m/z value, containing:
 #' \describe{
@@ -46,7 +46,7 @@
 #' #CalculateSingleAnnotationStatistics(mz = "mz-674.2805",data = data,mz.assay = "SPM",pathway.assay = "pathway",mz.slot = "scale.data")
 #'
 #' @export
-CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assay = "pathway", mz.slot= "scale.data", pathway.slot = "scale.data", corr_theshold = 0, corr_weight = 1, n_weight = 1, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb"), database_local_dir = NULL){
+CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assay = "pathway", mz.slot= "scale.data", pathway.slot = "scale.data", corr_theshold = 0, corr_weight = 1, n_weight = 1, database = NULL, database_version = "latest", database_source = c("auto", "bundled", "local"), database_local_dir = NULL){
 
   database_resources <- .spamtp_db_bundle(
     c("source_df", "analytehaspathway"),
@@ -235,9 +235,9 @@ CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assa
 #' @param n_weight Numeric weight applied to number of correlated pathways in z-score calculation (default = 1).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return Either a data.frame containing the original annotations for all m/z values and their corresponding most likely metabolite, or a list contating statistics for each m/z value.
 #'
@@ -253,7 +253,7 @@ CalculateSingleAnnotationStatistics <- function(mz, data, mz.assay, pathway.assa
 #' #CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")
 #'
 #' @export
-CalculateAnnotationStatistics <- function(data, mz.assay, pathway.assay, mz.slot= "scale.data", pathway.slot = "scale.data", return.top = TRUE, corr_theshold = 0, corr_weight = 1, n_weight = 1, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb"), database_local_dir = NULL){
+CalculateAnnotationStatistics <- function(data, mz.assay, pathway.assay, mz.slot= "scale.data", pathway.slot = "scale.data", return.top = TRUE, corr_theshold = 0, corr_weight = 1, n_weight = 1, database = NULL, database_version = "latest", database_source = c("auto", "bundled", "local"), database_local_dir = NULL){
 
   database_source <- match.arg(database_source)
   database_resources <- .spamtp_db_bundle(

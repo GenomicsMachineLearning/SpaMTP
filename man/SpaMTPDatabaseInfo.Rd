@@ -7,11 +7,13 @@
 SpaMTPDatabaseInfo(version = NULL)
 }
 \arguments{
-\item{version}{Optional SpaMTPdb resource version. \code{NULL} lists every
-available external version.}
+\item{version}{Optional bundled database snapshot version. \code{NULL} and
+\code{"latest"} list the snapshot shipped with this SpaMTP release.}
 }
 \value{
-A data frame describing resources in SpaMTPdb.
+A data frame describing bundled resources, including their version,
+dimensions, dataset names, and source-package file sizes and MD5 checksums.
+An unavailable version returns a zero-row data frame.
 }
 \description{
 Inspect SpaMTP database resources

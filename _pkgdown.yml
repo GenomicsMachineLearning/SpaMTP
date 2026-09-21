@@ -111,10 +111,11 @@ reference:
   - CardinalToSeurat
   - ConvertSeuratToCardinal
 - title: Loading Versioned Annotation Databases
-  desc: Functions for inspecting and loading versioned SpaMTPdb and RaMP annotation resources
+  desc: Functions for inspecting and loading bundled RaMP annotation resources
   contents:
   - LoadSpaMTPDatabase
   - SpaMTPDatabaseInfo
+  - BundledDatabases
 - title: Binning Spatial Metabolomic Data
   desc: Functions that bin m/z values into a lower resolution/wider peak.
   contents: BinSpaMTP

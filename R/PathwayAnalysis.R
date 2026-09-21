@@ -9,9 +9,9 @@
 #' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #' @param ... Additional parameters that can be passed through to `annotateTable()` when running `mz`-based analysis. Please see documentation for `annotateTable()` for more details.
 #'
 #' ### Details
@@ -19,7 +19,7 @@
 #' * Supported `genes` data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"
 #' * Supported `mzs` format: any string or numeric vector containing m/z. If
 #'   `mzs` values are provided, the current indexed annotation pipeline and the
-#'   versioned SpaMTPdb `chem_props` table is used by default.
+#'   bundled RaMP `chem_props` table is used by default.
 #'
 #'
 #' @return a dataframe with the relevant pathway information
@@ -47,7 +47,7 @@ FishersPathwayAnalysis <- function (Analyte,
                                     verbose = TRUE,
                                     database = NULL,
                                     database_version = "latest",
-                                    database_source = c("auto", "spamtpdb"),
+                                    database_source = c("auto", "bundled", "local"),
                                     database_local_dir = NULL,
                                     ...)
 {
@@ -87,7 +87,7 @@ FishersPathwayAnalysis <- function (Analyte,
 
   if ("mzs" %in% names(Analyte)) {
 
-    warning("A list of m/z values was provided. The current indexed annotation pipeline will run using arguments supplied through `...`; its default database is the versioned SpaMTPdb chem_props table.", call. = FALSE)
+    warning("A list of m/z values was provided. The current indexed annotation pipeline will run using arguments supplied through `...`; its default database is the bundled RaMP chem_props table.", call. = FALSE)
 
    analytes_mz = Analyte[["mzs"]]
 
@@ -407,9 +407,9 @@ FishersPathwayAnalysis <- function (Analyte,
 #' @param verbose Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A SpaMTP object with set enrichment on given analyte types.
 #' @export
@@ -436,7 +436,7 @@ FindRegionalPathways = function(SpaMTP,
                                 verbose = TRUE,
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb"),
+                                database_source = c("auto", "bundled", "local"),
                                 database_local_dir = NULL) {
   annotation_source <- match.arg(annotation_source)
   database_resources <- .spamtp_db_bundle(
@@ -704,9 +704,9 @@ FindRegionalPathways = function(SpaMTP,
 #' @param nPermSimple Number of permutations in the simple geseca implementation for preliminary estimation of P-values (default = 1000).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A table with GESECA results. Each row corresponds to a tested RAMP_DB pathway.
 #' @export
@@ -727,7 +727,7 @@ RunRAMPgeseca <- function(E,
                           nPermSimple = 1000,
                           database = NULL,
                           database_version = "latest",
-                          database_source = c("auto", "spamtpdb"),
+                          database_source = c("auto", "bundled", "local"),
                           database_local_dir = NULL){
 
   database_resources <- .spamtp_db_bundle(
@@ -771,9 +771,9 @@ RunRAMPgeseca <- function(E,
 #' @param verbose Boolean logical value indicating whether to print verbose messages during execution. (default = TRUE).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A SpaMTP object with a new assay added, containing respective gene/metabolite data formatted based on RAMP_db IDs.
 #' @export
@@ -790,7 +790,7 @@ RunRAMPgeseca <- function(E,
 #'
 #' ## Create a pathway assay from gene data with verbose output
 #' #spamtp_obj <- CreatePathwayAssay(spamtp_obj, analyte_type = "genes", assay = "SPT", new_assay = "gene_pathway", verbose = TRUE)
-CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", annotation_score_threshold = 0.05, annotation_source = c("current", "auto", "legacy"), verbose = TRUE, database = NULL, database_version = "latest", database_source = c("auto", "spamtpdb"), database_local_dir = NULL){
+CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Spatial", slot = "counts", new_assay = "pathway", annotation_score_threshold = 0.05, annotation_source = c("current", "auto", "legacy"), verbose = TRUE, database = NULL, database_version = "latest", database_source = c("auto", "bundled", "local"), database_local_dir = NULL){
 
   annotation_source <- match.arg(annotation_source)
   database_resources <- .spamtp_db_bundle(
@@ -949,9 +949,9 @@ CreatePathwayAssay <- function(SpaMTP, analyte_type = "metabolites", assay = "Sp
 #' @param remove.nans Logical. Whether to remove pathways with all NaN values (e.g., no matched analytes) (defaults = TRUE).
 #' @param database Optional named list of database resources, normally created
 #'   by [LoadSpaMTPDatabase()].
-#' @param database_version SpaMTPdb/RaMP version used for pathway lookup.
+#' @param database_version Database snapshot version used for pathway lookup.
 #' @param database_source Database source; see [LoadSpaMTPDatabase()].
-#' @param database_local_dir Optional staged SpaMTPdb resource directory.
+#' @param database_local_dir Optional local RDS resource directory.
 #'
 #' @return A SpaMTP Seurat object with a new assay containing pathway-level expression scores.
 #'         Feature names are adjusted to use underscores instead of dashes.
@@ -968,7 +968,7 @@ CreatePathwayObject <- function(object,
                                 remove.nans = TRUE,
                                 database = NULL,
                                 database_version = "latest",
-                                database_source = c("auto", "spamtpdb"),
+                                database_source = c("auto", "bundled", "local"),
                                 database_local_dir = NULL
 ) {
 

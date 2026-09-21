@@ -60,7 +60,7 @@
 
 .spamtp_db_resource <- function(resource,
                                 version = "latest",
-                                source = c("auto", "spamtpdb"),
+                                source = c("auto", "bundled", "local"),
                                 local_dir = NULL,
                                 hub = NULL,
                                 offline = FALSE,
@@ -70,39 +70,74 @@
     stop("resource must identify exactly one database resource.", call. = FALSE)
   }
   source <- match.arg(source)
+  if (!is.null(hub)) {
+    stop("This SpaMTP release uses bundled or local databases, not a Hub.",
+         call. = FALSE)
+  }
+  if (source == "auto") source <- if (is.null(local_dir)) "bundled" else "local"
+  if (source == "local" && is.null(local_dir)) {
+    stop("source = 'local' requires local_dir.", call. = FALSE)
+  }
+  if (source == "bundled" && !is.null(local_dir)) {
+    stop("Use source = 'local' or 'auto' with local_dir.", call. = FALSE)
+  }
+  if (is.null(version)) version <- "latest"
+  if (!is.character(version) || length(version) != 1L ||
+      is.na(version) || !nzchar(version)) {
+    stop("version must be a single non-empty string.", call. = FALSE)
+  }
   key <- .spamtp_db_cache_key(resource, version, source, local_dir)
   if (!isTRUE(refresh) && exists(key, envir = .spamtp_db_cache, inherits = FALSE)) {
     return(get(key, envir = .spamtp_db_cache, inherits = FALSE))
   }
 
-  if (!requireNamespace("SpaMTPdb", quietly = TRUE)) {
-    stop(
-      "Loading versioned annotation resources requires the SpaMTPdb package. ",
-      "Install SpaMTPdb or supply a named custom database bundle.",
-      call. = FALSE
-    )
+  if (source == "bundled") {
+    registry <- SpaMTPDatabaseInfo(version = version)
+    row <- registry[registry$resource == resource, , drop = FALSE]
+    if (nrow(row) != 1L) {
+      stop("No bundled resource '", resource, "' for version '", version, "'.",
+           call. = FALSE)
+    }
+    environment <- new.env(parent = emptyenv())
+    utils::data(list = row$source_object, package = "SpaMTP", envir = environment)
+    if (!exists(row$source_object, envir = environment, inherits = FALSE)) {
+      stop("Bundled database is missing: ", resource, ".", call. = FALSE)
+    }
+    value <- get(row$source_object, envir = environment, inherits = FALSE)
+    resolved_version <- row$version
+  } else {
+    # Local RDS files are an explicit user override, never a network fallback.
+    directory <- normalizePath(local_dir, mustWork = TRUE)
+    local_version <- if (version == "latest") {
+      unique(SpaMTPDatabaseInfo()$version)
+    } else version
+    paths <- file.path(c(directory, file.path(directory, local_version)),
+                       paste0(resource, ".rds"))
+    paths <- paths[file.exists(paths)]
+    if (!length(paths)) {
+      stop("Local database resource is missing: ", resource, ".rds.",
+           call. = FALSE)
+    }
+    value <- readRDS(paths[[1L]])
+    metadata_path <- file.path(dirname(paths[[1L]]), "ramp_db_metadata.rds")
+    local_metadata <- if (file.exists(metadata_path)) readRDS(metadata_path) else NULL
+    resolved_version <- if (is.list(local_metadata)) local_metadata$ramp_version else NULL
+    if (!is.null(resolved_version) && version != "latest" &&
+        !identical(as.character(resolved_version), version)) {
+      stop("Local database metadata does not match requested version '",
+           version, "'.", call. = FALSE)
+    }
+    resolved_version <- resolved_version %||%
+      if (version == "latest") "unversioned" else version
   }
-
-  value <- SpaMTPdb::SpaMTPdbResource(
-    resource = resource,
-    version = version,
-    local_dir = local_dir,
-    hub = hub,
-    offline = offline
-  )
-  resource_metadata <- SpaMTPdb::SpaMTPdbResource(
-    resource = resource,
-    version = version,
-    metadata = TRUE
-  )
 
   value <- .spamtp_repair_pathway_interactions(value, resource)
   attr(value, "spamtp_database") <- list(
     resource = resource,
-    version = as.character(resource_metadata$version[[1L]]),
-    source = "spamtpdb",
+    version = as.character(resolved_version),
+    source = source,
     local_dir = local_dir,
-    offline = offline
+    offline = TRUE
   )
   assign(key, value, envir = .spamtp_db_cache)
   value
@@ -111,7 +146,7 @@
 .spamtp_db_bundle <- function(resources,
                               database = NULL,
                               version = "latest",
-                              source = c("auto", "spamtpdb"),
+                              source = c("auto", "bundled", "local"),
                               local_dir = NULL,
                               hub = NULL,
                               offline = FALSE,
@@ -152,12 +187,14 @@
 
 #' Load versioned SpaMTP annotation resources
 #'
-#' Loads a coherent group of annotation resources from [SpaMTPdb]. Retrieved
-#' resources are cached for the current R session. A named custom bundle can be
-#' supplied for offline, testing, or user-curated workflows.
+#' Loads annotation resources bundled with SpaMTP without another data package,
+#' a Hub lookup, or a download. Resources are cached for the current R session.
+#' A named custom bundle or local RDS directory can be supplied for
+#' user-curated workflows.
 #'
 #' @details
-#' Exact affected RaMP 3.0.7 topology resources receive a checksum-guarded
+#' Bundled RaMP 3.0.7 graphs already include corrected interaction labels and
+#' directions. Exact affected local or custom topology resources receive a checksum-guarded
 #' correction for historical interaction-code and direction recycling. Source
 #' labels are retained in `source_reaction_type`; the resource attribute
 #' `spamtp_interaction_repair` records the correction separately from the
@@ -167,14 +204,19 @@
 #'
 #' @param resources Character vector of resource names. Use
 #'   [SpaMTPDatabaseInfo()] to list valid names.
-#' @param version SpaMTPdb/RaMP resource version, or `"latest"`.
-#' @param source Database source. `"auto"` and `"spamtpdb"` resolve versioned
-#'   resources through SpaMTPdb.
+#' @param version Database snapshot version, or `"latest"` for the bundled
+#'   snapshot. For local files, declared metadata must match an explicit version.
+#' @param source Database source. `"auto"` uses bundled data unless `local_dir`
+#'   is supplied. `"bundled"` uses installed data; `"local"` requires local RDS
+#'   files and never falls back to another source.
 #' @param database Optional named list containing the requested resources. When
 #'   supplied, no Hub lookup is performed.
-#' @param local_dir Optional directory containing staged SpaMTPdb `.rds` files.
-#' @param hub Optional pre-created `AnnotationHub` object passed to SpaMTPdb.
-#' @param offline If `TRUE`, do not query AnnotationHub.
+#' @param local_dir Optional directory containing `<resource>.rds` files,
+#'   either directly or in a version-named subdirectory. Without local version
+#'   metadata, `"latest"` files are labelled `"unversioned"`.
+#' @param hub Retained for call compatibility; must be `NULL` in this release.
+#' @param offline Retained for call compatibility. All resource loading is
+#'   offline, regardless of this argument.
 #' @param refresh If `TRUE`, bypass SpaMTP's in-session resource cache.
 #'
 #' @return A named list containing the requested resources.
@@ -195,7 +237,7 @@ LoadSpaMTPDatabase <- function(
       "chem_props", "source_df", "analyte", "analytehaspathway", "pathway"
     ),
     version = "latest",
-    source = c("auto", "spamtpdb"),
+    source = c("auto", "bundled", "local"),
     database = NULL,
     local_dir = NULL,
     hub = NULL,
@@ -215,21 +257,27 @@ LoadSpaMTPDatabase <- function(
 
 #' Inspect SpaMTP database resources
 #'
-#' @param version Optional SpaMTPdb resource version. `NULL` lists every
-#'   available external version.
+#' @param version Optional bundled database snapshot version. `NULL` and
+#'   `"latest"` list the snapshot shipped with this SpaMTP release.
 #'
-#' @return A data frame describing resources in SpaMTPdb.
+#' @return A data frame describing bundled resources, including their version,
+#'   dimensions, dataset names, and source-package file sizes and MD5 checksums.
+#'   An unavailable version returns a zero-row data frame.
 #' @export
 #'
 #' @examples
 #' utils::str(formals(SpaMTPDatabaseInfo))
 #' SpaMTPDatabaseInfo()
 SpaMTPDatabaseInfo <- function(version = NULL) {
-  if (!requireNamespace("SpaMTPdb", quietly = TRUE)) {
-    stop(
-      "SpaMTPDatabaseInfo() requires the SpaMTPdb package.",
-      call. = FALSE
-    )
+  path <- system.file("extdata", "bundled_database_manifest.csv", package = "SpaMTP")
+  if (!nzchar(path)) stop("Bundled database manifest is missing.", call. = FALSE)
+  registry <- utils::read.csv(path, stringsAsFactors = FALSE)
+  if (!is.null(version)) {
+    if (!is.character(version) || length(version) != 1L ||
+        is.na(version) || !nzchar(version)) {
+      stop("version must be NULL or a single non-empty string.", call. = FALSE)
+    }
+    if (version != "latest") registry <- registry[registry$version == version, , drop = FALSE]
   }
-  SpaMTPdb::SpaMTPdbResources(version = version)
+  registry
 }

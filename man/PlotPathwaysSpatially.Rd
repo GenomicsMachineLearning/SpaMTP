@@ -28,7 +28,7 @@ PlotPathwaysSpatially(
   image.labels = NULL,
   database = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb"),
+  database_source = c("auto", "bundled", "local"),
   database_local_dir = NULL
 )
 }
@@ -78,11 +78,11 @@ PlotPathwaysSpatially(
 \item{database}{Optional named list of database resources, normally created
 by \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_version}{SpaMTPdb/RaMP version used for pathway lookup.}
+\item{database_version}{Database snapshot version used for pathway lookup.}
 
 \item{database_source}{Database source; see \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+\item{database_local_dir}{Optional local RDS resource directory.}
 }
 \value{
 A ggplot object visualizing the pathway score spatially.

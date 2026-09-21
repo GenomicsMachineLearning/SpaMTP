@@ -45,31 +45,18 @@ devtools::install_github(
 )
 ```
 
-The developmental release separates versioned resources from the analysis
-code. `SpaMTPdb` supplies the pruned RaMP annotation/pathway snapshot, while
-`SpaMTPData` supplies the larger experiment objects used by the vignettes:
+The standalone GitHub releases (`main` and `developmental`) include their
+annotation and pathway databases. Neither `SpaMTPdb` nor `SpaMTPData` is
+required. The developmental resource interface reads bundled data offline:
 
 ``` r
-devtools::install_github("BCRL-tylu/SpaMTPdb")
-devtools::install_github("BCRL-tylu/SpaMTPData")
-
 db_info <- SpaMTP::SpaMTPDatabaseInfo()
-brain <- SpaMTPData::SpaMTPData("mouse_brain_dhb_striatum")
+chem_props <- SpaMTP::LoadSpaMTPDatabase("chem_props")$chem_props
 ```
 
-During Bioconductor onboarding, install the two companion packages before the
-developmental SpaMTP branch. Annotation databases are no longer duplicated in
-the software package; `SpaMTPData` continues to resolve its immutable published
-records while the ExperimentHub catalogue is being registered.
-
-After Bioconductor acceptance, the supported installation command will be:
-
-``` r
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-BiocManager::install("SpaMTP")
-```
+Large example experiments are obtained using the published download links in
+each tutorial. The separate Bioconductor submission uses companion resource
+packages; that dependency model does not apply to these standalone releases.
 
 For tutorials and more information please visit the [SpaMTP website](https://genomicsmachinelearning.github.io/SpaMTP/)
 

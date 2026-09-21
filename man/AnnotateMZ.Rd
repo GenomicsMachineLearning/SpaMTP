@@ -15,7 +15,7 @@ AnnotateMZ(
   ppm = 5,
   ms1_spectrum = NULL,
   database_version = "latest",
-  database_source = c("auto", "spamtpdb"),
+  database_source = c("auto", "bundled", "local"),
   database_local_dir = NULL,
   infer_structure = c("auto", "never", "always"),
   structure_backend = c("auto", "native"),
@@ -46,12 +46,12 @@ rules automatically when \code{rules} is \code{NULL}.}
 
 \item{ms1_spectrum}{Optional contextual spectrum.}
 
-\item{database_version}{SpaMTPdb/RaMP version used when \code{db = NULL}.}
+\item{database_version}{Database snapshot version used when \code{db = NULL}.}
 
 \item{database_source}{Database source used when \code{db = NULL}; see
 \code{\link[=LoadSpaMTPDatabase]{LoadSpaMTPDatabase()}}.}
 
-\item{database_local_dir}{Optional staged SpaMTPdb resource directory.}
+\item{database_local_dir}{Optional local RDS resource directory.}
 
 \item{infer_structure, structure_backend, structure_workers, min_structure_score}{Structure-aware
 rule-selection arguments passed to \code{\link[=BuildMZAnnotationIndex]{BuildMZAnnotationIndex()}}.}

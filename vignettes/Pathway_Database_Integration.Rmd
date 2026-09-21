@@ -92,23 +92,24 @@ original source label; undirected interactions have no arrowhead.
 Use SpaMTP's loader to obtain corrected graphs:
 
 ```{r load-graphs, eval=FALSE}
-db <- LoadSpaMTPDatabase("ramp_kegg", local_dir = "/path/to/SpaMTPdb-resources")
+db <- LoadSpaMTPDatabase("ramp_kegg")
 cell_cycle <- db$ramp_kegg[["Cell cycle"]]
 table(cell_cycle$protEdges$source_reaction_type)
 attr(db$ramp_kegg, "spamtp_interaction_repair")
 ```
 
-The correction is automatic in the database loader and network workflows,
-including custom bundles containing the exact affected snapshot. Compact
+The bundled graphs already include the correction. The database loader and
+network workflows also repair local RDS files and custom bundles containing
+the exact affected snapshot. Compact
 correction files in `inst/extdata/*_interactions_v1.rds` are applied only when
 the resource's serialized contents match its pinned SHA-256 fingerprint.
 Other custom graphs and future snapshots are not modified. Corrected graphs
 carry `spamtp_interaction_repair` provenance and can be saved with `saveRDS()`.
 
-The published SpaMTPdb files, their checksums, and their external version remain
-unchanged. Calling `SpaMTPdb` directly or reading the original RDS bypasses
-SpaMTP's correction. This software fix does not publish a new data release.
-The `spamtp_database` attribute describes the original downloaded resource;
+The immutable external 3.0.7 RDS files and their checksums remain unchanged.
+Reading those original files directly bypasses SpaMTP's correction; supplying
+them through `LoadSpaMTPDatabase(local_dir = ...)` applies it. No companion
+package is needed. The `spamtp_database` attribute identifies the bundled or local resource;
 `spamtp_interaction_repair` describes the additional in-memory correction.
 
 The membership-based enrichment functions do not use these edge labels. This
