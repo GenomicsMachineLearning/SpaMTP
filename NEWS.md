@@ -1,5 +1,9 @@
 # SpaMTP (developmental)
 
+* Spatial pathway plots now retain labelled placeholder panels for pathways
+  with no measured features or finite z-scores, preventing empty-data errors
+  in the Mouse Brain vignette. Unknown pathway names report a clear error.
+
 * Restored standalone resource loading for the public GitHub release. RaMP
   databases and corrected topology collections are bundled, along with
   precomputed SMILES features. Installation, default annotation and pkgdown

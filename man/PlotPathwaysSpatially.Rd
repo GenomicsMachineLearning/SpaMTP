@@ -90,6 +90,12 @@ A ggplot object visualizing the pathway score spatially.
 \description{
 This function has been adapted from fgsea package. For more detail about function inputs please visit their \href{https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31}{documentation}.
 }
+\details{
+Pathways without matching features in the selected assay slot, or
+without finite z-scores, produce a warning and a labelled placeholder panel.
+Their positions in the returned list are preserved. Unknown pathway names
+produce an error.
+}
 \examples{
 utils::str(formals(PlotPathwaysSpatially))
 #PlotPathwaysSpatially(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj)

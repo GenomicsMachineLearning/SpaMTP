@@ -692,6 +692,11 @@ PlotSinglePathway <- function(pathway, object, title=NULL,
 #'
 #' This function has been adapted from fgsea package. For more detail about function inputs please visit their [documentation](https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31).
 #'
+#' @details Pathways without matching features in the selected assay slot, or
+#'   without finite z-scores, produce a warning and a labelled placeholder panel.
+#'   Their positions in the returned list are preserved. Unknown pathway names
+#'   produce an error.
+#'
 #' @param pathways Character vector of pathway names to plot. These pathways must be those stored in the `chempathway` object. To check call `unique(chempathway$pathwayName)`.
 #' @param object SpaMTP Seurat object containing the spatial data and coordinates for plotting.
 #' @param images Character vector specifying which images to use for plotting from the SpaMTP Seurat Object.
@@ -761,6 +766,12 @@ PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alp
   pathway_db <- split(chempathway$rampId, chempathway$pathwayName)
   pathway_db <- pathway_db[!duplicated(tolower(names(pathway_db)))]
 
+  unknown_pathways <- setdiff(pathways, names(pathway_db))
+  if (length(unknown_pathways)) {
+    stop("Pathway names not found in the pathway database: ",
+         paste(unknown_pathways, collapse = ", "), call. = FALSE)
+  }
+
   pathway_db <- pathway_db[pathways]
 
   if (length(pathway_db) < 1) {
@@ -804,6 +815,11 @@ PlotPathwaysSpatially <- function(pathways, object, images, title=NULL,image.alp
 #' Plot expression profile of a single RAMP pathway spatially
 #'
 #' NOTE: This is a helper function for `PlotPathwaysSpatially`. This function has been adapted from fgsea package. For more detail about function inputs please visit their [documentation](https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31).
+#'
+#' @details If no pathway features occur in the selected assay slot, or the
+#'   scores cannot be standardized (for example, all scores are constant), a
+#'   warning and a labelled placeholder panel are returned. Unavailable scores
+#'   are not displayed as zero activity.
 #'
 #' @param pathway Character vector of analyte IDs (genes or metabolites) in the pathway.
 #' @param object SpaMTP Seurat object containing the spatial data and coordinates for plotting.
@@ -852,8 +868,29 @@ PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, imag
                                        image.labels = NULL
 ) {
 
-  obj2 <- addGesecaScores(list(pathway_x=pathway), object, assay=assay, slot=slot, scale=TRUE)
+  unavailable_plot <- function(reason) {
+    context <- paste0("Assay: ", assay, "; slot: ", slot)
+    warning(if (!is.null(title)) paste0(title, ": ") else "",
+            reason, " (", context, ").", call. = FALSE)
+    ggplot2::ggplot() +
+      ggplot2::annotate("text", x = 0, y = 0,
+                        label = paste(strwrap(reason, width = 28), collapse = "\n"),
+                        size = 4) +
+      ggplot2::xlim(-1, 1) +
+      ggplot2::ylim(-1, 1) +
+      ggplot2::labs(title = title, subtitle = context) +
+      ggplot2::theme_void()
+  }
 
+  expression_data <- Seurat::GetAssay(object, assay)[slot]
+  if (!length(intersect(pathway, rownames(expression_data)))) {
+    return(unavailable_plot("No pathway features in the selected assay slot"))
+  }
+
+  obj2 <- addGesecaScores(list(pathway_x=pathway), object, assay=assay, slot=slot, scale=TRUE)
+  if (!any(is.finite(obj2@meta.data[["pathway_x"]]))) {
+    return(unavailable_plot("No finite pathway z-scores\n(scores are constant or missing)"))
+  }
 
   if (methods::is(obj2@images[[images]], "FOV")){
     p <- Seurat::ImageFeaturePlot(
@@ -866,8 +903,9 @@ PlotSinglePathwaySpatially <- function(pathway, object, images, title=NULL, imag
       min.cutoff = min.cutoff,
       max.cutoff = max.cutoff,
       alpha = alpha[1],
-      dark.background = "white",
-      crop = crop
+      dark.background = FALSE,
+      crop = crop,
+      combine = FALSE
     )
 
   }else{
@@ -983,6 +1021,4 @@ addGesecaScores <- function(pathways,
 
   return(res)
 }
-
-
 

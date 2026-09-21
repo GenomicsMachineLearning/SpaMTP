@@ -77,6 +77,12 @@ A ggplot object visualizing the pathway score spatially.
 \description{
 NOTE: This is a helper function for \code{PlotPathwaysSpatially}. This function has been adapted from fgsea package. For more detail about function inputs please visit their \href{https://github.com/alserglab/fgsea/blob/master/R/geseca-plot.R#L266C1-L266C31}{documentation}.
 }
+\details{
+If no pathway features occur in the selected assay slot, or the
+scores cannot be standardized (for example, all scores are constant), a
+warning and a labelled placeholder panel are returned. Unavailable scores
+are not displayed as zero activity.
+}
 \examples{
 utils::str(formals(PlotSinglePathwaySpatially))
 #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))

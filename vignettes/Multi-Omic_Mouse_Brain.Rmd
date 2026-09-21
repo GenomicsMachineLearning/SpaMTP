@@ -1455,6 +1455,10 @@ df %>%
 
 Only some pathways are significant between the two modalities. We can also spatially visualise these pathways, lets pick 3 to view:
 
+Pathway coverage can differ between modalities. If a selected pathway has no
+matching features in an assay, its panel states this explicitly. Such a panel
+indicates unavailable evidence, not zero pathway activity.
+
 ```{r, fig.width=10, fig.height=4,dpi=72,warning=FALSE, message=FALSE}
 key_pathways <- c("Parkinson disease", "Dopamine beta-hydroxylase deficiency", "Dopamine metabolism")
 
