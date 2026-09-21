@@ -48,5 +48,12 @@ metabolite search term provided
 ## Examples
 
 ``` r
+utils::str(formals(SearchAnnotations))
+#> Dotted pair list of 5
+#>  $ data        : symbol 
+#>  $ metabolite  : symbol 
+#>  $ assay       : chr "Spatial"
+#>  $ search.exact: logi FALSE
+#>  $ column.name : chr "all_IsomerNames"
 # SearchAnnotations(SeuratObj, "Glucose", search.exact = TRUE)
 ```

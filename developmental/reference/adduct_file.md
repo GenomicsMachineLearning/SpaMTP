@@ -1,7 +1,10 @@
-# adduct_file: A dataframe containing possible adducts used for pathway analysis
+# Common adduct constants
 
-This object contains a collection of adducts with their relative
-ion.mass, change and polarity
+A small table of legacy adduct definitions retained for compatibility
+with earlier SpaMTP workflows. New annotation code should use
+[`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md),
+which includes charge, stoichiometry, ion-mode, and chemical-validity
+fields.
 
 ## Usage
 
@@ -11,28 +14,37 @@ adduct_file
 
 ## Format
 
-### A data frame with 47 rows and 6 variables:
+A data frame with 47 rows and 6 variables:
 
 - adduct_name:
 
-  Chemical formula of the adduct (character)
+  Adduct notation.
 
 - ion.mass:
 
-  Mass of the molecular ion formula (character)
+  Legacy ion-mass expression.
 
 - charge:
 
-  Relative charge of the adduct (integer)
+  Ion charge.
 
 - mult:
 
-  Multiplication factor based on the original molecule mass (double)
+  Analyte stoichiometric multiplier.
 
 - add_mass:
 
-  The true mass of the ion being added or reduced (double)
+  Exact mass shift.
 
 - pol:
 
-  Polarity of the ion (reduced = negative, added = positive) (character)
+  Ion polarity.
+
+## Value
+
+A data frame of legacy adduct definitions.
+
+## See also
+
+[`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md),
+[`MALDIMatrixRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixRules.md)

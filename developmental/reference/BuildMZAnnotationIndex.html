@@ -11,7 +11,7 @@ and avoids scanning every database row for every observed peak."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +29,7 @@ and avoids scanning every database row for every observed peak."><meta property=
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -74,7 +75,11 @@ and avoids scanning every database row for every observed peak.</p>
 <span>  adducts <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rules <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  maldi_matrix <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  collapse_isomers <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  collapse_isomers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  infer_structure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"never"</span>, <span class="st">"always"</span><span class="op">)</span>,</span>
+<span>  structure_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"native"</span><span class="op">)</span>,</span>
+<span>  structure_workers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"SpaMTP.smiles_workers"</span>, <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>  min_structure_score <span class="op">=</span> <span class="fl">0.05</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -88,9 +93,8 @@ database and the RaMP <code>chem_props</code> schema are supported.</p></dd>
 
 
 <dt id="arg-polarity">polarity<a class="anchor" aria-label="anchor" href="#arg-polarity"></a></dt>
-<dd><p><code>"positive"</code>, <code>"negative"</code>, or <code>"neutral"</code>.
-When <code>NULL</code>, use the matrix-profile default, or positive mode when no
-profile is given.</p></dd>
+<dd><p><code>"positive"</code>, <code>"negative"</code>, or <code>"neutral"</code>. When <code>NULL</code>,
+use the matrix-profile default, or positive mode when no profile is given.</p></dd>
 
 
 <dt id="arg-adducts">adducts<a class="anchor" aria-label="anchor" href="#arg-adducts"></a></dt>
@@ -105,9 +109,8 @@ space; this is a filter, not a compulsory input.</p></dd>
 
 <dt id="arg-maldi-matrix">maldi_matrix<a class="anchor" aria-label="anchor" href="#arg-maldi-matrix"></a></dt>
 <dd><p>Optional MALDI matrix or derivatization reagent profile.
-When supplied and <code>rules</code> is <code>NULL</code>,
-<code><a href="MALDIMatrixRules.html">MALDIMatrixRules()</a></code> automatically selects
-standard and validated matrix-specific rules. <code>adducts</code> remains an
+When supplied and <code>rules</code> is <code>NULL</code>, <code><a href="MALDIMatrixRules.html">MALDIMatrixRules()</a></code> automatically
+selects standard and validated matrix-specific rules. <code>adducts</code> remains an
 optional filter on that selected rule space.</p></dd>
 
 
@@ -115,12 +118,48 @@ optional filter on that selected rule space.</p></dd>
 <dd><p>Collapse records sharing formula, exact mass, and
 proton bound before indexing.</p></dd>
 
+
+<dt id="arg-infer-structure">infer_structure<a class="anchor" aria-label="anchor" href="#arg-infer-structure"></a></dt>
+<dd><p><code>"auto"</code> joins bundled precomputed features or
+derives them for at most <code>getOption("SpaMTP.max_runtime_smiles", 5000)</code>
+unique SMILES, <code>"never"</code> disables inference, and <code>"always"</code> forces
+runtime parsing and replaces precomputed structural fields.</p></dd>
+
+
+<dt id="arg-structure-backend">structure_backend<a class="anchor" aria-label="anchor" href="#arg-structure-backend"></a></dt>
+<dd><p>SMILES parser used by <code><a href="DeconvolveSMILES.html">DeconvolveSMILES()</a></code>.</p></dd>
+
+
+<dt id="arg-structure-workers">structure_workers<a class="anchor" aria-label="anchor" href="#arg-structure-workers"></a></dt>
+<dd><p>Number of workers used for runtime SMILES parsing.</p></dd>
+
+
+<dt id="arg-min-structure-score">min_structure_score<a class="anchor" aria-label="anchor" href="#arg-min-structure-score"></a></dt>
+<dd><p>Minimum rule-specific structural prior retained
+before m/z indexing. Set to zero to rank without structure-based pruning.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of class <code>spamtp_mz_index</code>.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">BuildMZAnnotationIndex</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ db                 : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ polarity           : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ adducts            : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ rules              : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ maldi_matrix       : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ collapse_isomers   : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ infer_structure    : language c("auto", "never", "always")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ structure_backend  : language c("auto", "native")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ structure_workers  : language getOption("SpaMTP.smiles_workers", 1L)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ min_structure_score: num 0.05</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

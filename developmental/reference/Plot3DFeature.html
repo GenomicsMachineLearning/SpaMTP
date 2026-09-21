@@ -11,7 +11,7 @@ Features must be numeric values. Please see  SpaMTP Additional Features vignette
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +29,7 @@ Features must be numeric values. Please see  SpaMTP Additional Features vignette
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -178,7 +179,28 @@ Features must be numeric values. Please see <code> SpaMTP Additional Features</c
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Plot3DFeature(data = my_data, features = c("gene1", "gene2"), assays = c("SPT", "SPM"), show.image = "slice1")</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">Plot3DFeature</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ data                : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ features            : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ assays              : language c("SPT", "SPM")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ slots               : chr "counts"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ between.layer.height: num 100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ names               : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ size                : num 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ col.palette         : chr "Reds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x.axis.label        : chr "x"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ y.axis.label        : chr "y"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ z.axis.label        : chr "z"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ show.x.ticks        : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ show.y.ticks        : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ show.z.ticks        : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ show.image          : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ plot.height         : num 800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ plot.width          : num 1500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ image.sf            : chr "lowres"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ downscale.image     : NULL</span>
+<span class="r-in"><span><span class="co"># Plot3DFeature(data = my_data, features = c("gene1", "gene2"), assays = c("SPT", "SPM"), show.image = "slice1")</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -13,7 +13,11 @@ PlotRegionalPathways(
   sig_cutoff = NULL,
   num_display = NULL,
   text_size = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -60,6 +64,24 @@ PlotRegionalPathways(
   Boolean indicating whether to show the message. If TRUE the message
   will be show, else the message will be suppressed (default = TRUE).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 A `ggplot` object representing the set enrichment analysis results.
@@ -67,5 +89,18 @@ A `ggplot` object representing the set enrichment analysis results.
 ## Examples
 
 ``` r
+utils::str(formals(PlotRegionalPathways))
+#> Dotted pair list of 11
+#>  $ regpathway        : symbol 
+#>  $ ident.column      : chr "Cluster_id"
+#>  $ selected_pathways : NULL
+#>  $ sig_cutoff        : NULL
+#>  $ num_display       : NULL
+#>  $ text_size         : NULL
+#>  $ verbose           : logi TRUE
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
 # PlotRegionalPathways(SpaMTP, ident = "clusters", regpathway = pathway_df)
 ```

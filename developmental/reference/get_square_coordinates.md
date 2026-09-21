@@ -36,6 +36,12 @@ square's name and corner coordinates.
 ## Examples
 
 ``` r
+utils::str(formals(get_square_coordinates))
+#> Dotted pair list of 4
+#>  $ center_x: symbol 
+#>  $ center_y: symbol 
+#>  $ width   : symbol 
+#>  $ name    : symbol 
 get_square_coordinates(center_x = 5, center_y = 5, width = 4, name = "MySquare")
 #>   Selection X Y
 #> 1  MySquare 3 3

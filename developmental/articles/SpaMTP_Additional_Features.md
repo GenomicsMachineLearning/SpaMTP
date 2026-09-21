@@ -630,7 +630,7 @@ sessionInfo()
 
     ## R version 4.6.1 (2026-06-24)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.4 LTS
+    ## Running under: Ubuntu 24.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -650,19 +650,19 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] kableExtra_1.4.1       knitr_1.51             viridis_0.6.5         
+    ##  [1] kableExtra_1.4.1       knitr_1.52             viridis_0.6.5         
     ##  [4] viridisLite_0.4.3      EnhancedVolcano_1.30.0 ggrepel_0.9.8         
     ##  [7] ggplot2_4.0.3          dplyr_1.2.1            Seurat_5.5.1          
     ## [10] SeuratObject_5.4.0     sp_2.2-3               Cardinal_3.14.0       
-    ## [13] S4Vectors_0.50.1       ProtGenerics_1.44.0    BiocGenerics_0.58.1   
-    ## [16] generics_0.1.4         BiocParallel_1.46.0    SpaMTP_1.1.0.9000     
+    ## [13] S4Vectors_0.50.3       ProtGenerics_1.44.0    BiocGenerics_0.58.1   
+    ## [16] generics_0.1.4         BiocParallel_1.46.0    SpaMTP_0.99.0         
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] RColorBrewer_1.1-3     rstudioapi_0.19.0      jsonlite_2.0.0        
-    ##   [4] magrittr_2.0.5         spatstat.utils_3.2-4   farver_2.1.2          
-    ##   [7] rmarkdown_2.31         fs_2.1.0               ragg_1.5.2            
+    ##   [4] magrittr_2.0.5         spatstat.utils_3.2-5   farver_2.1.2          
+    ##   [7] rmarkdown_2.32         fs_2.1.0               ragg_1.5.2            
     ##  [10] vctrs_0.7.3            ROCR_1.0-12            memoise_2.0.1         
-    ##  [13] spatstat.explore_3.8-2 htmltools_0.5.9        curl_7.1.0            
+    ##  [13] spatstat.explore_3.8-2 htmltools_0.5.9        curl_8.0.0            
     ##  [16] sass_0.4.10            sctransform_0.4.3      parallelly_1.48.0     
     ##  [19] KernSmooth_2.23-26     bslib_0.12.0           htmlwidgets_1.6.4     
     ##  [22] desc_1.4.3             ica_1.0-3              plyr_1.8.9            
@@ -673,30 +673,30 @@ sessionInfo()
     ##  [37] future_1.75.0          shiny_1.14.0           digest_0.6.39         
     ##  [40] patchwork_1.3.2        tensor_1.5.1           RSpectra_0.16-2       
     ##  [43] irlba_2.3.7            textshaping_1.0.5      labeling_0.4.3        
-    ##  [46] progressr_1.0.0        spatstat.sparse_3.2-0  httr_1.4.8            
+    ##  [46] progressr_1.0.0        spatstat.sparse_3.2-0  httr_1.4.9            
     ##  [49] polyclip_1.10-7        abind_1.4-8            compiler_4.6.1        
     ##  [52] proxy_0.4-29           withr_3.0.3            S7_0.2.2              
     ##  [55] DBI_1.3.0              fastDummies_1.7.6      MASS_7.3-65           
     ##  [58] classInt_0.4-11        units_1.0-1            tools_4.6.1           
     ##  [61] lmtest_0.9-40          otel_0.2.0             httpuv_1.6.17         
     ##  [64] future.apply_1.20.2    goftest_1.2-3          glue_1.8.1            
-    ##  [67] nlme_3.1-169           promises_1.5.0         sf_1.1-2              
+    ##  [67] nlme_3.1-169           promises_1.5.0         sf_1.1-3              
     ##  [70] grid_4.6.1             Rtsne_0.17             cluster_2.1.8.2       
     ##  [73] reshape2_1.4.5         gtable_0.3.6           spatstat.data_3.1-9   
-    ##  [76] class_7.3-23           tidyr_1.3.2            data.table_1.18.4     
-    ##  [79] xml2_1.6.0             spatstat.geom_3.8-2    RcppAnnoy_0.0.23      
-    ##  [82] RANN_2.6.2             pillar_1.11.1          stringr_1.6.0         
+    ##  [76] class_7.3-23           tidyr_1.3.2            data.table_1.18.6.1   
+    ##  [79] xml2_1.6.0             spatstat.geom_3.8-3    RcppAnnoy_0.0.23      
+    ##  [82] RANN_2.6.3             pillar_1.11.1          stringr_1.6.0         
     ##  [85] spam_2.11-4            RcppHNSW_0.7.0         limma_3.68.5          
     ##  [88] later_1.4.8            splines_4.6.1          lattice_0.22-9        
     ##  [91] survival_3.8-6         deldir_2.0-4           tidyselect_1.2.1      
-    ##  [94] CardinalIO_1.10.0      miniUI_0.1.2           pbapply_1.7-4         
+    ##  [94] CardinalIO_1.10.0      miniUI_0.1.2           pbapply_1.7-5         
     ##  [97] downlit_0.4.5          gridExtra_2.3.1        matter_2.14.0         
-    ## [100] svglite_2.2.2          scattermore_1.2        xfun_0.60             
+    ## [100] svglite_2.2.2          scattermore_1.2        xfun_0.61             
     ## [103] Biobase_2.72.0         statmod_1.5.2          matrixStats_1.5.0     
     ## [106] stringi_1.8.9          yaml_2.3.12            evaluate_1.0.5        
     ## [109] codetools_0.2-20       tibble_3.3.1           cli_3.6.6             
-    ## [112] ontologyIndex_2.12     uwot_0.2.4             xtable_1.8-8          
-    ## [115] reticulate_1.46.0      systemfonts_1.3.2      jquerylib_0.1.4       
+    ## [112] ontologyIndex_2.12     uwot_0.2.5             xtable_1.8-8          
+    ## [115] reticulate_1.47.0      systemfonts_1.3.2      jquerylib_0.1.4       
     ## [118] Rcpp_1.1.2             globals_0.19.1         spatstat.random_3.5-1 
     ## [121] zeallot_0.2.0          png_0.1-9              spatstat.univar_3.2-0 
     ## [124] parallel_4.6.1         pkgdown_2.2.1          dotCall64_1.2         

@@ -133,6 +133,27 @@ A mass spectrometry plot displaying mean intensity values
 ## Examples
 
 ``` r
+utils::str(formals(MassIntensityPlot))
+#> Dotted pair list of 19
+#>  $ data             : symbol 
+#>  $ group.by         : NULL
+#>  $ split.by         : NULL
+#>  $ cols             : NULL
+#>  $ assay            : chr "Spatial"
+#>  $ slot             : chr "counts"
+#>  $ label.annotations: logi FALSE
+#>  $ annotation.column: chr "all_IsomerNames"
+#>  $ mz.labels        : NULL
+#>  $ metabolite.labels: NULL
+#>  $ xlab             : chr "m/z"
+#>  $ ylab             : chr "intensity"
+#>  $ mass.range       : NULL
+#>  $ y.lim            : NULL
+#>  $ labelCex         : num 5
+#>  $ labelAdj         : language -1
+#>  $ labelOffset      : num 0
+#>  $ labelCol         : chr "#eb4034"
+#>  $ nlabels.to.show  : NULL
 ## Plot mean of whole tissue section
 # MassIntensityPlot(SeuratObj)
 

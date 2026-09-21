@@ -58,5 +58,14 @@ SM data points
 ## Examples
 
 ``` r
+utils::str(formals(CheckAlignment))
+#> Dotted pair list of 7
+#>  $ SM.data    : symbol 
+#>  $ ST.data    : symbol 
+#>  $ image.res  : NULL
+#>  $ names      : language c("SM", "ST")
+#>  $ cols       : NULL
+#>  $ image.slice: chr "slice1"
+#>  $ size       : num 0.5
 # CheckAlignment(SM.data, ST.data)
 ```

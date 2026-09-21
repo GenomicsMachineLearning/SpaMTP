@@ -62,5 +62,14 @@ binned intensity matrix stored in the `binned` assay.
 ## Examples
 
 ``` r
+utils::str(formals(BinSpaMTP))
+#> Dotted pair list of 7
+#>  $ data           : symbol 
+#>  $ resolution     : symbol 
+#>  $ units          : chr "ppm"
+#>  $ assay          : chr "Spatial"
+#>  $ slot           : chr "counts"
+#>  $ method         : language c("sum")
+#>  $ return.only.mtx: logi FALSE
 #BinSpaMTP(spamtp.obj, resolution = 10, units = "ppm", return.only.mtx = TRUE)
 ```

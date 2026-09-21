@@ -82,5 +82,16 @@ feature names and their correlation values.
 ## Examples
 
 ``` r
+utils::str(formals(FindCorrelatedFeatures))
+#> Dotted pair list of 9
+#>  $ data     : symbol 
+#>  $ mz       : NULL
+#>  $ gene     : NULL
+#>  $ ident    : NULL
+#>  $ SM.assay : chr "SPM"
+#>  $ ST.assay : NULL
+#>  $ SM.slot  : chr "counts"
+#>  $ ST.slot  : chr "counts"
+#>  $ nfeatures: num 10
 # result <- FindCorrelatedFeatures(data = SpaMTP, gene = "GeneX", nfeatures = 5)
 ```

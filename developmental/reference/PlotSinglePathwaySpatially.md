@@ -149,9 +149,39 @@ PlotSinglePathwaySpatially(
 
 A ggplot object visualizing the pathway score spatially.
 
+## Details
+
+If no pathway features occur in the selected assay slot, or the scores
+cannot be standardized (for example, all scores are constant), a warning
+and a labelled placeholder panel are returned. Unavailable scores are
+not displayed as zero activity.
+
 ## Examples
 
 ``` r
+utils::str(formals(PlotSinglePathwaySpatially))
+#> Dotted pair list of 21
+#>  $ pathway       : symbol 
+#>  $ object        : symbol 
+#>  $ images        : symbol 
+#>  $ title         : NULL
+#>  $ image.alpha   : num 1
+#>  $ assay         : language SeuratObject::DefaultAssay(object)
+#>  $ slot          : chr "scale.data"
+#>  $ colors        : language c("darkblue", "lightgrey", "darkred")
+#>  $ guide         : chr "colourbar"
+#>  $ crop          : logi TRUE
+#>  $ min.cutoff    : logi NA
+#>  $ max.cutoff    : logi NA
+#>  $ ncol          : NULL
+#>  $ pt.size.factor: num 1.6
+#>  $ alpha         : language c(1, 1)
+#>  $ image.scale   : chr "lowres"
+#>  $ shape         : num 21
+#>  $ stroke        : logi NA
+#>  $ interactive   : logi FALSE
+#>  $ information   : NULL
+#>  $ image.labels  : NULL
 #glycolysis_list <- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))
 #PlotSinglePathwaySpatially(glycolysis_list, spamtp_obj)
 ```

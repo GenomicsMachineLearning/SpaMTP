@@ -67,5 +67,14 @@ graph can be used for clustering.
 ## Examples
 
 ``` r
+utils::str(formals(MultiOmicIntegration))
+#> Dotted pair list of 7
+#>  $ multiomic.data     : symbol 
+#>  $ weight.list        : NULL
+#>  $ reduction.list     : language list("spt.pca", "spm.pca")
+#>  $ dims.list          : language list(1:30, 1:30)
+#>  $ return.intermediate: logi FALSE
+#>  $ verbose            : logi FALSE
+#>  $ ...                : symbol 
 # SpaMTP.obj <- MultiOmicIntegration(SpaMTP.obj, weight.list = list(0.5, 0.5), reduction.list =  list("spt.pca", "spm.pca"), dims.list = list(1:30, 1:30))
 ```

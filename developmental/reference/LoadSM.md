@@ -68,5 +68,14 @@ intensity values
 ## Examples
 
 ``` r
+utils::str(formals(LoadSM))
+#> Dotted pair list of 7
+#>  $ file      : symbol 
+#>  $ mass.range: NULL
+#>  $ resolution: logi NA
+#>  $ units     : chr "ppm"
+#>  $ verbose   : logi TRUE
+#>  $ assay     : chr "Spatial"
+#>  $ multi.run : logi FALSE
 # data <-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")
 ```

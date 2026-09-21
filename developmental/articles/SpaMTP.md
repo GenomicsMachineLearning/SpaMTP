@@ -23,9 +23,18 @@ analysis using this integrated data.
 
 ## SpaMTP Public Datasets
 
-To access and download all our datasets used in the vignettes you can
-vist the [*SpaMTP* zenodo
-page](https://zenodo.org/communities/spamtp/records).
+Each tutorial provides direct download links for its experiment objects
+from the [*SpaMTP* Zenodo
+community](https://zenodo.org/communities/spamtp/records), with
+checksum-verified downloads where automated fetching is used. No
+companion data package is required for this standalone release.
+
+The pruned RaMP annotation databases and corrected pathway graphs are
+included with SpaMTP. On the developmental branch,
+[`SpaMTPDatabaseInfo()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/SpaMTPDatabaseInfo.md)
+lists the bundled resources and
+[`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md)
+reads them offline.
 
 ## Installation
 

@@ -72,5 +72,16 @@ Function params/args:
 ## Examples
 
 ``` r
+utils::str(formals(subset_SPM))
+#> Dotted pair list of 9
+#>  $ object       : NULL
+#>  $ subset       : NULL
+#>  $ cells        : NULL
+#>  $ idents       : NULL
+#>  $ features     : NULL
+#>  $ Update.slots : logi TRUE
+#>  $ Update.object: logi TRUE
+#>  $ verbose      : logi FALSE
+#>  $ ...          : symbol 
 # sub <- subset_obt(seurat.obj, idents = "Sample1")
 ```

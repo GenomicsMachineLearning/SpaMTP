@@ -21,7 +21,11 @@ FindRegionalPathways(
   pval_cutoff_genes = 0.05,
   annotation_score_threshold = 0.05,
   annotation_source = c("current", "auto", "legacy"),
-  verbose = TRUE
+  verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -112,6 +116,24 @@ FindRegionalPathways(
   Boolean indicating whether to show informative messages. If FALSE
   these messages will be suppressed (default = TRUE).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 A SpaMTP object with set enrichment on given analyte types.
@@ -119,5 +141,26 @@ A SpaMTP object with set enrichment on given analyte types.
 ## Examples
 
 ``` r
+utils::str(formals(FindRegionalPathways))
+#> Dotted pair list of 19
+#>  $ SpaMTP                    : symbol 
+#>  $ ident                     : symbol 
+#>  $ DE.list                   : symbol 
+#>  $ analyte_types             : language c("genes", "metabolites")
+#>  $ SM_assay                  : chr "SPM"
+#>  $ ST_assay                  : chr "SPT"
+#>  $ SM_slot                   : chr "counts"
+#>  $ ST_slot                   : chr "counts"
+#>  $ min_path_size             : num 5
+#>  $ max_path_size             : num 500
+#>  $ pval_cutoff_mets          : num 0.05
+#>  $ pval_cutoff_genes         : num 0.05
+#>  $ annotation_score_threshold: num 0.05
+#>  $ annotation_source         : language c("current", "auto", "legacy")
+#>  $ verbose                   : logi TRUE
+#>  $ database                  : NULL
+#>  $ database_version          : chr "latest"
+#>  $ database_source           : language c("auto", "bundled", "local")
+#>  $ database_local_dir        : NULL
 # SpaMTP = FindRegionalPathways(SpaMTP, polarity = "positive")
 ```

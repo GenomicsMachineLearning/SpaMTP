@@ -62,5 +62,12 @@ contain numeric matrices. The merged assay will use the row-bound
 ## Examples
 
 ``` r
+utils::str(formals(CreateMergedModalityAssay))
+#> Dotted pair list of 5
+#>  $ SpaMTP         : symbol 
+#>  $ assays.to.merge: symbol 
+#>  $ new.assay      : chr "merged"
+#>  $ return.original: logi TRUE
+#>  $ verbose        : logi FALSE
 # merged_obj <- CreateMergedModalityAssay(SpaMTP = spamtp_obj, assays.to.merge = c("SPM", "SPT"),new.assay = "merged")
 ```

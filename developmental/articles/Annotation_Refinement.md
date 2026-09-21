@@ -41,10 +41,8 @@ library(Seurat)
 library(dplyr)
 library(tidyr)
 
-#For plotting + DE plots
+# Plotting
 library(ggplot2)
-library(EnhancedVolcano)
-library(viridis)
 ```
 
 ### 1) Pathway-Based Refinement: `CalculateAnnotationStatistics`
@@ -385,20 +383,27 @@ observed peak:
 
 dopamine_peak_mz <- 674.2805
 
-dopamine_db <- chem_props[
-  toupper(chem_props$chem_source_id) == "HMDB:HMDB0000073",
-  c(
-    "ramp_id", "chem_source_id", "inchi_key", "monoisotop_mass",
-    "common_name", "mol_formula"
-  ),
-  drop = FALSE
-]
-dopamine_db <- dopamine_db[1L, , drop = FALSE]
-stopifnot(nrow(dopamine_db) == 1L)
+# A one-row SpaMTPdb 3.0.7 subset keeps this comparison reproducible without a
+# full AnnotationHub download during website rendering.
+dopamine_db <- data.frame(
+  ramp_id = "RAMP_C_000218860",
+  chem_source_id = "hmdb:HMDB0000073",
+  inchi_key = "VYFYYTLLBUKUHU-UHFFFAOYSA-N",
+  monoisotop_mass = 153.078978601,
+  common_name = "Dopamine",
+  mol_formula = "C8H11NO2",
+  iso_smiles = "NCCC1=CC(O)=C(O)C=C1",
+  stringsAsFactors = FALSE
+)
 
-# Dopamine has two phenolic hydroxyls and one primary amine. This explicit
-# structure-derived field lets matrix-reaction rules prune impossible products.
-dopamine_db$fmp10_reactive_sites <- 3L
+# SpaMTP detects two phenolic hydroxyls, one primary amine, a catechol motif,
+# and the resulting three FMP-10-compatible sites from the RaMP SMILES.
+dopamine_db <- AnnotateSMILESStructure(dopamine_db)
+stopifnot(
+  dopamine_db$phenolic_hydroxyl_sites == 2L,
+  dopamine_db$primary_amine_sites == 1L,
+  dopamine_db$fmp10_reactive_sites == 3L
+)
 
 standard_positive_rules <- AdductRules("positive")
 standard_dopamine_index <- BuildMZAnnotationIndex(
@@ -471,6 +476,16 @@ knitr::kable(fmp10_product_rules, digits = 7, row.names = FALSE)
 ``` r
 
 # `adducts` is intentionally omitted: use every rule selected by FMP-10.
+fmp10_structure_space <- PredictAdductsFromSMILES(
+  dopamine_db$iso_smiles,
+  maldi_matrix = "FMP-10"
+)
+stopifnot(
+  fmp10_structure_space$retained[
+    fmp10_structure_space$adduct == "M+2FMP10a"
+  ]
+)
+
 fmp10_dopamine_index <- BuildMZAnnotationIndex(
   dopamine_db,
   polarity = "positive",
@@ -485,16 +500,17 @@ fmp10_dopamine_hits <- QueryMZAnnotationIndex(
 knitr::kable(
   fmp10_dopamine_hits[, c(
     "observed_mz", "expected_mz", "ppm_error", "adduct", "neutral_mass",
-    "metabolite_names", "ramp_ids", "reactive_site_status", "score"
+    "metabolite_names", "ramp_ids", "structure_score",
+    "structure_rule_evidence", "reactive_site_status", "score"
   )],
   digits = 7,
   row.names = FALSE
 )
 ```
 
-| observed_mz | expected_mz | ppm_error | adduct | neutral_mass | metabolite_names | ramp_ids | reactive_site_status | score |
-|---:|---:|---:|:---|---:|:---|:---|:---|---:|
-| 674.2805 | 674.2808 | 0.3743479 | M+2FMP10a | 153.079 | Dopamine | RAMP_C_000218860 | verified | 0.7313182 |
+| observed_mz | expected_mz | ppm_error | adduct | neutral_mass | metabolite_names | ramp_ids | structure_score | structure_rule_evidence | reactive_site_status | score |
+|---:|---:|---:|:---|---:|:---|:---|---:|:---|:---|---:|
+| 674.2805 | 674.2808 | 0.3743479 | M+2FMP10a | 153.079 | Dopamine | RAMP_C_000218860 | 0.85 | positive-mode proton/cation acceptance: carboxyl=0; alcohol-OH=0; phenolic-OH=2; ketone=0; amine=1; acidic-sites=2; proton-acceptors=1; alkali-donors=3; chelation-motifs=1; positive-atoms=N1; negative-atoms=O7,O9; alkali-atoms=N1,O7,O9 | verified | 0.6216205 |
 
 Here `mass_shift` and `charge` describe the **net detected ion**. The
 generic rule fields enforce the final charge balance expected by the
@@ -502,10 +518,10 @@ annotation engine; they do not claim that no hydrogen was lost during
 the two substitution reactions. Those reaction-site hydrogen losses, the
 intermediate `+2` state, and the subsequent `-CH3` transformation are
 already folded into the product rule. Because `fmp10_reactive_sites = 3`
-was provided, the double derivative is reported as `verified` for
-reaction-site eligibility. If this structure-derived value is
-unavailable, SpaMTP retains the candidate as `unknown` but applies a
-0.25 score multiplier instead of silently treating its chemistry as
+was inferred from dopamine’s RaMP SMILES, the double derivative is
+reported as `verified` for reaction-site eligibility. If a structure
+cannot be parsed, SpaMTP retains the candidate as `unknown` but applies
+a 0.25 score multiplier instead of silently treating its chemistry as
 verified.
 
 The custom rule recovers dopamine at an expected m/z of approximately
@@ -621,6 +637,43 @@ reaction chemistry:
 | 9-AA | Defaults to negative mode and ordinary negative ions, especially `[M-H]-`. No fixed `M+9AA` product is generated because a universal 9-AA metabolite-product shift is not established. |
 | FMP-10 | Adds covalent single- and double-derivative products with reaction-site requirements and literature provenance. |
 | Other registered reactive matrices/reagents | FMP-8/9, DPP-TFB, TMP-TFB, N-MePyBA, DNPH, coniferyl aldehyde, DHBA, DHAP, Girard T/P, 2-picolylamine, TMPA, AMPP/HATU, and TAHS are represented. A `profile_only` entry selects a sensible polarity and standard ion space but does not invent a universal product mass; a verified study-specific rule can be supplied explicitly. |
+
+SMILES target compatibility is still automated for `profile_only`
+entries, even when a universal product mass is unavailable. For example,
+SpaMTP can recognise that dopamine has the primary amine targeted by
+DPP-TFB, acetone has a ketone targeted by DNPH/Girard reagents, and 2HG
+has carboxylic acids targeted by 2-picolylamine or TMPA.
+`matrix_target_status = "compatible-target"` grants permission to
+consider a validated study-specific rule; it does not invent the net
+reaction mass:
+
+``` r
+
+matrix_examples <- list(
+  `DPP-TFB / dopamine` = c("DPP-TFB", dopamine_db$iso_smiles),
+  `DNPH / acetone` = c("DNPH", "CC(=O)C"),
+  `2-PA / 2HG` = c("2-picolylamine", "O[C@H](CCC(O)=O)C(O)=O")
+)
+matrix_compatibility <- do.call(rbind, lapply(names(matrix_examples), function(label) {
+  example <- matrix_examples[[label]]
+  prediction <- suppressWarnings(PredictAdductsFromSMILES(
+    example[[2]], maldi_matrix = example[[1]]
+  ))
+  data.frame(
+    example = label,
+    target_groups = prediction$matrix_target_groups[[1]],
+    target_sites = prediction$matrix_target_sites[[1]],
+    status = prediction$matrix_target_status[[1]]
+  )
+}))
+knitr::kable(matrix_compatibility, row.names = FALSE)
+```
+
+| example            | target_groups   | target_sites | status            |
+|:-------------------|:----------------|-------------:|:------------------|
+| DPP-TFB / dopamine | primary amine   |            1 | compatible-target |
+| DNPH / acetone     | aldehyde/ketone |            1 | compatible-target |
+| 2-PA / 2HG         | carboxylic acid |            2 | compatible-target |
 
 For DHB and CHCA matrix adducts, providing `ms1_spectrum` activates the
 existing adduct-family check. SpaMTP searches for the corresponding base

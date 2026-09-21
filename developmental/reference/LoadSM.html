@@ -9,7 +9,7 @@ This function adapts the readImzML function implmented in Cardinal to correctly 
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,7 @@ This function adapts the readImzML function implmented in Cardinal to correctly 
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -115,7 +116,16 @@ This function adapts the <code>readImzML</code> function implmented in Cardinal 
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># data &lt;-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">LoadSM</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ file      : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mass.range: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ resolution: logi NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ units     : chr "ppm"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ verbose   : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ assay     : chr "Spatial"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ multi.run : logi FALSE</span>
+<span class="r-in"><span><span class="co"># data &lt;-LoadSM(name = "run1", folder = "/Documents/SpaMTP_test_data/", mass.range = c(160,1500), resolution = 10, assay = "Spatial")</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

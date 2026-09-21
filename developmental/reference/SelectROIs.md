@@ -45,3 +45,12 @@ The app includes options to:
 
 Spatial selection uses `sf` geometry tools. The plot is rendered using
 `plotly`.
+
+## Examples
+
+``` r
+utils::str(formals(SelectROIs))
+#> Dotted pair list of 2
+#>  $ seurat_obj: symbol 
+#>  $ image     : chr "fov"
+```

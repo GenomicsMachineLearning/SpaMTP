@@ -18,7 +18,11 @@ RunRAMPgeseca(
   eps = 1e-50,
   nproc = 0,
   BPPARAM = NULL,
-  nPermSimple = 1000
+  nPermSimple = 1000,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -73,6 +77,24 @@ RunRAMPgeseca(
   Number of permutations in the simple geseca implementation for
   preliminary estimation of P-values (default = 1000).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 A table with GESECA results. Each row corresponds to a tested RAMP_DB
@@ -81,6 +103,22 @@ pathway.
 ## Examples
 
 ``` r
+utils::str(formals(RunRAMPgeseca))
+#> Dotted pair list of 14
+#>  $ E                 : symbol 
+#>  $ minSize           : num 1
+#>  $ maxSize           : language nrow(E) - 1
+#>  $ center            : logi TRUE
+#>  $ scale             : logi FALSE
+#>  $ sampleSize        : num 101
+#>  $ eps               : num 1e-50
+#>  $ nproc             : num 0
+#>  $ BPPARAM           : NULL
+#>  $ nPermSimple       : num 1000
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
 # E <- SpaMTP@reductions$pca.rev@feature.loadings
 # sig_pathways <- RunRAMPgeseca(E, minSize=15, maxSize=500)
 ```

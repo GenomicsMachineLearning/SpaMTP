@@ -94,8 +94,28 @@ MZBoxPlot(
   Boolean indicating whether to show the message. If TRUE the message
   will be show, else the message will be suppressed (default = FALSE).
 
+## Value
+
+A `ggplot` box-plot object.
+
 ## Examples
 
 ``` r
+utils::str(formals(MZBoxPlot))
+#> Dotted pair list of 14
+#>  $ seurat.obj   : symbol 
+#>  $ group.by     : NULL
+#>  $ mzs          : NULL
+#>  $ assay        : chr "Spatial"
+#>  $ slot         : chr "counts"
+#>  $ title        : chr "BoxPlot"
+#>  $ x.lab        : chr "var"
+#>  $ y.lab        : chr "intensity"
+#>  $ show.points  : logi TRUE
+#>  $ bottom.cutoff: NULL
+#>  $ top.cutoff   : NULL
+#>  $ log.data     : logi FALSE
+#>  $ cols         : NULL
+#>  $ verbose      : logi FALSE
 # MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
 ```

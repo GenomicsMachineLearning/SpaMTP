@@ -3,8 +3,8 @@
 The registry separates conventional MALDI matrices, reactive matrices,
 and derivatization reagents. A registered profile does not necessarily
 imply that a universal mass-shift rule is available: some reactions
-require a coupling reagent, produce several products, or depend strongly
-on analyte structure and acquisition conditions.
+require a coupling reagent, produce several products, or remain strongly
+dependent on the analyte structure and acquisition conditions.
 
 ## Usage
 
@@ -23,3 +23,11 @@ MALDIMatrixProfiles(matrix = NULL)
 
 A data frame describing supported matrix profiles and their current
 automatic-rule status.
+
+## Examples
+
+``` r
+utils::str(formals(MALDIMatrixProfiles))
+#> Dotted pair list of 1
+#>  $ matrix: NULL
+```

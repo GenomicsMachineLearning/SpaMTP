@@ -19,6 +19,9 @@ AnnotateBigData(
   tof_resolution = 30000,
   verbose = TRUE,
   maldi_matrix = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL,
   ...
 )
 ```
@@ -70,6 +73,19 @@ AnnotateBigData(
   Optional MALDI matrix/reagent profile used for automatic rule
   selection. The `adducts` argument remains an optional restriction.
 
+- database_version:
+
+  Database snapshot version used when `db = NULL`.
+
+- database_source:
+
+  Database source used when `db = NULL`; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 - ...:
 
   Additional indexed annotation/scoring arguments passed to
@@ -84,6 +100,20 @@ their corresponding annotation.
 ## Examples
 
 ``` r
+utils::str(formals(AnnotateBigData))
+#> Dotted pair list of 12
+#>  $ mzs               : symbol 
+#>  $ db                : NULL
+#>  $ ppm_error         : NULL
+#>  $ adducts           : NULL
+#>  $ polarity          : NULL
+#>  $ tof_resolution    : num 30000
+#>  $ verbose           : logi TRUE
+#>  $ maldi_matrix      : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
+#>  $ ...               : symbol 
 #cardinal <- readImzML("./Test_Data/Spotted/test_data1")
 #mzs <- data.frame(Cardinal::featureData(cardinal))$mz
 #results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative")

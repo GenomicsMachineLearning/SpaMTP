@@ -14,7 +14,11 @@ BuildMZAnnotationIndex(
   adducts = NULL,
   rules = NULL,
   maldi_matrix = NULL,
-  collapse_isomers = TRUE
+  collapse_isomers = TRUE,
+  infer_structure = c("auto", "never", "always"),
+  structure_backend = c("auto", "native"),
+  structure_workers = getOption("SpaMTP.smiles_workers", 1L),
+  min_structure_score = 0.05
 )
 ```
 
@@ -54,6 +58,44 @@ BuildMZAnnotationIndex(
   Collapse records sharing formula, exact mass, and proton bound before
   indexing.
 
+- infer_structure:
+
+  `"auto"` joins bundled precomputed features or derives them for at
+  most `getOption("SpaMTP.max_runtime_smiles", 5000)` unique SMILES,
+  `"never"` disables inference, and `"always"` forces runtime parsing
+  and replaces precomputed structural fields.
+
+- structure_backend:
+
+  SMILES parser used by
+  [`DeconvolveSMILES()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/DeconvolveSMILES.md).
+
+- structure_workers:
+
+  Number of workers used for runtime SMILES parsing.
+
+- min_structure_score:
+
+  Minimum rule-specific structural prior retained before m/z indexing.
+  Set to zero to rank without structure-based pruning.
+
 ## Value
 
 An object of class `spamtp_mz_index`.
+
+## Examples
+
+``` r
+utils::str(formals(BuildMZAnnotationIndex))
+#> Dotted pair list of 10
+#>  $ db                 : symbol 
+#>  $ polarity           : NULL
+#>  $ adducts            : NULL
+#>  $ rules              : NULL
+#>  $ maldi_matrix       : NULL
+#>  $ collapse_isomers   : logi TRUE
+#>  $ infer_structure    : language c("auto", "never", "always")
+#>  $ structure_backend  : language c("auto", "native")
+#>  $ structure_workers  : language getOption("SpaMTP.smiles_workers", 1L)
+#>  $ min_structure_score: num 0.05
+```

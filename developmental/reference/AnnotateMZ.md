@@ -16,6 +16,13 @@ AnnotateMZ(
   maldi_matrix = NULL,
   ppm = 5,
   ms1_spectrum = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL,
+  infer_structure = c("auto", "never", "always"),
+  structure_backend = c("auto", "native"),
+  structure_workers = getOption("SpaMTP.smiles_workers", 1L),
+  min_structure_score = 0.05,
   ...
 )
 ```
@@ -61,6 +68,25 @@ AnnotateMZ(
 
   Optional contextual spectrum.
 
+- database_version:
+
+  Database snapshot version used when `db = NULL`.
+
+- database_source:
+
+  Database source used when `db = NULL`; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
+- infer_structure, structure_backend, structure_workers,
+  min_structure_score:
+
+  Structure-aware rule-selection arguments passed to
+  [`BuildMZAnnotationIndex()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BuildMZAnnotationIndex.md).
+
 - ...:
 
   Additional arguments passed to
@@ -69,3 +95,27 @@ AnnotateMZ(
 ## Value
 
 A ranked candidate data frame.
+
+## Examples
+
+``` r
+utils::str(formals(AnnotateMZ))
+#> Dotted pair list of 17
+#>  $ observed_mz        : symbol 
+#>  $ db                 : NULL
+#>  $ index              : NULL
+#>  $ polarity           : NULL
+#>  $ adducts            : NULL
+#>  $ rules              : NULL
+#>  $ maldi_matrix       : NULL
+#>  $ ppm                : num 5
+#>  $ ms1_spectrum       : NULL
+#>  $ database_version   : chr "latest"
+#>  $ database_source    : language c("auto", "bundled", "local")
+#>  $ database_local_dir : NULL
+#>  $ infer_structure    : language c("auto", "never", "always")
+#>  $ structure_backend  : language c("auto", "native")
+#>  $ structure_workers  : language getOption("SpaMTP.smiles_workers", 1L)
+#>  $ min_structure_score: num 0.05
+#>  $ ...                : symbol 
+```

@@ -13,7 +13,11 @@ AddFMP10Annotations(
   assay = "Spatial",
   return.only.annotated = FALSE,
   mass.threshold = 0.05,
-  annotation.column = "all_IsomerNames"
+  annotation.column = "all_IsomerNames",
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -59,6 +63,24 @@ AddFMP10Annotations(
   Character string defining the feature meta.data column name that will
   contain the assigned annotations (default = "all_IsomerNames").
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for annotation lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 SpaMTP Seurat object containing the relative metabolite annotations
@@ -67,5 +89,18 @@ stored in the feature metadata dataframe.
 ## Examples
 
 ``` r
+utils::str(formals(AddFMP10Annotations))
+#> Dotted pair list of 11
+#>  $ obj                  : symbol 
+#>  $ only.fmp.adduct      : logi FALSE
+#>  $ add.custom.annotation: NULL
+#>  $ assay                : chr "Spatial"
+#>  $ return.only.annotated: logi FALSE
+#>  $ mass.threshold       : num 0.05
+#>  $ annotation.column    : chr "all_IsomerNames"
+#>  $ database             : NULL
+#>  $ database_version     : chr "latest"
+#>  $ database_source      : language c("auto", "bundled", "local")
+#>  $ database_local_dir   : NULL
 # AddFMP10Annotations(spamtp, only.fmp.adduct = FALSE)
 ```

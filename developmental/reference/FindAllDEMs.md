@@ -97,5 +97,19 @@ stored in \$counts and DEMs are in \$DEMs.
 ## Examples
 
 ``` r
+utils::str(formals(FindAllDEMs))
+#> Dotted pair list of 12
+#>  $ data             : symbol 
+#>  $ ident            : symbol 
+#>  $ n                : num 3
+#>  $ logFC_threshold  : num 1.2
+#>  $ DE_output_dir    : NULL
+#>  $ run_name         : chr "FindAllDEMs"
+#>  $ annotation.column: NULL
+#>  $ assay            : chr "Spatial"
+#>  $ slot             : chr "counts"
+#>  $ return.individual: logi FALSE
+#>  $ verbose          : logi TRUE
+#>  $ seed             : num 1234
 # FindAllDEMs(SeuratObj, "sample",DE_output_dir = "~/Documents/DE_output/", annotations = TRUE)
 ```

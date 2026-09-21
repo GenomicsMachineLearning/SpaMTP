@@ -9,7 +9,7 @@ This function is used by by FindAllDEMs()."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,7 @@ This function is used by by FindAllDEMs()."><meta property="og:image" content="h
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -135,7 +136,20 @@ This function is used by by <code><a href="FindAllDEMs.html">FindAllDEMs()</a></
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># pooled_obj &lt;- run_pooling(SeuratObj, "sample", n = 3)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">run_DE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pooled_data      : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ seurat_data      : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ ident            : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ output_dir       : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ run_name         : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ n                : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ logFC_threshold  : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ annotation.column: symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ assay            : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ return.individual: logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ verbose          : logi TRUE</span>
+<span class="r-in"><span><span class="co"># pooled_obj &lt;- run_pooling(SeuratObj, "sample", n = 3)</span></span></span>
 <span class="r-in"><span><span class="co"># run_DE(pooled_obj, SeuratObj, "sample", "~/Documents/DE_output/", "run_1", n = 3, logFC_threshold = 1.2, annotation.column = "all_IsomerNames", assay = "Spatial")</span></span></span>
 </code></pre></div>
     </div>

@@ -9,7 +9,7 @@ This function inherits from Seurat::ImageFeaturePlot()."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,7 @@ This function inherits from Seurat::ImageFeaturePlot()."><meta property="og:imag
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -240,7 +241,40 @@ This function inherits from Seurat::ImageFeaturePlot().</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1))</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">ImageMZPlot</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ object         : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mzs            : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ plusminus      : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ fov            : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ boundaries     : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cols           : language if (isTRUE(x = blend)) {     c("lightgrey", "#ff0000", "#00ff00") ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ size           : num 0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ min.cutoff     : logi NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ max.cutoff     : logi NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ split.by       : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ molecules      : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mols.size      : num 0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mols.cols      : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ nmols          : num 1000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ alpha          : num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ border.color   : chr "white"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ border.size    : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ dark.background: logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ blend          : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ blend.threshold: num 0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ crop           : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cells          : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ scale          : language c("feature", "all", "none")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ overlap        : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ axes           : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ combine        : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ coord.fixed    : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ assay          : chr "Spatial"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ slot           : chr "data"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ plot.pixel     : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ verbose        : logi TRUE</span>
+<span class="r-in"><span><span class="co"># ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1))</span></span></span>
 <span class="r-in"><span><span class="co"># ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)</span></span></span>
 </code></pre></div>
     </div>

@@ -119,7 +119,7 @@ pig206_peaks
     ## pixelData(3): x, y, run
     ## coord(2): x = 10...120, y = 1...66
     ## runNames(1): PIGII_206
-    ## metadata(1): processing_20260814011042
+    ## metadata(1): processing_20260921033952
     ## mass range: 150.2917 to 999.8333 
     ## centroided: TRUE
 
@@ -193,7 +193,7 @@ pig206_peaks
     ## pixelData(4): x, y, run, ssc
     ## coord(2): x = 10...120, y = 1...66
     ## runNames(1): PIGII_206
-    ## metadata(1): processing_20260814011042
+    ## metadata(1): processing_20260921033952
     ## mass range: 150.2917 to 999.8333 
     ## centroided: TRUE
 
@@ -558,7 +558,7 @@ object or annotate them directly.
 *SpaMTP* has a user-friendly function that assigns possible annotations
 to each m/z value based on a few variables:
 
-- db: Database to query. The default `NULL` uses the bundled RaMP 3.0
+- db: Database to query. The default `NULL` loads the bundled RaMP 3.0.7
   chemical-property table and preserves current `RAMP_C_*` identifiers
   for pathway analysis. A custom database can still be supplied.
 - polarity: Polarity mode the experiment was run in -\> either
@@ -600,10 +600,10 @@ bladder_annotated
     ##  1 layer present: counts
     ##  1 spatial field of view present: fov
 
-The indexed annotation uses the current bundled RaMP chemical
-properties. All ppm-valid candidates are stored (`min_score = 0`), so
-downstream pathway analysis and the interactive network viewer can apply
-a user-defined score threshold without re-running annotation.
+The indexed annotation uses the bundled RaMP chemical properties. All
+ppm-valid candidates are stored (`min_score = 0`), so downstream pathway
+analysis and the interactive network viewer can apply a user-defined
+score threshold without re-running annotation.
 
 These annotations are stored in the feature meta.data slot within our
 SpaMTP Object, lets take a look:
@@ -615,9 +615,9 @@ head(bladder_annotated[["Spatial"]]@meta.data, n = 3)
 
 |  | raw_mz | mz_names | observed_mz | all_IsomerNames | all_Isomers | all_Isomers_IDs | all_Adducts | all_Formulas | all_Errors | all_Scores | all_Ramp_IDs |
 |:---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| 1 | 403.0434 | mz-403.043426513672 | 403.043426513672 | Xanthotoxol glucoside; 6-methylpretetramide(1-); sulfometuron methyl; Sulfometuron-methyl | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | M+K | C17H16O9; C20H14NO6; C15H16N4O5S | 2.0755; 5.9333; 9.6053; 9.6061 | 0.734; 0.3957; 0.1264; 0.1264 | RAMP_C_000019192; RAMP_C_000267915; RAMP_C_000171863 |
-| 2 | 404.0514 | mz-404.051422119141 | 404.051422119141 | 2-S-glutathionyl acetate; 6-methylpretetramide; 4beta-(2-Aminoethylthio)catechin; Hydromorphone-3-sulphate; Morphine 3-Sulfate; Morphinan-3,6-diol, 7,8-didehydro-4,5-epoxy-17-methyl-, (5alpha,6alpha)-, 3-(hydrogen sulfate); Clinafloxacin | hmdb:HMDB0062198; chebi:27879; hmdb:HMDB0037475; hmdb:HMDB0060825; hmdb:HMDB0254891; hmdb:HMDB0254892; hmdb:HMDB0250323 | hmdb:HMDB0062198; chebi:27879; hmdb:HMDB0037475; hmdb:HMDB0060825; hmdb:HMDB0254891; hmdb:HMDB0254892; hmdb:HMDB0250323 | M+K | C12H19N3O8S; C20H15NO6; C17H19NO6S; C17H17ClFN3O3 | 2.5282; 4.1474; 12.483; 12.4841; 14.8075 | 0.704; 0.5671; 0.0355; 0.0354; 0.01 | RAMP_C_000041567; RAMP_C_000267915; RAMP_C_000018079; RAMP_C_000040738; RAMP_C_000168710; RAMP_C_000168711; RAMP_C_000164865 |
-| 5 | 409.0564 | mz-409.056396484375 | 409.056396484375 | fraxin; 5-Hydroxy-6-methoxycoumarin 7-glucoside; Ferulic acid 4-O-glucuronide; Feruloyl C1-glucuronide; Isoferulic acid 3-O-glucuronide; Isoferuloyl C1-glucuronide; cis-Ferulic acid 4-glucuronide; Fraxin; Remoxipride; Parecoxib; Tetomilast; n-\[\[(5-Methyl-3-phenylisoxazol-4-yl)-phenyl\]sulfonyl\]propanamide; parecoxib | chebi:5170; hmdb:HMDB0039774; hmdb:HMDB0041733; hmdb:HMDB0041734; hmdb:HMDB0041747; hmdb:HMDB0041749; hmdb:HMDB0240725; hmdb:HMDB0252486; hmdb:HMDB0014553; hmdb:HMDB0256127; hmdb:HMDB0258864; hmdb:HMDB0257987; chebi:73038 | chebi:5170; hmdb:HMDB0039774; hmdb:HMDB0041733; hmdb:HMDB0041734; hmdb:HMDB0041747; hmdb:HMDB0041749; hmdb:HMDB0240725; hmdb:HMDB0252486; hmdb:HMDB0014553; hmdb:HMDB0256127; hmdb:HMDB0258864; hmdb:HMDB0257987; chebi:73038 | M+K | C16H18O10; C16H23BrN2O3; C19H18N2O4S | 7.9173; 7.9251; 7.9251; 9.8602; 13.419; 13.4201; 13.4244 | 0.2284; 0.2278; 0.2278; 0.1145; 0.0218; 0.0218; 0.0218 | RAMP_C_000166720; RAMP_C_000020310; RAMP_C_000022212; RAMP_C_000022213; RAMP_C_000022226; RAMP_C_000022228; RAMP_C_000156936; RAMP_C_000166720; RAMP_C_000008843; RAMP_C_000169775; RAMP_C_000172085; RAMP_C_000171361; RAMP_C_000169775 |
+| 1 | 403.0434 | mz-403.043426513672 | 403.043426513672 | Xanthotoxol glucoside; 6-methylpretetramide(1-); sulfometuron methyl; Sulfometuron-methyl | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | M+K | C17H16O9; C20H14NO6; C15H16N4O5S | 2.0755; 5.9333; 9.6053; 9.6061 | 0.7266; 0.2967; 0.1251; 0.1251 | RAMP_C_000019192; RAMP_C_000267915; RAMP_C_000171863 |
+| 2 | 404.0514 | mz-404.051422119141 | 404.051422119141 | 2-S-glutathionyl acetate; 6-methylpretetramide; Hydromorphone-3-sulphate; Morphine 3-Sulfate; Morphinan-3,6-diol, 7,8-didehydro-4,5-epoxy-17-methyl-, (5alpha,6alpha)-, 3-(hydrogen sulfate); 4beta-(2-Aminoethylthio)catechin; Clinafloxacin | hmdb:HMDB0062198; chebi:27879; hmdb:HMDB0060825; hmdb:HMDB0254891; hmdb:HMDB0254892; hmdb:HMDB0037475; hmdb:HMDB0250323 | hmdb:HMDB0062198; chebi:27879; hmdb:HMDB0060825; hmdb:HMDB0254891; hmdb:HMDB0254892; hmdb:HMDB0037475; hmdb:HMDB0250323 | M+K | C12H19N3O8S; C20H15NO6; C17H19NO6S; C17H17ClFN3O3 | 2.5282; 4.1474; 12.483; 12.4841; 12.483; 14.8075 | 0.697; 0.4253; 0.0351; 0.0351; 0.0266; 0.0087 | RAMP_C_000041567; RAMP_C_000267915; RAMP_C_000040738; RAMP_C_000168710; RAMP_C_000168711; RAMP_C_000018079; RAMP_C_000164865 |
+| 5 | 409.0564 | mz-409.056396484375 | 409.056396484375 | fraxin; 5-Hydroxy-6-methoxycoumarin 7-glucoside; Feruloyl C1-glucuronide; Isoferuloyl C1-glucuronide; Ferulic acid 4-O-glucuronide; Isoferulic acid 3-O-glucuronide; Fraxin; cis-Ferulic acid 4-glucuronide; Remoxipride; Parecoxib; Tetomilast; n-\[\[(5-Methyl-3-phenylisoxazol-4-yl)-phenyl\]sulfonyl\]propanamide; parecoxib | chebi:5170; hmdb:HMDB0039774; hmdb:HMDB0041734; hmdb:HMDB0041749; hmdb:HMDB0041733; hmdb:HMDB0041747; hmdb:HMDB0252486; hmdb:HMDB0240725; hmdb:HMDB0014553; hmdb:HMDB0256127; hmdb:HMDB0258864; hmdb:HMDB0257987; chebi:73038 | chebi:5170; hmdb:HMDB0039774; hmdb:HMDB0041734; hmdb:HMDB0041749; hmdb:HMDB0041733; hmdb:HMDB0041747; hmdb:HMDB0252486; hmdb:HMDB0240725; hmdb:HMDB0014553; hmdb:HMDB0256127; hmdb:HMDB0258864; hmdb:HMDB0257987; chebi:73038 | M+K | C16H18O10; C16H23BrN2O3; C19H18N2O4S | 7.9173; 7.9251; 7.9251; 7.9251; 7.9251; 7.9251; 9.8602; 13.419; 13.419; 13.4201; 13.4244 | 0.2261; 0.2255; 0.2255; 0.2255; 0.2255; 0.2255; 0.0767; 0.0216; 0.0216; 0.0216; 0.0215 | RAMP_C_000166720; RAMP_C_000020310; RAMP_C_000022213; RAMP_C_000022228; RAMP_C_000022212; RAMP_C_000022226; RAMP_C_000156936; RAMP_C_000008843; RAMP_C_000169775; RAMP_C_000172085; RAMP_C_000171361 |
 
 We can see that for each m/z value, along with all possible annotations,
 we also observe information including database ID, the adduct used to
@@ -649,10 +649,10 @@ AnnotationInfo(bladder_annotated)
     ## [1] "3.0.7"
     ## 
     ## $generated_at
-    ## [1] "2026-08-14 01:11:50 UTC"
+    ## [1] "2026-09-21 03:41:04 UTC"
     ## 
     ## $candidates
-    ## [1] 409
+    ## [1] 568
     ## 
     ## $assay
     ## [1] "Spatial"
@@ -685,7 +685,7 @@ str(bladder_annotated@tools$mz_annotation, max.level = 1)
 
     ## List of 2
     ##  $ metadata:List of 13
-    ##  $ results :'data.frame':    409 obs. of  25 variables:
+    ##  $ results :'data.frame':    568 obs. of  35 variables:
 
   
 
@@ -727,7 +727,7 @@ refined_annotations[11,]
 
 | raw_mz | mz_names | observed_mz | all_IsomerNames | all_Isomers | all_Isomers_IDs | all_Adducts | all_Formulas | all_Errors | all_Scores | all_Ramp_IDs | Lipid.Maps.Category | Lipid.Maps.Main.Class | Species.Name | Species.Name.Simple |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| 403.0434 | mz-403.043426513672 | 403.043426513672 | Xanthotoxol glucoside; 6-methylpretetramide(1-); sulfometuron methyl; Sulfometuron-methyl | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | M+K | C17H16O9; C20H14NO6; C15H16N4O5S | 2.0755; 5.9333; 9.6053; 9.6061 | 0.734; 0.3957; 0.1264; 0.1264 | RAMP_C_000019192; RAMP_C_000267915; RAMP_C_000171863 | NA | NA | NA | NA |
+| 403.0434 | mz-403.043426513672 | 403.043426513672 | Xanthotoxol glucoside; 6-methylpretetramide(1-); sulfometuron methyl; Sulfometuron-methyl | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | hmdb:HMDB0038626; chebi:132734; chebi:9348; hmdb:HMDB0258595 | M+K | C17H16O9; C20H14NO6; C15H16N4O5S | 2.0755; 5.9333; 9.6053; 9.6061 | 0.7266; 0.2967; 0.1251; 0.1251 | RAMP_C_000019192; RAMP_C_000267915; RAMP_C_000171863 | NA | NA | NA | NA |
 
   
 
@@ -736,7 +736,7 @@ refined_annotations[11,]
 
 |  | raw_mz | mz_names | observed_mz | all_IsomerNames | all_Isomers | all_Isomers_IDs | all_Adducts | all_Formulas | all_Errors | all_Scores | all_Ramp_IDs | Lipid.Maps.Category | Lipid.Maps.Main.Class | Species.Name | Species.Name.Simple |
 |:---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| 19 | 432.0835 | mz-432.083526611328 | 432.083526611328 | gamma-L-Glutamyl-S-(2-carboxy-1-propyl)cysteinylglycine; (gamma-Glutamyl-gamma-glutamyl)-S-methylcysteine; dihydromacarpine; Besifloxacin; Amsacrine; amsacrine | hmdb:HMDB0029394; hmdb:HMDB0039424; chebi:18029; hmdb:HMDB0249089; hmdb:HMDB0014421; chebi:2687 | hmdb:HMDB0029394; hmdb:HMDB0039424; chebi:18029; hmdb:HMDB0249089; hmdb:HMDB0014421; chebi:2687 | M+K | C14H23N3O8S; C22H19NO6; C19H21ClFN3O3; C21H19N3O3S | 0.5016; 2.0165; 11.9853; 13.0915; 13.0965 | 0.796; 0.7375; 0.0452; 0.026; 0.0259 | RAMP_C_000010478; RAMP_C_000019968; RAMP_C_000262014; RAMP_C_000163840; RAMP_C_000008737 | NA | NA | NA | NA |
+| 19 | 432.0835 | mz-432.083526611328 | 432.083526611328 | gamma-L-Glutamyl-S-(2-carboxy-1-propyl)cysteinylglycine; (gamma-Glutamyl-gamma-glutamyl)-S-methylcysteine; dihydromacarpine; Besifloxacin; Amsacrine; amsacrine | hmdb:HMDB0029394; hmdb:HMDB0039424; chebi:18029; hmdb:HMDB0249089; hmdb:HMDB0014421; chebi:2687 | hmdb:HMDB0029394; hmdb:HMDB0039424; chebi:18029; hmdb:HMDB0249089; hmdb:HMDB0014421; chebi:2687 | M+K | C14H23N3O8S; C22H19NO6; C19H21ClFN3O3; C21H19N3O3S | 0.5016; 2.0165; 11.9853; 13.0915; 13.0965 | 0.788; 0.7301; 0.0393; 0.0257; 0.0256 | RAMP_C_000010478; RAMP_C_000019968; RAMP_C_000262014; RAMP_C_000163840; RAMP_C_000008737 | NA | NA | NA | NA |
 
 We can see that for metabolites that are not lipids, the names are
 returned as NA, however those that are annotated as lipids have been
@@ -1201,10 +1201,10 @@ cluster_6_mz_pathways[1:4,]
 
 | pathway_name | pathway_id | type | pathwayCategory | p_val | fdr | ratio | analytes_in_pathways | total_in_pathways |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/16:1(9Z)/16:1(9Z)) | SMP28204 | hmdb | smpdb3 | 0.0105764 | 0.608169 | 0.5 | 3 | 6 |
-| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/16:1(9Z)/18:0) | SMP28205 | hmdb | smpdb3 | 0.0105764 | 0.608169 | 0.5 | 3 | 6 |
-| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/18:0/18:2(9Z,12Z)) | SMP28207 | hmdb | smpdb3 | 0.0105764 | 0.608169 | 0.5 | 3 | 6 |
-| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/18:1(9Z)/18:1(9Z)) | SMP28218 | hmdb | smpdb3 | 0.0105764 | 0.608169 | 0.5 | 3 | 6 |
+| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/16:1(9Z)/16:1(9Z)) | SMP28204 | hmdb | smpdb3 | 0.0100613 | 0.5993906 | 0.5 | 3 | 6 |
+| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/16:1(9Z)/18:0) | SMP28205 | hmdb | smpdb3 | 0.0100613 | 0.5993906 | 0.5 | 3 | 6 |
+| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/18:0/18:2(9Z,12Z)) | SMP28207 | hmdb | smpdb3 | 0.0100613 | 0.5993906 | 0.5 | 3 | 6 |
+| Cardiolipin Biosynthesis CL(18:0/18:2(9Z,12Z)/18:1(9Z)/18:1(9Z)) | SMP28218 | hmdb | smpdb3 | 0.0100613 | 0.5993906 | 0.5 | 3 | 6 |
 
   
 
@@ -1259,9 +1259,9 @@ DE_pathways
 
 | pathwayName | pval | padj | log2err | ES | NES | size | leadingEdge | Cluster_id | adduct_info | leadingEdge_metabolites | leadingEdge_metabolites_id | leadingEdge_genes | met_regulation | rna_regulation | group_importance | pathwayRampId | sourceId | type | pathwayCategory |
 |:---|---:|---:|---:|---:|---:|---:|:---|:---|:---|:---|:---|:---|:---|:---|---:|:---|:---|:---|:---|
-| Sphingolipid metabolism: integrated pathway | 0.0003858 | 0.0003858 | 0.4984931 | 0.6587452 | 2.421067 | 10 | RAMP_C_0…. | 2 | 741.530578613281\[M+K\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↓;↑;↑;↑;↑;↑;↑;↑ |  | 6.277175 | RAMP_P_000053597 | WP4726 | wiki | NA |
-| Sphingolipid metabolism: integrated pathway | 0.0007370 | 0.0007370 | 0.4772708 | 0.7986888 | 1.671158 | 10 | RAMP_C_0…. | 5 | 741.530578613281\[M+K\];743.546752929688\[M+K\];769.561889648438\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↑;↑;↑;↑;↑;↑;↑ |  | 6.277175 | RAMP_P_000053597 | WP4726 | wiki | NA |
-| Sphingolipid metabolism: integrated pathway | 0.0000408 | 0.0000408 | 0.5573322 | -0.8406708 | -2.184950 | 10 | RAMP_C_0…. | 6 | 741.530578613281\[M+K\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↓;↓;↓;↓;↓;↓;↓;↓;↓ |  | 6.277175 | RAMP_P_000053597 | WP4726 | wiki | NA |
+| Sphingolipid metabolism: integrated pathway | 0.0001431 | 0.0001431 | 0.5188481 | 0.6589311 | 2.442868 | 10 | RAMP_C_0…. | 2 | 741.530578613281\[M+K\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↓;↑;↑;↑;↑;↑;↑;↑ |  | 6.347366 | RAMP_P_000053597 | WP4726 | wiki | NA |
+| Sphingolipid metabolism: integrated pathway | 0.0002776 | 0.0002776 | 0.4984931 | 0.7991104 | 1.697545 | 10 | RAMP_C_0…. | 5 | 741.530578613281\[M+K\];743.546752929688\[M+K\];769.561889648438\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↑;↑;↑;↑;↑;↑;↑ |  | 6.347366 | RAMP_P_000053597 | WP4726 | wiki | NA |
+| Sphingolipid metabolism: integrated pathway | 0.0000259 | 0.0000259 | 0.5756103 | -0.8408922 | -2.206954 | 10 | RAMP_C_0…. | 6 | 741.530578613281\[M+K\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↓;↓;↓;↓;↓;↓;↓;↓;↓ |  | 6.347366 | RAMP_P_000053597 | WP4726 | wiki | NA |
 
 The example uses `pval_cutoff_mets = 1`, so annotated metabolites can
 contribute to pathway ranks regardless of DE significance. Set it back
@@ -1309,21 +1309,21 @@ DE_pathways
 
 | pathwayName | pval | padj | log2err | ES | NES | size | leadingEdge | Cluster_id | adduct_info | leadingEdge_metabolites | leadingEdge_metabolites_id | leadingEdge_genes | met_regulation | rna_regulation | group_importance | pathwayRampId | sourceId | type | pathwayCategory |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| Fatty acid metabolism | 0.0153843 | 0.0230765 | 0.3807304 | -0.7129829 | -1.6717864 | 7 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↓;↓;↓;↓ |  | 12.63887 | RAMP_P_000049955 | map01212 | kegg | kegg |
-| Fatty acid metabolism | 0.0153843 | 0.0230765 | 0.3807304 | -0.7129829 | -1.6717864 | 7 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↓;↓;↓;↓ |  | 12.63887 | RAMP_P_000049984 | R-HSA-8978868 | reactome | NA |
-| Fatty acid metabolism | 0.0153843 | 0.0230765 | 0.3807304 | -0.7129829 | -1.6717864 | 7 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↓;↓;↓;↓ |  | 12.63887 | RAMP_P_000115760 | PMC7825801\_\_F3 | pfocr | NA |
-| Fatty acid metabolism | 0.0518919 | 0.0778378 | 0.2042948 | 0.7081923 | 1.3199499 | 7 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↑;↑;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000049955 | map01212 | kegg | kegg |
-| Fatty acid metabolism | 0.0518919 | 0.0778378 | 0.2042948 | 0.7081923 | 1.3199499 | 7 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↑;↑;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000049984 | R-HSA-8978868 | reactome | NA |
-| Fatty acid metabolism | 0.0518919 | 0.0778378 | 0.2042948 | 0.7081923 | 1.3199499 | 7 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↑;↑;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000115760 | PMC7825801\_\_F3 | pfocr | NA |
-| Fatty acid metabolism | 0.8438178 | 0.8991416 | 0.0572461 | -0.2779282 | -0.6942918 | 7 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000049955 | map01212 | kegg | kegg |
-| Fatty acid metabolism | 0.8438178 | 0.8991416 | 0.0572461 | -0.2779282 | -0.6942918 | 7 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000049984 | R-HSA-8978868 | reactome | NA |
-| Fatty acid metabolism | 0.8438178 | 0.8991416 | 0.0572461 | -0.2779282 | -0.6942918 | 7 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000115760 | PMC7825801\_\_F3 | pfocr | NA |
-| Peroxisomal lipid metabolism | 0.0669344 | 0.0669344 | 0.1999152 | -0.6777406 | -1.4405588 | 5 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];835.128479003906\[M+H\] | ATP(4-);2,3-trans-enoyl CoA(4-);trans-3-enoyl-CoA | chebi:30616;chebi:58856;chebi:27700 |  | ↓;↓;↓;↓ |  | 12.63887 | RAMP_P_000050361 | R-HSA-390918 | reactome | NA |
-| Peroxisomal lipid metabolism | 0.1380898 | 0.1380898 | 0.1238422 | 0.7077131 | 1.2292704 | 5 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];835.128479003906\[M+H\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);trans-3-enoyl-CoA | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:27700 |  | ↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000050361 | R-HSA-390918 | reactome | NA |
-| Peroxisomal lipid metabolism | 0.8991416 | 0.8991416 | 0.0537873 | -0.2777402 | -0.6118528 | 5 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];835.128479003906\[M+H\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);trans-3-enoyl-CoA | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:27700 |  | ↓;↓;↑;↑;↑ |  | 12.63887 | RAMP_P_000050361 | R-HSA-390918 | reactome | NA |
-| Sphingolipid metabolism: integrated pathway | 0.0015400 | 0.0046200 | 0.4550599 | 0.5272824 | 2.1116909 | 11 | RAMP_C_0…. | 2 | 703.57470703125\[M+H\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↑;↑;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000053597 | WP4726 | wiki | NA |
-| Sphingolipid metabolism: integrated pathway | 0.0145074 | 0.0435221 | 0.3807304 | 0.6901695 | 1.3593517 | 11 | RAMP_C_0…. | 5 | 503.981231689453\[M+H\];686.583801269531\[M+K\];703.57470703125\[M+H\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | ATP(4-);Cer(d18:1/24:1(15Z));SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | chebi:30616;hmdb:HMDB0004953;hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↑;↑;↑;↑;↑;↑;↑;↑;↑;↑ |  | 12.63887 | RAMP_P_000053597 | WP4726 | wiki | NA |
-| Sphingolipid metabolism: integrated pathway | 0.0001022 | 0.0003065 | 0.5384341 | -0.7797898 | -2.2001213 | 11 | RAMP_C_0…. | 6 | 703.57470703125\[M+H\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↓;↓;↓;↓;↓;↓;↓;↓;↓ |  | 12.63887 | RAMP_P_000053597 | WP4726 | wiki | NA |
+| Fatty acid metabolism | 0.0162690 | 0.0244035 | 0.3524879 | -0.7148398 | -1.6611833 | 7 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↓;↓;↓;↓ |  | 12.56269 | RAMP_P_000049955 | map01212 | kegg | kegg |
+| Fatty acid metabolism | 0.0162690 | 0.0244035 | 0.3524879 | -0.7148398 | -1.6611833 | 7 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↓;↓;↓;↓ |  | 12.56269 | RAMP_P_000049984 | R-HSA-8978868 | reactome | NA |
+| Fatty acid metabolism | 0.0162690 | 0.0244035 | 0.3524879 | -0.7148398 | -1.6611833 | 7 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↓;↓;↓;↓ |  | 12.56269 | RAMP_P_000115760 | PMC7825801\_\_F3 | pfocr | NA |
+| Fatty acid metabolism | 0.0701754 | 0.1052632 | 0.1752040 | 0.7073087 | 1.3125266 | 7 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↑;↑;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000049955 | map01212 | kegg | kegg |
+| Fatty acid metabolism | 0.0701754 | 0.1052632 | 0.1752040 | 0.7073087 | 1.3125266 | 7 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↑;↑;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000049984 | R-HSA-8978868 | reactome | NA |
+| Fatty acid metabolism | 0.0701754 | 0.1052632 | 0.1752040 | 0.7073087 | 1.3125266 | 7 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↑;↑;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000115760 | PMC7825801\_\_F3 | pfocr | NA |
+| Fatty acid metabolism | 0.8744856 | 0.9325153 | 0.0531298 | -0.2780055 | -0.6706484 | 7 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000049955 | map01212 | kegg | kegg |
+| Fatty acid metabolism | 0.8744856 | 0.9325153 | 0.0531298 | -0.2780055 | -0.6706484 | 7 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000049984 | R-HSA-8978868 | reactome | NA |
+| Fatty acid metabolism | 0.8744856 | 0.9325153 | 0.0531298 | -0.2780055 | -0.6706484 | 7 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];834.126831054688\[M+H\];835.128479003906\[M+H\];873.067810058594\[M+K\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);butyryl-CoA(4-);trans-3-enoyl-CoA;(R)-3-hydroxyacyl-CoA(4-) | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:57371;chebi:27700;chebi:57319 |  | ↓;↓;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000115760 | PMC7825801\_\_F3 | pfocr | NA |
+| Peroxisomal lipid metabolism | 0.0739247 | 0.0739247 | 0.1900233 | -0.6795914 | -1.4330181 | 5 | RAMP_C_0…. | 2 | 503.981231689453\[M+H\];817.102783203125\[M+H\];835.128479003906\[M+H\] | ATP(4-);2,3-trans-enoyl CoA(4-);trans-3-enoyl-CoA | chebi:30616;chebi:58856;chebi:27700 |  | ↓;↓;↓;↓ |  | 12.56269 | RAMP_P_000050361 | R-HSA-390918 | reactome | NA |
+| Peroxisomal lipid metabolism | 0.1425287 | 0.1425287 | 0.1215433 | 0.7068259 | 1.2331230 | 5 | RAMP_C_0…. | 5 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];835.128479003906\[M+H\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);trans-3-enoyl-CoA | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:27700 |  | ↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000050361 | R-HSA-390918 | reactome | NA |
+| Peroxisomal lipid metabolism | 0.9325153 | 0.9325153 | 0.0498907 | -0.2778157 | -0.6101350 | 5 | RAMP_C_0…. | 6 | 464.014862060547\[M+K\];503.981231689453\[M+H\];817.102783203125\[M+H\];835.128479003906\[M+H\] | Thiamine pyrophosphate;ATP(4-);2,3-trans-enoyl CoA(4-);trans-3-enoyl-CoA | hmdb:HMDB0001372;chebi:30616;chebi:58856;chebi:27700 |  | ↓;↓;↑;↑;↑ |  | 12.56269 | RAMP_P_000050361 | R-HSA-390918 | reactome | NA |
+| Sphingolipid metabolism: integrated pathway | 0.0028500 | 0.0085499 | 0.4317077 | 0.5257904 | 2.0742970 | 11 | RAMP_C_0…. | 2 | 703.57470703125\[M+H\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↑;↑;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000053597 | WP4726 | wiki | NA |
+| Sphingolipid metabolism: integrated pathway | 0.0292276 | 0.0876827 | 0.2712886 | 0.6891245 | 1.3573427 | 11 | RAMP_C_0…. | 5 | 503.981231689453\[M+H\];686.583801269531\[M+K\];703.57470703125\[M+H\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | ATP(4-);Cer(d18:1/24:1(15Z));SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | chebi:30616;hmdb:HMDB0004953;hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↑;↑;↑;↑;↑;↑;↑;↑;↑;↑;↑ |  | 12.56269 | RAMP_P_000053597 | WP4726 | wiki | NA |
+| Sphingolipid metabolism: integrated pathway | 0.0001173 | 0.0003519 | 0.5384341 | -0.7782991 | -2.2104145 | 11 | RAMP_C_0…. | 6 | 703.57470703125\[M+H\];743.546752929688\[M+K\];769.561889648438\[M+K\];797.593017578125\[M+K\];825.623657226562\[M+K\];851.640014648438\[M+K\];853.655090332031\[M+K\] | SM(d18:1/16:0);SM(d18:0/16:0);SM(d18:1/18:0);SM(d18:1/20:0);SM(d18:1/22:0);SM(d18:1/24:1(15Z));SM(d18:1/24:0) | hmdb:HMDB0010169;hmdb:HMDB0010168;hmdb:HMDB0001348;hmdb:HMDB0012102;hmdb:HMDB0012103;hmdb:HMDB0012107;hmdb:HMDB0011697 |  | ↓;↓;↓;↓;↓;↓;↓;↓;↓ |  | 12.56269 | RAMP_P_000053597 | WP4726 | wiki | NA |
 
 We can see that we now have many more differentially expressed pathways!
 Lets plot these results:
@@ -1613,7 +1613,7 @@ sessionInfo()
 
     ## R version 4.6.1 (2026-06-24)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.4 LTS
+    ## Running under: Ubuntu 24.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -1633,35 +1633,35 @@ sessionInfo()
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] future_1.75.0          kableExtra_1.4.1       knitr_1.51            
+    ##  [1] future_1.75.0          kableExtra_1.4.1       knitr_1.52            
     ##  [4] htmltools_0.5.9        viridis_0.6.5          viridisLite_0.4.3     
     ##  [7] EnhancedVolcano_1.30.0 ggrepel_0.9.8          ggplot2_4.0.3         
     ## [10] dplyr_1.2.1            Seurat_5.5.1           SeuratObject_5.4.0    
-    ## [13] sp_2.2-3               Cardinal_3.14.0        S4Vectors_0.50.1      
+    ## [13] sp_2.2-3               Cardinal_3.14.0        S4Vectors_0.50.3      
     ## [16] ProtGenerics_1.44.0    BiocGenerics_0.58.1    generics_0.1.4        
-    ## [19] BiocParallel_1.46.0    SpaMTP_1.1.0.9000     
+    ## [19] BiocParallel_1.46.0    SpaMTP_0.99.0         
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] RcppAnnoy_0.0.23            splines_4.6.1              
     ##   [3] later_1.4.8                 tibble_3.3.1               
     ##   [5] polyclip_1.10-7             fastDummies_1.7.6          
-    ##   [7] lifecycle_1.0.5             sf_1.1-2                   
-    ##   [9] edgeR_4.10.3                globals_0.19.1             
+    ##   [7] lifecycle_1.0.5             sf_1.1-3                   
+    ##   [9] edgeR_4.10.5                globals_0.19.1             
     ##  [11] lattice_0.22-9              MASS_7.3-65                
     ##  [13] crosstalk_1.2.2             magrittr_2.0.5             
     ##  [15] limma_3.68.5                plotly_4.12.1              
-    ##  [17] sass_0.4.10                 rmarkdown_2.31             
+    ##  [17] sass_0.4.10                 rmarkdown_2.32             
     ##  [19] jquerylib_0.1.4             yaml_2.3.12                
     ##  [21] httpuv_1.6.17               otel_0.2.0                 
     ##  [23] sctransform_0.4.3           spam_2.11-4                
-    ##  [25] spatstat.sparse_3.2-0       reticulate_1.46.0          
-    ##  [27] cowplot_1.2.0               pbapply_1.7-4              
+    ##  [25] spatstat.sparse_3.2-0       reticulate_1.47.0          
+    ##  [27] cowplot_1.2.0               pbapply_1.7-5              
     ##  [29] DBI_1.3.0                   RColorBrewer_1.1-3         
     ##  [31] abind_1.4-8                 Rtsne_0.17                 
     ##  [33] GenomicRanges_1.64.0        purrr_1.2.2                
     ##  [35] downlit_0.4.5               IRanges_2.46.0             
     ##  [37] irlba_2.3.7                 listenv_1.0.0              
-    ##  [39] spatstat.utils_3.2-4        pheatmap_1.0.13            
+    ##  [39] spatstat.utils_3.2-5        pheatmap_1.0.13            
     ##  [41] units_1.0-1                 goftest_1.2-3              
     ##  [43] RSpectra_0.16-2             spatstat.random_3.5-1      
     ##  [45] matter_2.14.0               fitdistrplus_1.2-6         
@@ -1680,17 +1680,17 @@ sessionInfo()
     ##  [71] ragg_1.5.2                  ica_1.0-3                  
     ##  [73] Rcpp_1.1.2                  glue_1.8.1                 
     ##  [75] SparseArray_1.12.2          gridExtra_2.3.1            
-    ##  [77] xfun_0.60                   MatrixGenerics_1.24.0      
+    ##  [77] xfun_0.61                   MatrixGenerics_1.24.0      
     ##  [79] withr_3.0.3                 fastmap_1.2.0              
     ##  [81] shinyjs_2.1.1               rsvd_1.0.5                 
     ##  [83] digest_0.6.39               R6_2.6.1                   
     ##  [85] mime_0.13                   textshaping_1.0.5          
     ##  [87] scattermore_1.2             tensor_1.5.1               
     ##  [89] spatstat.data_3.1-9         tidyr_1.3.2                
-    ##  [91] data.table_1.18.4           class_7.3-23               
-    ##  [93] S4Arrays_1.12.0             httr_1.4.8                 
+    ##  [91] data.table_1.18.6.1         class_7.3-23               
+    ##  [93] S4Arrays_1.12.0             httr_1.4.9                 
     ##  [95] htmlwidgets_1.6.4           ontologyIndex_2.12         
-    ##  [97] whisker_0.4.1               uwot_0.2.4                 
+    ##  [97] whisker_0.4.1               uwot_0.2.5                 
     ##  [99] pkgconfig_2.0.3             gtable_0.3.6               
     ## [101] lmtest_0.9-40               S7_0.2.2                   
     ## [103] XVector_0.52.0              SingleCellExperiment_1.34.0
@@ -1705,7 +1705,7 @@ sessionInfo()
     ## [121] parallel_4.6.1              miniUI_0.1.2               
     ## [123] desc_1.4.3                  pillar_1.11.1              
     ## [125] grid_4.6.1                  vctrs_0.7.3                
-    ## [127] RANN_2.6.2                  promises_1.5.0             
+    ## [127] RANN_2.6.3                  promises_1.5.0             
     ## [129] BiocSingular_1.28.0         beachmat_2.28.0            
     ## [131] xtable_1.8-8                cluster_2.1.8.2            
     ## [133] beeswarm_0.4.0              evaluate_1.0.5             
@@ -1716,7 +1716,7 @@ sessionInfo()
     ## [143] classInt_0.4-11             ggbeeswarm_0.7.3           
     ## [145] plyr_1.8.9                  fs_2.1.0                   
     ## [147] stringi_1.8.9               deldir_2.0-4               
-    ## [149] spatstat.geom_3.8-2         Matrix_1.7-5               
+    ## [149] spatstat.geom_3.8-3         Matrix_1.7-5               
     ## [151] RcppHNSW_0.7.0              patchwork_1.3.2            
     ## [153] statmod_1.5.2               shiny_1.14.0               
     ## [155] SummarizedExperiment_1.42.0 ROCR_1.0-12                

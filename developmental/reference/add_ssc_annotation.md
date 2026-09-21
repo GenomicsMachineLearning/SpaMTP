@@ -37,6 +37,11 @@ segmentation annotations per pixel.
 ## Examples
 
 ``` r
+utils::str(formals(add_ssc_annotation))
+#> Dotted pair list of 3
+#>  $ data      : symbol 
+#>  $ data_ssc  : symbol 
+#>  $ resolution: symbol 
 # ssc_data <- Cardinal::spatialShrunkenCentroids(CardinalObj, ...)
 # new_CardinalObj <- add_ssc_annotation(CardinalObj, ssc_data, resolution ="r=2,k=8,s=32")
 ```

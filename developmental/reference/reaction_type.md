@@ -1,8 +1,7 @@
-# reaction_type: data.frame containing reaction type mappings
+# Pathway-network reaction styles
 
-This data frame provides a mapping between reaction types and their
-associated attributes, such as the reaction name, linetype, arrowhead
-type, and colour used for network visualization.
+A small lookup table mapping SpaMTP interaction style codes to visual
+properties used by the interactive pathway-network viewer.
 
 ## Usage
 
@@ -12,24 +11,28 @@ reaction_type
 
 ## Format
 
-### A data frame with 11 rows and 5 variables:
+A data frame with 18 rows and 5 variables:
 
 - reaction_type:
 
-  Numerical code representing the type of reaction (integer)
+  Stable SpaMTP style code; not a database-specific factor index.
 
 - reaction_name:
 
-  Description of the reaction process (character)
+  Human-readable reaction type.
 
 - linetype:
 
-  Line type used to represent the reaction in network plots (character)
+  Line style.
 
 - arrowhead:
 
-  Arrowhead type indicating the direction of the reaction (character)
+  Arrowhead style.
 
 - colour:
 
-  Colour used to represent the reaction in network plots (character)
+  Edge colour.
+
+## Value
+
+A data frame of pathway-network reaction styles.

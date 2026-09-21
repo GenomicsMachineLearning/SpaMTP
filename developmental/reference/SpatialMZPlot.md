@@ -135,6 +135,27 @@ specified m/z values for Spatial data with H&E Image
 ## Examples
 
 ``` r
+utils::str(formals(SpatialMZPlot))
+#> Dotted pair list of 19
+#>  $ object        : symbol 
+#>  $ mzs           : symbol 
+#>  $ plusminus     : NULL
+#>  $ images        : NULL
+#>  $ crop          : logi TRUE
+#>  $ assay         : chr "Spatial"
+#>  $ slot          : chr "counts"
+#>  $ keep.scale    : chr "feature"
+#>  $ min.cutoff    : logi NA
+#>  $ max.cutoff    : logi NA
+#>  $ ncol          : NULL
+#>  $ combine       : logi TRUE
+#>  $ pt.size.factor: num 1.6
+#>  $ alpha         : language c(1, 1)
+#>  $ image.alpha   : num 1
+#>  $ stroke        : num 0.25
+#>  $ interactive   : logi FALSE
+#>  $ information   : NULL
+#>  $ verbose       : logi TRUE
 # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 # SpatialMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 ```

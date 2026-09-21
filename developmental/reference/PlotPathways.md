@@ -16,6 +16,10 @@ PlotPathways(
   reduction = NULL,
   colors = c("darkblue", "lightgrey", "darkred"),
   guide = "colourbar",
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL,
   ...
 )
 ```
@@ -65,6 +69,24 @@ PlotPathways(
   Character string stating the type of legend to display (default =
   "colourbar").
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 - ...:
 
   Additional inputs taken by
@@ -79,5 +101,20 @@ relative reduction.
 ## Examples
 
 ``` r
+utils::str(formals(PlotPathways))
+#> Dotted pair list of 13
+#>  $ pathways          : symbol 
+#>  $ object            : symbol 
+#>  $ title             : NULL
+#>  $ assay             : language DefaultAssay(object)
+#>  $ slot              : chr "scale.data"
+#>  $ reduction         : NULL
+#>  $ colors            : language c("darkblue", "lightgrey", "darkred")
+#>  $ guide             : chr "colourbar"
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
+#>  $ ...               : symbol 
 #PlotPathways(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj, reduction = "umap"))
 ```

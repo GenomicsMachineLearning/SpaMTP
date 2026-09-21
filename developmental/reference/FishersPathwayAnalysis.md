@@ -13,6 +13,10 @@ FishersPathwayAnalysis(
   pathway_all_info = FALSE,
   pval_cutoff = NULL,
   verbose = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL,
   ...
 )
 ```
@@ -53,6 +57,24 @@ FishersPathwayAnalysis(
   Boolean indicating whether to show informative messages. If FALSE
   these messages will be suppressed (default = TRUE).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 - ...:
 
   Additional parameters that can be passed through to
@@ -75,8 +97,7 @@ FishersPathwayAnalysis(
 
   - Supported `mzs` format: any string or numeric vector containing m/z.
     If `mzs` values are provided, the current indexed annotation
-    pipeline and the bundled RaMP `chem_props` table are used by
-    default.
+    pipeline and the bundled RaMP `chem_props` table is used by default.
 
 ## Value
 
@@ -85,6 +106,20 @@ a dataframe with the relevant pathway information
 ## Examples
 
 ``` r
+utils::str(formals(FishersPathwayAnalysis))
+#> Dotted pair list of 12
+#>  $ Analyte           : symbol 
+#>  $ max_path_size     : num 500
+#>  $ min_path_size     : num 5
+#>  $ alternative       : chr "greater"
+#>  $ pathway_all_info  : logi FALSE
+#>  $ pval_cutoff       : NULL
+#>  $ verbose           : logi TRUE
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
+#>  $ ...               : symbol 
 ## Running in 'mzs' mode:
 # FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)
 

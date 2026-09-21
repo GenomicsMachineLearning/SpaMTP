@@ -72,8 +72,22 @@ SaveSpaMTPData(
 
   - For saving in R saveRDS() is recommended.
 
+## Value
+
+The output-directory path, invisibly.
+
 ## Examples
 
 ``` r
+utils::str(formals(SaveSpaMTPData))
+#> Dotted pair list of 8
+#>  $ data       : symbol 
+#>  $ outdir     : symbol 
+#>  $ assay      : chr "Spatial"
+#>  $ slot       : chr "counts"
+#>  $ image      : NULL
+#>  $ annotations: logi FALSE
+#>  $ generate.h5: logi TRUE
+#>  $ verbose    : logi TRUE
 # saveSpaMTPData(SeuratObject, "../output", annotations = TRUE)
 ```

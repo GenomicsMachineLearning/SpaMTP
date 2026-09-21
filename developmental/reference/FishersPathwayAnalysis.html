@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -70,6 +71,10 @@
 <span>  pathway_all_info <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pval_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  database <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  database_version <span class="op">=</span> <span class="st">"latest"</span>,</span>
+<span>  database_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"bundled"</span>, <span class="st">"local"</span><span class="op">)</span>,</span>
+<span>  database_local_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -106,6 +111,23 @@
 <dd><p>Boolean indicating whether to show informative messages. If FALSE these messages will be suppressed (default = TRUE).</p></dd>
 
 
+<dt id="arg-database">database<a class="anchor" aria-label="anchor" href="#arg-database"></a></dt>
+<dd><p>Optional named list of database resources, normally created
+by <code><a href="LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code>.</p></dd>
+
+
+<dt id="arg-database-version">database_version<a class="anchor" aria-label="anchor" href="#arg-database-version"></a></dt>
+<dd><p>Database snapshot version used for pathway lookup.</p></dd>
+
+
+<dt id="arg-database-source">database_source<a class="anchor" aria-label="anchor" href="#arg-database-source"></a></dt>
+<dd><p>Database source; see <code><a href="LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code>.</p></dd>
+
+
+<dt id="arg-database-local-dir">database_local_dir<a class="anchor" aria-label="anchor" href="#arg-database-local-dir"></a></dt>
+<dd><p>Optional local RDS resource directory.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional parameters that can be passed through to <code><a href="annotateTable.html">annotateTable()</a></code> when running <code>mz</code>-based analysis. Please see documentation for <code><a href="annotateTable.html">annotateTable()</a></code> for more details.</p><div class="section">
 <h3 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h3>
@@ -114,7 +136,7 @@
 <li><p>Supported <code>genes</code> data format: strings which contain the gene name and formatting. For example = "entrez:X", "gene_symbol:X", "uniprot:X", "ensembl:X", "hmdb:HMDBPX"</p></li>
 <li><p>Supported <code>mzs</code> format: any string or numeric vector containing m/z. If
 <code>mzs</code> values are provided, the current indexed annotation pipeline and the
-bundled RaMP <code>chem_props</code> table are used by default.</p></li>
+bundled RaMP <code>chem_props</code> table is used by default.</p></li>
 </ul></div></dd>
 
 </dl></div>
@@ -125,7 +147,21 @@ bundled RaMP <code>chem_props</code> table are used by default.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Running in 'mzs' mode:</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">FishersPathwayAnalysis</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ Analyte           : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ max_path_size     : num 500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ min_path_size     : num 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ alternative       : chr "greater"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pathway_all_info  : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pval_cutoff       : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ verbose           : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database          : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_version  : chr "latest"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_source   : language c("auto", "bundled", "local")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_local_dir: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ ...               : symbol </span>
+<span class="r-in"><span><span class="co">## Running in 'mzs' mode:</span></span></span>
 <span class="r-in"><span><span class="co"># FishersPathwayAnalysis(Analyte = list("mzs" = mz_values), ppm_error = 3)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Running in 'metabolites' mode</span></span></span>

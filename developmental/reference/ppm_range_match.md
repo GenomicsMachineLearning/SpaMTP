@@ -1,10 +1,7 @@
-# Calculates the ppm range and check if mz values are within the range
+# Check whether m/z values match within a ppm tolerance
 
-- Returns TRUE if match is found and false if no match.
-
-Calculates the ppm range and check if mz values are within the range
-
-- Returns TRUE if match is found and false if no match.
+Calculates the absolute ppm difference between observed and reference
+m/z values and returns whether each comparison satisfies the tolerance.
 
 ## Usage
 

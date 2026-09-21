@@ -55,5 +55,13 @@ A Cardinal object containing intensity values and feature metadata
 ## Examples
 
 ``` r
+utils::str(formals(ConvertSeuratToCardinal))
+#> Dotted pair list of 6
+#>  $ data            : symbol 
+#>  $ assay           : chr "Spatial"
+#>  $ slot            : chr "counts"
+#>  $ run_col         : NULL
+#>  $ feature.metadata: logi FALSE
+#>  $ verbose         : logi TRUE
 # cardinal.obj <- ConvertSeuratToCardinal(SeuratObject, feature.metadata = TRUE)
 ```

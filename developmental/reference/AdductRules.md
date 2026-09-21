@@ -29,3 +29,12 @@ AdductRules(
 ## Value
 
 A data frame containing validated adduct rules.
+
+## Examples
+
+``` r
+utils::str(formals(AdductRules))
+#> Dotted pair list of 2
+#>  $ polarity       : language c("both", "positive", "negative", "neutral")
+#>  $ include_complex: logi TRUE
+```

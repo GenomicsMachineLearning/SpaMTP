@@ -58,5 +58,13 @@ feature metadata dataframe.
 ## Examples
 
 ``` r
+utils::str(formals(AddCustomMZAnnotations))
+#> Dotted pair list of 6
+#>  $ data                 : symbol 
+#>  $ annotations          : symbol 
+#>  $ assay                : chr "Spatial"
+#>  $ return.only.annotated: logi FALSE
+#>  $ mass.threshold       : num 0.05
+#>  $ annotation.column    : chr "all_IsomerNames"
 # annotated_data <- AddCustomMZAnnotations(SpaMTP.obj, annotation.df)
 ```

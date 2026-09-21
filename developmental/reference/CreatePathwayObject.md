@@ -14,7 +14,11 @@ CreatePathwayObject(
   assay = SeuratObject::DefaultAssay(object),
   slot = "scale.data",
   new.assay = "pathway",
-  remove.nans = TRUE
+  remove.nans = TRUE,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -45,6 +49,24 @@ CreatePathwayObject(
   Logical. Whether to remove pathways with all NaN values (e.g., no
   matched analytes) (defaults = TRUE).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 A SpaMTP Seurat object with a new assay containing pathway-level
@@ -54,5 +76,16 @@ of dashes.
 ## Examples
 
 ``` r
+utils::str(formals(CreatePathwayObject))
+#> Dotted pair list of 9
+#>  $ object            : symbol 
+#>  $ assay             : language SeuratObject::DefaultAssay(object)
+#>  $ slot              : chr "scale.data"
+#>  $ new.assay         : chr "pathway"
+#>  $ remove.nans       : logi TRUE
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
 #object <- CreatePathwayObject(seurat_obj, assay = "RNA", slot = "scale.data")
 ```

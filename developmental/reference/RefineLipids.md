@@ -49,5 +49,11 @@ Data.frame containing additional columns with simplified lipid names
 ## Examples
 
 ``` r
+utils::str(formals(RefineLipids))
+#> Dotted pair list of 4
+#>  $ data             : symbol 
+#>  $ annotation.column: chr "annotations"
+#>  $ database         : chr "HMDB"
+#>  $ lipid_info       : chr "simple"
 # RefineLipids(DEPs_df)
 ```

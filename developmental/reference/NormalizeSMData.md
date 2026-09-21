@@ -62,5 +62,13 @@ stored in the \$data slot of the specified assay
 ## Examples
 
 ``` r
+utils::str(formals(NormalizeSMData))
+#> Dotted pair list of 6
+#>  $ data              : symbol 
+#>  $ normalisation.type: chr "TIC"
+#>  $ scale.factor      : NULL
+#>  $ assay             : chr "Spatial"
+#>  $ slot              : chr "counts"
+#>  $ verbose           : logi TRUE
 # normalised_data <- NormalizeSMData(SeuratObject)
 ```

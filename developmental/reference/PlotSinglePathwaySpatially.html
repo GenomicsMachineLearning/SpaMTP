@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -179,10 +180,40 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A ggplot object visualizing the pathway score spatially.</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>If no pathway features occur in the selected assay slot, or the
+scores cannot be standardized (for example, all scores are constant), a
+warning and a labelled placeholder panel are returned. Unavailable scores
+are not displayed as zero activity.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#glycolysis_list &lt;- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">PlotSinglePathwaySpatially</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pathway       : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ object        : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ images        : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ title         : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ image.alpha   : num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ assay         : language SeuratObject::DefaultAssay(object)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ slot          : chr "scale.data"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ colors        : language c("darkblue", "lightgrey", "darkred")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ guide         : chr "colourbar"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ crop          : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ min.cutoff    : logi NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ max.cutoff    : logi NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ ncol          : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pt.size.factor: num 1.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ alpha         : language c(1, 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ image.scale   : chr "lowres"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ shape         : num 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ stroke        : logi NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ interactive   : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ information   : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ image.labels  : NULL</span>
+<span class="r-in"><span><span class="co">#glycolysis_list &lt;- list("Glycolysis" = c("RAMP_C_000218730","RAMP_G_000012583","RAMP_G_000001171","RAMP_G_000007564","RAMP_C_000218226","RAMP_C_000040403","RAMP_C_000001115","RAMP_G_000008859"))</span></span></span>
 <span class="r-in"><span><span class="co">#PlotSinglePathwaySpatially(glycolysis_list, spamtp_obj)</span></span></span>
 </code></pre></div>
     </div>

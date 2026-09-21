@@ -75,7 +75,13 @@ analyses using these.
 mzs <- data.frame(Cardinal::featureData(spotted_large))$mz
 
 ## Annotate each m/z value
-results <- AnnotateBigData(mzs, db = HMDB_db, ppm_error = 3, adducts = c("M-H", "M+Cl"), polarity = "negative") 
+results <- AnnotateBigData(
+  mzs,
+  db = NULL,
+  ppm_error = 3,
+  adducts = c("M-H", "M+Cl"),
+  polarity = "negative"
+)
 ```
 
 ``` r
@@ -198,7 +204,7 @@ sessionInfo()
 
     ## R version 4.6.1 (2026-06-24)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.4 LTS
+    ## Running under: Ubuntu 24.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -221,14 +227,14 @@ sessionInfo()
     ##  [1] viridis_0.6.5          viridisLite_0.4.3      EnhancedVolcano_1.30.0
     ##  [4] ggrepel_0.9.8          ggplot2_4.0.3          dplyr_1.2.1           
     ##  [7] Seurat_5.5.1           SeuratObject_5.4.0     sp_2.2-3              
-    ## [10] Cardinal_3.14.0        S4Vectors_0.50.1       ProtGenerics_1.44.0   
+    ## [10] Cardinal_3.14.0        S4Vectors_0.50.3       ProtGenerics_1.44.0   
     ## [13] BiocGenerics_0.58.1    generics_0.1.4         BiocParallel_1.46.0   
-    ## [16] SpaMTP_1.1.0.9000     
+    ## [16] SpaMTP_0.99.0         
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] RColorBrewer_1.1-3     rstudioapi_0.19.0      jsonlite_2.0.0        
-    ##   [4] magrittr_2.0.5         spatstat.utils_3.2-4   farver_2.1.2          
-    ##   [7] rmarkdown_2.31         fs_2.1.0               ragg_1.5.2            
+    ##   [4] magrittr_2.0.5         spatstat.utils_3.2-5   farver_2.1.2          
+    ##   [7] rmarkdown_2.32         fs_2.1.0               ragg_1.5.2            
     ##  [10] vctrs_0.7.3            ROCR_1.0-12            memoise_2.0.1         
     ##  [13] spatstat.explore_3.8-2 htmltools_0.5.9        sass_0.4.10           
     ##  [16] sctransform_0.4.3      parallelly_1.48.0      KernSmooth_2.23-26    
@@ -241,30 +247,30 @@ sessionInfo()
     ##  [37] shiny_1.14.0           digest_0.6.39          patchwork_1.3.2       
     ##  [40] tensor_1.5.1           RSpectra_0.16-2        irlba_2.3.7           
     ##  [43] textshaping_1.0.5      labeling_0.4.3         progressr_1.0.0       
-    ##  [46] spatstat.sparse_3.2-0  httr_1.4.8             polyclip_1.10-7       
+    ##  [46] spatstat.sparse_3.2-0  httr_1.4.9             polyclip_1.10-7       
     ##  [49] abind_1.4-8            compiler_4.6.1         proxy_0.4-29          
     ##  [52] withr_3.0.3            S7_0.2.2               DBI_1.3.0             
     ##  [55] fastDummies_1.7.6      MASS_7.3-65            classInt_0.4-11       
     ##  [58] units_1.0-1            tools_4.6.1            lmtest_0.9-40         
     ##  [61] otel_0.2.0             httpuv_1.6.17          future.apply_1.20.2   
     ##  [64] goftest_1.2-3          glue_1.8.1             nlme_3.1-169          
-    ##  [67] promises_1.5.0         sf_1.1-2               grid_4.6.1            
+    ##  [67] promises_1.5.0         sf_1.1-3               grid_4.6.1            
     ##  [70] Rtsne_0.17             cluster_2.1.8.2        reshape2_1.4.5        
     ##  [73] gtable_0.3.6           spatstat.data_3.1-9    class_7.3-23          
-    ##  [76] tidyr_1.3.2            data.table_1.18.4      xml2_1.6.0            
-    ##  [79] spatstat.geom_3.8-2    RcppAnnoy_0.0.23       RANN_2.6.2            
+    ##  [76] tidyr_1.3.2            data.table_1.18.6.1    xml2_1.6.0            
+    ##  [79] spatstat.geom_3.8-3    RcppAnnoy_0.0.23       RANN_2.6.3            
     ##  [82] pillar_1.11.1          stringr_1.6.0          spam_2.11-4           
     ##  [85] RcppHNSW_0.7.0         limma_3.68.5           later_1.4.8           
     ##  [88] splines_4.6.1          lattice_0.22-9         survival_3.8-6        
     ##  [91] deldir_2.0-4           tidyselect_1.2.1       CardinalIO_1.10.0     
-    ##  [94] miniUI_0.1.2           pbapply_1.7-4          downlit_0.4.5         
-    ##  [97] knitr_1.51             gridExtra_2.3.1        matter_2.14.0         
-    ## [100] svglite_2.2.2          scattermore_1.2        xfun_0.60             
+    ##  [94] miniUI_0.1.2           pbapply_1.7-5          downlit_0.4.5         
+    ##  [97] knitr_1.52             gridExtra_2.3.1        matter_2.14.0         
+    ## [100] svglite_2.2.2          scattermore_1.2        xfun_0.61             
     ## [103] Biobase_2.72.0         statmod_1.5.2          matrixStats_1.5.0     
     ## [106] stringi_1.8.9          yaml_2.3.12            kableExtra_1.4.1      
     ## [109] evaluate_1.0.5         codetools_0.2-20       tibble_3.3.1          
-    ## [112] cli_3.6.6              ontologyIndex_2.12     uwot_0.2.4            
-    ## [115] xtable_1.8-8           reticulate_1.46.0      systemfonts_1.3.2     
+    ## [112] cli_3.6.6              ontologyIndex_2.12     uwot_0.2.5            
+    ## [115] xtable_1.8-8           reticulate_1.47.0      systemfonts_1.3.2     
     ## [118] jquerylib_0.1.4        Rcpp_1.1.2             globals_0.19.1        
     ## [121] spatstat.random_3.5-1  zeallot_0.2.0          png_0.1-9             
     ## [124] spatstat.univar_3.2-0  parallel_4.6.1         pkgdown_2.2.1         

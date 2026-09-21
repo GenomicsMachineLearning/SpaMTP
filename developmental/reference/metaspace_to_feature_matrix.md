@@ -33,5 +33,10 @@ spatial pixels (named 'x_y').
 ## Examples
 
 ``` r
+utils::str(formals(metaspace_to_feature_matrix))
+#> Dotted pair list of 3
+#>  $ metaspace_data: symbol 
+#>  $ transform     : logi FALSE
+#>  $ verbose       : logi TRUE
 # metaspace_to_feature_matrix(mtx, transform = TRUE)
 ```

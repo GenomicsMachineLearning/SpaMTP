@@ -135,6 +135,25 @@ cells).
 ## Examples
 
 ``` r
+utils::str(formals(MapSpatialOmics))
+#> Dotted pair list of 17
+#>  $ SM.data              : symbol 
+#>  $ ST.data              : symbol 
+#>  $ ST.hires             : logi FALSE
+#>  $ SM.assay             : chr "Spatial"
+#>  $ ST.assay             : chr "Spatial"
+#>  $ SM.fov               : chr "fov"
+#>  $ ST.image             : chr "slice1"
+#>  $ ST.scale.factor      : chr "hires"
+#>  $ SM.pixel.width       : NULL
+#>  $ overlap.threshold    : num 0.2
+#>  $ annotations          : logi TRUE
+#>  $ add.metadata         : logi TRUE
+#>  $ merge.unique.metadata: logi TRUE
+#>  $ map.data             : logi FALSE
+#>  $ new_SPT.assay        : chr "SPT"
+#>  $ new_SPM.assay        : chr "SPM"
+#>  $ verbose              : logi FALSE
 
 ## Mapping MALDI data to equivalent Visium spots
 # MapSpatialOmics(VisiumObj, SeuratObj, ST.scale.factor = "hires", SM.assay = "Spatial", ST.assay = "Spatial")

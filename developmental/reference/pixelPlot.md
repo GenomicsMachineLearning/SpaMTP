@@ -22,5 +22,8 @@ plot where spots are in pixel layout rather then spot
 ## Examples
 
 ``` r
+utils::str(formals(pixelPlot))
+#> Dotted pair list of 1
+#>  $ plot: symbol 
 #pixelPlot(SpatialFeaturPlot(SpaMTP.obj, features = "nFeature_Spatial"))
 ```

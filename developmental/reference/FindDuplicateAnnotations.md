@@ -27,5 +27,9 @@ multiple m/z values
 ## Examples
 
 ``` r
+utils::str(formals(FindDuplicateAnnotations))
+#> Dotted pair list of 2
+#>  $ data : symbol 
+#>  $ assay: chr "Spatial"
 # FindDuplicateAnnotations(SeuratObj)
 ```

@@ -85,7 +85,12 @@ intensity and pixel coordinate values.
 ``` r
 
 msi_file <- resolve_mouse_brain_demo_file(
-  file.path("SM_data", "V11L12-109_B1.Visium.FMP.220826_smamsi.csv")
+  file.path("SM_data", "V11L12-109_B1.Visium.FMP.220826_smamsi.csv"),
+  url = paste0(
+    "https://zenodo.org/api/records/17246900/files/",
+    "V11L12-109_B1.Visium.FMP.220826_smamsi.csv/content"
+  ),
+  expected_md5 = "d30790cd62b5fe88441ae4a63fa787e7"
 )
 msi <- ReadSM_mtx(mtx.file = msi_file)
 ```
@@ -276,7 +281,12 @@ custom annotations:
 ``` r
 
 fmp10_file <- resolve_mouse_brain_demo_file(
-  file.path("SM_data", "Public_data_FMP10_Annotations.csv")
+  file.path("SM_data", "Public_data_FMP10_Annotations.csv"),
+  url = paste0(
+    "https://zenodo.org/api/records/17246900/files/",
+    "Public_data_FMP10_Annotations.csv/content"
+  ),
+  expected_md5 = "5885b3ff385ef5ad3aad24100b75949a"
 )
 fmp10_metabolites <- read.csv(fmp10_file, row.names = 1)
 ```
@@ -425,54 +435,9 @@ users can align two datasets. This example can also be visualised
 msi_transformed <- AlignSpatialOmics(sm.data = msi_annotated, st.data = vis)
 ```
 
-------------------------------------------------------------------------
+### Please Wait
 
-Instructions
-
-------------------------------------------------------------------------
-
-Rotation angle
-
-Move along x axis
-
-Move along y axis
-
-Stretch angle 1
-
-Stretch factor 1
-
-Stretch angle 2
-
-Stretch factor 2
-
-SM spot size
-
-ST point size
-
-Spot shape
-
-circle square
-
-SM plot feature
-
-orig.ident nCount_Spatial nFeature_Spatial
-
-ST plot feature
-
-orig.ident nCount_Spatial nFeature_Spatial lesion region RegionLoupe
-annotations
-
-Show image
-
-Show ST spots
-
-Show SM spots
-
-Mirror along x axis
-
-Mirror along y axis
-
-Return aligned data
+![loading](/__static__/frontend/images/spinner.gif?v=ce6bcde20b2f6c562913c06be83f9e7c8a19b008017407a3094b76fa82bbd6b7f4048e032e07e534d4ab5442b9105294d612863735077ab13a47653a14c5866e)
 
     Loading required package: shiny
 
@@ -722,11 +687,11 @@ head(DE[DE$cluster == 0,] , n =5 )
 
 |         | p_val | avg_log2FC | pct.1 | pct.2 | p_val_adj | cluster |  gene   |
 |:--------|:-----:|:----------:|:-----:|:-----:|:---------:|:-------:|:-------:|
-| Ppp1r1b |   0   |  2.606143  | 0.959 | 0.344 |     0     |    0    | Ppp1r1b |
-| Gpr88   |   0   |  2.760005  | 0.927 | 0.288 |     0     |    0    |  Gpr88  |
-| Rgs9    |   0   |  2.734961  | 0.884 | 0.234 |     0     |    0    |  Rgs9   |
-| Pde1b   |   0   |  2.353808  | 0.968 | 0.442 |     0     |    0    |  Pde1b  |
-| Penk    |   0   |  2.487892  | 0.980 | 0.392 |     0     |    0    |  Penk   |
+| Ppp1r1b |   0   |  2.608945  | 0.958 | 0.341 |     0     |    0    | Ppp1r1b |
+| Gpr88   |   0   |  2.788813  | 0.929 | 0.284 |     0     |    0    |  Gpr88  |
+| Rgs9    |   0   |  2.762268  | 0.882 | 0.232 |     0     |    0    |  Rgs9   |
+| Pde1b   |   0   |  2.361740  | 0.967 | 0.439 |     0     |    0    |  Pde1b  |
+| Penk    |   0   |  2.524006  | 0.981 | 0.389 |     0     |    0    |  Penk   |
 
 Looking at the top 5 most over-expressed genes in cluster 0, we can see
 some key genes that define the Striatum. These are plot below:
@@ -926,7 +891,7 @@ print(results)
 
 |       cluster       |    ARI     |
 |:-------------------:|:----------:|
-|     ST_clusters     | 0.3298645  |
+|     ST_clusters     | 0.3301036  |
 |     SM_clusters     | -0.0319345 |
 |      gpca_SPM       | 0.0446128  |
 |      gpca_SPT       | 0.3450286  |
@@ -1157,7 +1122,7 @@ has already been processed with the code hidden below:
 # data(combined.dhb.data)
 
 ## Annotate metabolites against databases
-#db = rbind(HMDB_db, Chebi_db)
+# chem_props <- LoadSpaMTPDatabase("chem_props")$chem_props
 #combined.dhb.data = AnnotateSM(combined.dhb.data,assay = "SPM", db = db, polarity = "positive")
 
 ## Normalise ST and SM data 
@@ -1397,14 +1362,14 @@ We can visualise the top 6 most significant pathways:
 head(ST_results)
 ```
 
-|                pathway                |  pctVar   | pval | padj |  log2err  | size |
-|:-------------------------------------:|:---------:|:----:|:----:|:---------:|:----:|
-|     Glycolysis / Gluconeogenesis      | 0.9103873 |  0   |  0   | 1.1953445 |  34  |
-| Transmission across Chemical Synapses | 1.0338214 |  0   |  0   | 1.1053366 | 116  |
-|            Neuronal System            | 1.2160733 |  0   |  0   | 1.0959293 | 180  |
-|        HIF-1 signaling pathway        | 0.7317979 |  0   |  0   | 1.0276699 |  20  |
-|    Fructose and mannose metabolism    | 0.7656430 |  0   |  0   | 1.0175448 |  16  |
-|       Synaptic vesicle pathway        | 0.6223132 |  0   |  0   | 0.9653278 |  26  |
+|                pathway                |  pctVar   | pval | padj | log2err  | size |
+|:-------------------------------------:|:---------:|:----:|:----:|:--------:|:----:|
+|     Glycolysis / Gluconeogenesis      | 0.9103873 |  0   |  0   | 1.195345 |  34  |
+| Transmission across Chemical Synapses | 1.0338214 |  0   |  0   | 1.095929 | 116  |
+|            Neuronal System            | 1.2160733 |  0   |  0   | 1.095929 | 180  |
+|      Biosynthesis of amino acids      | 0.8395754 |  0   |  0   | 1.067210 |  13  |
+|           Carbon metabolism           | 0.8395754 |  0   |  0   | 1.067210 |  13  |
+|    Fructose and mannose metabolism    | 0.7656430 |  0   |  0   | 1.057464 |  16  |
 
 Lets plot these:
 
@@ -1478,13 +1443,13 @@ ST_results[ST_results$pathway %in% selected_pathways,]
 
 | pathway | pctVar | pval | padj | log2err | size |
 |:--:|:--:|:--:|:--:|:--:|:--:|
-| Dopamine Neurotransmitter Release Cycle | 0.4054641 | 0.0000000 | 0.0000002 | 0.7614608 | 16 |
-| Parkinson disease | 0.2077226 | 0.0000953 | 0.0004841 | 0.5384341 | 7 |
-| Dopaminergic synapse | 0.1640049 | 0.0012610 | 0.0032018 | 0.4550599 | 12 |
-| Parkinson’s disease pathway | 0.0588434 | 0.4145854 | 1.0000000 | 0.0542316 | 12 |
-| Dopamine Activation of Neurological Reward System | 0.0346916 | 0.4165834 | 1.0000000 | 0.0540088 | 3 |
-| Dopamine metabolism | 0.0170373 | 0.7012987 | 1.0000000 | 0.0297775 | 3 |
-| Dopamine beta-hydroxylase deficiency | 0.0085299 | 0.9290709 | 1.0000000 | 0.0126058 | 3 |
+| Dopamine Neurotransmitter Release Cycle | 0.4054641 | 0.0000000 | 0.0000001 | 0.7749390 | 16 |
+| Parkinson disease | 0.2077226 | 0.0000807 | 0.0004126 | 0.5384341 | 7 |
+| Dopaminergic synapse | 0.1640049 | 0.0011321 | 0.0028703 | 0.4550599 | 12 |
+| Parkinson’s disease pathway | 0.0588434 | 0.4075924 | 1.0000000 | 0.0550211 | 12 |
+| Dopamine Activation of Neurological Reward System | 0.0346916 | 0.4155844 | 1.0000000 | 0.0541201 | 3 |
+| Dopamine metabolism | 0.0170373 | 0.6813187 | 1.0000000 | 0.0312053 | 3 |
+| Dopamine beta-hydroxylase deficiency | 0.0085299 | 0.9280719 | 1.0000000 | 0.0127011 | 3 |
 
 ``` r
 
@@ -1498,6 +1463,10 @@ SM_results[SM_results$pathway %in% selected_pathways,]
 
 Only some pathways are significant between the two modalities. We can
 also spatially visualise these pathways, lets pick 3 to view:
+
+Pathway coverage can differ between modalities. If a selected pathway
+has no matching features in an assay, its panel states this explicitly.
+Such a panel indicates unavailable evidence, not zero pathway activity.
 
 ``` r
 
@@ -1584,7 +1553,7 @@ sessionInfo()
 
     ## R version 4.6.1 (2026-06-24)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.4 LTS
+    ## Running under: Ubuntu 24.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -1607,31 +1576,31 @@ sessionInfo()
     ##  [1] future_1.75.0          patchwork_1.3.2        mclust_6.1.3          
     ##  [4] EnhancedVolcano_1.30.0 ggrepel_0.9.8          ggplot2_4.0.3         
     ##  [7] dplyr_1.2.1            Seurat_5.5.1           SeuratObject_5.4.0    
-    ## [10] sp_2.2-3               Cardinal_3.14.0        S4Vectors_0.50.1      
+    ## [10] sp_2.2-3               Cardinal_3.14.0        S4Vectors_0.50.3      
     ## [13] ProtGenerics_1.44.0    BiocGenerics_0.58.1    generics_0.1.4        
-    ## [16] BiocParallel_1.46.0    SpaMTP_1.1.0.9000     
+    ## [16] BiocParallel_1.46.0    SpaMTP_0.99.0         
     ## 
     ## loaded via a namespace (and not attached):
     ##   [1] RcppAnnoy_0.0.23            splines_4.6.1              
     ##   [3] later_1.4.8                 tibble_3.3.1               
     ##   [5] polyclip_1.10-7             fastDummies_1.7.6          
-    ##   [7] lifecycle_1.0.5             sf_1.1-2                   
-    ##   [9] edgeR_4.10.3                globals_0.19.1             
+    ##   [7] lifecycle_1.0.5             sf_1.1-3                   
+    ##   [9] edgeR_4.10.5                globals_0.19.1             
     ##  [11] lattice_0.22-9              MASS_7.3-65                
     ##  [13] crosstalk_1.2.2             magrittr_2.0.5             
     ##  [15] limma_3.68.5                plotly_4.12.1              
-    ##  [17] sass_0.4.10                 rmarkdown_2.31             
+    ##  [17] sass_0.4.10                 rmarkdown_2.32             
     ##  [19] jquerylib_0.1.4             yaml_2.3.12                
     ##  [21] httpuv_1.6.17               otel_0.2.0                 
     ##  [23] sctransform_0.4.3           spam_2.11-4                
-    ##  [25] spatstat.sparse_3.2-0       reticulate_1.46.0          
-    ##  [27] cowplot_1.2.0               pbapply_1.7-4              
+    ##  [25] spatstat.sparse_3.2-0       reticulate_1.47.0          
+    ##  [27] cowplot_1.2.0               pbapply_1.7-5              
     ##  [29] DBI_1.3.0                   RColorBrewer_1.1-3         
     ##  [31] abind_1.4-8                 Rtsne_0.17                 
     ##  [33] GenomicRanges_1.64.0        purrr_1.2.2                
     ##  [35] downlit_0.4.5               IRanges_2.46.0             
     ##  [37] irlba_2.3.7                 listenv_1.0.0              
-    ##  [39] spatstat.utils_3.2-4        units_1.0-1                
+    ##  [39] spatstat.utils_3.2-5        units_1.0-1                
     ##  [41] goftest_1.2-3               RSpectra_0.16-2            
     ##  [43] spatstat.random_3.5-1       matter_2.14.0              
     ##  [45] fitdistrplus_1.2-6          parallelly_1.48.0          
@@ -1650,18 +1619,18 @@ sessionInfo()
     ##  [71] ragg_1.5.2                  ica_1.0-3                  
     ##  [73] Rcpp_1.1.2                  glue_1.8.1                 
     ##  [75] SparseArray_1.12.2          gridExtra_2.3.1            
-    ##  [77] xfun_0.60                   MatrixGenerics_1.24.0      
+    ##  [77] xfun_0.61                   MatrixGenerics_1.24.0      
     ##  [79] withr_3.0.3                 fastmap_1.2.0              
     ##  [81] shinyjs_2.1.1               rsvd_1.0.5                 
     ##  [83] digest_0.6.39               R6_2.6.1                   
     ##  [85] mime_0.13                   textshaping_1.0.5          
     ##  [87] scattermore_1.2             tensor_1.5.1               
     ##  [89] spatstat.data_3.1-9         tidyr_1.3.2                
-    ##  [91] data.table_1.18.4           FNN_1.1.4.1                
+    ##  [91] data.table_1.18.6.1         FNN_1.1.4.1                
     ##  [93] class_7.3-23                S4Arrays_1.12.0            
-    ##  [95] httr_1.4.8                  htmlwidgets_1.6.4          
+    ##  [95] httr_1.4.9                  htmlwidgets_1.6.4          
     ##  [97] ontologyIndex_2.12          whisker_0.4.1              
-    ##  [99] uwot_0.2.4                  pkgconfig_2.0.3            
+    ##  [99] uwot_0.2.5                  pkgconfig_2.0.3            
     ## [101] gtable_0.3.6                lmtest_0.9-40              
     ## [103] S7_0.2.2                    XVector_0.52.0             
     ## [105] SingleCellExperiment_1.34.0 htmltools_0.5.9            
@@ -1669,7 +1638,7 @@ sessionInfo()
     ## [109] scales_1.4.0                kableExtra_1.4.1           
     ## [111] Biobase_2.72.0              png_0.1-9                  
     ## [113] spatstat.univar_3.2-0       ggdendro_0.2.0             
-    ## [115] knitr_1.51                  rstudioapi_0.19.0          
+    ## [115] knitr_1.52                  rstudioapi_0.19.0          
     ## [117] reshape2_1.4.5              nlme_3.1-169               
     ## [119] proxy_0.4-29                cachem_1.1.0               
     ## [121] zoo_1.9-0                   stringr_1.6.0              
@@ -1677,7 +1646,7 @@ sessionInfo()
     ## [125] parallel_4.6.1              miniUI_0.1.2               
     ## [127] desc_1.4.3                  pillar_1.11.1              
     ## [129] grid_4.6.1                  vctrs_0.7.3                
-    ## [131] RANN_2.6.2                  promises_1.5.0             
+    ## [131] RANN_2.6.3                  promises_1.5.0             
     ## [133] BiocSingular_1.28.0         beachmat_2.28.0            
     ## [135] xtable_1.8-8                cluster_2.1.8.2            
     ## [137] beeswarm_0.4.0              evaluate_1.0.5             
@@ -1688,7 +1657,7 @@ sessionInfo()
     ## [147] naturalsort_0.1.3           ggbeeswarm_0.7.3           
     ## [149] plyr_1.8.9                  fs_2.1.0                   
     ## [151] stringi_1.8.9               viridisLite_0.4.3          
-    ## [153] deldir_2.0-4                spatstat.geom_3.8-2        
+    ## [153] deldir_2.0-4                spatstat.geom_3.8-3        
     ## [155] Matrix_1.7-5                RcppHNSW_0.7.0             
     ## [157] statmod_1.5.2               shiny_1.14.0               
     ## [159] SummarizedExperiment_1.42.0 ROCR_1.0-12                

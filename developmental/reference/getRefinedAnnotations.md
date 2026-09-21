@@ -36,6 +36,11 @@ number of annotations assigned (per mz value)
 ## Examples
 
 ``` r
+utils::str(formals(getRefinedAnnotations))
+#> Dotted pair list of 3
+#>  $ obj  : symbol 
+#>  $ assay: chr "Spatial"
+#>  $ n    : num 1
 # HMDB_db <- load("data/HMDB_1_names.rds")
 # AnnotatedSeuratObj <- AnnotateSeuratMALDI(SeuratObj, HMDB_db)
 

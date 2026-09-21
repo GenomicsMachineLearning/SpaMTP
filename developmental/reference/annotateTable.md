@@ -23,7 +23,14 @@ annotateTable(
   check_isotopes = TRUE,
   check_adduct_network = TRUE,
   min_score = 0,
-  maldi_matrix = NULL
+  maldi_matrix = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL,
+  infer_structure = c("auto", "never", "always"),
+  structure_backend = c("auto", "native"),
+  structure_workers = getOption("SpaMTP.smiles_workers", 1L),
+  min_structure_score = 0.05
 )
 ```
 
@@ -104,6 +111,39 @@ annotateTable(
 
   Optional MALDI matrix/reagent profile used for automatic rule
   selection. `adducts = NULL` keeps the complete selected rule space.
+
+- database_version:
+
+  Database snapshot version used when `db = NULL`.
+
+- database_source:
+
+  Database source used when `db = NULL`; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
+- infer_structure:
+
+  `"auto"` joins bundled precomputed structure features when possible,
+  `"never"` disables inference, and `"always"` parses missing structures
+  at runtime.
+
+- structure_backend:
+
+  SMILES parser passed to
+  [`DeconvolveSMILES()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/DeconvolveSMILES.md).
+
+- structure_workers:
+
+  Number of workers used for runtime SMILES parsing.
+
+- min_structure_score:
+
+  Minimum rule-specific structural prior retained during candidate-index
+  construction.
 
 ## Value
 

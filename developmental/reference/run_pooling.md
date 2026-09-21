@@ -54,5 +54,14 @@ counts data based on the Seurat Object input
 ## Examples
 
 ``` r
+utils::str(formals(run_pooling))
+#> Dotted pair list of 7
+#>  $ data.filt: symbol 
+#>  $ idents   : symbol 
+#>  $ n        : symbol 
+#>  $ assay    : symbol 
+#>  $ slot     : symbol 
+#>  $ seed     : num 1234
+#>  $ verbose  : logi TRUE
 # run_pooling <- list(seuratObj, idents = "sample", n = 3, assay = "Spatial", slot = "counts")
 ```

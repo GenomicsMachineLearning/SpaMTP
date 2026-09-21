@@ -48,5 +48,12 @@ Binned intensity value stored in barcode meta.data slot
 ## Examples
 
 ``` r
+utils::str(formals(BinMetabolites))
+#> Dotted pair list of 5
+#>  $ data    : symbol 
+#>  $ mzs     : symbol 
+#>  $ assay   : chr "Spatial"
+#>  $ slot    : chr "data"
+#>  $ bin_name: chr "Binned_Metabolites"
 # SpaMPT.obj <- BinMetabolites(SpaMPT.obj, mz = c('mz-740.471557617188','mz-784.528564453125','mz-897.603637695312'), bin_name = "Lipids")
 ```

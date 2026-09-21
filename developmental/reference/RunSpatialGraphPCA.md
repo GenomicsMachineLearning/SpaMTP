@@ -114,11 +114,28 @@ spatially-aware PCA reduction values stored in `@reductions`.
 
 ## Details
 
-Note: This method has been adapted from
-[GraphPCA](https://doi.org/10.1186/s13059-024-03429-x) python package.
+Note: This method has been adapted from the GraphPCA Python package
+([doi:10.1186/s13059-024-03429-x](https://doi.org/10.1186/s13059-024-03429-x)
+).
 
 ## Examples
 
 ``` r
+utils::str(formals(RunSpatialGraphPCA))
+#> Dotted pair list of 14
+#>  $ data          : symbol 
+#>  $ n_components  : num 50
+#>  $ assay         : chr "Spatial"
+#>  $ slot          : chr "scale.data"
+#>  $ image         : NULL
+#>  $ platform      : chr "Visium"
+#>  $ lambda        : num 0.5
+#>  $ n_neighbors   : NULL
+#>  $ include_self  : logi FALSE
+#>  $ alg           : chr "kd_tree"
+#>  $ fast          : logi TRUE
+#>  $ graph_name    : chr "SpatialKNN"
+#>  $ reduction_name: chr "SpatialPCA"
+#>  $ verbose       : logi TRUE
 # spamtp_obj <- RunSpatialGraphPCA(spamtp_obj, platform = "Visium")
 ```

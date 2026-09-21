@@ -148,6 +148,29 @@ specified m/z values for Spatial data with H&E Image
 ## Examples
 
 ``` r
+utils::str(formals(SpatialMZAnnotationPlot))
+#> Dotted pair list of 21
+#>  $ object        : symbol 
+#>  $ metabolites   : symbol 
+#>  $ plusminus     : NULL
+#>  $ images        : NULL
+#>  $ crop          : logi TRUE
+#>  $ assay         : chr "Spatial"
+#>  $ slot          : chr "counts"
+#>  $ keep.scale    : chr "feature"
+#>  $ min.cutoff    : logi NA
+#>  $ max.cutoff    : logi NA
+#>  $ ncol          : NULL
+#>  $ combine       : logi TRUE
+#>  $ pt.size.factor: num 1.6
+#>  $ alpha         : language c(1, 1)
+#>  $ image.alpha   : num 1
+#>  $ stroke        : num 0.25
+#>  $ interactive   : logi FALSE
+#>  $ information   : NULL
+#>  $ column.name   : chr "all_IsomerNames"
+#>  $ plot.exact    : logi TRUE
+#>  $ verbose       : logi TRUE
 # SpatialMZAnnotationPlot(SeuratObj, mzs = c("Glucose", "Glutamine"))
 # SpatialMZAnnotationPlot(SeuratObj, mzs = c("Glucose", "Glutamine"), plusminus = 0.05)
 ```

@@ -31,5 +31,10 @@ A subset Seurat object containing only m/z values that were specified
 ## Examples
 
 ``` r
+utils::str(formals(SubsetMZFeatures))
+#> Dotted pair list of 3
+#>  $ data    : symbol 
+#>  $ features: symbol 
+#>  $ assay   : chr "Spatial"
 # SubsetMZFeatures(SeuratObj, c("mz-160","mz-170","mz-180"))
 ```

@@ -27,7 +27,11 @@ CalculateSingleAnnotationStatistics(
   pathway.slot = "scale.data",
   corr_theshold = 0,
   corr_weight = 1,
-  n_weight = 1
+  n_weight = 1,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -80,6 +84,24 @@ CalculateSingleAnnotationStatistics(
   Numeric weight applied to number of correlated pathways in z-score
   calculation (default = 1).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 A tibble with the ranked annotations for the m/z value, containing:
@@ -115,6 +137,21 @@ A tibble with the ranked annotations for the m/z value, containing:
 ## Examples
 
 ``` r
+utils::str(formals(CalculateSingleAnnotationStatistics))
+#> Dotted pair list of 13
+#>  $ mz                : symbol 
+#>  $ data              : symbol 
+#>  $ mz.assay          : symbol 
+#>  $ pathway.assay     : chr "pathway"
+#>  $ mz.slot           : chr "scale.data"
+#>  $ pathway.slot      : chr "scale.data"
+#>  $ corr_theshold     : num 0
+#>  $ corr_weight       : num 1
+#>  $ n_weight          : num 1
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
 #data <- CreatePathwayObject(data,assay="SPT_pathway",slot = "scale.data")
 #CalculateSingleAnnotationStatistics(mz = "mz-674.2805",data = data,mz.assay = "SPM",pathway.assay = "pathway",mz.slot = "scale.data")
 ```

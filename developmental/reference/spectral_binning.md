@@ -50,5 +50,12 @@ provided reference list.
 ## Examples
 
 ``` r
+utils::str(formals(spectral_binning))
+#> Dotted pair list of 5
+#>  $ matrix   : symbol 
+#>  $ ref      : symbol 
+#>  $ index    : symbol 
+#>  $ method   : language c("sum", "mean", "max", "min")
+#>  $ tolerance: symbol 
 #Helper function for binning data in Matrix format
 ```

@@ -59,5 +59,14 @@ assay.
 ## Examples
 
 ``` r
+utils::str(formals(Load_METASPACE))
+#> Dotted pair list of 7
+#>  $ dataset_id: symbol 
+#>  $ fdr       : num 0.1
+#>  $ database  : language c("HMDB", "v4")
+#>  $ api_key   : NULL
+#>  $ relative  : logi FALSE
+#>  $ transform : logi FALSE
+#>  $ verbose   : logi TRUE
 # Load_METASPACE(dataset_id = "2020-12-07_03h16m14s", fdr = 0.1, database= c("HMDB", "v4"), relative = TRUE)
 ```

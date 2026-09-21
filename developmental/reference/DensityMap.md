@@ -43,5 +43,12 @@ peakbins/density of distribution of each peak
 ## Examples
 
 ``` r
+utils::str(formals(DensityMap))
+#> Dotted pair list of 5
+#>  $ object: symbol 
+#>  $ assay : chr "SPM"
+#>  $ slot  : chr "counts"
+#>  $ folder: language getwd()
+#>  $ ...   : symbol 
 # DensityMap(SpaMTP.obj)
 ```

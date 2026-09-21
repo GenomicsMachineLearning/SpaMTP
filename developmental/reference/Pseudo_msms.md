@@ -26,7 +26,7 @@ Pseudo_msms(
 
 - counts:
 
-  Numeric matrix n_peaks × n_pixels
+  Numeric matrix n_peaks x n_pixels
 
 - spectra10_list:
 
@@ -34,11 +34,11 @@ Pseudo_msms(
 
 - ppm_tol:
 
-  Precursor‐matching tolerance in ppm (default 10)
+  Precursor-matching tolerance in ppm (default 10)
 
 - frag_tol_da:
 
-  Fragment‐matching tolerance in Da (default 0.01)
+  Fragment-matching tolerance in Da (default 0.01)
 
 - cos_threshold:
 
@@ -55,5 +55,5 @@ Pseudo_msms(
 ## Value
 
 A list of length n_peaks. Each element is an integer vector giving the
-indices in spectra10_list of all library spectra10 with cosine ≥
+indices in spectra10_list of all library spectra10 with cosine \>=
 cos_threshold (or integer(0) if none).

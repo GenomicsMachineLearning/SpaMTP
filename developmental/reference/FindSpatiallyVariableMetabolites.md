@@ -70,5 +70,15 @@ the assay feature meta.data
 ## Examples
 
 ``` r
+utils::str(formals(FindSpatiallyVariableMetabolites))
+#> Dotted pair list of 8
+#>  $ object   : symbol 
+#>  $ assay    : chr "SPM"
+#>  $ slot     : chr "counts"
+#>  $ image    : chr "slice1"
+#>  $ nfeatures: num 2000
+#>  $ max_spots: num 5000
+#>  $ seed     : num 1
+#>  $ verbose  : logi TRUE
 # SpaMTP.obj <- FindSpatiallyVariableMetabolites(SpaMTP)
 ```

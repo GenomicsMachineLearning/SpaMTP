@@ -84,5 +84,18 @@ to match the aligned ST data
 ## Examples
 
 ``` r
+utils::str(formals(AlignSpatialOmics))
+#> Dotted pair list of 11
+#>  $ sm.data             : symbol 
+#>  $ st.data             : symbol 
+#>  $ msi.pixel.multiplier: num 20
+#>  $ image.res           : chr "lowres"
+#>  $ continous_cols      : NULL
+#>  $ catagorical_cols    : NULL
+#>  $ fov                 : chr "fov"
+#>  $ image.slice         : chr "slice1"
+#>  $ shiny.host          : chr "0.0.0.0"
+#>  $ shiny.port          : num 4698
+#>  $ verbose             : logi FALSE
 # SM_Transformed <- AlignSpatialOmics(SM.data, ST.data)
 ```

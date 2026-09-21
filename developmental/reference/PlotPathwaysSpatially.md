@@ -28,7 +28,11 @@ PlotPathwaysSpatially(
   stroke = NA,
   interactive = FALSE,
   information = NULL,
-  image.labels = NULL
+  image.labels = NULL,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -146,12 +150,64 @@ PlotPathwaysSpatially(
   Character vector specifying optional labels for multiple images
   (default = NULL).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 A ggplot object visualizing the pathway score spatially.
 
+## Details
+
+Pathways without matching features in the selected assay slot, or
+without finite z-scores, produce a warning and a labelled placeholder
+panel. Their positions in the returned list are preserved. Unknown
+pathway names produce an error.
+
 ## Examples
 
 ``` r
+utils::str(formals(PlotPathwaysSpatially))
+#> Dotted pair list of 25
+#>  $ pathways          : symbol 
+#>  $ object            : symbol 
+#>  $ images            : symbol 
+#>  $ title             : NULL
+#>  $ image.alpha       : num 1
+#>  $ assay             : language SeuratObject::DefaultAssay(object)
+#>  $ slot              : chr "scale.data"
+#>  $ colors            : language c("darkblue", "lightgrey", "darkred")
+#>  $ guide             : chr "colourbar"
+#>  $ crop              : logi TRUE
+#>  $ min.cutoff        : logi NA
+#>  $ max.cutoff        : logi NA
+#>  $ ncol              : NULL
+#>  $ pt.size.factor    : num 1.6
+#>  $ alpha             : language c(1, 1)
+#>  $ image.scale       : chr "lowres"
+#>  $ shape             : num 21
+#>  $ stroke            : logi NA
+#>  $ interactive       : logi FALSE
+#>  $ information       : NULL
+#>  $ image.labels      : NULL
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
 #PlotPathwaysSpatially(c("Glycolysis", "Acylcarnitine 3-Butenylcarnitine", "ABC transporters"), spamtp_obj)
 ```

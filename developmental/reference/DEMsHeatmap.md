@@ -16,8 +16,8 @@ DEMsHeatmap(
   order.by = "FDR",
   scale = "row",
   color = (grDevices::colorRampPalette(c("navy", "white", "red")))(50),
-  cluster_cols = F,
-  cluster_rows = T,
+  cluster_cols = FALSE,
+  cluster_rows = TRUE,
   fontsize_row = 15,
   fontsize_col = 15,
   cutree_cols = 9,
@@ -77,12 +77,12 @@ DEMsHeatmap(
 - cluster_cols:
 
   Boolean value determining if columns should be clustered or hclust
-  object (default = F).
+  object (default = FALSE).
 
 - cluster_rows:
 
   Boolean value determining if rows should be clustered or hclust object
-  (default = T).
+  (default = TRUE).
 
 - fontsize_row:
 
@@ -145,6 +145,28 @@ defined in the edgeR ouput object.
 ## Examples
 
 ``` r
+utils::str(formals(DEMsHeatmap))
+#> Dotted pair list of 20
+#>  $ edgeR_output           : symbol 
+#>  $ n                      : num 5
+#>  $ only.pos               : logi FALSE
+#>  $ FDR.threshold          : num 0.05
+#>  $ logfc.threshold        : num 0.5
+#>  $ order.by               : chr "FDR"
+#>  $ scale                  : chr "row"
+#>  $ color                  : language (grDevices::colorRampPalette(c("navy", "white", "red")))(50)
+#>  $ cluster_cols           : logi FALSE
+#>  $ cluster_rows           : logi TRUE
+#>  $ fontsize_row           : num 15
+#>  $ fontsize_col           : num 15
+#>  $ cutree_cols            : num 9
+#>  $ silent                 : logi TRUE
+#>  $ plot_annotations_column: NULL
+#>  $ save_to_path           : NULL
+#>  $ plot.save.width        : num 20
+#>  $ plot.save.height       : num 20
+#>  $ nlabels.to.show        : NULL
+#>  $ annotation_colors      : NULL
 # DEMs <- FindAllDEMs(SeuratObj, "sample")
 
 # DEMsHeatmap(DEMs)

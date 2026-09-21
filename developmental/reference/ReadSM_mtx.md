@@ -59,7 +59,7 @@ counts slot of the designated assay.
 
 **NOTE:** The input file must be in a format similar to the table below:
 
-    A data.frame: 5 × 5
+    A data.frame: 5 x 5
        x   y   mz1  mz2  mz3
     1  0   1    0    0   11
     2  0   2    0    0    0
@@ -76,5 +76,13 @@ counts slot of the designated assay.
 ## Examples
 
 ``` r
+utils::str(formals(ReadSM_mtx))
+#> Dotted pair list of 6
+#>  $ mtx.file            : symbol 
+#>  $ assay               : chr "Spatial"
+#>  $ verbose             : logi TRUE
+#>  $ feature.start.column: num 1
+#>  $ mz.prefix           : NULL
+#>  $ project.name        : chr "SpaMTP"
 # msi_data <- ReadSM_mtx("~/Documents/msi_mtx.csv")
 ```

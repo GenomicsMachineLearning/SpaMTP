@@ -94,8 +94,28 @@ MZVlnPlot(
   Boolean indicating whether to show the message. If TRUE the message
   will be show, else the message will be suppressed (default = FALSE).
 
+## Value
+
+A `ggplot` violin-plot object.
+
 ## Examples
 
 ``` r
+utils::str(formals(MZVlnPlot))
+#> Dotted pair list of 14
+#>  $ seurat.obj   : symbol 
+#>  $ group.by     : NULL
+#>  $ mzs          : NULL
+#>  $ assay        : chr "Spatial"
+#>  $ slot         : chr "counts"
+#>  $ title        : chr "VlnPlot"
+#>  $ x.lab        : chr "var"
+#>  $ y.lab        : chr "intensity"
+#>  $ show.points  : logi TRUE
+#>  $ bottom.cutoff: NULL
+#>  $ top.cutoff   : NULL
+#>  $ log.data     : logi FALSE
+#>  $ cols         : NULL
+#>  $ verbose      : logi FALSE
 # MZVlnPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)
 ```

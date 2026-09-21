@@ -58,5 +58,14 @@ of 2D matrices).
 ## Examples
 
 ``` r
+utils::str(formals(get_metaspace))
+#> Dotted pair list of 7
+#>  $ dataset_id    : symbol 
+#>  $ fdr           : num 0.1
+#>  $ database      : language c("HMDB", "v4")
+#>  $ include_images: logi TRUE
+#>  $ api_key       : NULL
+#>  $ isotope_idx   : num 1
+#>  $ relative      : logi TRUE
 # get_metaspace(dataset_id = "2020-12-07_03h16m14s", fdr = 0.1, database= c("HMDB", "v4"), relative = TRUE)
 ```

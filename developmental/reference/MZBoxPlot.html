@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,7 @@
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -140,10 +141,30 @@
 <dd><p>Boolean indicating whether to show the message. If TRUE the message will be show, else the message will be suppressed (default = FALSE).</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>ggplot</code> box-plot object.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">MZBoxPlot</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ seurat.obj   : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ group.by     : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mzs          : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ assay        : chr "Spatial"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ slot         : chr "counts"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ title        : chr "BoxPlot"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x.lab        : chr "var"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ y.lab        : chr "intensity"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ show.points  : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ bottom.cutoff: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ top.cutoff   : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ log.data     : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ cols         : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ verbose      : logi FALSE</span>
+<span class="r-in"><span><span class="co"># MZBoxPlot(SeuratObj, group.by = "sample",  bottom.cutoff = 0.05)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -49,6 +49,13 @@ value.
 ## Examples
 
 ``` r
+utils::str(formals(GetMZMetadata))
+#> Dotted pair list of 5
+#>  $ obj            : symbol 
+#>  $ mz             : symbol 
+#>  $ assay          : chr "Spatial"
+#>  $ metadata.column: chr "all_IsomerNames"
+#>  $ separate       : logi TRUE
 # GetMZMetadata(SpaMTP, mz = "mz-100", metadata.column = "all_IsomerNames")
 
 ##### Example for getting metabolite annotation IDs for a m/z value

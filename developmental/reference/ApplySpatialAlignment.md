@@ -93,7 +93,7 @@ ApplySpatialAlignment(
   Matched landmark coordinates as two-column matrices or data frames in
   x-y order. At least three non-collinear pairs are required for
   `method = "affine"`. Landmarks are optional but strongly recommended
-  for `method = "lddmm"` when sections are not already close. ST
+  for `method = "lddmm"` when the sections are not already close. ST
   landmarks must use the target coordinate system after any
   `ST.scale.factor` has been applied.
 
@@ -219,15 +219,14 @@ details.
 
 Python is only required when `method = "lddmm"` and `alignment = NULL`.
 Precomputed SMINT coordinates and affine landmark alignment are handled
-entirely in R. Lightweight provenance and quality diagnostics can be
-stored in the returned object's `@tools$spatial_alignment` entry. The
-backend summary records STalign's affine component as `affine_yx`; it is
-not the complete nonlinear LDDMM transformation.
+entirely in R. The backend summary records STalign's affine component as
+`affine_yx`; it is not the complete nonlinear LDDMM transformation.
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
+utils::str(formals(ApplySpatialAlignment))
 # Apply coordinates already exported by the SMINT/STalign notebook.
 aligned_sm <- ApplySpatialAlignment(
   SM.data = sm,
@@ -244,7 +243,7 @@ fit <- ApplySpatialAlignment(
   SM.landmarks = sm_landmarks,
   ST.landmarks = st_landmarks,
   landmark.order = "yx",             # point-annotator row/column order
-  SM.landmark.space = "preprocessed", # selected after rasterization
+  SM.landmark.space = "preprocessed", # landmarks selected after rasterization
   source.scale = 10,
   source.rotate = 90,
   source.origin = c(0, 0),
@@ -252,5 +251,5 @@ fit <- ApplySpatialAlignment(
   return = "result"
 )
 fit$diagnostics
-} # }
+}
 ```

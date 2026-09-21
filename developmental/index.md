@@ -60,6 +60,22 @@ devtools::install_github(
 )
 ```
 
+The standalone GitHub releases (`main` and `developmental`) include
+their annotation and pathway databases. Neither `SpaMTPdb` nor
+`SpaMTPData` is required. The developmental resource interface reads
+bundled data offline:
+
+``` r
+
+db_info <- SpaMTP::SpaMTPDatabaseInfo()
+chem_props <- SpaMTP::LoadSpaMTPDatabase("chem_props")$chem_props
+```
+
+Large example experiments are obtained using the published download
+links in each tutorial. The separate Bioconductor submission uses
+companion resource packages; that dependency model does not apply to
+these standalone releases.
+
 For tutorials and more information please visit the [SpaMTP
 website](https://genomicsmachinelearning.github.io/SpaMTP/)
 
@@ -96,11 +112,6 @@ Verify it download correctly:
 
     wget -q -O - https://downloads.gmllab.com/SpaMTP/spamtp-1.1.sif.md5 | md5sum -c -
 
-Or to create an Apptainer image from scratch (you need the
-environment-linux.yml, dependencies.R and spamtp.def files):
-
-    apptainer build spamtp.sif spamtp.def
-
 ### Contributing
 
 To reproduce the dependencies and install SpaMTP into a conda
@@ -117,3 +128,7 @@ environment:
     conda install --no-update-deps -c bioconda bioconductor-delayedmatrixstats bioconductor-hdf5array bioconductor-rhdf5 bioconductor-rhdf5lib --y
     conda install --no-update-deps -c bioconda bioconductor-msnbase bioconductor-ebimage==4.48.0-0 --y
     Rscript dependencies.R
+
+Pathway membership, topology provenance, the interaction-code
+correction, and rebuild instructions are documented in [Pathway Database
+Integration](https://genomicsmachinelearning.github.io/SpaMTP/developmental/vignettes/Pathway_Database_Integration.Rmd).

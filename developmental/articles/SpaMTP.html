@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul>
@@ -182,9 +183,15 @@ are useful for SM analysis pipelines.
 <div class="section level2">
 <h2 id="spamtp-public-datasets">SpaMTP Public Datasets<a class="anchor" aria-label="anchor" href="#spamtp-public-datasets"></a>
 </h2>
-<p>To access and download all our datasets used in the vignettes you can
-vist the <a href="https://zenodo.org/communities/spamtp/records" class="external-link"><em>SpaMTP</em>
-zenodo page</a>.</p>
+<p>Each tutorial provides direct download links for its experiment
+objects from the <a href="https://zenodo.org/communities/spamtp/records" class="external-link"><em>SpaMTP</em>
+Zenodo community</a>, with checksum-verified downloads where automated
+fetching is used. No companion data package is required for this
+standalone release.</p>
+<p>The pruned RaMP annotation databases and corrected pathway graphs are
+included with SpaMTP. On the developmental branch,
+<code><a href="../reference/SpaMTPDatabaseInfo.html">SpaMTPDatabaseInfo()</a></code> lists the bundled resources and
+<code><a href="../reference/LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code> reads them offline.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>

@@ -29,5 +29,9 @@ A list containing functions for querying METASPACE data.
 ## Examples
 
 ``` r
+utils::str(formals(metaspace_client))
+#> Dotted pair list of 2
+#>  $ host   : chr "https://metaspace2020.org"
+#>  $ api_key: NULL
 # ms <- metaspace_client()
 ```

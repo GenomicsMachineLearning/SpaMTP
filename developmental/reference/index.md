@@ -22,6 +22,33 @@ and Cardinal Objects
   : Converts a SpaMTP Seurat object to a Cardinal object, including
   annotations and metadata
 
+## Loading Versioned Annotation Databases
+
+Functions for inspecting and loading bundled RaMP annotation resources
+
+- [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md)
+  : Load versioned SpaMTP annotation resources
+- [`SpaMTPDatabaseInfo()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/SpaMTPDatabaseInfo.md)
+  : Inspect SpaMTP database resources
+- [`BundledDatabases`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`chem_props`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`source_df`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`analyte`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`analytehaspathway`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`pathway`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`ramp_db_metadata`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`smiles_features`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`RAMP_hmdb`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`RAMP_kegg`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`RAMP_Reactome`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`RAMP_wikipathway`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`HMDB_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`Chebi_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`Lipidmaps_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`GNPS_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  [`filtered_fmp10`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BundledDatabases.md)
+  : Bundled annotation and pathway databases
+
 ## Binning Spatial Metabolomic Data
 
 Functions that bin m/z values into a lower resolution/wider peak.
@@ -38,6 +65,12 @@ reference metabolic database
   : Annotates m/z values stored in a SpaMTP Object
 - [`AnnotateMZ()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AnnotateMZ.md)
   : Annotate one or more observed m/z values
+- [`DeconvolveSMILES()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/DeconvolveSMILES.md)
+  : Decompose explicit functional groups in SMILES strings
+- [`AnnotateSMILESStructure()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AnnotateSMILESStructure.md)
+  : Add SMILES-derived structural features to a metabolite database
+- [`PredictAdductsFromSMILES()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/PredictAdductsFromSMILES.md)
+  : Predict a structure-aware adduct search space from SMILES
 - [`AdductRules()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/AdductRules.md)
   : Return the validated SpaMTP adduct rule table
 - [`MALDIMatrixProfiles()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/MALDIMatrixProfiles.md)
@@ -277,71 +310,14 @@ metadata.csv, and feature.metadata.csv files
 - [`SaveSpaMTPData()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/SaveSpaMTPData.md)
   : Saves SpaMTP Object
 
-## Reference Metabolite Datasets
+## Bundled Annotation and Network Constants
 
-Metabolite datasets used for annotating m/z masses
-
-- [`HMDB_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/HMDB_db.md)
-  : HMDB_db: A cleaned version of the reference metabolomics dataset
-  from the Human Metabolome Database (HMDB)
-
-- [`Lipidmaps_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/Lipidmaps_db.md)
-  : Lipidmaps_db: A cleaned version of the lipid database from LIPID
-  MAPS
-
-- [`Chebi_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/Chebi_db.md)
-  :
-
-  Chebi_db: Cleaned ChEBI `(Chemical entities of biological interest)`
-  reference dataset
-
-- [`GNPS_db`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/GNPS_db.md)
-  : GNPS_db: A cleaned database of metabolites from GNPS
-
-- [`filtered_fmp10`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/filtered_fmp10.md)
-  : filtered_fmp10: data.frame containing FMP10+ metabolite mappings
-
-## Metabolic Pathway Datasets
-
-Various datasets required for pathway analysis
+Small compatibility tables used by annotation and pathway visualisation
 
 - [`adduct_file`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/adduct_file.md)
-  : adduct_file: A dataframe containing possible adducts used for
-  pathway analysis
-- [`analyte`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/analyte.md)
-  : analyte: A dataframe containing ID's of possible RAMP analytes
-- [`analytehaspathway`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/analytehaspathway.md)
-  : analytehaspathway: A dataframe containing RAMP_pathway ID's
-- [`chem_props`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/chem_props.md)
-  : chem_props: A database containing the chemical properties and
-  metadata of each RAMP_DB analyte
-- [`pathway`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/pathway.md)
-  : pathway: A dataframe containing RAMP_DB pathways and their relative
-  metadata
-- [`source_df`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/source_df.md)
-  : source_df: A dataframe containing source information about RAMP_ID
-  analyte used for analysis
-- [`ramp_db_metadata`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/ramp_db_metadata.md)
-  : Metadata for the bundled pruned RaMP snapshot
-
-## Pathway Network Datasets
-
-Various datasets required for generated pathway network plots
-
-- [`RAMP_hmdb`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/RAMP_hmdb.md)
-  : RAMP_hmdb: A list containing network plot information about pathways
-  from the HMDB database
-- [`RAMP_Reactome`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/RAMP_Reactome.md)
-  : RAMP_Reactome: A list containing network plot information about
-  pathways from the Reactome database
-- [`RAMP_kegg`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/RAMP_kegg.md)
-  : RAMP_kegg: A list containing network plot information about pathways
-  from the KEGG database
-- [`RAMP_wikipathway`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/RAMP_wikipathway.md)
-  : RAMP_wikipathway: A list containing network plot information about
-  pathways from the Wiki database
+  : Common adduct constants
 - [`reaction_type`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/reaction_type.md)
-  : reaction_type: data.frame containing reaction type mappings
+  : Pathway-network reaction styles
 
 ## Cardinal Wrapper Functions
 
@@ -354,8 +330,6 @@ Functions used to alter Cardinal Objects.
 
 Various helper functions used by SpaMTP
 
-- [`verbose_message()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/verbose_message.md)
-  : Helper function for suppressing function progress messages
 - [`subset_SPM()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/subset_SPM.md)
   : Subsets SpaMTP Seurat Object containing FOVs
 - [`check_cardinal_version()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/check_cardinal_version.md)
@@ -398,44 +372,25 @@ Helper functions required for running ‘AnnotateSM()’
 - [`annotateTable()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/annotateTable.md)
   : Annotates m/z values stored in a data.frame based on reference
   metabolite dataset
-
 - [`labels_to_show()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/labels_to_show.md)
   : Filters the annotation list to only include the first n number of
   annotations per m/z
-
 - [`add_backslashes_to_specialfeatures()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/add_backslashes_to_specialfeatures.md)
   : Adds in backslashes required to take into account special using
   grepl such as brackets and +
-
 - [`check_and_truncate_adduct_vector()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/check_and_truncate_adduct_vector.md)
   : Checks if the complete adduct is in the data base, else returns a
   truncated adduct
-
 - [`db_adduct_filter()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/db_adduct_filter.md)
   : Filters the provided metabolomic database by polarity and adducts
-
-- [`is_formula_valid()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/is_formula_valid.md)
-  : Checks if a formula contains only the allowed elements
-
 - [`formula_filter()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/formula_filter.md)
   : Filters reference Database to only select natural elements
-
 - [`calculate_bounds()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/calculate_bounds.md)
   : Calculates the mz range of the observed_df
-
 - [`ppm_error()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/ppm_error.md)
   : Calculates the ppm error as a valve
-
 - [`ppm_range_match()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/ppm_range_match.md)
-  :
-
-  Calculates the ppm range and check if mz values are within the range
-
-  - Returns TRUE if match is found and false if no match.
-
-- [`proc_db()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/proc_db.md)
-  : Searches observed mz values against the data base list and returns
-  matching annotations
+  : Check whether m/z values match within a ppm tolerance
 
 ### METASPACE Loader helper functions
 
@@ -490,24 +445,6 @@ Helper functions used in multi-omic analysis functions
   : Maps SM pixels to low resolution ST data
 - [`hiresMapping()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/hiresMapping.md)
   : Maps SM pixels to high resolution ST data
-- [`translate()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/translate.md)
-  : Creates a transformation matrix that translates an object in 2D
-- [`mirror()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/mirror.md)
-  : Creates a transformation matrix that mirrors an object in 2D along
-  either the x axis or y axis around its center of mass
-- [`stretch()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/stretch.md)
-  : Stretch along angle
-- [`rigid.rot()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/rigid.rot.md)
-  : Creates a transformation matrix for rotation
-- [`rigid.transf()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/rigid.transf.md)
-  : Creates a transformation matrix for rotation and translation
-- [`rigid.transl()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/rigid.transl.md)
-  : Creates a transformation matrix for translation with an offset of
-  (h, k)
-- [`rigid.refl()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/rigid.refl.md)
-  : Creates a transformation matrix for reflection
-- [`rigid.stretch()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/rigid.stretch.md)
-  : Creates a transformation matrix for stretching
 - [`combine.tr()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/combine.tr.md)
   : Combines rigid tranformation matrices
 

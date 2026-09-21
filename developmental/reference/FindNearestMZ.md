@@ -31,5 +31,10 @@ String of the closest m/z value within the given dataset
 ## Examples
 
 ``` r
+utils::str(formals(FindNearestMZ))
+#> Dotted pair list of 3
+#>  $ data     : symbol 
+#>  $ target_mz: symbol 
+#>  $ assay    : NULL
 # FindNearestMZ(SeuratObj, target_mz = 400.01)
 ```

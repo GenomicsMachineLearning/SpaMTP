@@ -91,6 +91,19 @@ differential expressed m/z metabolites
 ## Examples
 
 ``` r
+utils::str(formals(run_DE))
+#> Dotted pair list of 11
+#>  $ pooled_data      : symbol 
+#>  $ seurat_data      : symbol 
+#>  $ ident            : symbol 
+#>  $ output_dir       : symbol 
+#>  $ run_name         : symbol 
+#>  $ n                : symbol 
+#>  $ logFC_threshold  : symbol 
+#>  $ annotation.column: symbol 
+#>  $ assay            : symbol 
+#>  $ return.individual: logi FALSE
+#>  $ verbose          : logi TRUE
 # pooled_obj <- run_pooling(SeuratObj, "sample", n = 3)
 # run_DE(pooled_obj, SeuratObj, "sample", "~/Documents/DE_output/", "run_1", n = 3, logFC_threshold = 1.2, annotation.column = "all_IsomerNames", assay = "Spatial")
 ```

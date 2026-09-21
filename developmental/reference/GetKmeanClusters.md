@@ -73,6 +73,17 @@ cluster assignments.
 ## Examples
 
 ``` r
+utils::str(formals(GetKmeanClusters))
+#> Dotted pair list of 9
+#>  $ data        : symbol 
+#>  $ reduction   : chr "SpatialPCA"
+#>  $ cluster.name: chr "spatial_clusters"
+#>  $ clusters    : num 8
+#>  $ iter.max    : num 10
+#>  $ nstart      : num 1
+#>  $ algorithm   : language c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen")
+#>  $ trace       : logi FALSE
+#>  $ seed        : num 888
 # seurat_object <- GetKmeanClusters(spamtp_obj, reduction = "SpatialPCA", centers = 8, cluster.name = "test_clusters")
 # SpatialDimPlot(spamtp_obj, group.by = "test_clusters")
 ```

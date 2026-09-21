@@ -69,5 +69,15 @@ for various QC plots
 ## Examples
 
 ``` r
+utils::str(formals(statPlot))
+#> Dotted pair list of 8
+#>  $ seurat.obj   : symbol 
+#>  $ group.by     : NULL
+#>  $ assay        : chr "Spatial"
+#>  $ slot         : chr "counts"
+#>  $ bottom.cutoff: NULL
+#>  $ top.cutoff   : NULL
+#>  $ log.data     : logi FALSE
+#>  $ verbose      : logi FALSE
 # df <- statPlot(SeuratObj, group.by = "sample", bottom.cutoff = 0.05, top.cutoff = 0.05, log.data = TRUE)
 ```

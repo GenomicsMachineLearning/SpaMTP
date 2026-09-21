@@ -207,6 +207,39 @@ specified m/z values
 ## Examples
 
 ``` r
+utils::str(formals(ImageMZPlot))
+#> Dotted pair list of 31
+#>  $ object         : symbol 
+#>  $ mzs            : symbol 
+#>  $ plusminus      : NULL
+#>  $ fov            : NULL
+#>  $ boundaries     : NULL
+#>  $ cols           : language if (isTRUE(x = blend)) {     c("lightgrey", "#ff0000", "#00ff00") ...
+#>  $ size           : num 0.5
+#>  $ min.cutoff     : logi NA
+#>  $ max.cutoff     : logi NA
+#>  $ split.by       : NULL
+#>  $ molecules      : NULL
+#>  $ mols.size      : num 0.1
+#>  $ mols.cols      : NULL
+#>  $ nmols          : num 1000
+#>  $ alpha          : num 1
+#>  $ border.color   : chr "white"
+#>  $ border.size    : NULL
+#>  $ dark.background: logi TRUE
+#>  $ blend          : logi FALSE
+#>  $ blend.threshold: num 0.5
+#>  $ crop           : logi FALSE
+#>  $ cells          : NULL
+#>  $ scale          : language c("feature", "all", "none")
+#>  $ overlap        : logi FALSE
+#>  $ axes           : logi FALSE
+#>  $ combine        : logi TRUE
+#>  $ coord.fixed    : logi TRUE
+#>  $ assay          : chr "Spatial"
+#>  $ slot           : chr "data"
+#>  $ plot.pixel     : logi FALSE
+#>  $ verbose        : logi TRUE
 # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1))
 # ImageMZPlot(SeuratObj, mzs = c(400.678, 300.1), plusminus = 0.05)
 ```

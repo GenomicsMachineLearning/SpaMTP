@@ -15,9 +15,13 @@
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Mouse_Urinary_Bladder.md):
 - [SpaMTP: Spatial Multi-Omics
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Multi-Omic_Mouse_Brain.md):
+- [Pathway databases, interaction provenance, and rebuilding
+  graphs](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Pathway_Database_Integration.md):
 - [SpaMTP: Simulated Single Cell Multi-Omics
   Analysis](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/Single_Cell_MultiOmics.md):
 - [SpaMTP: Additional Analysis
   Features](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/SpaMTP_Additional_Features.md):
+- [SpaMTP: Spatial Metabolite
+  Annotation](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/SpaMTP_Bioconductor.md):
 - [Getting
   Started](https://genomicsmachinelearning.github.io/SpaMTP/developmental/articles/SpaMTP.md):

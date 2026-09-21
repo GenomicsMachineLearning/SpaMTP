@@ -13,7 +13,7 @@ are not repeated for every cluster-pathway pair."><meta property="og:image" cont
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,7 @@ are not repeated for every cluster-pathway pair."><meta property="og:image" cont
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -94,7 +95,11 @@ are not repeated for every cluster-pathway pair.</p>
 <span>  max_nodes <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  label_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"detected"</span>, <span class="st">"all"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  max_spatial_points <span class="op">=</span> <span class="fl">50000L</span>,</span>
-<span>  layout_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"repulsion"</span>, <span class="st">"force"</span>, <span class="st">"radial"</span>, <span class="st">"bipartite"</span><span class="op">)</span></span>
+<span>  layout_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"repulsion"</span>, <span class="st">"force"</span>, <span class="st">"radial"</span>, <span class="st">"bipartite"</span><span class="op">)</span>,</span>
+<span>  database <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  database_version <span class="op">=</span> <span class="st">"latest"</span>,</span>
+<span>  database_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"bundled"</span>, <span class="st">"local"</span><span class="op">)</span>,</span>
+<span>  database_local_dir <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -218,6 +223,23 @@ browser rendering. Use <code>Inf</code> to retain all points.</p></dd>
 analyte classes into rings, and <code>"bipartite"</code> separates genes and
 metabolites vertically. It can also be changed interactively.</p></dd>
 
+
+<dt id="arg-database">database<a class="anchor" aria-label="anchor" href="#arg-database"></a></dt>
+<dd><p>Optional named list of database resources, normally created
+by <code><a href="LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code>.</p></dd>
+
+
+<dt id="arg-database-version">database_version<a class="anchor" aria-label="anchor" href="#arg-database-version"></a></dt>
+<dd><p>Database snapshot version used for pathway lookup.</p></dd>
+
+
+<dt id="arg-database-source">database_source<a class="anchor" aria-label="anchor" href="#arg-database-source"></a></dt>
+<dd><p>Database source; see <code><a href="LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code>.</p></dd>
+
+
+<dt id="arg-database-local-dir">database_local_dir<a class="anchor" aria-label="anchor" href="#arg-database-local-dir"></a></dt>
+<dd><p>Optional local RDS resource directory.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -226,7 +248,36 @@ metabolites vertically. It can also be changed interactively.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># PathwayNetworkPlots(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">PathwayNetworkPlots</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ SpaMTP                    : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ ident                     : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ regpathway                : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ DE.list                   : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ selected_pathways         : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ path                      : language getwd()</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ SM_slot                   : chr "counts"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ ST_slot                   : chr "counts"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ colour_palette            : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ SM_assay                  : chr "SPM"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ ST_assay                  : chr "SPT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ analyte_types             : language c("genes", "metabolites")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ annotation_source         : language c("current", "auto", "legacy")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ annotation_score_threshold: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ annotation_score_floor    : num 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ metabolite_detection      : language c("leading_edge", "annotated")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ image                     : chr "slice1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ verbose                   : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ top_n_pathways            : int 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ max_nodes                 : int 500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ label_mode                : language c("detected", "all", "none")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ max_spatial_points        : int 50000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ layout_mode               : language c("repulsion", "force", "radial", "bipartite")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database                  : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_version          : chr "latest"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_source           : language c("auto", "bundled", "local")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_local_dir        : NULL</span>
+<span class="r-in"><span><span class="co"># PathwayNetworkPlots(</span></span></span>
 <span class="r-in"><span><span class="co">#   SpaMTP, ident = "Custom_ident", regpathway = regpathway,</span></span></span>
 <span class="r-in"><span><span class="co">#   DE.list = DE.list, selected_pathways = "WP1902"</span></span></span>
 <span class="r-in"><span><span class="co"># )</span></span></span>

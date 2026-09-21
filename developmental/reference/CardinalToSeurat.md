@@ -53,5 +53,12 @@ Object
 ## Examples
 
 ``` r
+utils::str(formals(CardinalToSeurat))
+#> Dotted pair list of 5
+#>  $ data        : symbol 
+#>  $ multi.run   : logi FALSE
+#>  $ seurat.coord: NULL
+#>  $ assay       : chr "Spatial"
+#>  $ verbose     : logi TRUE
 # CardinalToSeurat(CardinalObj, run_name = "run_1", seurat.coord = NULL)
 ```

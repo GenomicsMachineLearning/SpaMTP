@@ -66,5 +66,15 @@ The image is stored in the `@image$slice1` slot.
 ## Examples
 
 ``` r
+utils::str(formals(AddSMImage))
+#> Dotted pair list of 8
+#>  $ image_path    : symbol 
+#>  $ SpaMTP        : symbol 
+#>  $ fov           : chr "fov"
+#>  $ grey.scale    : num 0.5
+#>  $ plot.greyscale: logi FALSE
+#>  $ seed          : num 123
+#>  $ n.spots       : NULL
+#>  $ ...           : symbol 
 # AddSMImage(image_path = "../HnE_image.png", SpaMTP = SpaMTP_obj)
 ```

@@ -19,3 +19,11 @@ AnnotationInfo(SpaMTP)
 
 A named list containing annotation schema, engine, RaMP version,
 provenance, and candidate count where available.
+
+## Examples
+
+``` r
+utils::str(formals(AnnotationInfo))
+#> Dotted pair list of 1
+#>  $ SpaMTP: symbol 
+```

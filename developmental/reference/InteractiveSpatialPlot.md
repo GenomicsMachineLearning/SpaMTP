@@ -36,8 +36,18 @@ InteractiveSpatialPlot(
   Character defining the the name of the image to use for tissue
   coordinates and spatial plotting (default = "slice1").
 
+## Value
+
+A Shiny application object.
+
 ## Examples
 
 ``` r
+utils::str(formals(InteractiveSpatialPlot))
+#> Dotted pair list of 4
+#>  $ obj  : symbol 
+#>  $ assay: chr "Spatial"
+#>  $ slot : chr "counts"
+#>  $ image: chr "slice1"
 #InteractiveSpatialPlot(spamtp)
 ```

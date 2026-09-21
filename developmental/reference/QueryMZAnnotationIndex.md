@@ -60,3 +60,18 @@ QueryMZAnnotationIndex(
 ## Value
 
 A ranked candidate data frame.
+
+## Examples
+
+``` r
+utils::str(formals(QueryMZAnnotationIndex))
+#> Dotted pair list of 8
+#>  $ observed_mz         : symbol 
+#>  $ index               : symbol 
+#>  $ ppm                 : num 5
+#>  $ ms1_spectrum        : NULL
+#>  $ use_mass_defect     : logi TRUE
+#>  $ check_isotopes      : logi TRUE
+#>  $ check_adduct_network: logi TRUE
+#>  $ min_score           : num 0
+```

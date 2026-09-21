@@ -2,10 +2,9 @@
 
 This function assigns each valid m/z peak with one/multiple metabolite
 names based on the mass difference between the observed value and the
-theoretical value documented in the reference database. SpaMTP contains
-4 cleaned reference databases to choose from these include HMDB, Lipid
-Maps, ChEBI and GNPS. These databases can also be combined for increased
-coverage.
+theoretical value documented in the reference database. Versioned RaMP,
+HMDB, LIPID MAPS, ChEBI, and GNPS resources are provided by SpaMTP and
+can be combined with user-supplied reference tables.
 
 ## Usage
 
@@ -25,6 +24,9 @@ AnnotateSM(
   min_score = 0,
   verbose = TRUE,
   maldi_matrix = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL,
   ...
 )
 ```
@@ -39,8 +41,9 @@ AnnotateSM(
 - db:
 
   Reference metabolite dataset in the form of a data.frame. When `NULL`,
-  the bundled current RaMP `chem_props` table is used, unless a
-  pre-built `index` is supplied through `...`.
+  the bundled RaMP `chem_props` table is used, unless a pre-built
+  `index` is supplied through `...`. Versioned resources are loaded with
+  SpaMTP and can be overridden with local RDS files.
 
 - assay:
 
@@ -115,11 +118,25 @@ AnnotateSM(
   `adducts` is optional and only restricts that automatic search space
   when explicitly supplied.
 
+- database_version:
+
+  Database snapshot version used when `db = NULL`.
+
+- database_source:
+
+  Database source used when `db = NULL`; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 - ...:
 
   Additional indexed annotation/scoring arguments passed to
   [`annotateTable()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/annotateTable.md),
-  such as `index`, `rules`, or `ms1_spectrum`.
+  such as `index`, `rules`, `ms1_spectrum`, `infer_structure`,
+  `structure_backend`, `structure_workers`, or `min_structure_score`.
 
 ## Value
 
@@ -129,6 +146,26 @@ in the relative assay's meta.data (e.g. SeuratObj`[["Spatial"]][[]]`)
 ## Examples
 
 ``` r
+utils::str(formals(AnnotateSM))
+#> Dotted pair list of 18
+#>  $ data                 : symbol 
+#>  $ db                   : NULL
+#>  $ assay                : chr "Spatial"
+#>  $ raw.mz.column        : chr "raw_mz"
+#>  $ ppm_error            : NULL
+#>  $ adducts              : NULL
+#>  $ polarity             : NULL
+#>  $ tof_resolution       : num 30000
+#>  $ filepath             : NULL
+#>  $ return.only.annotated: logi TRUE
+#>  $ save.intermediate    : logi TRUE
+#>  $ min_score            : num 0
+#>  $ verbose              : logi TRUE
+#>  $ maldi_matrix         : NULL
+#>  $ database_version     : chr "latest"
+#>  $ database_source      : language c("auto", "bundled", "local")
+#>  $ database_local_dir   : NULL
+#>  $ ...                  : symbol 
 # HMDB_db <- load("data/HMDB_1_names.rds")
 # Annotated_SeuratObj <- AnnotateSM(SeuratObj, HMDB_db)
 ```

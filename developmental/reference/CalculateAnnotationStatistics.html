@@ -19,7 +19,7 @@ NOTE: this function requires CreatePathwayAssay to be run first
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@ NOTE: this function requires CreatePathwayAssay to be run first
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul></li>
@@ -86,7 +87,11 @@ NOTE: this function requires CreatePathwayAssay to be run first
 <span>  return.top <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  corr_theshold <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  corr_weight <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  n_weight <span class="op">=</span> <span class="fl">1</span></span>
+<span>  n_weight <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  database <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  database_version <span class="op">=</span> <span class="st">"latest"</span>,</span>
+<span>  database_source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"bundled"</span>, <span class="st">"local"</span><span class="op">)</span>,</span>
+<span>  database_local_dir <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -130,6 +135,23 @@ NOTE: this function requires CreatePathwayAssay to be run first
 <dd><p>Numeric weight applied to number of correlated pathways in z-score calculation (default = 1).</p></dd>
 
 
+<dt id="arg-database">database<a class="anchor" aria-label="anchor" href="#arg-database"></a></dt>
+<dd><p>Optional named list of database resources, normally created
+by <code><a href="LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code>.</p></dd>
+
+
+<dt id="arg-database-version">database_version<a class="anchor" aria-label="anchor" href="#arg-database-version"></a></dt>
+<dd><p>Database snapshot version used for pathway lookup.</p></dd>
+
+
+<dt id="arg-database-source">database_source<a class="anchor" aria-label="anchor" href="#arg-database-source"></a></dt>
+<dd><p>Database source; see <code><a href="LoadSpaMTPDatabase.html">LoadSpaMTPDatabase()</a></code>.</p></dd>
+
+
+<dt id="arg-database-local-dir">database_local_dir<a class="anchor" aria-label="anchor" href="#arg-database-local-dir"></a></dt>
+<dd><p>Optional local RDS resource directory.</p></dd>
+
+
 <dt id="arg-mz">mz<a class="anchor" aria-label="anchor" href="#arg-mz"></a></dt>
 <dd><p>Character or numeric. The target m/z feature. If numeric, the closest matching m/z in the dataset will be selected.</p></dd>
 
@@ -141,7 +163,22 @@ NOTE: this function requires CreatePathwayAssay to be run first
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">CalculateAnnotationStatistics</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dotted pair list of 13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ data              : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mz.assay          : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pathway.assay     : symbol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ mz.slot           : chr "scale.data"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pathway.slot      : chr "scale.data"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ return.top        : logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ corr_theshold     : num 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ corr_weight       : num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ n_weight          : num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database          : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_version  : chr "latest"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_source   : language c("auto", "bundled", "local")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ database_local_dir: NULL</span>
+<span class="r-in"><span><span class="co">#CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -71,5 +71,15 @@ categories
 ## Examples
 
 ``` r
+utils::str(formals(TMMNormalize))
+#> Dotted pair list of 8
+#>  $ combined.obj      : symbol 
+#>  $ ident             : symbol 
+#>  $ refIdent          : symbol 
+#>  $ normalisation.type: chr "CPM"
+#>  $ CPM.scale.factor  : num 1e+06
+#>  $ assay             : chr "Spatial"
+#>  $ slot              : chr "counts"
+#>  $ verbose           : logi FALSE
 # norm.data <- TMMNormalize(SeuratObj, ident = "samples", refIdent = "sample1", normalisation.type = "CPM")
 ```

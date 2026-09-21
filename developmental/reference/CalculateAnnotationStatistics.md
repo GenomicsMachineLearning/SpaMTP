@@ -26,7 +26,11 @@ CalculateAnnotationStatistics(
   return.top = TRUE,
   corr_theshold = 0,
   corr_weight = 1,
-  n_weight = 1
+  n_weight = 1,
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -81,6 +85,24 @@ CalculateAnnotationStatistics(
   Numeric weight applied to number of correlated pathways in z-score
   calculation (default = 1).
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 - mz:
 
   Character or numeric. The target m/z feature. If numeric, the closest
@@ -95,5 +117,20 @@ contating statistics for each m/z value.
 ## Examples
 
 ``` r
+utils::str(formals(CalculateAnnotationStatistics))
+#> Dotted pair list of 13
+#>  $ data              : symbol 
+#>  $ mz.assay          : symbol 
+#>  $ pathway.assay     : symbol 
+#>  $ mz.slot           : chr "scale.data"
+#>  $ pathway.slot      : chr "scale.data"
+#>  $ return.top        : logi TRUE
+#>  $ corr_theshold     : num 0
+#>  $ corr_weight       : num 1
+#>  $ n_weight          : num 1
+#>  $ database          : NULL
+#>  $ database_version  : chr "latest"
+#>  $ database_source   : language c("auto", "bundled", "local")
+#>  $ database_local_dir: NULL
 #CalculateAnnotationStatistics(data = data,mz.assay = "SPM",pathway.assay = "merged",mz.slot = "scale.data")
 ```

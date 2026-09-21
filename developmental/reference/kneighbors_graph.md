@@ -54,5 +54,12 @@ A sparse adjacency matrix (`dgCMatrix`) representing the k-NN graph.
 ## Examples
 
 ``` r
+utils::str(formals(kneighbors_graph))
+#> Dotted pair list of 5
+#>  $ location    : symbol 
+#>  $ n_neighbors : symbol 
+#>  $ platform    : symbol 
+#>  $ include_self: logi FALSE
+#>  $ alg         : chr "kd_tree"
 ### HELPER FUNCTION
 ```

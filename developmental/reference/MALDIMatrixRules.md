@@ -41,3 +41,14 @@ MALDIMatrixRules(
 
 A validated adduct/reaction rule data frame accepted by
 [`BuildMZAnnotationIndex()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/BuildMZAnnotationIndex.md).
+
+## Examples
+
+``` r
+utils::str(formals(MALDIMatrixRules))
+#> Dotted pair list of 4
+#>  $ maldi_matrix           : symbol 
+#>  $ polarity               : NULL
+#>  $ include_standard       : logi TRUE
+#>  $ include_matrix_products: logi TRUE
+```

@@ -34,5 +34,10 @@ spatially variable metabolites
 ## Examples
 
 ``` r
+utils::str(formals(GetSpatiallyVariableMetabolites))
+#> Dotted pair list of 3
+#>  $ object: symbol 
+#>  $ assay : chr "SPM"
+#>  $ n     : num 10
 # features <- GetSpatiallyVariableMetabolites(SpaMTP, n = 6)
 ```

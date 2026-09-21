@@ -31,7 +31,11 @@ PathwayNetworkPlots(
   max_nodes = 500L,
   label_mode = c("detected", "all", "none"),
   max_spatial_points = 50000L,
-  layout_mode = c("repulsion", "force", "radial", "bipartite")
+  layout_mode = c("repulsion", "force", "radial", "bipartite"),
+  database = NULL,
+  database_version = "latest",
+  database_source = c("auto", "bundled", "local"),
+  database_local_dir = NULL
 )
 ```
 
@@ -156,6 +160,24 @@ PathwayNetworkPlots(
   classes into rings, and `"bipartite"` separates genes and metabolites
   vertically. It can also be changed interactively.
 
+- database:
+
+  Optional named list of database resources, normally created by
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_version:
+
+  Database snapshot version used for pathway lookup.
+
+- database_source:
+
+  Database source; see
+  [`LoadSpaMTPDatabase()`](https://genomicsmachinelearning.github.io/SpaMTP/developmental/reference/LoadSpaMTPDatabase.md).
+
+- database_local_dir:
+
+  Optional local RDS resource directory.
+
 ## Value
 
 Invisibly returns the generated HTML file path.
@@ -163,6 +185,35 @@ Invisibly returns the generated HTML file path.
 ## Examples
 
 ``` r
+utils::str(formals(PathwayNetworkPlots))
+#> Dotted pair list of 27
+#>  $ SpaMTP                    : symbol 
+#>  $ ident                     : symbol 
+#>  $ regpathway                : symbol 
+#>  $ DE.list                   : symbol 
+#>  $ selected_pathways         : NULL
+#>  $ path                      : language getwd()
+#>  $ SM_slot                   : chr "counts"
+#>  $ ST_slot                   : chr "counts"
+#>  $ colour_palette            : NULL
+#>  $ SM_assay                  : chr "SPM"
+#>  $ ST_assay                  : chr "SPT"
+#>  $ analyte_types             : language c("genes", "metabolites")
+#>  $ annotation_source         : language c("current", "auto", "legacy")
+#>  $ annotation_score_threshold: NULL
+#>  $ annotation_score_floor    : num 0.01
+#>  $ metabolite_detection      : language c("leading_edge", "annotated")
+#>  $ image                     : chr "slice1"
+#>  $ verbose                   : logi TRUE
+#>  $ top_n_pathways            : int 10
+#>  $ max_nodes                 : int 500
+#>  $ label_mode                : language c("detected", "all", "none")
+#>  $ max_spatial_points        : int 50000
+#>  $ layout_mode               : language c("repulsion", "force", "radial", "bipartite")
+#>  $ database                  : NULL
+#>  $ database_version          : chr "latest"
+#>  $ database_source           : language c("auto", "bundled", "local")
+#>  $ database_local_dir        : NULL
 # PathwayNetworkPlots(
 #   SpaMTP, ident = "Custom_ident", regpathway = regpathway,
 #   DE.list = DE.list, selected_pathways = "WP1902"

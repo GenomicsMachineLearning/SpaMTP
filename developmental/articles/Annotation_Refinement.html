@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpaMTP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
     <li><a class="dropdown-item" href="../articles/SpaMTP_Additional_Features.html">Additional SpaMTP Features</a></li>
     <li><a class="dropdown-item" href="../articles/Big_Data.html">Handling Big Datasets</a></li>
     <li><a class="dropdown-item" href="../articles/Metabolite_Annotation_Pipeline.html">Indexed Metabolite Annotation with RaMP 3.0</a></li>
+    <li><a class="dropdown-item" href="../articles/Pathway_Database_Integration.html">Pathway Database Integration and Interaction Provenance</a></li>
     <li><a class="dropdown-item" href="../articles/Annotation_Refinement.html">Refining Metabolite Annotations</a></li>
     <li><a class="dropdown-item" href="../articles/Single_Cell_MultiOmics.html">Simulated scMulti-Omics Analysis</a></li>
   </ul>
@@ -136,10 +137,8 @@ replace the original annotations.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#For plotting + DE plots</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kevinblighe/EnhancedVolcano" class="external-link">EnhancedVolcano</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Plotting</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="pathway-based-refinement-calculateannotationstatistics">1) Pathway-Based Refinement:
@@ -1010,20 +1009,27 @@ place dopamine near the observed peak:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dopamine_peak_mz</span> <span class="op">&lt;-</span> <span class="fl">674.2805</span></span>
 <span></span>
-<span><span class="va">dopamine_db</span> <span class="op">&lt;-</span> <span class="va">chem_props</span><span class="op">[</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="va">chem_props</span><span class="op">$</span><span class="va">chem_source_id</span><span class="op">)</span> <span class="op">==</span> <span class="st">"HMDB:HMDB0000073"</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"ramp_id"</span>, <span class="st">"chem_source_id"</span>, <span class="st">"inchi_key"</span>, <span class="st">"monoisotop_mass"</span>,</span>
-<span>    <span class="st">"common_name"</span>, <span class="st">"mol_formula"</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  drop <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">]</span></span>
-<span><span class="va">dopamine_db</span> <span class="op">&lt;-</span> <span class="va">dopamine_db</span><span class="op">[</span><span class="fl">1L</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dopamine_db</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span></span>
+<span><span class="co"># A one-row SpaMTPdb 3.0.7 subset keeps this comparison reproducible without a</span></span>
+<span><span class="co"># full AnnotationHub download during website rendering.</span></span>
+<span><span class="va">dopamine_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  ramp_id <span class="op">=</span> <span class="st">"RAMP_C_000218860"</span>,</span>
+<span>  chem_source_id <span class="op">=</span> <span class="st">"hmdb:HMDB0000073"</span>,</span>
+<span>  inchi_key <span class="op">=</span> <span class="st">"VYFYYTLLBUKUHU-UHFFFAOYSA-N"</span>,</span>
+<span>  monoisotop_mass <span class="op">=</span> <span class="fl">153.078978601</span>,</span>
+<span>  common_name <span class="op">=</span> <span class="st">"Dopamine"</span>,</span>
+<span>  mol_formula <span class="op">=</span> <span class="st">"C8H11NO2"</span>,</span>
+<span>  iso_smiles <span class="op">=</span> <span class="st">"NCCC1=CC(O)=C(O)C=C1"</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Dopamine has two phenolic hydroxyls and one primary amine. This explicit</span></span>
-<span><span class="co"># structure-derived field lets matrix-reaction rules prune impossible products.</span></span>
-<span><span class="va">dopamine_db</span><span class="op">$</span><span class="va">fmp10_reactive_sites</span> <span class="op">&lt;-</span> <span class="fl">3L</span></span>
+<span><span class="co"># SpaMTP detects two phenolic hydroxyls, one primary amine, a catechol motif,</span></span>
+<span><span class="co"># and the resulting three FMP-10-compatible sites from the RaMP SMILES.</span></span>
+<span><span class="va">dopamine_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AnnotateSMILESStructure.html">AnnotateSMILESStructure</a></span><span class="op">(</span><span class="va">dopamine_db</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="va">dopamine_db</span><span class="op">$</span><span class="va">phenolic_hydroxyl_sites</span> <span class="op">==</span> <span class="fl">2L</span>,</span>
+<span>  <span class="va">dopamine_db</span><span class="op">$</span><span class="va">primary_amine_sites</span> <span class="op">==</span> <span class="fl">1L</span>,</span>
+<span>  <span class="va">dopamine_db</span><span class="op">$</span><span class="va">fmp10_reactive_sites</span> <span class="op">==</span> <span class="fl">3L</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">standard_positive_rules</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/AdductRules.html">AdductRules</a></span><span class="op">(</span><span class="st">"positive"</span><span class="op">)</span></span>
 <span><span class="va">standard_dopamine_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BuildMZAnnotationIndex.html">BuildMZAnnotationIndex</a></span><span class="op">(</span></span>
@@ -1136,6 +1142,16 @@ database:</p>
 </table>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># `adducts` is intentionally omitted: use every rule selected by FMP-10.</span></span>
+<span><span class="va">fmp10_structure_space</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PredictAdductsFromSMILES.html">PredictAdductsFromSMILES</a></span><span class="op">(</span></span>
+<span>  <span class="va">dopamine_db</span><span class="op">$</span><span class="va">iso_smiles</span>,</span>
+<span>  maldi_matrix <span class="op">=</span> <span class="st">"FMP-10"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="va">fmp10_structure_space</span><span class="op">$</span><span class="va">retained</span><span class="op">[</span></span>
+<span>    <span class="va">fmp10_structure_space</span><span class="op">$</span><span class="va">adduct</span> <span class="op">==</span> <span class="st">"M+2FMP10a"</span></span>
+<span>  <span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">fmp10_dopamine_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BuildMZAnnotationIndex.html">BuildMZAnnotationIndex</a></span><span class="op">(</span></span>
 <span>  <span class="va">dopamine_db</span>,</span>
 <span>  polarity <span class="op">=</span> <span class="st">"positive"</span>,</span>
@@ -1150,22 +1166,25 @@ database:</p>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>  <span class="va">fmp10_dopamine_hits</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"observed_mz"</span>, <span class="st">"expected_mz"</span>, <span class="st">"ppm_error"</span>, <span class="st">"adduct"</span>, <span class="st">"neutral_mass"</span>,</span>
-<span>    <span class="st">"metabolite_names"</span>, <span class="st">"ramp_ids"</span>, <span class="st">"reactive_site_status"</span>, <span class="st">"score"</span></span>
+<span>    <span class="st">"metabolite_names"</span>, <span class="st">"ramp_ids"</span>, <span class="st">"structure_score"</span>,</span>
+<span>    <span class="st">"structure_rule_evidence"</span>, <span class="st">"reactive_site_status"</span>, <span class="st">"score"</span></span>
 <span>  <span class="op">)</span><span class="op">]</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="9%">
-<col width="9%">
-<col width="8%">
-<col width="8%">
-<col width="10%">
-<col width="13%">
-<col width="13%">
-<col width="17%">
-<col width="8%">
+<col width="3%">
+<col width="3%">
+<col width="2%">
+<col width="2%">
+<col width="3%">
+<col width="4%">
+<col width="4%">
+<col width="4%">
+<col width="63%">
+<col width="5%">
+<col width="2%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">observed_mz</th>
@@ -1175,6 +1194,8 @@ database:</p>
 <th align="right">neutral_mass</th>
 <th align="left">metabolite_names</th>
 <th align="left">ramp_ids</th>
+<th align="right">structure_score</th>
+<th align="left">structure_rule_evidence</th>
 <th align="left">reactive_site_status</th>
 <th align="right">score</th>
 </tr></thead>
@@ -1186,8 +1207,13 @@ database:</p>
 <td align="right">153.079</td>
 <td align="left">Dopamine</td>
 <td align="left">RAMP_C_000218860</td>
+<td align="right">0.85</td>
+<td align="left">positive-mode proton/cation acceptance: carboxyl=0;
+alcohol-OH=0; phenolic-OH=2; ketone=0; amine=1; acidic-sites=2;
+proton-acceptors=1; alkali-donors=3; chelation-motifs=1;
+positive-atoms=N1; negative-atoms=O7,O9; alkali-atoms=N1,O7,O9</td>
 <td align="left">verified</td>
-<td align="right">0.7313182</td>
+<td align="right">0.6216205</td>
 </tr></tbody>
 </table>
 <p>Here <code>mass_shift</code> and <code>charge</code> describe the
@@ -1197,9 +1223,9 @@ claim that no hydrogen was lost during the two substitution reactions.
 Those reaction-site hydrogen losses, the intermediate <code>+2</code>
 state, and the subsequent <code>-CH3</code> transformation are already
 folded into the product rule. Because
-<code>fmp10_reactive_sites = 3</code> was provided, the double
-derivative is reported as <code>verified</code> for reaction-site
-eligibility. If this structure-derived value is unavailable, SpaMTP
+<code>fmp10_reactive_sites = 3</code> was inferred from dopamine’s RaMP
+SMILES, the double derivative is reported as <code>verified</code> for
+reaction-site eligibility. If a structure cannot be parsed, SpaMTP
 retains the candidate as <code>unknown</code> but applies a 0.25 score
 multiplier instead of silently treating its chemistry as verified.</p>
 <p>The custom rule recovers dopamine at an expected m/z of approximately
@@ -1517,6 +1543,62 @@ explicitly.</td>
 </tr>
 </tbody>
 </table>
+<p>SMILES target compatibility is still automated for
+<code>profile_only</code> entries, even when a universal product mass is
+unavailable. For example, SpaMTP can recognise that dopamine has the
+primary amine targeted by DPP-TFB, acetone has a ketone targeted by
+DNPH/Girard reagents, and 2HG has carboxylic acids targeted by
+2-picolylamine or TMPA.
+<code>matrix_target_status = "compatible-target"</code> grants
+permission to consider a validated study-specific rule; it does not
+invent the net reaction mass:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">matrix_examples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  `DPP-TFB / dopamine` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DPP-TFB"</span>, <span class="va">dopamine_db</span><span class="op">$</span><span class="va">iso_smiles</span><span class="op">)</span>,</span>
+<span>  `DNPH / acetone` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DNPH"</span>, <span class="st">"CC(=O)C"</span><span class="op">)</span>,</span>
+<span>  `2-PA / 2HG` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2-picolylamine"</span>, <span class="st">"O[C@H](CCC(O)=O)C(O)=O"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">matrix_compatibility</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">matrix_examples</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">label</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">example</span> <span class="op">&lt;-</span> <span class="va">matrix_examples</span><span class="op">[[</span><span class="va">label</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="../reference/PredictAdductsFromSMILES.html">PredictAdductsFromSMILES</a></span><span class="op">(</span></span>
+<span>    <span class="va">example</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>, maldi_matrix <span class="op">=</span> <span class="va">example</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    example <span class="op">=</span> <span class="va">label</span>,</span>
+<span>    target_groups <span class="op">=</span> <span class="va">prediction</span><span class="op">$</span><span class="va">matrix_target_groups</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    target_sites <span class="op">=</span> <span class="va">prediction</span><span class="op">$</span><span class="va">matrix_target_sites</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    status <span class="op">=</span> <span class="va">prediction</span><span class="op">$</span><span class="va">matrix_target_status</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">matrix_compatibility</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">example</th>
+<th align="left">target_groups</th>
+<th align="right">target_sites</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">DPP-TFB / dopamine</td>
+<td align="left">primary amine</td>
+<td align="right">1</td>
+<td align="left">compatible-target</td>
+</tr>
+<tr class="even">
+<td align="left">DNPH / acetone</td>
+<td align="left">aldehyde/ketone</td>
+<td align="right">1</td>
+<td align="left">compatible-target</td>
+</tr>
+<tr class="odd">
+<td align="left">2-PA / 2HG</td>
+<td align="left">carboxylic acid</td>
+<td align="right">2</td>
+<td align="left">compatible-target</td>
+</tr>
+</tbody>
+</table>
 <p>For DHB and CHCA matrix adducts, providing <code>ms1_spectrum</code>
 activates the existing adduct-family check. SpaMTP searches for the
 corresponding base ion (for example <code>[M+H]+</code> or
@@ -1612,19 +1694,19 @@ used for this comparison.</p>
 or executed automatically by SpaMTP. The input directory must contain
 matching <code>.imzML</code> and <code>.ibd</code> files. The following
 example uses both official GNPS library variants:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="ex">ms1_id</span> msi <span class="dt">\</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>  <span class="at">--input_dir</span> path/to/msi_data <span class="dt">\</span></span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>  <span class="at">--libs</span> db/gnps_minmz100.pkl db/gnps_minmz100_k10.pkl <span class="dt">\</span></span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>  <span class="at">--mode</span> positive <span class="dt">\</span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>  <span class="at">--mz_ppm_tol</span> 5 <span class="dt">\</span></span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>  <span class="at">--min_feature_spatial_chaos</span> 0.10 <span class="dt">\</span></span>
-<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>  <span class="at">--min_pixel_overlap</span> 50 <span class="dt">\</span></span>
-<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>  <span class="at">--min_correlation</span> 0.85 <span class="dt">\</span></span>
-<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>  <span class="at">--lib_search_mztol</span> 0.05 <span class="dt">\</span></span>
-<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>  <span class="at">--score_cutoff</span> 0.70 <span class="dt">\</span></span>
-<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>  <span class="at">--min_matched_peak</span> 3 <span class="dt">\</span></span>
-<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>  <span class="at">--min_spec_usage</span> 0.05 <span class="dt">\</span></span>
-<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>  <span class="at">--n_cores</span> 12</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="ex">ms1_id</span> msi <span class="dt">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  <span class="at">--input_dir</span> path/to/msi_data <span class="dt">\</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  <span class="at">--libs</span> db/gnps_minmz100.pkl db/gnps_minmz100_k10.pkl <span class="dt">\</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="at">--mode</span> positive <span class="dt">\</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  <span class="at">--mz_ppm_tol</span> 5 <span class="dt">\</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>  <span class="at">--min_feature_spatial_chaos</span> 0.10 <span class="dt">\</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>  <span class="at">--min_pixel_overlap</span> 50 <span class="dt">\</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>  <span class="at">--min_correlation</span> 0.85 <span class="dt">\</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>  <span class="at">--lib_search_mztol</span> 0.05 <span class="dt">\</span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>  <span class="at">--score_cutoff</span> 0.70 <span class="dt">\</span></span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>  <span class="at">--min_matched_peak</span> 3 <span class="dt">\</span></span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>  <span class="at">--min_spec_usage</span> 0.05 <span class="dt">\</span></span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>  <span class="at">--n_cores</span> 12</span></code></pre></div>
 <p>These values are starting points, not universal confidence
 boundaries. Mass accuracy, spatial resolution, the number of tissue
 pixels, ionisation mode, and instrument type should guide parameter
@@ -1637,7 +1719,7 @@ exploratory coverage at the cost of more false matches.</p>
 retained because it preserves alternative spectral candidates; the
 dereplicated table is convenient for inspection but should not be the
 only archived result.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pseudo_msms_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
 <span>  <span class="st">"path/to/msi_data"</span>,</span>
 <span>  <span class="st">"sample_name"</span>,</span>
@@ -1660,7 +1742,7 @@ only archived result.</p>
 <p>Thresholds can be changed by the user when analysing the retained
 table, provided that the original MS1-ID search was run with equally
 permissive or more permissive cut-offs:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pseudo_score_threshold</span> <span class="op">&lt;-</span> <span class="fl">0.70</span></span>
 <span><span class="va">minimum_matched_peaks</span> <span class="op">&lt;-</span> <span class="fl">3L</span></span>
 <span><span class="va">minimum_spectral_usage</span> <span class="op">&lt;-</span> <span class="fl">0.05</span></span>
@@ -1677,7 +1759,7 @@ permissive or more permissive cut-offs:</p>
 independently by observed precursor m/z and InChIKey. The first 14
 InChIKey characters compare the two-dimensional molecular connectivity
 while avoiding an accidental name match:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dopamine_connectivity_key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/chartr.html" class="external-link">toupper</a></span><span class="op">(</span><span class="va">dopamine_db</span><span class="op">$</span><span class="va">inchi_key</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>  <span class="fl">1</span>,</span>
@@ -1712,7 +1794,7 @@ itself. Keeping both rows of evidence preserves that distinction.</p>
 independent database. Record the installed MS1-ID version, GNPS release
 or checksum, input file checksum, ionisation mode, and all thresholds
 used for the analysis.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pseudo_msms_database</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    engine <span class="op">=</span> <span class="st">"ms1_id"</span>,</span>

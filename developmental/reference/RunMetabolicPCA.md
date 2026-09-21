@@ -89,6 +89,19 @@ SpaMTP object with pca results stored in the
 ## Examples
 
 ``` r
+utils::str(formals(RunMetabolicPCA))
+#> Dotted pair list of 11
+#>  $ SpaMTP                      : symbol 
+#>  $ npcs                        : num 30
+#>  $ variance_explained_threshold: num 0.9
+#>  $ assay                       : chr "SPM"
+#>  $ slot                        : chr "counts"
+#>  $ show_variance_plot          : logi FALSE
+#>  $ bin_resolution              : NULL
+#>  $ resolution_units            : chr "ppm"
+#>  $ bin_method                  : chr "sum"
+#>  $ reduction.name              : chr "pca"
+#>  $ verbose                     : logi TRUE
 ## For running PCA on un-adjusted peak bin sizes
 # spamtp_obj <- RunMetabolicPCA(spamtp_obj, npcs = 50)
 

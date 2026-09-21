@@ -93,8 +93,28 @@ MZRidgePlot(
   Boolean indicating whether to show the message. If TRUE the message
   will be show, else the message will be suppressed (default = FALSE).
 
+## Value
+
+A `ggplot` ridge-plot object.
+
 ## Examples
 
 ``` r
+utils::str(formals(MZRidgePlot))
+#> Dotted pair list of 14
+#>  $ seurat.obj   : symbol 
+#>  $ group.by     : NULL
+#>  $ mzs          : NULL
+#>  $ assay        : chr "Spatial"
+#>  $ slot         : chr "counts"
+#>  $ title        : chr "RidgePlot"
+#>  $ x.lab        : chr "intensity"
+#>  $ y.lab        : chr "var"
+#>  $ bottom.cutoff: NULL
+#>  $ top.cutoff   : NULL
+#>  $ bins         : num 1000
+#>  $ log.data     : logi FALSE
+#>  $ cols         : NULL
+#>  $ verbose      : logi FALSE
 # MZRidgePlot(SeuratObj, group.by = "sample")
 ```

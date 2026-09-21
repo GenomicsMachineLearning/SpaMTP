@@ -140,5 +140,26 @@ A 3D Plotly plot
 ## Examples
 
 ``` r
+utils::str(formals(Plot3DFeature))
+#> Dotted pair list of 19
+#>  $ data                : symbol 
+#>  $ features            : symbol 
+#>  $ assays              : language c("SPT", "SPM")
+#>  $ slots               : chr "counts"
+#>  $ between.layer.height: num 100
+#>  $ names               : NULL
+#>  $ size                : num 3
+#>  $ col.palette         : chr "Reds"
+#>  $ x.axis.label        : chr "x"
+#>  $ y.axis.label        : chr "y"
+#>  $ z.axis.label        : chr "z"
+#>  $ show.x.ticks        : logi FALSE
+#>  $ show.y.ticks        : logi FALSE
+#>  $ show.z.ticks        : logi FALSE
+#>  $ show.image          : NULL
+#>  $ plot.height         : num 800
+#>  $ plot.width          : num 1500
+#>  $ image.sf            : chr "lowres"
+#>  $ downscale.image     : NULL
 # Plot3DFeature(data = my_data, features = c("gene1", "gene2"), assays = c("SPT", "SPM"), show.image = "slice1")
 ```
